@@ -28,8 +28,8 @@ const LandingPage = () => {
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 hover:text-gray-900 transition">Features</a>
               <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition">How It Works</a>
-              <Link href="/login" className="text-gray-600 hover:text-gray-900 transition">Sign in</Link>
-              <Link href="/register" className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">
+              <Link href="/welcome" className="text-gray-600 hover:text-gray-900 transition">Sign in</Link>
+              <Link href="/welcome/register" className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">
                 Start for free
               </Link>
             </div>
@@ -52,7 +52,7 @@ const LandingPage = () => {
               Connect with your roots and celebrate your family&apos;s unique journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register" className="bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg hover:shadow-xl">
+              <Link href="/welcome/register" className="bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg hover:shadow-xl">
                 Start for free
               </Link>
               <a href="#features" className="bg-white text-gray-900 px-8 py-4 rounded-lg hover:bg-gray-50 transition font-semibold border border-gray-200 shadow-sm">
@@ -347,11 +347,11 @@ const LandingPage = () => {
             Start documenting your family&apos;s unique journey today and create a lasting legacy
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" className="bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2">
+            <Link href="/welcome/register" className="bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2">
               Start for free
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/login" className="bg-white text-gray-900 px-8 py-4 rounded-lg hover:bg-gray-50 transition font-semibold border border-gray-200 shadow-sm">
+            <Link href="/welcome" className="bg-white text-gray-900 px-8 py-4 rounded-lg hover:bg-gray-50 transition font-semibold border border-gray-200 shadow-sm">
               Sign in
             </Link>
           </div>
@@ -383,7 +383,7 @@ const LandingPage = () => {
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li><a href="#features" className="hover:text-white transition">Features</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition">How It Works</a></li>
-                <li><Link href="/register" className="hover:text-white transition">Start for free</Link></li>
+                <li><Link href="/welcome/register" className="hover:text-white transition">Start for free</Link></li>
               </ul>
             </div>
 
