@@ -290,13 +290,32 @@ const LandingPage = () => {
             </div>
 
             <div className="relative h-[500px]">
-              {/* Stacked Images */}
-              <div className="absolute inset-0">
-                {/* Login - Step 1 */}
-                <div className={`absolute inset-0 transition-all duration-500 ${
-                  activeStep === 1 ? 'opacity-100 translate-y-0 rotate-0 z-30 scale-100' : 'opacity-40 translate-y-8 -rotate-6 z-10 scale-95'
-                }`}>
-                  <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white h-full">
+              <div className="card-swap-container">
+                {/* Card 1 - Login */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '1rem',
+                    border: '4px solid white',
+                    background: 'white',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: activeStep === 1 
+                      ? 'translateZ(0px) rotateY(0deg) scale(1)'
+                      : activeStep === 2
+                      ? 'translateZ(-100px) translateX(-60px) rotateY(25deg) scale(0.9)'
+                      : 'translateZ(-100px) translateX(-60px) rotateY(25deg) scale(0.9)',
+                    opacity: activeStep === 1 ? 1 : 0.4,
+                    zIndex: activeStep === 1 ? 30 : 10
+                  }}
+                >
+                  <div className="w-full h-full overflow-hidden rounded-xl">
                     <Image 
                       src="/images/Login - 1.png" 
                       alt="Login" 
@@ -307,11 +326,31 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Add Member Form - Personal Info (Top Half) - Step 2 */}
-                <div className={`absolute inset-0 transition-all duration-500 ${
-                  activeStep === 2 ? 'opacity-100 translate-y-0 rotate-0 z-30 scale-100' : 'opacity-40 translate-y-4 rotate-3 z-20 scale-95'
-                }`}>
-                  <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white h-full">
+                {/* Card 2 - Add Member Form */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '1rem',
+                    border: '4px solid white',
+                    background: 'white',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: activeStep === 1
+                      ? 'translateZ(-50px) translateX(30px) rotateY(-15deg) scale(0.95)'
+                      : activeStep === 2
+                      ? 'translateZ(0px) rotateY(0deg) scale(1)'
+                      : 'translateZ(-50px) translateX(-30px) rotateY(15deg) scale(0.95)',
+                    opacity: activeStep === 2 ? 1 : 0.7,
+                    zIndex: activeStep === 2 ? 30 : 20
+                  }}
+                >
+                  <div className="w-full h-full overflow-hidden rounded-xl">
                     <Image 
                       src="/images/Add Member Form - 1.png" 
                       alt="Add Member Personal Information" 
@@ -322,11 +361,31 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                {/* Add Member Form - Family Connection (Bottom Half) - Step 3 */}
-                <div className={`absolute inset-0 transition-all duration-500 ${
-                  activeStep === 3 ? 'opacity-100 translate-y-0 rotate-0 z-30 scale-100' : 'opacity-40 translate-y-12 rotate-6 z-10 scale-95'
-                }`}>
-                  <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white h-full">
+                {/* Card 3 - Family Connection */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '1rem',
+                    border: '4px solid white',
+                    background: 'white',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: activeStep === 1
+                      ? 'translateZ(-100px) translateX(60px) rotateY(-25deg) scale(0.9)'
+                      : activeStep === 2
+                      ? 'translateZ(-50px) translateX(30px) rotateY(-15deg) scale(0.95)'
+                      : 'translateZ(0px) rotateY(0deg) scale(1)',
+                    opacity: activeStep === 3 ? 1 : 0.4,
+                    zIndex: activeStep === 3 ? 30 : activeStep === 2 ? 20 : 10
+                  }}
+                >
+                  <div className="w-full h-full overflow-hidden rounded-xl">
                     <Image 
                       src="/images/Add Member Form - 1.png" 
                       alt="Add Member Family Connection" 
