@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User authentication and tree management
+model TreeOwner {
+  id           Int          @id @default(autoincrement())
+  fullName     String       @db.VarChar(225)
+  email        String       @unique @db.VarChar(225)
+  passwordHash String       @db.VarChar(225)
+  googleUserId String?      @db.VarChar(225)
+  
+  familyTrees  FamilyTree[]
+  
+  @@map("TreeOwner")
+}
+
+model FamilyTree {
+  id          Int      @id @default(autoincrement())
+  treeName    String   @db.VarChar(225)
+  origin      String   @db.VarChar(300)
+  createdDate DateTime @default(now())
+  
+  // Foreign keys
+  treeOwnerId Int
+  
+  // Relations
+  treeOwner         TreeOwner          @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
+  familyMembers     FamilyMember[]
+  guestEditors      GuestEditor[]
+  achievementTypes  AchievementType[]
+  
+  @@map("FamilyTree")
+}
+
+model FamilyMember {
+  id             Int       @id @default(autoincrement())
+  fullName       String    @db.VarChar(225)
+  gender         String    @db.VarChar(45)
+  address        String    @db.VarChar(1000)
+  profilePicture String?   @db.VarChar(300)
+  generation     String    @db.VarChar(45)
+  isDeceased     Boolean   @default(false) @db.TinyInt
+  
+  // Foreign keys
+  familyTreeId   Int
+  
+  // Relations
+  familyTree                  FamilyTree                 @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  achievements                Achievement[]
+  passingRecords              PassingRecord[]
+  causesOfDeath               CauseOfDeath[]
+  occupation                  Occupation?
+  birthPlaces                 FamilyMember_has_PlaceOfOrigin[]
+  spouseRelationships1        SpouseRelationship[]       @relation("FamilyMember1")
+  spouseRelationships2        SpouseRelationship[]       @relation("FamilyMember2")
+  
+  @@map("FamilyMember")
+}
+
+model Occupation {
+  id           Int    @id @default(autoincrement())
+  jobTitle     String @db.VarChar(225)
+  endDate      DateTime?
+  
+  // Foreign keys
+  familyMemberId Int @unique
+  
+  // Relations
+  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  
+  @@map("Occupation")
+}
+
+model Achievement {
+  id             Int      @id @default(autoincrement())
+  achievedDate   DateTime
+  title          String   @db.VarChar(225)
+  description    String   @db.VarChar(5000)
+  
+  // Foreign keys
+  familyMemberId     Int
+  achievementTypeId  Int
+  
+  // Relations
+  familyMember    FamilyMember     @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  achievementType AchievementType  @relation(fields: [achievementTypeId], references: [id])
+  
+  @@map("Achievement")
+}
+
+model AchievementType {
+  id       Int    @id @default(autoincrement())
+  typeName String @db.VarChar(225)
+  
+  // Foreign keys
+  familyTreeId Int
+  
+  // Relations
+  familyTree   FamilyTree    @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  achievements Achievement[]
+  
+  @@map("AchievementType")
+}
+
+model PassingRecord {
+  id           Int      @id @default(autoincrement())
+  createDate   DateTime @default(now())
+  passingDate  DateTime
+  
+  // Foreign keys
+  familyMemberId Int
+  
+  // Relations
+  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  
+  @@map("PassingRecord")
+}
+
+model CauseOfDeath {
+  id         Int      @id @default(autoincrement())
+  cause      String   @db.VarChar(225)
+  deathDate  DateTime
+  
+  // Foreign keys
+  familyMemberId Int
+  
+  // Relations
+  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  
+  @@map("CauseOfDeath")
+}
+
+model PlaceOfOrigin {
+  id       Int    @id @default(autoincrement())
+  location String @db.VarChar(1000)
+  
+  // Relations
+  familyMembers FamilyMember_has_PlaceOfOrigin[]
+  buriedPlaces  BuriedPlace[]
+  
+  @@map("PlaceOfOrigin")
+}
+
+model FamilyMember_has_PlaceOfOrigin {
+  id               Int      @id @default(autoincrement())
+  startDate        DateTime
+  endDate          DateTime?
+  
+  // Foreign keys
+  familyMemberId   Int
+  placeOfOriginId  Int
+  
+  // Relations
+  familyMember  FamilyMember   @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  placeOfOrigin PlaceOfOrigin  @relation(fields: [placeOfOriginId], references: [id])
+  
+  @@map("FamilyMember_has_PlaceOfOrigin")
+}
+
+model BuriedPlace {
+  id          Int      @id @default(autoincrement())
+  location    String   @db.VarChar(1000)
+  startDate   DateTime
+  description String   @db.VarChar(1000)
+  
+  // Foreign keys
+  placeOfOriginId Int
+  
+  // Relations
+  placeOfOrigin PlaceOfOrigin @relation(fields: [placeOfOriginId], references: [id])
+  
+  @@map("BuriedPlace")
+}
+
+model SpouseRelationship {
+  id            Int       @id @default(autoincrement())
+  marriageDate  DateTime
+  divorceDate   DateTime?
+  
+  // Foreign keys
+  familyMember1Id Int
+  familyMember2Id Int
+  
+  // Relations
+  familyMember1 FamilyMember @relation("FamilyMember1", fields: [familyMember1Id], references: [id], onDelete: Cascade)
+  familyMember2 FamilyMember @relation("FamilyMember2", fields: [familyMember2Id], references: [id], onDelete: Cascade)
+  
+  @@map("SpouseRelationship")
+}
+
+model GuestEditor {
+  id             Int      @id @default(autoincrement())
+  accessCode     String   @db.VarChar(45)
+  createdDate    DateTime @default(now())
+  
+  // Foreign keys
+  familyTreeId Int
+  
+  // Relations
+  familyTree FamilyTree @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  
+  @@map("GuestEditor")
+}
