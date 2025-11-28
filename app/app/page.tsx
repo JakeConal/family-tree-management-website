@@ -9,7 +9,7 @@ const LandingPage = () => {
   const [activeStep, setActiveStep] = useState(1);
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-y-scroll snap-y snap-mandatory">
       {/* Background Gradient Spots */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-200/30 rounded-full blur-3xl"></div>
@@ -38,11 +38,11 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen snap-start snap-always flex items-center">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <div className="inline-block mb-6 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-200">
-              <span className="text-sm font-medium text-gray-700">Build Your Family Legacy Today</span>
+            <div className="inline-block mb-6 px-4 py-2 bg-transparent rounded-full shadow-sm border border-black">
+              <span className="text-sm font-medium text-gray-900">Build Your Family Legacy Today</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Preserve Your Family<br />Story
@@ -63,13 +63,13 @@ const LandingPage = () => {
 
           {/* Hero Image/Demo */}
           <div className="relative mt-16">
-            <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-2xl p-4 shadow-2xl">
-              <div className="flex items-center space-x-2 mb-4">
+            <div className="bg-gradient-to-br from-purple-950 via-purple-700 to-indigo-800 rounded-t-2xl pt-4 shadow-2xl">
+              <div className="flex items-center space-x-2 mb-4 px-4">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
-              <div className="bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-white/20">
+              <div className="bg-white overflow-hidden shadow-2xl">
                 <Image 
                   src="/images/Family Tree.png" 
                   alt="Family Tree Dashboard" 
@@ -85,7 +85,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section id="features" className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen snap-start snap-always flex items-center">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-4">Features</h2>
@@ -97,7 +97,7 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-20">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100">
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -149,10 +149,15 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Additional Features */}
+      {/* Additional Features Section */}
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-left">
+              <h2 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-4">Additional Features</h2>
               <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Weave the tapestry of your<br />family&apos;s enduring story
               </h3>
@@ -212,7 +217,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen snap-start snap-always flex items-center">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-4">How It Works</h2>
@@ -338,7 +343,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 min-h-screen snap-start snap-always flex items-center">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Your Family Story Awaits
