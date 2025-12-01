@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Users, TreeDeciduous, Award, BarChart3, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import SplitText from '../components/SplitText';
 
 const LandingPage = () => {
   const [activeStep, setActiveStep] = useState(1);
@@ -11,11 +12,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white relative overflow-y-scroll snap-y snap-mandatory">
       {/* Background Gradient Spots */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-200/30 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-purple-200/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-pink-200/30 rounded-full blur-3xl"></div>
-      </div>
+     
       
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
@@ -44,13 +41,36 @@ const LandingPage = () => {
             <div className="inline-block mb-6 px-4 py-2 bg-transparent rounded-full shadow-sm border border-black">
               <span className="text-sm font-medium text-gray-900">Build Your Family Legacy Today</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Preserve Your Family<br />Story
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Easily build, view, and preserve your family tree for future generations.<br />
-              Connect with your roots and celebrate your family&apos;s unique journey.
-            </p>
+            <div className="mb-6">
+              <SplitText 
+                text="Preserve Your Family Story"
+                tag="h1"
+                className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight"
+                splitType="words, chars"
+                delay={50}
+                duration={0.8}
+                ease="power3.out"
+                from={{ opacity: 0, y: 50, rotationX: -90 }}
+                to={{ opacity: 1, y: 0, rotationX: 0 }}
+                threshold={0.5}
+                rootMargin="0px"
+              />
+            </div>
+            <div className="mb-8 max-w-3xl mx-auto">
+              <SplitText 
+                text="Easily build, view, and preserve your family tree for future generations. Connect with your roots and celebrate your family's unique journey."
+                tag="p"
+                className="text-xl text-gray-600"
+                splitType="words"
+                delay={30}
+                duration={0.6}
+                ease="power2.out"
+                from={{ opacity: 0, y: 20 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.5}
+                rootMargin="0px"
+              />
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/welcome/register" className="bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition font-semibold shadow-lg hover:shadow-xl">
                 Start for free
@@ -98,7 +118,7 @@ const LandingPage = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up hover:shadow-purple-500/50" style={{ animationDelay: '0.1s' }}>
               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100">
                 <div className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Image 
@@ -115,7 +135,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up hover:shadow-blue-500/50" style={{ animationDelay: '0.2s' }}>
               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100">
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Image 
@@ -132,7 +152,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group animate-fade-in-up hover:shadow-pink-500/50" style={{ animationDelay: '0.3s' }}>
               <div className="relative h-56 overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100">
                 <div className="absolute inset-0 bg-gradient-to-t from-pink-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Image 
