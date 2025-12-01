@@ -12,7 +12,11 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white relative overflow-y-scroll snap-y snap-mandatory">
       {/* Background Gradient Spots */}
-     
+      <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-purple-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-[700px] h-[700px] bg-pink-200/30 rounded-full blur-3xl"></div>
+      </div>
       
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
