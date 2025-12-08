@@ -2,10 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TreePine, Eye, Users, Award, BarChart3 } from 'lucide-react';
 import { TextGenerateEffect } from '../src/components/ui/text-generate-effect';
+import { RippleButton } from '../src/components/ui/ripple-button';
+import { GradientText } from '../src/components/ui/gradient-text';
+import { InteractiveGridPattern } from '../src/components/ui/interactive-grid-pattern';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen w-full relative bg-white">
+      <div className="relative z-10 min-h-screen w-full">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -19,17 +23,23 @@ export default function Home() {
               <a href="#how-it-works" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">How It Works</a>
             </div>
             <div className="flex items-center gap-3">
-              <Link 
-                href="/login" 
-                className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                Sign in
+              <Link href="/login">
+                <RippleButton 
+                  variant="outline"
+                  size="sm"
+                  className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Sign in
+                </RippleButton>
               </Link>
-              <Link 
-                href="/signup" 
-                className="px-4 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-              >
-                Start for free
+              <Link href="/signup">
+                <RippleButton 
+                  size="sm"
+                  className="bg-gray-900 text-white hover:bg-gray-800 border-0"
+                  variant="default"
+                >
+                  Start for free
+                </RippleButton>
               </Link>
             </div>
           </div>
@@ -37,12 +47,18 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-6 lg:px-8">
+      <section className="pt-32 pb-16 px-6 lg:px-8 relative">
+        <InteractiveGridPattern 
+          className="absolute inset-0 opacity-20 -z-10"
+          width={50}
+          height={50}
+          squares={[60, 60]}
+        />
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <div className="inline-block mb-6">
-              <span className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-full bg-white/50 backdrop-blur-sm">
-                Build Your Family Legacy Today
+              <span className="px-4 py-2 text-sm border border-gray-400 rounded-full bg-white/50 backdrop-blur-sm">
+                <GradientText text="Build Your Family Legacy Today" className="font-medium" />
               </span>
             </div>
             <TextGenerateEffect 
@@ -53,18 +69,24 @@ export default function Home() {
               Easily build, view, and preserve your family tree for future generations. Connect with your roots and celebrate your family&apos;s unique journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href="/signup" 
-                className="px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-base font-medium"
-              >
-                Start for free
+              <Link href="/signup">
+                <RippleButton 
+                  size="lg"
+                  className="bg-gray-900 text-white hover:bg-gray-800 border-0"
+                  variant="default"
+                >
+                  Start for free
+                </RippleButton>
               </Link>
-              <Link 
-                href="#features" 
-                className="px-6 py-3 bg-white text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-base font-medium"
-              >
-                Explore
-              </Link>
+              <a href="#features">
+                <RippleButton 
+                  variant="outline"
+                  size="lg"
+                  className="text-gray-900 bg-white border-gray-300 hover:bg-gray-50"
+                >
+                  Explore
+                </RippleButton>
+              </a>
             </div>
           </div>
           
@@ -93,8 +115,10 @@ export default function Home() {
         </div>
       </section>
 
+      
+
       {/* Features Section */}
-      <section id="features" className="py-20 px-6 lg:px-8">
+      <section id="features" className="py-20 px-6 lg:px-8 bg-gray-50 relative">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
@@ -173,17 +197,19 @@ export default function Home() {
       {/* Additional Features Section */}
       <section className="py-20 px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Left: Title */}
+            <div>
               <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
                 Additional Features
               </h2>
               <TextGenerateEffect 
                 words="Weave the tapestry of your family's enduring story"
-                className="text-3xl md:text-4xl text-gray-900 mb-4"
+                className="text-3xl md:text-4xl text-gray-900"
               />
             </div>
 
+            {/* Right: Feature List */}
             <div className="space-y-8">
               {/* Interactive Family Tree */}
               <div className="flex gap-4">
@@ -250,7 +276,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 px-6 lg:px-8 bg-white">
+      <section id="how-it-works" className="py-20 px-6 lg:px-8 bg-gray-50 relative">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
@@ -310,7 +336,13 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6 lg:px-8 bg-linear-to-br from-blue-50 via-purple-50 to-pink-50">
+      <section className="py-20 px-6 lg:px-8 relative ">
+        <InteractiveGridPattern 
+          className="absolute inset-0 opacity-15 -z-10"
+          width={50}
+          height={50}
+          squares={[60, 60]}
+        />
         <div className="max-w-4xl mx-auto text-center">
           <TextGenerateEffect 
             words="Your Family Story Awaits"
@@ -320,17 +352,23 @@ export default function Home() {
             Start documenting your family&apos;s unique journey today and create a lasting legacy
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/signup" 
-              className="px-8 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors text-base font-medium"
-            >
-              Start for free
+            <Link href="/signup">
+              <RippleButton 
+                size="lg"
+                className="bg-gray-900 text-white hover:bg-gray-800 border-0"
+                variant="default"
+              >
+                Start for free
+              </RippleButton>
             </Link>
-            <Link 
-              href="/login" 
-              className="px-8 py-3 bg-white text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-base font-medium"
-            >
-              Sign in
+            <Link href="/login">
+              <RippleButton 
+                variant="outline"
+                size="lg"
+                className="text-gray-900 bg-white border-gray-300 hover:bg-gray-50"
+              >
+                Sign in
+              </RippleButton>
             </Link>
           </div>
         </div>
@@ -389,6 +427,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
