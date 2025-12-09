@@ -23,7 +23,7 @@ export default function Home() {
               <a href="#how-it-works" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">How It Works</a>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/login">
+              <Link href="/welcome">
                 <RippleButton 
                   variant="outline"
                   size="sm"
@@ -360,7 +360,7 @@ export default function Home() {
                 Start for free
               </RippleButton>
             </Link>
-            <Link href="/login">
+            <Link href="/welcome">
               <RippleButton 
                 variant="outline"
                 size="lg"

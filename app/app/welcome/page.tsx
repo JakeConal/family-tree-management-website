@@ -42,7 +42,7 @@ export default function WelcomePage() {
 
               {/* Buttons */}
               <div className="w-full space-y-3">
-                <Link href="/login" className="block">
+                <Link href="/welcome/login" className="block">
                   <RippleButton 
                     className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                     variant="default"
@@ -81,7 +81,7 @@ export default function WelcomePage() {
 
               {/* Button */}
               <div className="w-full">
-                <Link href="/access-code" className="block">
+                <Link href="/welcome/guest-login" className="block">
                   <RippleButton 
                     className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                     variant="default"
