@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { TreePine, Eye, Users, Award, BarChart3 } from 'lucide-react';
+import { Eye, Users, Award, BarChart3 } from 'lucide-react';
 import { TextGenerateEffect } from '../src/components/ui/text-generate-effect';
 import { RippleButton } from '../src/components/ui/ripple-button';
 import { GradientText } from '../src/components/ui/gradient-text';
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
-              <TreePine className="w-6 h-6 text-gray-800" />
+              <Image src="/images/logo.png" alt="Family Tree Logo" width={24} height={24} className="w-6 h-6" />
               <span className="text-lg font-semibold text-gray-900">Family Tree</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
@@ -379,7 +379,7 @@ export default function Home() {
           <div className="grid md:grid-cols-5 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <TreePine className="w-6 h-6 text-gray-800" />
+                <Image src="/images/logo.png" alt="Family Tree Logo" width={24} height={24} className="w-6 h-6" />
                 <span className="text-lg font-bold text-gray-900">Family Tree</span>
               </div>
               <p className="text-sm text-gray-600 mb-4 leading-relaxed">
