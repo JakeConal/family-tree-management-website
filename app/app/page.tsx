@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { TreePine, Eye, Users, Award, BarChart3 } from 'lucide-react';
-import { cn } from '../src/lib/utils';
 import { TextGenerateEffect } from '../src/components/ui/text-generate-effect';
 import { RippleButton } from '../src/components/ui/ripple-button';
 import { GradientText } from '../src/components/ui/gradient-text';
@@ -210,15 +209,15 @@ export default function Home() {
             </div>
 
             {/* Right: Feature List */}
-            <div className="space-y-8">
+            <div className="space-y-10">
               {/* Interactive Family Tree */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="shrink-0">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                     <Eye className="w-6 h-6 text-gray-900" />
                   </div>
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-xl font-bold text-gray-900 mb-2">Interactive Family Tree</h4>
                   <p className="text-gray-600 leading-relaxed">
                     Visualize your family connections with beautiful, easy-to-navigate tree diagrams.
@@ -227,13 +226,13 @@ export default function Home() {
               </div>
 
               {/* Member Management */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="shrink-0">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-gray-900" />
                   </div>
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-xl font-bold text-gray-900 mb-2">Member Management</h4>
                   <p className="text-gray-600 leading-relaxed">
                     Add and organize family members with detailed profiles and photos.
@@ -242,13 +241,13 @@ export default function Home() {
               </div>
 
               {/* Achievement Tracking */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="shrink-0">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                     <Award className="w-6 h-6 text-gray-900" />
                   </div>
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-xl font-bold text-gray-900 mb-2">Achievement Tracking</h4>
                   <p className="text-gray-600 leading-relaxed">
                     Record and celebrate important milestones in your family.
@@ -257,13 +256,13 @@ export default function Home() {
               </div>
 
               {/* Detailed Reports */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="shrink-0">
                   <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                     <BarChart3 className="w-6 h-6 text-gray-900" />
                   </div>
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="text-xl font-bold text-gray-900 mb-2">Detailed Reports</h4>
                   <p className="text-gray-600 leading-relaxed">
                     Generate comprehensive reports and statistics about your family history.
