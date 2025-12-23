@@ -9,204 +9,227 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+// Enums
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
 
 // User authentication and tree management
 model TreeOwner {
-  id           Int          @id @default(autoincrement())
-  fullName     String       @db.VarChar(225)
-  email        String       @unique @db.VarChar(225)
-  passwordHash String       @db.VarChar(225)
-  googleUserId String?      @db.VarChar(225)
-  
+  id           Int           @id @default(autoincrement())
+  fullName     String        @db.VarChar(225)
+  email        String        @unique @db.VarChar(225)
+  passwordHash String        @db.VarChar(225)
+  googleId     String?       @db.VarChar(225)
+  authProvider AuthProvider? @default(LOCAL)
+  isVerified   Boolean       @default(false) @db.TinyInt
+  refreshToken String?       @db.VarChar(225)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?     @updatedAt
+
   familyTrees  FamilyTree[]
-  
+
   @@map("TreeOwner")
 }
 
 model FamilyTree {
-  id          Int      @id @default(autoincrement())
-  treeName    String   @db.VarChar(225)
-  origin      String   @db.VarChar(300)
-  createdDate DateTime @default(now())
-  
+  id                  Int            @id @default(autoincrement())
+  familyName          String         @db.VarChar(225)
+  origin              String?        @db.VarChar(500)
+  establishYear       Int?
+  createdAt           DateTime       @default(now())
+
   // Foreign keys
-  treeOwnerId Int
-  
+  treeOwnerId         Int
+  rootMemberId        Int?
+
   // Relations
-  treeOwner         TreeOwner          @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
-  familyMembers     FamilyMember[]
-  guestEditors      GuestEditor[]
-  achievementTypes  AchievementType[]
-  
+  treeOwner           TreeOwner      @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
+  rootMember          FamilyMember?  @relation("FamilyRoot", fields: [rootMemberId], references: [id])
+  familyMembers       FamilyMember[]
+  guestEditors        GuestEditor[]
+  achievementTypes    AchievementType[]
+
   @@map("FamilyTree")
 }
 
 model FamilyMember {
-  id             Int       @id @default(autoincrement())
-  fullName       String    @db.VarChar(225)
-  gender         String    @db.VarChar(45)
-  address        String    @db.VarChar(1000)
-  profilePicture String?   @db.VarChar(300)
-  generation     String    @db.VarChar(45)
-  isDeceased     Boolean   @default(false) @db.TinyInt
-  
+  id             Int                                 @id @default(autoincrement())
+  fullName       String                              @db.VarChar(225)
+  gender         Gender?
+  birthday       DateTime?
+  address        String?                             @db.VarChar(1000)
+  profilePicture String?                             @db.VarChar(500)
+  generation     String?                             @db.VarChar(45)
+  isRootPerson   Boolean?            @default(false)  @db.TinyInt
+  isAdopted      Boolean?            @default(false)  @db.TinyInt
+
   // Foreign keys
   familyTreeId   Int
-  
+  parentId       Int?
+
   // Relations
-  familyTree                  FamilyTree                 @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
-  achievements                Achievement[]
-  passingRecords              PassingRecord[]
-  causesOfDeath               CauseOfDeath[]
-  occupation                  Occupation?
-  birthPlaces                 FamilyMember_has_PlaceOfOrigin[]
-  spouseRelationships1        SpouseRelationship[]       @relation("FamilyMember1")
-  spouseRelationships2        SpouseRelationship[]       @relation("FamilyMember2")
-  
+  familyTree     FamilyTree                         @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  parent         FamilyMember?                       @relation("ParentChild", fields: [parentId], references: [id])
+  children       FamilyMember[]                      @relation("ParentChild")
+  achievements   Achievement[]
+  passingRecords PassingRecord[]
+  causesOfDeath  CauseOfDeath[]
+  occupations    Occupation[]
+  birthPlaces    FamilyMember_has_PlaceOfOrigin[]
+  spouse1        SpouseRelationship[]                @relation("FamilyMember1")
+  spouse2        SpouseRelationship[]                @relation("FamilyMember2")
+  guestEditors   GuestEditor[]
+
   @@map("FamilyMember")
 }
 
 model Occupation {
-  id           Int    @id @default(autoincrement())
-  jobTitle     String @db.VarChar(225)
-  endDate      DateTime?
-  
+  id             Int       @id @default(autoincrement())
+  jobTitle       String    @db.VarChar(225)
+  startDate      DateTime?
+  endDate        DateTime?
+
   // Foreign keys
-  familyMemberId Int @unique
-  
+  familyMemberId Int
+
   // Relations
-  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  
+  familyMember   FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+
   @@map("Occupation")
 }
 
 model Achievement {
-  id             Int      @id @default(autoincrement())
-  achievedDate   DateTime
-  title          String   @db.VarChar(225)
-  description    String   @db.VarChar(5000)
-  
+  id                Int             @id @default(autoincrement())
+  title             String          @db.VarChar(225)
+  achieveDate       DateTime?
+  description       String?         @db.VarChar(2000)
+
   // Foreign keys
-  familyMemberId     Int
-  achievementTypeId  Int
-  
+  familyMemberId    Int
+  achievementTypeId Int
+
   // Relations
-  familyMember    FamilyMember     @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  achievementType AchievementType  @relation(fields: [achievementTypeId], references: [id])
-  
+  familyMember      FamilyMember    @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  achievementType   AchievementType @relation(fields: [achievementTypeId], references: [id])
+
   @@map("Achievement")
 }
 
 model AchievementType {
-  id       Int    @id @default(autoincrement())
-  typeName String @db.VarChar(225)
-  
+  id           Int             @id @default(autoincrement())
+  typeName     String          @db.VarChar(225)
+
   // Foreign keys
   familyTreeId Int
-  
+
   // Relations
-  familyTree   FamilyTree    @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  familyTree   FamilyTree      @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
   achievements Achievement[]
-  
+
   @@map("AchievementType")
 }
 
 model PassingRecord {
-  id           Int      @id @default(autoincrement())
-  createDate   DateTime @default(now())
-  passingDate  DateTime
-  
+  id             Int       @id @default(autoincrement())
+  dateOfPassing  DateTime
+  createdAt      DateTime  @default(now())
+
   // Foreign keys
   familyMemberId Int
-  
+
   // Relations
-  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  
+  familyMember   FamilyMember   @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  causeOfDeath   CauseOfDeath?
+  buriedPlaces   BuriedPlace[]
+
   @@map("PassingRecord")
 }
 
 model CauseOfDeath {
-  id         Int      @id @default(autoincrement())
-  cause      String   @db.VarChar(225)
-  deathDate  DateTime
-  
+  id               Int           @id @default(autoincrement())
+  causeName        String        @db.VarChar(225)
+
   // Foreign keys
-  familyMemberId Int
-  
+  passingRecordId  Int
+
   // Relations
-  familyMember FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  
+  passingRecord    PassingRecord @relation(fields: [passingRecordId], references: [id], onDelete: Cascade)
+
   @@map("CauseOfDeath")
 }
 
-model PlaceOfOrigin {
-  id       Int    @id @default(autoincrement())
-  location String @db.VarChar(1000)
-  
+model BuriedPlace {
+  id              Int       @id @default(autoincrement())
+  location        String    @db.VarChar(1000)
+  startDate       DateTime?
+  endDate         DateTime?
+
+  // Foreign keys
+  passingRecordId Int
+
   // Relations
-  familyMembers FamilyMember_has_PlaceOfOrigin[]
-  buriedPlaces  BuriedPlace[]
-  
+  passingRecord   PassingRecord @relation(fields: [passingRecordId], references: [id], onDelete: Cascade)
+
+  @@map("BuriedPlace")
+}
+
+model PlaceOfOrigin {
+  id             Int                               @id @default(autoincrement())
+  location       String                            @db.VarChar(225)
+
+  // Relations
+  familyMembers  FamilyMember_has_PlaceOfOrigin[]
+
   @@map("PlaceOfOrigin")
 }
 
 model FamilyMember_has_PlaceOfOrigin {
-  id               Int      @id @default(autoincrement())
-  startDate        DateTime
-  endDate          DateTime?
-  
-  // Foreign keys
-  familyMemberId   Int
+  familyMemberId  Int
   placeOfOriginId  Int
-  
-  // Relations
-  familyMember  FamilyMember   @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  placeOfOrigin PlaceOfOrigin  @relation(fields: [placeOfOriginId], references: [id])
-  
+  startDate       DateTime?
+  endDate         DateTime?
+
+  familyMember    FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  placeOfOrigin   PlaceOfOrigin @relation(fields: [placeOfOriginId], references: [id])
+
+  @@id([familyMemberId, placeOfOriginId])
   @@map("FamilyMember_has_PlaceOfOrigin")
 }
 
-model BuriedPlace {
-  id          Int      @id @default(autoincrement())
-  location    String   @db.VarChar(1000)
-  startDate   DateTime
-  description String   @db.VarChar(1000)
-  
-  // Foreign keys
-  placeOfOriginId Int
-  
-  // Relations
-  placeOfOrigin PlaceOfOrigin @relation(fields: [placeOfOriginId], references: [id])
-  
-  @@map("BuriedPlace")
-}
-
 model SpouseRelationship {
-  id            Int       @id @default(autoincrement())
-  marriageDate  DateTime
-  divorceDate   DateTime?
-  
+  id              Int          @id @default(autoincrement())
+  marriageDate    DateTime
+  divorceDate     DateTime?
+
   // Foreign keys
   familyMember1Id Int
   familyMember2Id Int
-  
+
   // Relations
-  familyMember1 FamilyMember @relation("FamilyMember1", fields: [familyMember1Id], references: [id], onDelete: Cascade)
-  familyMember2 FamilyMember @relation("FamilyMember2", fields: [familyMember2Id], references: [id], onDelete: Cascade)
-  
+  familyMember1   FamilyMember @relation("FamilyMember1", fields: [familyMember1Id], references: [id], onDelete: Cascade)
+  familyMember2   FamilyMember @relation("FamilyMember2", fields: [familyMember2Id], references: [id], onDelete: Cascade)
+
   @@map("SpouseRelationship")
 }
 
 model GuestEditor {
-  id             Int      @id @default(autoincrement())
-  accessCode     String   @db.VarChar(45)
-  createdDate    DateTime @default(now())
-  
+  id             Int        @id @default(autoincrement())
+  accessCode     String     @db.VarChar(45)
+  createDate     DateTime   @default(now())
+
   // Foreign keys
-  familyTreeId Int
-  
+  familyMemberId Int
+
   // Relations
-  familyTree FamilyTree @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
-  
+  familyMember   FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+
   @@map("GuestEditor")
 }
