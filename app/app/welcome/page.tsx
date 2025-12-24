@@ -1,13 +1,16 @@
-import Link from 'next/link';
-import { ArrowLeft, User, KeyRound, ChevronRight } from 'lucide-react';
-import { RippleButton } from '../../src/components/ui/ripple-button';
+import Link from "next/link";
+import { ArrowLeft, User, KeyRound, ChevronRight } from "lucide-react";
+import { RippleButton } from "../../components/ui/ripple-button";
 
 export default function WelcomePage() {
   return (
     <div className="min-h-screen w-full bg-gray-50 flex flex-col">
       {/* Back to Home Link */}
       <div className="px-6 lg:px-12 py-8">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+        >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-lg font-medium">Back To Home</span>
         </Link>
@@ -43,7 +46,7 @@ export default function WelcomePage() {
               {/* Buttons */}
               <div className="w-full space-y-3">
                 <Link href="/welcome/login" className="block">
-                  <RippleButton 
+                  <RippleButton
                     className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                     variant="default"
                   >
@@ -52,7 +55,7 @@ export default function WelcomePage() {
                   </RippleButton>
                 </Link>
                 <Link href="/signup" className="block">
-                  <RippleButton 
+                  <RippleButton
                     variant="outline"
                     className="w-full bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-50 text-base py-6 rounded-full"
                   >
@@ -76,13 +79,14 @@ export default function WelcomePage() {
 
               {/* Description */}
               <p className="text-center text-gray-600 mb-8 leading-relaxed">
-                Have an access code from your family tree owner? Enter it here to view the family tree.
+                Have an access code from your family tree owner? Enter it here
+                to view the family tree.
               </p>
 
               {/* Button */}
               <div className="w-full">
                 <Link href="/welcome/guest-login" className="block">
-                  <RippleButton 
+                  <RippleButton
                     className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                     variant="default"
                   >

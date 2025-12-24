@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { ChevronLeft, KeyRound, ChevronRight } from 'lucide-react';
-import { RippleButton } from '../../../src/components/ui/ripple-button';
+import Link from "next/link";
+import { useState } from "react";
+import { ChevronLeft, KeyRound, ChevronRight } from "lucide-react";
+import { RippleButton } from "../../../components/ui/ripple-button";
 
 export default function GuestLoginPage() {
-  const [accessCode, setAccessCode] = useState('');
+  const [accessCode, setAccessCode] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle access code verification logic here
-    console.log('Access Code:', accessCode);
+    console.log("Access Code:", accessCode);
   };
 
   return (
@@ -20,8 +20,8 @@ export default function GuestLoginPage() {
         {/* Card Container */}
         <div className="bg-white rounded-3xl border-2 border-gray-200 p-8 md:p-10">
           {/* Back Button */}
-          <Link 
-            href="/welcome" 
+          <Link
+            href="/welcome"
             className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -42,7 +42,10 @@ export default function GuestLoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Access Code Field */}
             <div>
-              <label htmlFor="accessCode" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="accessCode"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Access Code
               </label>
               <div className="relative">
@@ -65,7 +68,7 @@ export default function GuestLoginPage() {
 
             {/* Submit Button */}
             <div className="pt-2">
-              <RippleButton 
+              <RippleButton
                 type="submit"
                 className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                 variant="default"

@@ -1,32 +1,38 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { ChevronLeft, UserCircle, Mail, Lock, ChevronRight } from 'lucide-react';
-import { RippleButton } from '../../src/components/ui/ripple-button';
+import Link from "next/link";
+import { useState } from "react";
+import {
+  ChevronLeft,
+  UserCircle,
+  Mail,
+  Lock,
+  ChevronRight,
+} from "lucide-react";
+import { RippleButton } from "../../components/ui/ripple-button";
 
 export default function SignUpPage() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate passwords match
     if (password !== confirmPassword) {
-      alert('Passwords do not match!');
+      alert("Passwords do not match!");
       return;
     }
 
     // Handle sign up logic here
-    console.log('Sign Up:', { fullName, email, password });
+    console.log("Sign Up:", { fullName, email, password });
   };
 
   const handleGoogleSignUp = () => {
     // Handle Google OAuth sign up
-    console.log('Google sign up');
+    console.log("Google sign up");
   };
 
   return (
@@ -35,8 +41,8 @@ export default function SignUpPage() {
         {/* Card Container */}
         <div className="bg-white rounded-3xl border-2 border-gray-200 p-8 md:p-10">
           {/* Back Button */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -57,7 +63,10 @@ export default function SignUpPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name Field */}
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="fullName"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Full Name
               </label>
               <div className="relative">
@@ -76,7 +85,10 @@ export default function SignUpPage() {
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Email
               </label>
               <div className="relative">
@@ -95,7 +107,10 @@ export default function SignUpPage() {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -115,7 +130,10 @@ export default function SignUpPage() {
 
             {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -135,7 +153,7 @@ export default function SignUpPage() {
 
             {/* Submit Button */}
             <div className="pt-2">
-              <RippleButton 
+              <RippleButton
                 type="submit"
                 className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                 variant="default"
@@ -152,7 +170,9 @@ export default function SignUpPage() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+              <span className="px-4 bg-white text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -185,8 +205,11 @@ export default function SignUpPage() {
 
           {/* Sign In Link */}
           <p className="text-center mt-6 text-gray-600">
-            Already have an account?{' '}
-            <Link href="/welcome/login" className="font-semibold text-gray-900 hover:underline">
+            Already have an account?{" "}
+            <Link
+              href="/welcome/login"
+              className="font-semibold text-gray-900 hover:underline"
+            >
               Sign in
             </Link>
           </p>

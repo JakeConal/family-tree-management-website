@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { ChevronLeft, Mail, Lock, ChevronRight } from 'lucide-react';
-import { RippleButton } from '../../../src/components/ui/ripple-button';
+import Link from "next/link";
+import { useState } from "react";
+import { ChevronLeft, Mail, Lock, ChevronRight } from "lucide-react";
+import { RippleButton } from "../../../components/ui/ripple-button";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle login logic here
-    console.log('Login:', { email, password });
+    console.log("Login:", { email, password });
   };
 
   const handleGoogleLogin = () => {
     // Handle Google OAuth login
-    console.log('Google login');
+    console.log("Google login");
   };
 
   return (
@@ -26,8 +26,8 @@ export default function LoginPage() {
         {/* Card Container */}
         <div className="bg-white rounded-3xl border-2 border-gray-200 p-8 md:p-10">
           {/* Back Button */}
-          <Link 
-            href="/welcome" 
+          <Link
+            href="/welcome"
             className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -39,16 +39,17 @@ export default function LoginPage() {
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Sign in
             </h1>
-            <p className="text-lg text-gray-600">
-              Welcome back
-            </p>
+            <p className="text-lg text-gray-600">Welcome back</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Email
               </label>
               <div className="relative">
@@ -67,7 +68,10 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-900 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -86,7 +90,7 @@ export default function LoginPage() {
 
             {/* Submit Button */}
             <div className="pt-2">
-              <RippleButton 
+              <RippleButton
                 type="submit"
                 className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
                 variant="default"
@@ -103,7 +107,9 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+              <span className="px-4 bg-white text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -136,8 +142,11 @@ export default function LoginPage() {
 
           {/* Sign Up Link */}
           <p className="text-center mt-6 text-gray-600">
-            Don&apos;t have an account?{' '}
-            <Link href="/welcome/signup" className="font-semibold text-gray-900 hover:underline">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/welcome/signup"
+              className="font-semibold text-gray-900 hover:underline"
+            >
               Create one
             </Link>
           </p>
