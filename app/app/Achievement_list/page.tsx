@@ -4,28 +4,47 @@ import Image from "next/image";
 import { type ChangeEvent, type ComponentType, type FormEvent, useMemo, useState } from "react";
 
 import {
-  Award,
-  BookOpenCheck,
   ChevronLeft,
   CalendarDays,
   LayoutDashboard,
-  Leaf,
   LineChart,
   ListChecks,
   MapPin,
   Plus,
   Settings,
   Trees,
-  Trophy,
   UsersRound,
 } from "lucide-react";
 
 import { FamilySidebar } from "../../components/family-sidebar";
 import { FamilyTreeLogo } from "../../components/icons/family-tree-logo";
 import { PersonIcon, CalendarIcon } from "../../components/icons/achievement-metadata";
-import { GraduationIcon } from "../../components/icons/graduation-icon";
 
 type AchievementIcon = ComponentType<{ className?: string }>;
+
+// Icon path mapping for each category
+const ACHIEVEMENT_ICON_CONFIG: Record<string, { iconPath: string; background: string }> = {
+  Education: { iconPath: "/icons/cup.png", background: "#D6EEFF" },
+  Graduation: { iconPath: "/icons/cup.png", background: "#D6EEFF" },
+  Career: { iconPath: "/icons/career.png", background: "#E7DDFB" },
+  Business: { iconPath: "/icons/career.png", background: "#E7DDFB" },
+  Sport: { iconPath: "/icons/sport.png", background: "#F8F1C2" },
+  Sports: { iconPath: "/icons/sport.png", background: "#F8F1C2" },
+  Health: { iconPath: "/icons/health.png", background: "#F8D6D6" },
+  Artistic: { iconPath: "/icons/artist.png", background: "#CCE7F8" },
+  Creative: { iconPath: "/icons/artist.png", background: "#CCE7F8" },
+  Community: { iconPath: "/icons/community.png", background: "#D6EEFF" },
+  Environment: { iconPath: "/icons/enviroment.png", background: "#E0F3D3" },
+  Financial: { iconPath: "/icons/finance.png", background: "#FAE5D3" },
+  Finance: { iconPath: "/icons/finance.png", background: "#FAE5D3" },
+  "Skill Development": { iconPath: "/icons/skill.png", background: "#E7DDFB" },
+  Travel: { iconPath: "/icons/travel.png", background: "#D1F2EB" },
+  Passing: { iconPath: "/icons/passing.png", background: "#D9D9D9" },
+  Married: { iconPath: "/icons/ket_hon.png", background: "#F8D6D6" },
+  Marriage: { iconPath: "/icons/ket_hon.png", background: "#F8D6D6" },
+  Divorce: { iconPath: "/icons/broken.png", background: "#E7DDFB" },
+  Birth: { iconPath: "/icons/birth.png", background: "#D6EEFF" },
+};
 
 interface AchievementEntry {
   id: string;
@@ -35,7 +54,7 @@ interface AchievementEntry {
   date: string;
   description: string;
   background: string;
-  icon: AchievementIcon;
+  iconPath: string;
 }
 
 interface PassingEntry {
@@ -48,7 +67,7 @@ interface PassingEntry {
   cause: string;
   causes: string[];
   burialPlaces: { location: string; startDate: string }[];
-  icon: AchievementIcon;
+  iconPath: string;
 }
 
 interface LifeEventEntry {
@@ -82,7 +101,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           "Ruben graduated with honors from MIT with a Master's Degree in Computer Science.",
         background: "#D6EEFF",
-        icon: GraduationIcon,
+        iconPath: "/icons/cup.png",
       },
       {
         id: "career",
@@ -93,7 +112,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           "Forrest founded and scaled Hunter & Sons into a leading regional corporate litigation firm.",
         background: "#E7DDFB",
-        icon: UsersRound,
+        iconPath: "/icons/career.png",
       },
       {
         id: "sport",
@@ -104,7 +123,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           "Geoffrey was the MVP of the 2005 State Championship, showcasing exceptional teamwork and skill.",
         background: "#F8F1C2",
-        icon: Trophy,
+        iconPath: "/icons/sport.png",
       },
       {
         id: "health",
@@ -115,7 +134,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           "Ruben finished the intense 75 Hard program, improving discipline and overall health.",
         background: "#F8D6D6",
-        icon: ListChecks,
+        iconPath: "/icons/health.png",
       },
     ],
   },
@@ -131,7 +150,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           "Corad led a neighborhood-wide multi-sort recycling program that boosted sustainability efforts.",
         background: "#E0F3D3",
-        icon: Leaf,
+        iconPath: "/icons/enviroment.png",
       },
       {
         id: "artistic",
@@ -142,7 +161,7 @@ const initialAchievementSections: { year: string; entries: AchievementEntry[] }[
         description:
           'Josh released "The Chronos Fragment," which quickly became a bestseller on indie charts.',
         background: "#CCE7F8",
-        icon: BookOpenCheck,
+        iconPath: "/icons/artist.png",
       },
     ],
   },
@@ -164,7 +183,7 @@ const passingSections: { year: string; entries: PassingEntry[] }[] = [
         burialPlaces: [
           { location: "Family Tomb Area, Dong Nai", startDate: "08/20/2015" },
         ],
-        icon: Leaf,
+        iconPath: "/icons/passing.png",
       },
     ],
   },
@@ -190,7 +209,7 @@ const passingSections: { year: string; entries: PassingEntry[] }[] = [
           { location: "Lac Canh Vien Cemetery, Hoa Binh", startDate: "11/22/2010" },
           { location: "Vinh Hang Memorial Park, Ha Noi", startDate: "12/12/2011" },
         ],
-        icon: Leaf,
+        iconPath: "/icons/passing.png",
       },
     ],
   },
@@ -292,6 +311,14 @@ export default function AchievementListPage() {
   const [isEditingAchievement, setIsEditingAchievement] = useState(false);
   const [achievementFormData, setAchievementFormData] = useState<AchievementFormData | null>(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isAddAchievementOpen, setIsAddAchievementOpen] = useState(false);
+  const [newAchievementFormData, setNewAchievementFormData] = useState({
+    person: "",
+    category: "",
+    date: "",
+    title: "",
+    description: "",
+  });
 
   // Life Event modal states
   const [selectedLifeEvent, setSelectedLifeEvent] = useState<LifeEventEntry | null>(null);
@@ -584,6 +611,72 @@ export default function AchievementListPage() {
     handleModalClose();
   };
 
+  // Add Achievement handlers
+  const handleAddAchievementClose = () => {
+    setIsAddAchievementOpen(false);
+    setNewAchievementFormData({
+      person: "",
+      category: "",
+      date: "",
+      title: "",
+      description: "",
+    });
+  };
+
+  const handleNewAchievementFormChange = (field: keyof typeof newAchievementFormData) => (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const value = event.currentTarget.value;
+    setNewAchievementFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddAchievementSave = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newAchievementFormData.person || !newAchievementFormData.category || !newAchievementFormData.date) {
+      return;
+    }
+
+    // Get the year from the date
+    const dateParts = newAchievementFormData.date.split("/");
+    const year = dateParts[2] || new Date().getFullYear().toString();
+
+    // Get config for selected category
+    const typeConfig = ACHIEVEMENT_ICON_CONFIG[newAchievementFormData.category] || {
+      iconPath: "/icons/cup.png",
+      background: "#FFFFFF",
+    };
+
+    // Create new achievement entry
+    const newAchievement: AchievementEntry = {
+      id: `achievement-${Date.now()}`,
+      person: newAchievementFormData.person,
+      date: newAchievementFormData.date,
+      category: newAchievementFormData.category,
+      title: newAchievementFormData.title || "New Achievement",
+      description: newAchievementFormData.description || "",
+      background: typeConfig.background,
+      iconPath: typeConfig.iconPath,
+    };
+
+    // Add to sections
+    setAchievementSections((prev) => {
+      const existingSection = prev.find((s) => s.year === year);
+      if (existingSection) {
+        return prev.map((section) =>
+          section.year === year
+            ? { ...section, entries: [...section.entries, newAchievement] }
+            : section
+        );
+      } else {
+        return [{ year, entries: [newAchievement] }, ...prev].sort(
+          (a, b) => parseInt(b.year) - parseInt(a.year)
+        );
+      }
+    });
+
+    handleAddAchievementClose();
+  };
+
   const addButtonLabel = useMemo(() => {
     if (activeTab === "Passing") return "Add Passing";
     if (activeTab === "Life Event") return "Add Divorce";
@@ -651,12 +744,15 @@ export default function AchievementListPage() {
                     All Years
                   </button>
                   <button className="flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#C9CDD4] bg-white text-sm font-medium text-gray-700">
-                    <Award className="h-4 w-4 text-gray-500" />
+                    <ListChecks className="h-4 w-4 text-gray-500" />
                     All Types
                   </button>
                 </div>
               )}
-              <button className="ml-auto flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#101828] text-sm font-semibold text-gray-900">
+              <button
+                onClick={() => setIsAddAchievementOpen(true)}
+                className="ml-auto flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#101828] text-sm font-semibold text-gray-900"
+              >
                 <Plus className="h-4 w-4" />
                 {addButtonLabel}
               </button>
@@ -677,7 +773,6 @@ export default function AchievementListPage() {
 
                   <div className="mx-auto flex max-w-[900px] flex-col gap-[24px]">
                     {entries.map((entry) => {
-                      const Icon = entry.icon;
                       return (
                         <article
                           key={entry.id}
@@ -711,8 +806,14 @@ export default function AchievementListPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border border-[#9B9B9B] bg-white text-[#1A1A1A]">
-                              <Icon className="h-5 w-5" />
+                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center">
+                              <Image
+                                src={entry.iconPath}
+                                alt="Passing"
+                                width={28}
+                                height={28}
+                                className="object-contain"
+                              />
                             </div>
                           </div>
                           <p className="line-clamp-1 text-sm text-[#2E2E2E]">{entry.cause}</p>
@@ -780,7 +881,6 @@ export default function AchievementListPage() {
 
                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                       {entries.map((entry) => {
-                        const Icon = entry.icon;
                         return (
                           <article
                             key={entry.id}
@@ -808,8 +908,14 @@ export default function AchievementListPage() {
                                   {entry.date}
                                 </div>
                               </div>
-                              <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-black/20 bg-white text-gray-900">
-                                <Icon className="h-5 w-5" />
+                              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center">
+                                <Image
+                                  src={entry.iconPath}
+                                  alt={entry.category}
+                                  width={28}
+                                  height={28}
+                                  className="object-contain"
+                                />
                               </div>
                             </div>
                             <div className="min-w-0 overflow-hidden">
@@ -1213,7 +1319,7 @@ export default function AchievementListPage() {
 
               <div className="mt-4 flex flex-col items-center gap-2">
                 <div className="flex h-[50px] w-[50px] items-center justify-center rounded-[16px] border border-black/15 bg-[#F4F4F4]">
-                  <Leaf className="h-6 w-6 text-[#111]" />
+                  <Image src="/icons/passing.png" alt="Passing" width={24} height={24} />
                 </div>
                 <h2 className="text-center text-[22px] font-normal leading-tight text-[#000]">
                   {isEditingPassing ? "Edit Passing Information" : `${selectedPassing.person}'s Passing Information`}
@@ -1416,6 +1522,135 @@ export default function AchievementListPage() {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Add Achievement Modal */}
+        {isAddAchievementOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+            role="dialog"
+            aria-modal="true"
+            onClick={handleAddAchievementClose}
+          >
+            <div
+              className="relative flex w-full max-w-[520px] flex-col rounded-[32px] border border-black/10 bg-white p-8 text-[#111] shadow-[0_25px_80px_rgba(0,0,0,0.25)]"
+              style={{ maxHeight: "90vh" }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={handleAddAchievementClose}
+                className="flex items-center gap-2 text-base font-medium text-[#111]"
+              >
+                <ChevronLeft className="h-5 w-5" />
+                Back
+              </button>
+
+              <div className="mt-4 flex flex-col items-center gap-2">
+                <div className="flex h-[50px] w-[50px] items-center justify-center rounded-[16px] border border-black/15 bg-[#F4F4F4]">
+                  <Image src="/icons/cup.png" alt="Achievement" width={24} height={24} />
+                </div>
+                <h2 className="text-center text-[22px] font-normal leading-tight text-[#000]">
+                  Record Achievement
+                </h2>
+              </div>
+
+              <form onSubmit={handleAddAchievementSave} className="mt-6 flex flex-col gap-5 overflow-y-auto pr-2" style={{ maxHeight: "calc(90vh - 280px)" }}>
+                {/* Family Member */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Family Member *</label>
+                  <select
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    value={newAchievementFormData.person}
+                    onChange={handleNewAchievementFormChange("person")}
+                    required
+                  >
+                    <option value="">Select member</option>
+                    <option value="Ruben Hunter">Ruben Hunter</option>
+                    <option value="Forrest Hunter">Forrest Hunter</option>
+                    <option value="Geoffrey">Geoffrey</option>
+                    <option value="Josh Cooper">Josh Cooper</option>
+                    <option value="Corad Hunter">Corad Hunter</option>
+                  </select>
+                </div>
+
+                {/* Achievement Type and Date Achieved */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#111]">Achievement Type *</label>
+                    <select
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                      value={newAchievementFormData.category}
+                      onChange={handleNewAchievementFormChange("category")}
+                      required
+                    >
+                      <option value="">Select type</option>
+                      <option value="Education">Education</option>
+                      <option value="Business">Business</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Health">Health</option>
+                      <option value="Community">Community</option>
+                      <option value="Creative">Creative</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-[#111]">Date Achieved *</label>
+                    <input
+                      type="text"
+                      placeholder="MM/DD/YYYY"
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                      value={newAchievementFormData.date}
+                      onChange={handleNewAchievementFormChange("date")}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Achievement Title */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">
+                    Achievement Title <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Bachelor of Computer Science"
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    value={newAchievementFormData.title}
+                    onChange={handleNewAchievementFormChange("title")}
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">
+                    Description <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <textarea
+                    placeholder="Describe the achievement"
+                    className="min-h-[100px] w-full rounded-[16px] border border-[#B6B6B6] bg-[#F6F6F6] px-4 py-3 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    value={newAchievementFormData.description}
+                    onChange={handleNewAchievementFormChange("description")}
+                  />
+                </div>
+
+                <div className="mt-4 flex justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleAddAchievementClose}
+                    className="h-10 w-[100px] rounded-[20px] border border-[#111] text-sm font-semibold text-[#111]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
