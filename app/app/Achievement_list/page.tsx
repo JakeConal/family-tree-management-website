@@ -608,14 +608,14 @@ export default function AchievementListPage() {
           }}
         />
 
-        <main className="box-border w-[1232px] max-w-[1232px] flex-1 bg-white px-10 pb-16 pt-10" style={{ minHeight: "1024px" }}>
+        <main className="box-border flex-1 bg-white px-6 pb-16 pt-10 overflow-x-hidden" style={{ minHeight: "1024px" }}>
           <header className="border-b border-gray-200 pb-8">
             <div className="text-center">
               <h1 className="text-2xl font-semibold text-gray-900">Hunter Family</h1>
             </div>
 
             <div className="mt-6 flex justify-center">
-              <div className="flex w-full max-w-[1032px] overflow-hidden rounded-full border border-[#B9BEC7] bg-[#E7E8EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+              <div className="flex w-full max-w-[900px] overflow-hidden rounded-full border border-[#B9BEC7] bg-[#E7E8EB] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
                 {achievementTabs.map((tab, index) => (
                   <button
                     key={tab.id}
@@ -638,7 +638,7 @@ export default function AchievementListPage() {
               </div>
             </div>
 
-            <div className="mt-6 mx-auto flex w-full max-w-[1032px] flex-wrap items-center gap-4">
+            <div className="mt-6 mx-auto flex w-full max-w-[900px] flex-wrap items-center gap-4">
               {isPassingView ? (
                 <button className="flex h-10 w-[150px] items-center justify-center gap-2 rounded-[50px] border border-[#0064FF] bg-white px-4 text-sm font-semibold text-[#0E1A2A] shadow-[0_4px_10px_rgba(0,0,0,0.08)]">
                   <CalendarDays className="h-4 w-4 text-[#0064FF]" />
@@ -675,7 +675,7 @@ export default function AchievementListPage() {
                     <div className="h-px flex-1 bg-[#D9CDA6]" />
                   </div>
 
-                  <div className="mx-auto flex max-w-[1032px] flex-col gap-[30px]">
+                  <div className="mx-auto flex max-w-[900px] flex-col gap-[24px]">
                     {entries.map((entry) => {
                       const Icon = entry.icon;
                       return (
@@ -691,31 +691,31 @@ export default function AchievementListPage() {
                               handlePassingCardSelect(year, entry);
                             }
                           }}
-                          className="flex h-[152px] w-full cursor-pointer flex-col justify-between rounded-[24px] border border-[#B4B4B4] bg-[#D9D9D9] px-6 py-5 text-[#1A1A1A] shadow-[0_6px_12px_rgba(0,0,0,0.15)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
+                          className="flex min-h-[152px] w-full cursor-pointer flex-col justify-between overflow-hidden rounded-[24px] border border-[#B4B4B4] bg-[#D9D9D9] px-6 py-5 text-[#1A1A1A] shadow-[0_6px_12px_rgba(0,0,0,0.15)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
                         >
                           <div className="flex items-start justify-between">
-                            <div>
-                              <h2 className="text-lg font-semibold">{entry.title}</h2>
+                            <div className="min-w-0 flex-1 overflow-hidden">
+                              <h2 className="truncate text-lg font-semibold">{entry.title}</h2>
                               <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#3C3C3C]">
                                 <span className="flex items-center gap-2">
-                                  <PersonIcon className="h-4 w-4" />
-                                  {entry.person}
+                                  <PersonIcon className="h-4 w-4 flex-shrink-0" />
+                                  <span className="truncate">{entry.person}</span>
                                 </span>
                                 <span className="flex items-center gap-2">
-                                  <CalendarIcon className="h-4 w-4" />
+                                  <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                                   {entry.date}
                                 </span>
                                 <span className="flex items-center gap-2">
-                                  <MapPin className="h-4 w-4" />
-                                  {entry.location}
+                                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                                  <span className="truncate">{entry.location}</span>
                                 </span>
                               </div>
                             </div>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#9B9B9B] bg-white text-[#1A1A1A]">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border border-[#9B9B9B] bg-white text-[#1A1A1A]">
                               <Icon className="h-5 w-5" />
                             </div>
                           </div>
-                          <p className="text-sm text-[#2E2E2E]">{entry.cause}</p>
+                          <p className="line-clamp-1 text-sm text-[#2E2E2E]">{entry.cause}</p>
                         </article>
                       );
                     })}
@@ -733,7 +733,7 @@ export default function AchievementListPage() {
                       <div className="h-px flex-1 bg-[#DAD5C5]" />
                     </div>
 
-                    <div className="mx-auto flex flex-col gap-[30px] lg:grid lg:grid-cols-[repeat(2,554px)] lg:justify-between lg:gap-x-[44px] lg:gap-y-[30px]">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                       {entries.map((entry) => (
                         <article
                           key={entry.id}
@@ -747,22 +747,22 @@ export default function AchievementListPage() {
                               handleLifeEventCardSelect(year, entry);
                             }
                           }}
-                          className="flex h-[152px] w-[554px] cursor-pointer flex-col justify-between rounded-[30px] border border-black/25 bg-white px-6 py-5 text-[#231F20] shadow-[0_6px_12px_rgba(0,0,0,0.15)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
+                          className="flex min-h-[152px] cursor-pointer flex-col justify-between overflow-hidden rounded-[30px] border border-black/25 bg-white px-6 py-5 text-[#231F20] shadow-[0_6px_12px_rgba(0,0,0,0.15)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
                           style={{ backgroundColor: entry.background }}
                         >
                           <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <h2 className="text-lg font-semibold">{entry.title}</h2>
+                            <div className="min-w-0 flex-1 overflow-hidden">
+                              <h2 className="truncate text-lg font-semibold">{entry.title}</h2>
                               <div className="mt-2 flex items-center gap-2 text-sm text-[#4E4444]">
-                                <CalendarIcon className="h-4 w-4" />
+                                <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                                 {entry.date}
                               </div>
                             </div>
-                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-black/20 bg-white">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border border-black/20 bg-white">
                               <Image src={entry.iconSrc} alt="Event icon" width={28} height={28} />
                             </div>
                           </div>
-                          <p className="text-sm text-[#3B2E2E]">{entry.description}</p>
+                          <p className="line-clamp-2 text-sm text-[#3B2E2E]">{entry.description}</p>
                         </article>
                       ))}
                     </div>
@@ -778,7 +778,7 @@ export default function AchievementListPage() {
                       <div className="h-px flex-1 bg-gray-200" />
                     </div>
 
-                    <div className="mx-auto flex flex-col gap-[30px] lg:grid lg:grid-cols-[repeat(2,554px)] lg:justify-between lg:gap-x-[44px] lg:gap-y-[30px]">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                       {entries.map((entry) => {
                         const Icon = entry.icon;
                         return (
@@ -794,7 +794,7 @@ export default function AchievementListPage() {
                                 handleCardSelect(year, entry);
                               }
                             }}
-                            className="flex h-[152px] w-[554px] cursor-pointer flex-col justify-between rounded-[30px] border border-black/25 px-7 py-5 text-gray-900 shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
+                            className="flex min-h-[152px] cursor-pointer flex-col justify-between overflow-hidden rounded-[30px] border border-black/25 px-7 py-5 text-gray-900 shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#101828]"
                             style={{ backgroundColor: entry.background }}
                           >
                             <div className="flex items-center justify-between gap-4">
@@ -812,11 +812,11 @@ export default function AchievementListPage() {
                                 <Icon className="h-5 w-5" />
                               </div>
                             </div>
-                            <div>
-                              <h2 className="font-serif text-[22px] font-semibold leading-tight text-gray-900">
+                            <div className="min-w-0 overflow-hidden">
+                              <h2 className="truncate font-serif text-[22px] font-semibold leading-tight text-gray-900">
                                 {entry.title}
                               </h2>
-                              <p className="mt-3 text-sm leading-relaxed text-gray-700">
+                              <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-700">
                                 {entry.description}
                               </p>
                             </div>

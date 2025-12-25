@@ -48,7 +48,7 @@ export function FamilySidebar({
   createTreeLabel = "Create New Tree",
 }: FamilySidebarProps) {
   return (
-    <aside className="flex min-h-[1024px] w-[220px] flex-shrink-0 flex-col border-r border-slate-200 bg-[#F5F6F8] px-5 pb-8 pt-6 text-slate-900">
+    <aside className="flex min-h-[1024px] w-[200px] flex-shrink-0 flex-col border-r border-slate-200 bg-[#F5F6F8] px-4 pb-8 pt-6 text-slate-900">
       <div className="flex items-center gap-3">
         {brand.logo ? (
           <div className="flex h-[42px] w-[42px] items-center justify-center rounded-full border border-slate-300 bg-white p-2 text-slate-700">
