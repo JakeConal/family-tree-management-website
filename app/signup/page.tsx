@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   UserCircle,
@@ -16,8 +18,10 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate passwords match
@@ -26,13 +30,40 @@ export default function SignUpPage() {
       return;
     }
 
-    // Handle sign up logic here
-    console.log("Sign Up:", { fullName, email, password });
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fullName, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Sign in the user after successful registration
+        await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+        router.push("/dashboard");
+      } else {
+        alert(data.error || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("An error occurred during registration");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignUp = () => {
-    // Handle Google OAuth sign up
-    console.log("Google sign up");
+    signIn("google", { callbackUrl: "/dashboard" });
   };
 
   return (
@@ -155,10 +186,11 @@ export default function SignUpPage() {
             <div className="pt-2">
               <RippleButton
                 type="submit"
-                className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
+                disabled={isLoading}
+                className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full disabled:opacity-50"
                 variant="default"
               >
-                Create Account
+                {isLoading ? "Creating Account..." : "Create Account"}
                 <ChevronRight className="w-5 h-5 ml-2" />
               </RippleButton>
             </div>

@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+
+model TreeOwner {
+  id          Int          @id @default(autoincrement())
+  fullName    String       @db.VarChar(225)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  userId      String?      @unique
+  familyTrees FamilyTree[]
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("TreeOwner")
+}
+
+model FamilyTree {
+  id               Int               @id @default(autoincrement())
+  familyName       String            @db.VarChar(225)
+  origin           String?           @db.VarChar(500)
+  establishYear    Int?
+  createdAt        DateTime          @default(now())
+  treeOwnerId      Int
+  rootMemberId     Int?              @unique
+  achievementTypes AchievementType[]
+  familyMembers    FamilyMember[]
+  rootMember       FamilyMember?     @relation("FamilyRoot", fields: [rootMemberId], references: [id])
+  treeOwner        TreeOwner         @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
+  guestEditors     GuestEditor[]
+
+  @@index([treeOwnerId], map: "FamilyTree_treeOwnerId_fkey")
+  @@map("FamilyTree")
+}
+
+model FamilyMember {
+  id             Int                              @id @default(autoincrement())
+  fullName       String                           @db.VarChar(225)
+  gender         Gender?
+  birthday       DateTime?
+  address        String?                          @db.VarChar(1000)
+  profilePicture String?                          @db.VarChar(500)
+  generation     String?                          @db.VarChar(45)
+  isRootPerson   Boolean?                         @default(false)
+  isAdopted      Boolean?                         @default(false)
+  familyTreeId   Int
+  parentId       Int?
+  achievements   Achievement[]
+  causesOfDeath  CauseOfDeath[]
+  familyTree     FamilyTree                       @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+  parent         FamilyMember?                    @relation("ParentChild", fields: [parentId], references: [id])
+  children       FamilyMember[]                   @relation("ParentChild")
+  birthPlaces    FamilyMember_has_PlaceOfOrigin[]
+  rootFor        FamilyTree?                      @relation("FamilyRoot")
+  guestEditors   GuestEditor[]
+  occupations    Occupation[]
+  passingRecords PassingRecord[]
+  spouse1        SpouseRelationship[]             @relation("FamilyMember1")
+  spouse2        SpouseRelationship[]             @relation("FamilyMember2")
+
+  @@index([familyTreeId], map: "FamilyMember_familyTreeId_fkey")
+  @@index([parentId], map: "FamilyMember_parentId_fkey")
+  @@map("FamilyMember")
+}
+
+model Occupation {
+  id             Int          @id @default(autoincrement())
+  jobTitle       String       @db.VarChar(225)
+  startDate      DateTime?
+  endDate        DateTime?
+  familyMemberId Int
+  familyMember   FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+
+  @@index([familyMemberId], map: "Occupation_familyMemberId_fkey")
+  @@map("Occupation")
+}
+
+model Achievement {
+  id                Int             @id @default(autoincrement())
+  title             String          @db.VarChar(225)
+  achieveDate       DateTime?
+  description       String?         @db.VarChar(2000)
+  familyMemberId    Int
+  achievementTypeId Int
+  achievementType   AchievementType @relation(fields: [achievementTypeId], references: [id])
+  familyMember      FamilyMember    @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+
+  @@index([achievementTypeId], map: "Achievement_achievementTypeId_fkey")
+  @@index([familyMemberId], map: "Achievement_familyMemberId_fkey")
+  @@map("Achievement")
+}
+
+model AchievementType {
+  id           Int           @id @default(autoincrement())
+  typeName     String        @db.VarChar(225)
+  familyTreeId Int
+  achievements Achievement[]
+  familyTree   FamilyTree    @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+
+  @@index([familyTreeId], map: "AchievementType_familyTreeId_fkey")
+  @@map("AchievementType")
+}
+
+model PassingRecord {
+  id             Int           @id @default(autoincrement())
+  dateOfPassing  DateTime
+  createdAt      DateTime      @default(now())
+  familyMemberId Int
+  buriedPlaces   BuriedPlace[]
+  causeOfDeath   CauseOfDeath?
+  familyMember   FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+
+  @@index([familyMemberId], map: "PassingRecord_familyMemberId_fkey")
+  @@map("PassingRecord")
+}
+
+model CauseOfDeath {
+  id              Int           @id @default(autoincrement())
+  causeName       String        @db.VarChar(225)
+  passingRecordId Int           @unique
+  familyMemberId  Int
+  familyMember    FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  passingRecord   PassingRecord @relation(fields: [passingRecordId], references: [id], onDelete: Cascade)
+
+  @@index([familyMemberId], map: "CauseOfDeath_familyMemberId_fkey")
+  @@map("CauseOfDeath")
+}
+
+model BuriedPlace {
+  id              Int           @id @default(autoincrement())
+  location        String        @db.VarChar(1000)
+  startDate       DateTime?
+  endDate         DateTime?
+  passingRecordId Int
+  passingRecord   PassingRecord @relation(fields: [passingRecordId], references: [id], onDelete: Cascade)
+
+  @@index([passingRecordId], map: "BuriedPlace_passingRecordId_fkey")
+  @@map("BuriedPlace")
+}
+
+model PlaceOfOrigin {
+  id            Int                              @id @default(autoincrement())
+  location      String                           @db.VarChar(225)
+  familyMembers FamilyMember_has_PlaceOfOrigin[]
+
+  @@map("PlaceOfOrigin")
+}
+
+model FamilyMember_has_PlaceOfOrigin {
+  familyMemberId  Int
+  placeOfOriginId Int
+  startDate       DateTime?
+  endDate         DateTime?
+  familyMember    FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  placeOfOrigin   PlaceOfOrigin @relation(fields: [placeOfOriginId], references: [id])
+
+  @@id([familyMemberId, placeOfOriginId])
+  @@index([placeOfOriginId], map: "FamilyMember_has_PlaceOfOrigin_placeOfOriginId_fkey")
+  @@map("FamilyMember_has_PlaceOfOrigin")
+}
+
+model SpouseRelationship {
+  id              Int          @id @default(autoincrement())
+  marriageDate    DateTime
+  divorceDate     DateTime?
+  familyMember1Id Int
+  familyMember2Id Int
+  familyMember1   FamilyMember @relation("FamilyMember1", fields: [familyMember1Id], references: [id], onDelete: Cascade)
+  familyMember2   FamilyMember @relation("FamilyMember2", fields: [familyMember2Id], references: [id], onDelete: Cascade)
+
+  @@index([familyMember1Id], map: "SpouseRelationship_familyMember1Id_fkey")
+  @@index([familyMember2Id], map: "SpouseRelationship_familyMember2Id_fkey")
+  @@map("SpouseRelationship")
+}
+
+model GuestEditor {
+  id             Int          @id @default(autoincrement())
+  accessCode     String       @db.VarChar(45)
+  createDate     DateTime     @default(now())
+  familyMemberId Int
+  familyTreeId   Int
+  familyMember   FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  familyTree     FamilyTree   @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+
+  @@index([familyMemberId], map: "GuestEditor_familyMemberId_fkey")
+  @@index([familyTreeId], map: "GuestEditor_familyTreeId_fkey")
+  @@map("GuestEditor")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?  @map("email_verified")
+  image         String?
+  password      String?
+  treeOwner     TreeOwner?
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "accounts_user_id_fkey")
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "sessions_user_id_fkey")
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
