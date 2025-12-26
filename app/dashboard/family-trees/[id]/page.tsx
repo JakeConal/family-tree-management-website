@@ -17,6 +17,8 @@ import {
   Pencil,
 } from "lucide-react";
 
+import AddMemberModal from "../../../../components/modals/AddMemberModal";
+
 // Mock data types (representing API responses)
 interface FamilyTree {
   id: number;
@@ -47,6 +49,13 @@ interface ActivityItem {
   avatar?: string;
 }
 
+interface FamilyMember {
+  id: number;
+  fullName: string;
+  gender: string;
+  birthday: string;
+}
+
 export default function FamilyTreeDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -59,6 +68,8 @@ export default function FamilyTreeDashboard() {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
 
   // Initialize sidebar state from localStorage
   useEffect(() => {
@@ -159,6 +170,93 @@ export default function FamilyTreeDashboard() {
       " " +
       date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     );
+  };
+
+  // Fetch existing family members for the modal dropdown
+  const fetchExistingMembers = async () => {
+    try {
+      const response = await fetch(`/api/family-trees/${familyTreeId}/members`);
+      if (response.ok) {
+        const members = await response.json();
+        setExistingMembers(members);
+      }
+    } catch (error) {
+      console.error("Error fetching existing members:", error);
+    }
+  };
+
+  // Fetch all dashboard data
+  const fetchFamilyTreeData = async () => {
+    try {
+      const familyTreeResponse = await fetch(
+        `/api/family-trees/${familyTreeId}`
+      );
+      if (!familyTreeResponse.ok) {
+        throw new Error("Failed to fetch family tree");
+      }
+      const familyTreeData = await familyTreeResponse.json();
+      setFamilyTree(familyTreeData);
+    } catch (error) {
+      console.error("Error fetching family tree:", error);
+    }
+  };
+
+  const fetchStatistics = async () => {
+    try {
+      // Fetch family members for statistics
+      const membersResponse = await fetch(
+        `/api/family-members?familyTreeId=${familyTreeId}`
+      );
+      if (membersResponse.ok) {
+        const members = await membersResponse.json();
+
+        // Calculate statistics from real data
+        const totalMembers = members.length;
+        const livingMembers = members.filter(
+          (member: any) =>
+            !member.passingRecords || member.passingRecords.length === 0
+        ).length;
+        const totalGenerations = Math.max(
+          ...members.map((member: any) =>
+            member.generation ? parseInt(member.generation) : 1
+          ),
+          1
+        );
+
+        // Mock growth data (in real app, this would come from historical data)
+        const statistics: FamilyStatistics = {
+          totalGenerations,
+          totalMembers,
+          livingMembers,
+          memberGrowth: { count: 0, percentage: 0 }, // Would need historical data
+          deathTrend: { count: totalMembers - livingMembers, percentage: 0 },
+          marriageTrend: { marriages: 0, divorces: 0 }, // Would need relationship data
+          achievementGrowth: { count: 0, percentage: 0 }, // Would need achievement data
+        };
+
+        setStatistics(statistics);
+      }
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    }
+  };
+
+  const fetchActivities = async () => {
+    // For now, keep empty activities array until we implement activity API
+    setActivities([]);
+  };
+
+  const handleAddMember = async () => {
+    await fetchExistingMembers();
+    setIsAddMemberModalOpen(true);
+  };
+
+  const handleMemberAdded = async () => {
+    // Refresh dashboard data after adding a member
+    await fetchFamilyTreeData();
+    await fetchStatistics();
+    await fetchActivities();
+    await fetchExistingMembers();
   };
 
   if (loading) {
@@ -368,9 +466,10 @@ export default function FamilyTreeDashboard() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <button
-            onClick={() =>
-              router.push(`/dashboard/family-trees/${familyTreeId}/members/new`)
-            }
+            onClick={() => {
+              setIsAddMemberModalOpen(true);
+              fetchExistingMembers();
+            }}
             className="flex flex-col items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border border-green-200"
           >
             <UserPlus className="w-8 h-8 text-green-600 mb-2" />
@@ -451,6 +550,23 @@ export default function FamilyTreeDashboard() {
           </button>
         </div>
       </div>
+
+      {/* Add Member Modal */}
+      {isAddMemberModalOpen && (
+        <AddMemberModal
+          isOpen={isAddMemberModalOpen}
+          onClose={() => setIsAddMemberModalOpen(false)}
+          familyTreeId={familyTreeId}
+          existingMembers={existingMembers}
+          onMemberAdded={() => {
+            // Refresh data after adding member
+            fetchFamilyTreeData();
+            fetchStatistics();
+            fetchActivities();
+            fetchExistingMembers();
+          }}
+        />
+      )}
     </div>
   );
 }
