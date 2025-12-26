@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { familyName, origin, establishYear } = body;
+    const { familyName, origin, establishYear, rootPerson } = body;
 
     if (
       !familyName ||
@@ -58,6 +58,17 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Family name is required" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      !rootPerson?.fullName ||
+      typeof rootPerson.fullName !== "string" ||
+      rootPerson.fullName.trim().length === 0
+    ) {
+      return NextResponse.json(
+        { error: "Root person full name is required" },
         { status: 400 }
       );
     }
@@ -91,11 +102,68 @@ export async function POST(request: NextRequest) {
     // Create the root family member
     const rootMember = await prisma.familyMember.create({
       data: {
-        fullName: `${familyName.trim()} Root`,
+        fullName: rootPerson.fullName.trim(),
+        gender: rootPerson.gender
+          ? rootPerson.gender === "male"
+            ? "MALE"
+            : rootPerson.gender === "female"
+            ? "FEMALE"
+            : "OTHER"
+          : null,
+        birthday: rootPerson.birthDate ? new Date(rootPerson.birthDate) : null,
+        address: rootPerson.address?.trim() || null,
+        profilePicture: rootPerson.profilePicture || null,
+        generation: "1", // Root person is generation 1
         isRootPerson: true,
         familyTreeId: familyTree.id,
       },
     });
+
+    // Create places of origin if provided
+    if (rootPerson.placesOfOrigin && Array.isArray(rootPerson.placesOfOrigin)) {
+      for (const place of rootPerson.placesOfOrigin) {
+        if (place.location?.trim()) {
+          // Find or create the place of origin
+          let placeOfOrigin = await prisma.placeOfOrigin.findFirst({
+            where: { location: place.location.trim() },
+          });
+
+          if (!placeOfOrigin) {
+            placeOfOrigin = await prisma.placeOfOrigin.create({
+              data: { location: place.location.trim() },
+            });
+          }
+
+          // Create the junction record
+          await prisma.familyMember_has_PlaceOfOrigin.create({
+            data: {
+              familyMemberId: rootMember.id,
+              placeOfOriginId: placeOfOrigin.id,
+              startDate: place.startDate ? new Date(place.startDate) : null,
+              endDate: place.endDate ? new Date(place.endDate) : null,
+            },
+          });
+        }
+      }
+    }
+
+    // Create occupations if provided
+    if (rootPerson.occupations && Array.isArray(rootPerson.occupations)) {
+      for (const occupation of rootPerson.occupations) {
+        if (occupation.title?.trim()) {
+          await prisma.occupation.create({
+            data: {
+              jobTitle: occupation.title.trim(),
+              startDate: occupation.startDate
+                ? new Date(occupation.startDate)
+                : null,
+              endDate: occupation.endDate ? new Date(occupation.endDate) : null,
+              familyMemberId: rootMember.id,
+            },
+          });
+        }
+      }
+    }
 
     // Update the family tree with the root member ID
     const updatedFamilyTree = await prisma.familyTree.update({
