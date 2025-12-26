@@ -17,6 +17,7 @@ import {
   Check,
   ChevronDown,
 } from "lucide-react";
+import { triggerFamilyTreesRefresh } from "../../../../lib/useFamilyTrees";
 
 interface PlaceOfOrigin {
   id: string;
@@ -90,11 +91,19 @@ export default function NewFamilyTreePage() {
     };
   }, [isOpen]);
 
-  const handleClose = () => {
+  const handleClose = (familyTreeId?: number) => {
     setIsOpen(false);
     setTimeout(() => {
-      router.push("/dashboard");
+      if (familyTreeId) {
+        router.push(`/dashboard/family-trees/${familyTreeId}`);
+      } else {
+        router.push("/dashboard");
+      }
     }, 200); // Allow animation to complete
+  };
+
+  const handleBackdropClick = () => {
+    handleClose();
   };
 
   if (status === "loading") {
@@ -230,7 +239,10 @@ export default function NewFamilyTreePage() {
       });
 
       if (response.ok) {
-        handleClose();
+        const createdFamilyTree = await response.json();
+        // Trigger sidebar refresh to show the new family tree
+        triggerFamilyTreesRefresh();
+        handleClose(createdFamilyTree.id);
       } else {
         const error = await response.json();
         alert(error.error || "Failed to create family tree");
@@ -250,7 +262,7 @@ export default function NewFamilyTreePage() {
         className={`fixed inset-0 z-40 transition-all duration-200 ${
           isOpen ? "opacity-100" : "opacity-0"
         }`}
-        onClick={handleClose}
+        onClick={handleBackdropClick}
       />
 
       {/* Modal */}
@@ -269,7 +281,7 @@ export default function NewFamilyTreePage() {
               Create New Family Tree
             </h1>
             <button
-              onClick={handleClose}
+              onClick={handleBackdropClick}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <X className="w-5 h-5 text-gray-500" />
@@ -744,7 +756,7 @@ export default function NewFamilyTreePage() {
           <div className="flex gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
             <button
               type="button"
-              onClick={handleClose}
+              onClick={handleBackdropClick}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium"
             >
               Cancel

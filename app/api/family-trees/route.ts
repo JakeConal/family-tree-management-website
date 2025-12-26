@@ -88,7 +88,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(familyTree, { status: 201 });
+    // Create the root family member
+    const rootMember = await prisma.familyMember.create({
+      data: {
+        fullName: `${familyName.trim()} Root`,
+        isRootPerson: true,
+        familyTreeId: familyTree.id,
+      },
+    });
+
+    // Update the family tree with the root member ID
+    const updatedFamilyTree = await prisma.familyTree.update({
+      where: { id: familyTree.id },
+      data: { rootMemberId: rootMember.id },
+    });
+
+    return NextResponse.json(updatedFamilyTree, { status: 201 });
   } catch (error) {
     console.error("Error creating family tree:", error);
     return NextResponse.json(
