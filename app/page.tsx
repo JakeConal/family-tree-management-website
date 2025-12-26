@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Eye, Users, Award, BarChart3 } from "lucide-react";
 import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { RippleButton } from "../components/ui/ripple-button";
@@ -7,6 +12,31 @@ import { GradientText } from "../components/ui/gradient-text";
 import { InteractiveGridPattern } from "../components/ui/interactive-grid-pattern";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard");
+    }
+  }, [status, router]);
+
+  // Show loading state while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is authenticated (they'll be redirected)
+  if (status === "authenticated") {
+    return null;
+  }
   return (
     <div className="min-h-screen w-full relative bg-white">
       <div className="relative z-10 min-h-screen w-full">
