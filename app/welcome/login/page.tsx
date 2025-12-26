@@ -4,20 +4,50 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronLeft, Mail, Lock, ChevronRight } from "lucide-react";
 import { RippleButton } from "../../../components/ui/ripple-button";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Login:", { email, password });
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    // Handle Google OAuth login
-    console.log("Google login");
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch (err) {
+      setError("An error occurred with Google login. Please try again.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -44,6 +74,11 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
             {/* Email Field */}
             <div>
               <label
@@ -92,10 +127,11 @@ export default function LoginPage() {
             <div className="pt-2">
               <RippleButton
                 type="submit"
-                className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
+                disabled={isLoading}
+                className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                 variant="default"
               >
-                Sign In
+                {isLoading ? "Signing In..." : "Sign In"}
                 <ChevronRight className="w-5 h-5 ml-2" />
               </RippleButton>
             </div>
@@ -117,7 +153,8 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-300 rounded-full bg-white text-gray-900 hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border-2 border-gray-300 rounded-full bg-white text-gray-900 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -137,7 +174,7 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Continue with Google
+            {isLoading ? "Signing in..." : "Continue with Google"}
           </button>
 
           {/* Sign Up Link */}
