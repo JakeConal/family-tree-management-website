@@ -33,6 +33,7 @@ model FamilyTree {
   rootMember       FamilyMember?     @relation("FamilyRoot", fields: [rootMemberId], references: [id])
   treeOwner        TreeOwner         @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
   guestEditors     GuestEditor[]
+  changeLogs       ChangeLog[]
 
   @@index([treeOwnerId], map: "FamilyTree_treeOwnerId_fkey")
   @@map("FamilyTree")
@@ -245,6 +246,23 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model ChangeLog {
+  id          Int       @id @default(autoincrement())
+  entityType  String    @db.VarChar(50)  // 'FamilyMember', 'Achievement', 'Occupation', etc.
+  entityId    Int       // ID of the entity that was changed
+  action      String    @db.VarChar(20)  // 'CREATE', 'UPDATE', 'DELETE'
+  userId      String?   // User who made the change (null for system changes)
+  familyTreeId Int      // Family tree this change belongs to
+  oldValues   String?   @db.Text         // JSON string of old values (for UPDATE)
+  newValues   String?   @db.Text         // JSON string of new values (for CREATE/UPDATE)
+  createdAt   DateTime  @default(now())
+  familyTree  FamilyTree @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
+
+  @@index([familyTreeId], map: "ChangeLog_familyTreeId_fkey")
+  @@index([entityType, entityId], map: "ChangeLog_entityType_entityId_fkey")
+  @@map("ChangeLog")
 }
 
 enum Gender {

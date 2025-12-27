@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import AddMemberModal from "../../../../components/modals/AddMemberModal";
+import RecordAchievementModal from "../../../../components/modals/RecordAchievementModal";
 
 // Mock data types (representing API responses)
 interface FamilyTree {
@@ -49,6 +50,18 @@ interface ActivityItem {
   avatar?: string;
 }
 
+interface ChangeLog {
+  id: number;
+  entityType: string;
+  entityId: number;
+  action: string;
+  userId: string | null;
+  familyTreeId: number;
+  oldValues: string | null;
+  newValues: string | null;
+  createdAt: string;
+}
+
 interface FamilyMember {
   id: number;
   fullName: string;
@@ -66,9 +79,12 @@ export default function FamilyTreeDashboard() {
   const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
   const [statistics, setStatistics] = useState<FamilyStatistics | null>(null);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [isRecordAchievementModalOpen, setIsRecordAchievementModalOpen] =
+    useState(false);
   const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
 
   // Initialize sidebar state from localStorage
@@ -142,11 +158,15 @@ export default function FamilyTreeDashboard() {
 
         // For now, keep empty activities array until we implement activity API
         setActivities([]);
+
+        // Fetch change logs
+        await fetchActivities();
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setFamilyTree(null);
         setStatistics(null);
         setActivities([]);
+        setChangeLogs([]);
       } finally {
         setLoading(false);
       }
@@ -242,8 +262,20 @@ export default function FamilyTreeDashboard() {
   };
 
   const fetchActivities = async () => {
-    // For now, keep empty activities array until we implement activity API
-    setActivities([]);
+    try {
+      const response = await fetch(
+        `/api/change-logs?familyTreeId=${familyTreeId}`
+      );
+      if (response.ok) {
+        const logs = await response.json();
+        setChangeLogs(logs);
+      } else {
+        setChangeLogs([]);
+      }
+    } catch (error) {
+      console.error("Error fetching change logs:", error);
+      setChangeLogs([]);
+    }
   };
 
   const handleAddMember = async () => {
@@ -291,6 +323,87 @@ export default function FamilyTreeDashboard() {
       </div>
     );
   }
+
+  // Helper functions
+  const getActionIcon = (action: string) => {
+    switch (action) {
+      case "CREATE":
+        return "+";
+      case "UPDATE":
+        return "✎";
+      case "DELETE":
+        return "×";
+      default:
+        return "?";
+    }
+  };
+
+  const formatChangeLogMessage = (log: ChangeLog) => {
+    const entityType = log.entityType;
+    const action = log.action.toLowerCase();
+
+    // Only show major events
+    const majorEvents = [
+      "FamilyMember",
+      "PassingRecord",
+      "Achievement",
+      "SpouseRelationship",
+    ];
+
+    if (!majorEvents.includes(entityType)) {
+      return null; // Don't display minor events
+    }
+
+    let message = "";
+
+    switch (entityType) {
+      case "FamilyMember":
+        if (action === "create") {
+          message = "New family member added";
+        } else if (action === "update") {
+          message = "Family member information updated";
+        } else if (action === "delete") {
+          message = "Family member removed";
+        }
+        break;
+      case "PassingRecord":
+        message = "Passing record added";
+        break;
+      case "Achievement":
+        message = "Achievement recorded";
+        break;
+      case "SpouseRelationship":
+        if (action === "create") {
+          message = "Marriage recorded";
+        } else if (action === "delete") {
+          message = "Divorce recorded";
+        }
+        break;
+      default:
+        message = `${entityType} ${action}d`;
+    }
+
+    return message;
+  };
+
+  const formatChangeLogTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60)
+    );
+
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="space-y-8">
@@ -478,11 +591,10 @@ export default function FamilyTreeDashboard() {
             </span>
           </button>
           <button
-            onClick={() =>
-              router.push(
-                `/dashboard/family-trees/${familyTreeId}/achievements/new`
-              )
-            }
+            onClick={() => {
+              setIsRecordAchievementModalOpen(true);
+              fetchExistingMembers();
+            }}
             className="flex flex-col items-center p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors border border-yellow-200"
           >
             <Trophy className="w-8 h-8 text-yellow-600 mb-2" />
@@ -518,37 +630,53 @@ export default function FamilyTreeDashboard() {
       {/* Recent Changes */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Recent Changes
+          Recent Events
         </h2>
         <div className="space-y-4">
-          {activities.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
-            >
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-green-700">
-                  {activity.user.charAt(0)}
-                </span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  <span className="font-semibold">{activity.user}</span>{" "}
-                  {activity.action}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {formatTimestamp(activity.timestamp)}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+          {changeLogs.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>No major changes recorded yet.</p>
+              <p className="text-sm">
+                Major events like adding members, marriages, and achievements
+                will appear here.
+              </p>
             </div>
-          ))}
+          ) : (
+            changeLogs
+              .map((log) => {
+                const message = formatChangeLogMessage(log);
+                return message ? (
+                  <div
+                    key={log.id}
+                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-medium text-green-700">
+                        {getActionIcon(log.action)}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {message}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatChangeLogTimestamp(log.createdAt)}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </div>
+                ) : null;
+              })
+              .filter(Boolean) // Remove null entries
+          )}
         </div>
-        <div className="mt-4 text-center">
-          <button className="text-sm text-green-600 hover:text-green-700 font-medium">
-            Load More Activities
-          </button>
-        </div>
+        {changeLogs.length > 0 && (
+          <div className="mt-4 text-center">
+            <button className="text-sm text-green-600 hover:text-green-700 font-medium">
+              Load More Events
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Add Member Modal */}
@@ -560,6 +688,23 @@ export default function FamilyTreeDashboard() {
           existingMembers={existingMembers}
           onMemberAdded={() => {
             // Refresh data after adding member
+            fetchFamilyTreeData();
+            fetchStatistics();
+            fetchActivities();
+            fetchExistingMembers();
+          }}
+        />
+      )}
+
+      {/* Record Achievement Modal */}
+      {isRecordAchievementModalOpen && (
+        <RecordAchievementModal
+          isOpen={isRecordAchievementModalOpen}
+          onClose={() => setIsRecordAchievementModalOpen(false)}
+          familyTreeId={familyTreeId}
+          existingMembers={existingMembers}
+          onAchievementRecorded={() => {
+            // Refresh data after recording achievement
             fetchFamilyTreeData();
             fetchStatistics();
             fetchActivities();

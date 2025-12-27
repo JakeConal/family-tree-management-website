@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { getPrisma } from "../../../../../lib/prisma";
+import { logChange } from "../../../../../lib/utils";
 
 export async function POST(
   request: NextRequest,
@@ -144,6 +145,24 @@ export async function POST(
       },
     });
 
+    // Log the creation
+    await logChange(
+      "FamilyMember",
+      familyMember.id,
+      "CREATE",
+      familyTreeId,
+      session.user.id,
+      null,
+      {
+        fullName: familyMember.fullName,
+        gender: familyMember.gender,
+        birthday: familyMember.birthday,
+        address: familyMember.address,
+        generation: familyMember.generation,
+        parentId: familyMember.parentId,
+      }
+    );
+
     // Create places of origin if provided
     if (placesOfOrigin && Array.isArray(placesOfOrigin)) {
       for (const place of placesOfOrigin) {
@@ -192,7 +211,7 @@ export async function POST(
 
     // Handle spouse relationships
     if (relatedMemberId && relationship?.toLowerCase() === "spouse") {
-      await prisma.spouseRelationship.create({
+      const spouseRelationship = await prisma.spouseRelationship.create({
         data: {
           marriageDate: relationshipDate
             ? new Date(relationshipDate)
@@ -201,6 +220,21 @@ export async function POST(
           familyMember2Id: Math.max(familyMember.id, parseInt(relatedMemberId)),
         },
       });
+
+      // Log the spouse relationship creation
+      await logChange(
+        "SpouseRelationship",
+        spouseRelationship.id,
+        "CREATE",
+        familyTreeId,
+        session.user.id,
+        null,
+        {
+          marriageDate: spouseRelationship.marriageDate,
+          familyMember1Id: spouseRelationship.familyMember1Id,
+          familyMember2Id: spouseRelationship.familyMember2Id,
+        }
+      );
     }
 
     return NextResponse.json(familyMember, { status: 201 });

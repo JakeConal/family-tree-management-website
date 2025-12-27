@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../../auth";
 import { getPrisma } from "../../../../lib/prisma";
+import { logChange } from "../../../../lib/utils";
 
 export async function GET(
   request: NextRequest,
@@ -172,6 +173,18 @@ export async function PUT(
       );
     }
 
+    // Store old values for logging
+    const oldValues = {
+      fullName: existingMember.fullName,
+      gender: existingMember.gender,
+      birthday: existingMember.birthday,
+      address: existingMember.address,
+      profilePicture: existingMember.profilePicture,
+      generation: existingMember.generation,
+      isAdopted: existingMember.isAdopted,
+      parentId: existingMember.parentId,
+    };
+
     // If parentId is provided, verify it exists and belongs to the same family tree
     if (parentId !== undefined && parentId !== null) {
       const parent = await prisma.familyMember.findFirst({
@@ -225,6 +238,28 @@ export async function PUT(
         },
       },
     });
+
+    // Log the update
+    const newValues = {
+      fullName: updatedMember.fullName,
+      gender: updatedMember.gender,
+      birthday: updatedMember.birthday,
+      address: updatedMember.address,
+      profilePicture: updatedMember.profilePicture,
+      generation: updatedMember.generation,
+      isAdopted: updatedMember.isAdopted,
+      parentId: updatedMember.parentId,
+    };
+
+    await logChange(
+      "FamilyMember",
+      updatedMember.id,
+      "UPDATE",
+      existingMember.familyTreeId,
+      session.user.id,
+      oldValues,
+      newValues
+    );
 
     return NextResponse.json(updatedMember);
   } catch (error) {
@@ -282,6 +317,26 @@ export async function DELETE(
         { status: 400 }
       );
     }
+
+    // Log the deletion before deleting
+    await logChange(
+      "FamilyMember",
+      existingMember.id,
+      "DELETE",
+      existingMember.familyTreeId,
+      session.user.id,
+      {
+        fullName: existingMember.fullName,
+        gender: existingMember.gender,
+        birthday: existingMember.birthday,
+        address: existingMember.address,
+        profilePicture: existingMember.profilePicture,
+        generation: existingMember.generation,
+        isAdopted: existingMember.isAdopted,
+        parentId: existingMember.parentId,
+      },
+      null
+    );
 
     // Delete the family member (cascade will handle related records)
     await prisma.familyMember.delete({

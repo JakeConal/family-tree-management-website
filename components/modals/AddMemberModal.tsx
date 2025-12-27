@@ -376,8 +376,7 @@ export default function AddMemberModal({
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
-                        <input
-                          type="text"
+                        <select
                           value={place.location}
                           onChange={(e) => {
                             const updated = placesOfOrigin.map((p) =>
@@ -387,9 +386,47 @@ export default function AddMemberModal({
                             );
                             setPlacesOfOrigin(updated);
                           }}
-                          placeholder="Choose origin"
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+                        >
+                          <option value="">Select place of origin</option>
+                          <option value="An Giang">An Giang</option>
+                          <option value="Ba Ria – Vung Tau">
+                            Ba Ria – Vung Tau
+                          </option>
+                          <option value="Bac Giang">Bac Giang</option>
+                          <option value="Bac Ninh">Bac Ninh</option>
+                          <option value="Binh Duong">Binh Duong</option>
+                          <option value="Binh Dinh">Binh Dinh</option>
+                          <option value="Binh Phuoc">Binh Phuoc</option>
+                          <option value="Binh Thuan">Binh Thuan</option>
+                          <option value="Ca Mau">Ca Mau</option>
+                          <option value="Dak Lak">Dak Lak</option>
+                          <option value="Dak Nong">Dak Nong</option>
+                          <option value="Dong Nai">Dong Nai</option>
+                          <option value="Dong Thap">Dong Thap</option>
+                          <option value="Gia Lai">Gia Lai</option>
+                          <option value="Ha Giang">Ha Giang</option>
+                          <option value="Ha Nam">Ha Nam</option>
+                          <option value="Ha Tinh">Ha Tinh</option>
+                          <option value="Khanh Hoa">Khanh Hoa</option>
+                          <option value="Kien Giang">Kien Giang</option>
+                          <option value="Lam Dong">Lam Dong</option>
+                          <option value="Lao Cai">Lao Cai</option>
+                          <option value="Long An">Long An</option>
+                          <option value="Nam Dinh">Nam Dinh</option>
+                          <option value="Nghe An">Nghe An</option>
+                          <option value="Ninh Binh">Ninh Binh</option>
+                          <option value="Phu Tho">Phu Tho</option>
+                          <option value="Quang Nam">Quang Nam</option>
+                          <option value="Hanoi">Hanoi</option>
+                          <option value="Ho Chi Minh City">
+                            Ho Chi Minh City
+                          </option>
+                          <option value="Hai Phong">Hai Phong</option>
+                          <option value="Da Nang">Da Nang</option>
+                          <option value="Can Tho">Can Tho</option>
+                          <option value="Hue">Hue</option>
+                        </select>
                       </div>
 
                       <div>
