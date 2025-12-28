@@ -43,6 +43,7 @@ interface AddMemberModalProps {
   familyTreeId: string;
   existingMembers: FamilyMember[];
   onMemberAdded: () => void;
+  selectedMemberId?: string;
 }
 
 export default function AddMemberModal({
@@ -51,6 +52,7 @@ export default function AddMemberModal({
   familyTreeId,
   existingMembers,
   onMemberAdded,
+  selectedMemberId,
 }: AddMemberModalProps) {
   const [memberFormData, setMemberFormData] = useState({
     fullName: "",
@@ -74,13 +76,28 @@ export default function AddMemberModal({
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
+      let initialRelationship = "";
+      let initialRelatedMemberId = "";
+
+      if (selectedMemberId) {
+        if (selectedMemberId.includes(",")) {
+          // Adding child to spouse pair - use first spouse as parent
+          initialRelatedMemberId = selectedMemberId.split(",")[0];
+          initialRelationship = "child";
+        } else {
+          // Adding to single member
+          initialRelatedMemberId = selectedMemberId;
+          initialRelationship = "child"; // Default to child, user can change
+        }
+      }
+
       setMemberFormData({
         fullName: "",
         gender: "",
         birthDate: "",
         address: "",
-        relatedMemberId: "",
-        relationship: "",
+        relatedMemberId: initialRelatedMemberId,
+        relationship: initialRelationship,
         relationshipDate: "",
       });
       setPlacesOfOrigin([
@@ -91,7 +108,7 @@ export default function AddMemberModal({
       setConfirmAccuracy(false);
       setIsSubmitting(false);
     }
-  }, [isOpen]);
+  }, [isOpen, selectedMemberId]);
 
   // Handle escape key
   useEffect(() => {

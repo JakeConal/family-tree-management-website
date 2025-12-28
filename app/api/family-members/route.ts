@@ -55,7 +55,8 @@ export async function GET(request: NextRequest) {
           },
         },
         spouse1: {
-          include: {
+          select: {
+            divorceDate: true,
             familyMember2: {
               select: {
                 id: true,
@@ -65,13 +66,20 @@ export async function GET(request: NextRequest) {
           },
         },
         spouse2: {
-          include: {
+          select: {
+            divorceDate: true,
             familyMember1: {
               select: {
                 id: true,
                 fullName: true,
               },
             },
+          },
+        },
+        passingRecords: {
+          select: {
+            id: true,
+            dateOfPassing: true,
           },
         },
         achievements: {

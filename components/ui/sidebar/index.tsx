@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
@@ -23,15 +23,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const { familyTrees, loading } = useFamilyTrees(session);
 
-  const navigationItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Family Tree", href: "/dashboard/family-tree", icon: TreePine },
-    { name: "Members", href: "/dashboard/members", icon: Users },
-    { name: "Life Event", href: "/dashboard/events", icon: Calendar },
-    { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  ];
-
   // Extract family tree ID from pathname for active state
   const getFamilyTreeIdFromPath = () => {
     const match = pathname.match(/\/dashboard\/family-trees\/(\d+)/);
@@ -39,6 +30,23 @@ export function Sidebar() {
   };
 
   const activeFamilyTreeId = getFamilyTreeIdFromPath();
+
+  const navigationItems = useMemo(() => {
+    const familyTreeHref = activeFamilyTreeId
+      ? `/dashboard/family-trees/${activeFamilyTreeId}/tree`
+      : familyTrees.length > 0
+      ? `/dashboard/family-trees/${familyTrees[0].id}/tree`
+      : "/dashboard";
+
+    return [
+      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Family Tree", href: familyTreeHref, icon: TreePine },
+      { name: "Members", href: "/dashboard/members", icon: Users },
+      { name: "Life Event", href: "/dashboard/events", icon: Calendar },
+      { name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
+      { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    ];
+  }, [activeFamilyTreeId, familyTrees]);
 
   return (
     <div className="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
@@ -105,10 +113,14 @@ export function Sidebar() {
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const isActive =
-              pathname === item.href ||
-              (item.href === "/dashboard" &&
-                pathname.startsWith("/dashboard/family-trees/") &&
-                pathname.endsWith("/dashboard") === false);
+              item.name === "Dashboard"
+                ? pathname === "/dashboard" ||
+                  (pathname.startsWith("/dashboard/family-trees/") &&
+                    !pathname.includes("/tree") &&
+                    !pathname.endsWith("/new"))
+                : item.name === "Family Tree"
+                ? pathname.includes("/tree")
+                : pathname === item.href;
 
             return (
               <button

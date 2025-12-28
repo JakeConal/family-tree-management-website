@@ -19,6 +19,8 @@
     "@prisma/adapter-planetscale": "^7.2.0",
     "@prisma/client": "^4.16.0",
     "@types/bcryptjs": "^2.4.6",
+    "@xyflow/react": "^12.10.0",
+    "basicprimitives": "^6.6.1",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -33,6 +35,9 @@
     "ogl": "^1.0.11",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-family-tree": "^3.2.0",
+    "react-zoom-pan-pinch": "^3.7.0",
+    "relatives-tree": "^3.2.2",
     "tailwind-merge": "^3.4.0",
     "three": "^0.181.2",
     "zod": "^4.1.13"
