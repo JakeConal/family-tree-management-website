@@ -9,6 +9,7 @@ import {
   Trophy,
   Briefcase,
   Heart,
+  Skull,
 } from "lucide-react";
 
 interface ChangeLog {
@@ -65,6 +66,14 @@ export default function ChangeLogDetailsModal({
         const data = newData || oldData;
         if (data?.familyMember1Id) memberIds.push(data.familyMember1Id);
         if (data?.familyMember2Id) memberIds.push(data.familyMember2Id);
+      } else if (log.entityType === "PassingRecord") {
+        // For passing records, we need to get the family member
+        const newData = log.newValues ? JSON.parse(log.newValues) : null;
+        const oldData = log.oldValues ? JSON.parse(log.oldValues) : null;
+        const data = newData || oldData;
+        if (data?.familyMemberId) {
+          memberIds.push(data.familyMemberId);
+        }
       }
 
       if (memberIds.length > 0) {
@@ -134,6 +143,8 @@ export default function ChangeLogDetailsModal({
         return formatSpouseRelationshipChanges(action, oldData, newData);
       case "Occupation":
         return formatOccupationChanges(action, oldData, newData);
+      case "PassingRecord":
+        return formatPassingRecordChanges(action, oldData, newData);
       default:
         return formatGenericChanges(action, oldData, newData);
     }
@@ -422,6 +433,67 @@ export default function ChangeLogDetailsModal({
     return changes;
   };
 
+  const formatPassingRecordChanges = (
+    action: string,
+    oldData: any,
+    newData: any
+  ) => {
+    const changes: Array<{
+      field: string;
+      oldValue: any;
+      newValue: any;
+      type: string;
+    }> = [];
+
+    if (action === "CREATE" && newData) {
+      // Add member information first
+      const memberId = newData.familyMemberId;
+      const memberName =
+        relatedMembers[memberId]?.fullName || `Member #${memberId}`;
+      changes.push({
+        field: "Family Member",
+        oldValue: null,
+        newValue: memberName,
+        type: "text",
+      });
+
+      changes.push({
+        field: "Date of Passing",
+        oldValue: null,
+        newValue: new Date(newData.dateOfPassing).toLocaleDateString(),
+        type: "date",
+      });
+
+      if (newData.causesOfDeath && Array.isArray(newData.causesOfDeath)) {
+        changes.push({
+          field: "Causes of Death",
+          oldValue: null,
+          newValue: newData.causesOfDeath.join(", "),
+          type: "text",
+        });
+      }
+
+      if (newData.burialPlaces && Array.isArray(newData.burialPlaces)) {
+        newData.burialPlaces.forEach((place: any, index: number) => {
+          changes.push({
+            field: `Burial Place ${index + 1} - Location`,
+            oldValue: null,
+            newValue: place.location,
+            type: "text",
+          });
+          changes.push({
+            field: `Burial Place ${index + 1} - Start Date`,
+            oldValue: null,
+            newValue: new Date(place.startDate).toLocaleDateString(),
+            type: "date",
+          });
+        });
+      }
+    }
+
+    return changes;
+  };
+
   const formatGenericChanges = (action: string, oldData: any, newData: any) => {
     const changes: Array<{
       field: string;
@@ -487,6 +559,8 @@ export default function ChangeLogDetailsModal({
         return <Briefcase className="w-5 h-5" />;
       case "SpouseRelationship":
         return <Heart className="w-5 h-5" />;
+      case "PassingRecord":
+        return <Skull className="w-5 h-5" />;
       default:
         return <FileText className="w-5 h-5" />;
     }

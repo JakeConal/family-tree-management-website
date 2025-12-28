@@ -19,6 +19,7 @@ import {
 
 import AddMemberModal from "../../../../components/modals/AddMemberModal";
 import RecordAchievementModal from "../../../../components/modals/RecordAchievementModal";
+import RecordPassingModal from "../../../../components/modals/RecordPassingModal";
 import ChangeLogDetailsModal from "../../../../components/modals/ChangeLogDetailsModal";
 
 // Mock data types (representing API responses)
@@ -85,6 +86,8 @@ export default function FamilyTreeDashboard() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [isRecordAchievementModalOpen, setIsRecordAchievementModalOpen] =
+    useState(false);
+  const [isRecordPassingModalOpen, setIsRecordPassingModalOpen] =
     useState(false);
   const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
   const [selectedChangeLog, setSelectedChangeLog] = useState<ChangeLog | null>(
@@ -625,12 +628,13 @@ export default function FamilyTreeDashboard() {
             </span>
           </button>
           <button
-            onClick={() =>
-              router.push(`/dashboard/family-trees/${familyTreeId}/events/new`)
-            }
+            onClick={() => {
+              setIsRecordPassingModalOpen(true);
+              fetchExistingMembers();
+            }}
             className="flex flex-col items-center p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
           >
-            <Calendar className="w-8 h-8 text-red-600 mb-2" />
+            <Skull className="w-8 h-8 text-red-600 mb-2" />
             <span className="text-sm font-medium text-red-700">
               Record Passing
             </span>
@@ -728,6 +732,23 @@ export default function FamilyTreeDashboard() {
           existingMembers={existingMembers}
           onAchievementRecorded={() => {
             // Refresh data after recording achievement
+            fetchFamilyTreeData();
+            fetchStatistics();
+            fetchActivities();
+            fetchExistingMembers();
+          }}
+        />
+      )}
+
+      {/* Record Passing Modal */}
+      {isRecordPassingModalOpen && (
+        <RecordPassingModal
+          isOpen={isRecordPassingModalOpen}
+          onClose={() => setIsRecordPassingModalOpen(false)}
+          familyTreeId={familyTreeId}
+          existingMembers={existingMembers}
+          onPassingRecorded={() => {
+            // Refresh data after recording passing
             fetchFamilyTreeData();
             fetchStatistics();
             fetchActivities();

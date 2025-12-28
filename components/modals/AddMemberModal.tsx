@@ -374,7 +374,7 @@ export default function AddMemberModal({
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="space-y-3">
                       <div>
                         <select
                           value={place.location}
@@ -429,38 +429,46 @@ export default function AddMemberModal({
                         </select>
                       </div>
 
-                      <div>
-                        <input
-                          type="date"
-                          value={place.startDate}
-                          onChange={(e) => {
-                            const updated = placesOfOrigin.map((p) =>
-                              p.id === place.id
-                                ? { ...p, startDate: e.target.value }
-                                : p
-                            );
-                            setPlacesOfOrigin(updated);
-                          }}
-                          placeholder="Start date"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Start Date
+                          </label>
+                          <input
+                            type="date"
+                            value={place.startDate}
+                            onChange={(e) => {
+                              const updated = placesOfOrigin.map((p) =>
+                                p.id === place.id
+                                  ? { ...p, startDate: e.target.value }
+                                  : p
+                              );
+                              setPlacesOfOrigin(updated);
+                            }}
+                            placeholder="Start date"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
 
-                      <div>
-                        <input
-                          type="date"
-                          value={place.endDate}
-                          onChange={(e) => {
-                            const updated = placesOfOrigin.map((p) =>
-                              p.id === place.id
-                                ? { ...p, endDate: e.target.value }
-                                : p
-                            );
-                            setPlacesOfOrigin(updated);
-                          }}
-                          placeholder="End date (optional)"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            End Date
+                          </label>
+                          <input
+                            type="date"
+                            value={place.endDate}
+                            onChange={(e) => {
+                              const updated = placesOfOrigin.map((p) =>
+                                p.id === place.id
+                                  ? { ...p, endDate: e.target.value }
+                                  : p
+                              );
+                              setPlacesOfOrigin(updated);
+                            }}
+                            placeholder="End date (optional)"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -508,7 +516,7 @@ export default function AddMemberModal({
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="space-y-3">
                       <div>
                         <input
                           type="text"
@@ -526,38 +534,46 @@ export default function AddMemberModal({
                         />
                       </div>
 
-                      <div>
-                        <input
-                          type="date"
-                          value={occupation.startDate}
-                          onChange={(e) => {
-                            const updated = occupations.map((o) =>
-                              o.id === occupation.id
-                                ? { ...o, startDate: e.target.value }
-                                : o
-                            );
-                            setOccupations(updated);
-                          }}
-                          placeholder="Start date"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Start Date
+                          </label>
+                          <input
+                            type="date"
+                            value={occupation.startDate}
+                            onChange={(e) => {
+                              const updated = occupations.map((o) =>
+                                o.id === occupation.id
+                                  ? { ...o, startDate: e.target.value }
+                                  : o
+                              );
+                              setOccupations(updated);
+                            }}
+                            placeholder="Start date"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
 
-                      <div>
-                        <input
-                          type="date"
-                          value={occupation.endDate}
-                          onChange={(e) => {
-                            const updated = occupations.map((o) =>
-                              o.id === occupation.id
-                                ? { ...o, endDate: e.target.value }
-                                : o
-                            );
-                            setOccupations(updated);
-                          }}
-                          placeholder="End date (optional)"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            End Date
+                          </label>
+                          <input
+                            type="date"
+                            value={occupation.endDate}
+                            onChange={(e) => {
+                              const updated = occupations.map((o) =>
+                                o.id === occupation.id
+                                  ? { ...o, endDate: e.target.value }
+                                  : o
+                              );
+                              setOccupations(updated);
+                            }}
+                            placeholder="End date (optional)"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
