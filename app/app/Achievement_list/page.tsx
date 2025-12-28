@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { type ChangeEvent, type ComponentType, type FormEvent, useMemo, useState } from "react";
+import { type ChangeEvent, type ComponentType, type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   ChevronLeft,
@@ -24,16 +24,16 @@ type AchievementIcon = ComponentType<{ className?: string }>;
 
 // Icon path mapping for each category
 const ACHIEVEMENT_ICON_CONFIG: Record<string, { iconPath: string; background: string }> = {
-  Education: { iconPath: "/icons/cup.png", background: "#D6EEFF" },
-  Graduation: { iconPath: "/icons/cup.png", background: "#D6EEFF" },
+  Education: { iconPath: "/icons/cup.png", background: "#E0F2FE" },
+  Graduation: { iconPath: "/icons/cup.png", background: "#E0F2FE" },
   Career: { iconPath: "/icons/career.png", background: "#E7DDFB" },
   Business: { iconPath: "/icons/career.png", background: "#E7DDFB" },
   Sport: { iconPath: "/icons/sport.png", background: "#F8F1C2" },
   Sports: { iconPath: "/icons/sport.png", background: "#F8F1C2" },
   Health: { iconPath: "/icons/health.png", background: "#F8D6D6" },
-  Artistic: { iconPath: "/icons/artist.png", background: "#CCE7F8" },
-  Creative: { iconPath: "/icons/artist.png", background: "#CCE7F8" },
-  Community: { iconPath: "/icons/community.png", background: "#D6EEFF" },
+  Artistic: { iconPath: "/icons/artist.png", background: "#BAE6FD" },
+  Creative: { iconPath: "/icons/artist.png", background: "#BAE6FD" },
+  Community: { iconPath: "/icons/community.png", background: "#DBEAFE" },
   Environment: { iconPath: "/icons/enviroment.png", background: "#E0F3D3" },
   Financial: { iconPath: "/icons/finance.png", background: "#FAE5D3" },
   Finance: { iconPath: "/icons/finance.png", background: "#FAE5D3" },
@@ -275,10 +275,8 @@ const lifeEventSections: { year: string; entries: LifeEventEntry[] }[] = [
   },
 ];
 
-const familyTrees = [
-  { id: "hunter", name: "Hunter Family", href: "#", active: true },
-  { id: "frank", name: "Frank Family", href: "#" },
-];
+// familyTrees will be loaded from API
+// const familyTrees = [...] - removed, now dynamic
 
 const sidebarNavItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "#" },
@@ -338,6 +336,154 @@ export default function AchievementListPage() {
     burialPlaces: { location: string; startDate: string }[];
   } | null>(null);
   const [passingSectionsState, setPassingSectionsState] = useState(passingSections);
+
+  // ===== NEW: API Data States =====
+  const [familyTrees, setFamilyTrees] = useState<{ id: string; name: string; href?: string; active?: boolean }[]>([]);
+  const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
+  const [selectedTreeName, setSelectedTreeName] = useState<string>("Loading...");
+  const [hasMoreTrees, setHasMoreTrees] = useState(false);
+
+  // Filter states
+  const [yearFilter, setYearFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
+  const [availableTypes, setAvailableTypes] = useState<{ id: string; name: string }[]>([]);
+  const [availableMembers, setAvailableMembers] = useState<{ id: string; name: string }[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Dropdown visibility states
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
+
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true);
+
+  // ===== Fetch Family Trees on mount =====
+  useEffect(() => {
+    async function fetchFamilyTrees() {
+      try {
+        const res = await fetch("/api/family-trees");
+        const data = await res.json();
+        if (data.trees && data.trees.length > 0) {
+          const trees = data.trees.map((t: { id: string; name: string }, index: number) => ({
+            ...t,
+            href: "#",
+            active: index === 0,
+          }));
+          setFamilyTrees(trees);
+          setSelectedTreeId(trees[0].id);
+          setSelectedTreeName(trees[0].name);
+          setHasMoreTrees(data.hasMore);
+        }
+      } catch (error) {
+        console.error("Failed to fetch family trees:", error);
+      }
+    }
+    fetchFamilyTrees();
+  }, []);
+
+  // ===== Fetch Achievement Types when tree is selected =====
+  useEffect(() => {
+    async function fetchAchievementTypes() {
+      if (!selectedTreeId) return;
+      try {
+        const res = await fetch(`/api/achievement-types?treeId=${selectedTreeId}`);
+        const data = await res.json();
+        setAvailableTypes(data.types || []);
+      } catch (error) {
+        console.error("Failed to fetch achievement types:", error);
+      }
+    }
+    fetchAchievementTypes();
+  }, [selectedTreeId]);
+
+  // ===== Fetch Family Members when tree is selected =====
+  useEffect(() => {
+    async function fetchFamilyMembers() {
+      if (!selectedTreeId) return;
+      try {
+        const res = await fetch(`/api/family-members?treeId=${selectedTreeId}`);
+        const data = await res.json();
+        setAvailableMembers(data.members || []);
+      } catch (error) {
+        console.error("Failed to fetch family members:", error);
+      }
+    }
+    fetchFamilyMembers();
+  }, [selectedTreeId]);
+
+  // ===== Fetch Achievements when tree, year, or type filter changes =====
+  const fetchAchievements = useCallback(async () => {
+    if (!selectedTreeId) return;
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({ treeId: selectedTreeId });
+      if (yearFilter !== "all") params.append("year", yearFilter);
+      if (typeFilter !== "all") params.append("type", typeFilter);
+
+      const res = await fetch(`/api/achievements?${params}`);
+      const data = await res.json();
+      setAchievementSections(data.sections || []);
+      setAvailableYears(data.availableYears || []);
+    } catch (error) {
+      console.error("Failed to fetch achievements:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedTreeId, yearFilter, typeFilter]);
+
+  // ===== Fetch Passing Records =====
+  const fetchPassingRecords = useCallback(async () => {
+    if (!selectedTreeId) return;
+    try {
+      const params = new URLSearchParams({ treeId: selectedTreeId });
+      if (yearFilter !== "all") params.append("year", yearFilter);
+
+      const res = await fetch(`/api/passing-records?${params}`);
+      const data = await res.json();
+      setPassingSectionsState(data.sections || []);
+    } catch (error) {
+      console.error("Failed to fetch passing records:", error);
+    }
+  }, [selectedTreeId, yearFilter]);
+
+  // ===== Fetch Life Events =====
+  const fetchLifeEvents = useCallback(async () => {
+    if (!selectedTreeId) return;
+    try {
+      const params = new URLSearchParams({ treeId: selectedTreeId });
+      if (yearFilter !== "all") params.append("year", yearFilter);
+
+      const res = await fetch(`/api/life-events?${params}`);
+      const data = await res.json();
+      setLifeEventSectionsState(data.sections || []);
+    } catch (error) {
+      console.error("Failed to fetch life events:", error);
+    }
+  }, [selectedTreeId, yearFilter]);
+
+  // ===== Trigger data fetching based on active tab =====
+  useEffect(() => {
+    if (!selectedTreeId) return;
+
+    if (activeTab === "Achievement") {
+      fetchAchievements();
+    } else if (activeTab === "Passing") {
+      fetchPassingRecords();
+    } else if (activeTab === "Life Event") {
+      fetchLifeEvents();
+    }
+  }, [activeTab, selectedTreeId, yearFilter, typeFilter, fetchAchievements, fetchPassingRecords, fetchLifeEvents]);
+
+  // ===== Handle tree selection =====
+  const handleTreeSelect = (treeId: string, treeName: string) => {
+    setFamilyTrees(trees => trees.map(t => ({ ...t, active: t.id === treeId })));
+    setSelectedTreeId(treeId);
+    setSelectedTreeName(treeName);
+    setYearFilter("all");
+    setTypeFilter("all");
+  };
+
 
   const handleCardSelect = (year: string, entry: AchievementEntry) => {
     setSelectedAchievement(entry);
@@ -630,51 +776,56 @@ export default function AchievementListPage() {
     setNewAchievementFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddAchievementSave = (event: FormEvent<HTMLFormElement>) => {
+  const handleAddAchievementSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!newAchievementFormData.person || !newAchievementFormData.category || !newAchievementFormData.date) {
       return;
     }
 
-    // Get the year from the date
-    const dateParts = newAchievementFormData.date.split("/");
-    const year = dateParts[2] || new Date().getFullYear().toString();
+    if (!selectedTreeId) return;
 
-    // Get config for selected category
-    const typeConfig = ACHIEVEMENT_ICON_CONFIG[newAchievementFormData.category] || {
-      iconPath: "/icons/cup.png",
-      background: "#FFFFFF",
-    };
+    setIsSaving(true);
 
-    // Create new achievement entry
-    const newAchievement: AchievementEntry = {
-      id: `achievement-${Date.now()}`,
-      person: newAchievementFormData.person,
-      date: newAchievementFormData.date,
-      category: newAchievementFormData.category,
-      title: newAchievementFormData.title || "New Achievement",
-      description: newAchievementFormData.description || "",
-      background: typeConfig.background,
-      iconPath: typeConfig.iconPath,
-    };
+    try {
+      // Find the member ID from the selected member name
+      const selectedMember = availableMembers.find(m => m.name === newAchievementFormData.person);
+      // Find the achievement type ID from the selected type name
+      const selectedType = availableTypes.find(t => t.name === newAchievementFormData.category);
 
-    // Add to sections
-    setAchievementSections((prev) => {
-      const existingSection = prev.find((s) => s.year === year);
-      if (existingSection) {
-        return prev.map((section) =>
-          section.year === year
-            ? { ...section, entries: [...section.entries, newAchievement] }
-            : section
-        );
-      } else {
-        return [{ year, entries: [newAchievement] }, ...prev].sort(
-          (a, b) => parseInt(b.year) - parseInt(a.year)
-        );
+      if (!selectedMember || !selectedType) {
+        console.error("Member or type not found");
+        setIsSaving(false);
+        return;
       }
-    });
 
-    handleAddAchievementClose();
+      // Native date input already returns YYYY-MM-DD format
+      const dbDate = newAchievementFormData.date;
+
+      const response = await fetch("/api/achievements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          treeId: selectedTreeId,
+          memberId: selectedMember.id,
+          achievementTypeId: selectedType.id,
+          date: dbDate,
+          title: newAchievementFormData.title || "New Achievement",
+          description: newAchievementFormData.description || "",
+        }),
+      });
+
+      if (response.ok) {
+        // Refresh achievements data
+        fetchAchievements();
+        handleAddAchievementClose();
+      } else {
+        console.error("Failed to save achievement");
+      }
+    } catch (error) {
+      console.error("Error saving achievement:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const addButtonLabel = useMemo(() => {
@@ -704,7 +855,7 @@ export default function AchievementListPage() {
         <main className="box-border flex-1 bg-white px-6 pb-16 pt-10 overflow-x-hidden" style={{ minHeight: "1024px" }}>
           <header className="border-b border-gray-200 pb-8">
             <div className="text-center">
-              <h1 className="text-2xl font-semibold text-gray-900">Hunter Family</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">{selectedTreeName}</h1>
             </div>
 
             <div className="mt-6 flex justify-center">
@@ -732,23 +883,68 @@ export default function AchievementListPage() {
             </div>
 
             <div className="mt-6 mx-auto flex w-full max-w-[900px] flex-wrap items-center gap-4">
-              {isPassingView ? (
-                <button className="flex h-10 w-[150px] items-center justify-center gap-2 rounded-[50px] border border-[#0064FF] bg-white px-4 text-sm font-semibold text-[#0E1A2A] shadow-[0_4px_10px_rgba(0,0,0,0.08)]">
-                  <CalendarDays className="h-4 w-4 text-[#0064FF]" />
-                  All Years
+              {/* Year Filter Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => { setIsYearDropdownOpen(!isYearDropdownOpen); setIsTypeDropdownOpen(false); }}
+                  className={`flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border ${yearFilter !== "all" ? "border-[#0064FF] bg-blue-50" : "border-[#C9CDD4] bg-white"} text-sm font-medium text-gray-700`}
+                >
+                  <CalendarDays className={`h-4 w-4 ${yearFilter !== "all" ? "text-[#0064FF]" : "text-gray-500"}`} />
+                  {yearFilter === "all" ? "All Years" : yearFilter}
                 </button>
-              ) : (
-                <div className="flex flex-wrap gap-4">
-                  <button className="flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#C9CDD4] bg-white text-sm font-medium text-gray-700">
-                    <CalendarDays className="h-4 w-4 text-gray-500" />
-                    All Years
+                {isYearDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-[150px] rounded-lg border border-gray-200 bg-white shadow-lg z-50">
+                    <button
+                      onClick={() => { setYearFilter("all"); setIsYearDropdownOpen(false); }}
+                      className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${yearFilter === "all" ? "font-semibold text-[#0064FF]" : ""}`}
+                    >
+                      All Years
+                    </button>
+                    {availableYears.map((year) => (
+                      <button
+                        key={year}
+                        onClick={() => { setYearFilter(year); setIsYearDropdownOpen(false); }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${yearFilter === year ? "font-semibold text-[#0064FF]" : ""}`}
+                      >
+                        {year}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Type Filter Dropdown (only for Achievement tab) */}
+              {!isPassingView && !isLifeEventView && (
+                <div className="relative">
+                  <button
+                    onClick={() => { setIsTypeDropdownOpen(!isTypeDropdownOpen); setIsYearDropdownOpen(false); }}
+                    className={`flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border ${typeFilter !== "all" ? "border-[#0064FF] bg-blue-50" : "border-[#C9CDD4] bg-white"} text-sm font-medium text-gray-700`}
+                  >
+                    <ListChecks className={`h-4 w-4 ${typeFilter !== "all" ? "text-[#0064FF]" : "text-gray-500"}`} />
+                    {typeFilter === "all" ? "All Types" : typeFilter}
                   </button>
-                  <button className="flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#C9CDD4] bg-white text-sm font-medium text-gray-700">
-                    <ListChecks className="h-4 w-4 text-gray-500" />
-                    All Types
-                  </button>
+                  {isTypeDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-1 w-[180px] rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                      <button
+                        onClick={() => { setTypeFilter("all"); setIsTypeDropdownOpen(false); }}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${typeFilter === "all" ? "font-semibold text-[#0064FF]" : ""}`}
+                      >
+                        All Types
+                      </button>
+                      {availableTypes.map((type) => (
+                        <button
+                          key={type.id}
+                          onClick={() => { setTypeFilter(type.name); setIsTypeDropdownOpen(false); }}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${typeFilter === type.name ? "font-semibold text-[#0064FF]" : ""}`}
+                        >
+                          {type.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
+
               <button
                 onClick={() => setIsAddAchievementOpen(true)}
                 className="ml-auto flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#101828] text-sm font-semibold text-gray-900"
@@ -1558,53 +1754,54 @@ export default function AchievementListPage() {
               </div>
 
               <form onSubmit={handleAddAchievementSave} className="mt-6 flex flex-col gap-5 overflow-y-auto pr-2" style={{ maxHeight: "calc(90vh - 280px)" }}>
-                {/* Family Member */}
+                {/* Family Member - Dynamic from API */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#111]">Family Member *</label>
                   <select
-                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                     value={newAchievementFormData.person}
                     onChange={handleNewAchievementFormChange("person")}
                     required
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
                   >
                     <option value="">Select member</option>
-                    <option value="Ruben Hunter">Ruben Hunter</option>
-                    <option value="Forrest Hunter">Forrest Hunter</option>
-                    <option value="Geoffrey">Geoffrey</option>
-                    <option value="Josh Cooper">Josh Cooper</option>
-                    <option value="Corad Hunter">Corad Hunter</option>
+                    {availableMembers.map((member) => (
+                      <option key={member.id} value={member.name}>{member.name}</option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Achievement Type and Date Achieved */}
                 <div className="grid grid-cols-2 gap-4">
+                  {/* Achievement Type - Dynamic from API */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Achievement Type *</label>
                     <select
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                       value={newAchievementFormData.category}
                       onChange={handleNewAchievementFormChange("category")}
                       required
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
                     >
                       <option value="">Select type</option>
-                      <option value="Education">Education</option>
-                      <option value="Business">Business</option>
-                      <option value="Sports">Sports</option>
-                      <option value="Health">Health</option>
-                      <option value="Community">Community</option>
-                      <option value="Creative">Creative</option>
+                      {availableTypes.map((type) => (
+                        <option key={type.id} value={type.name}>{type.name}</option>
+                      ))}
                     </select>
                   </div>
+                  {/* Date with Calendar Icon */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Date Achieved *</label>
-                    <input
-                      type="text"
-                      placeholder="MM/DD/YYYY"
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
-                      value={newAchievementFormData.date}
-                      onChange={handleNewAchievementFormChange("date")}
-                      required
-                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                        value={newAchievementFormData.date}
+                        onChange={(e) => setNewAchievementFormData(prev => ({ ...prev, date: e.target.value }))}
+                        required
+                      />
+                      <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
                 </div>
 
