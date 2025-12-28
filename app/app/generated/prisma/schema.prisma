@@ -7,25 +7,17 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
 }
 
-// Enums
-enum AuthProvider {
-  LOCAL
-  GOOGLE
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
+// Enums - SQLite doesn't support enums, so we use String instead
+// AuthProvider: LOCAL, GOOGLE
+// Gender: MALE, FEMALE, OTHER
 
 // User authentication and tree management
 model TreeOwner {
   id        Int       @id @default(autoincrement())
-  fullName  String    @db.VarChar(225)
+  fullName  String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -39,8 +31,8 @@ model TreeOwner {
 
 model FamilyTree {
   id            Int      @id @default(autoincrement())
-  familyName    String   @db.VarChar(225)
-  origin        String?  @db.VarChar(500)
+  familyName    String
+  origin        String?
   establishYear Int?
   createdAt     DateTime @default(now())
 
@@ -60,14 +52,14 @@ model FamilyTree {
 
 model FamilyMember {
   id             Int       @id @default(autoincrement())
-  fullName       String    @db.VarChar(225)
-  gender         Gender?
+  fullName       String
+  gender         String? // MALE, FEMALE, OTHER
   birthday       DateTime?
-  address        String?   @db.VarChar(1000)
-  profilePicture String?   @db.VarChar(500)
-  generation     String?   @db.VarChar(45)
-  isRootPerson   Boolean?  @default(false) @db.TinyInt
-  isAdopted      Boolean?  @default(false) @db.TinyInt
+  address        String?
+  profilePicture String?
+  generation     String?
+  isRootPerson   Boolean?  @default(false)
+  isAdopted      Boolean?  @default(false)
 
   // Foreign keys
   familyTreeId Int
@@ -92,7 +84,7 @@ model FamilyMember {
 
 model Occupation {
   id        Int       @id @default(autoincrement())
-  jobTitle  String    @db.VarChar(225)
+  jobTitle  String
   startDate DateTime?
   endDate   DateTime?
 
@@ -107,9 +99,9 @@ model Occupation {
 
 model Achievement {
   id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(225)
+  title       String
   achieveDate DateTime?
-  description String?   @db.VarChar(2000)
+  description String?
 
   // Foreign keys
   familyMemberId    Int
@@ -124,7 +116,7 @@ model Achievement {
 
 model AchievementType {
   id       Int    @id @default(autoincrement())
-  typeName String @db.VarChar(225)
+  typeName String
 
   // Foreign keys
   familyTreeId Int
@@ -154,7 +146,7 @@ model PassingRecord {
 
 model CauseOfDeath {
   id        Int    @id @default(autoincrement())
-  causeName String @db.VarChar(225)
+  causeName String
 
   // Foreign keys
   passingRecordId Int @unique
@@ -169,7 +161,7 @@ model CauseOfDeath {
 
 model BuriedPlace {
   id        Int       @id @default(autoincrement())
-  location  String    @db.VarChar(1000)
+  location  String
   startDate DateTime?
   endDate   DateTime?
 
@@ -184,7 +176,7 @@ model BuriedPlace {
 
 model PlaceOfOrigin {
   id       Int    @id @default(autoincrement())
-  location String @db.VarChar(225)
+  location String
 
   // Relations
   familyMembers FamilyMember_has_PlaceOfOrigin[]
@@ -223,7 +215,7 @@ model SpouseRelationship {
 
 model GuestEditor {
   id         Int      @id @default(autoincrement())
-  accessCode String   @db.VarChar(45)
+  accessCode String
   createDate DateTime @default(now())
 
   // Foreign keys
@@ -256,12 +248,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

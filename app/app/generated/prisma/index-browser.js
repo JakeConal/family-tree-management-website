@@ -114,9 +114,6 @@ Prisma.NullTypes = NullTypes
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -272,89 +269,6 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
-exports.Prisma.TreeOwnerOrderByRelevanceFieldEnum = {
-  fullName: 'fullName',
-  userId: 'userId'
-};
-
-exports.Prisma.FamilyTreeOrderByRelevanceFieldEnum = {
-  familyName: 'familyName',
-  origin: 'origin'
-};
-
-exports.Prisma.FamilyMemberOrderByRelevanceFieldEnum = {
-  fullName: 'fullName',
-  address: 'address',
-  profilePicture: 'profilePicture',
-  generation: 'generation'
-};
-
-exports.Prisma.OccupationOrderByRelevanceFieldEnum = {
-  jobTitle: 'jobTitle'
-};
-
-exports.Prisma.AchievementOrderByRelevanceFieldEnum = {
-  title: 'title',
-  description: 'description'
-};
-
-exports.Prisma.AchievementTypeOrderByRelevanceFieldEnum = {
-  typeName: 'typeName'
-};
-
-exports.Prisma.CauseOfDeathOrderByRelevanceFieldEnum = {
-  causeName: 'causeName'
-};
-
-exports.Prisma.BuriedPlaceOrderByRelevanceFieldEnum = {
-  location: 'location'
-};
-
-exports.Prisma.PlaceOfOriginOrderByRelevanceFieldEnum = {
-  location: 'location'
-};
-
-exports.Prisma.GuestEditorOrderByRelevanceFieldEnum = {
-  accessCode: 'accessCode'
-};
-
-exports.Prisma.UserOrderByRelevanceFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  image: 'image'
-};
-
-exports.Prisma.AccountOrderByRelevanceFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  type: 'type',
-  provider: 'provider',
-  providerAccountId: 'providerAccountId',
-  refresh_token: 'refresh_token',
-  access_token: 'access_token',
-  token_type: 'token_type',
-  scope: 'scope',
-  id_token: 'id_token',
-  session_state: 'session_state'
-};
-
-exports.Prisma.SessionOrderByRelevanceFieldEnum = {
-  id: 'id',
-  sessionToken: 'sessionToken',
-  userId: 'userId'
-};
-
-exports.Prisma.VerificationTokenOrderByRelevanceFieldEnum = {
-  id: 'id',
-  identifier: 'identifier',
-  token: 'token'
-};
-exports.Gender = exports.$Enums.Gender = {
-  MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  OTHER: 'OTHER'
-};
 
 exports.Prisma.ModelName = {
   TreeOwner: 'TreeOwner',

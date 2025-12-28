@@ -100,36 +100,6 @@ export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
 
 /**
- * Enums
- */
-export namespace $Enums {
-  export const AuthProvider: {
-  LOCAL: 'LOCAL',
-  GOOGLE: 'GOOGLE'
-};
-
-export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
-
-
-export const Gender: {
-  MALE: 'MALE',
-  FEMALE: 'FEMALE',
-  OTHER: 'OTHER'
-};
-
-export type Gender = (typeof Gender)[keyof typeof Gender]
-
-}
-
-export type AuthProvider = $Enums.AuthProvider
-
-export const AuthProvider: typeof $Enums.AuthProvider
-
-export type Gender = $Enums.Gender
-
-export const Gender: typeof $Enums.Gender
-
-/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -917,6 +887,10 @@ export namespace Prisma {
             args: Prisma.TreeOwnerCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.TreeOwnerCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreeOwnerPayload>[]
+          }
           delete: {
             args: Prisma.TreeOwnerDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$TreeOwnerPayload>
@@ -932,6 +906,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.TreeOwnerUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TreeOwnerUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreeOwnerPayload>[]
           }
           upsert: {
             args: Prisma.TreeOwnerUpsertArgs<ExtArgs>
@@ -983,6 +961,10 @@ export namespace Prisma {
             args: Prisma.FamilyTreeCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.FamilyTreeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyTreePayload>[]
+          }
           delete: {
             args: Prisma.FamilyTreeDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$FamilyTreePayload>
@@ -998,6 +980,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.FamilyTreeUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FamilyTreeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyTreePayload>[]
           }
           upsert: {
             args: Prisma.FamilyTreeUpsertArgs<ExtArgs>
@@ -1049,6 +1035,10 @@ export namespace Prisma {
             args: Prisma.FamilyMemberCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.FamilyMemberCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyMemberPayload>[]
+          }
           delete: {
             args: Prisma.FamilyMemberDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$FamilyMemberPayload>
@@ -1064,6 +1054,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.FamilyMemberUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FamilyMemberUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyMemberPayload>[]
           }
           upsert: {
             args: Prisma.FamilyMemberUpsertArgs<ExtArgs>
@@ -1115,6 +1109,10 @@ export namespace Prisma {
             args: Prisma.OccupationCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.OccupationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OccupationPayload>[]
+          }
           delete: {
             args: Prisma.OccupationDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$OccupationPayload>
@@ -1130,6 +1128,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.OccupationUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.OccupationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OccupationPayload>[]
           }
           upsert: {
             args: Prisma.OccupationUpsertArgs<ExtArgs>
@@ -1181,6 +1183,10 @@ export namespace Prisma {
             args: Prisma.AchievementCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.AchievementCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>[]
+          }
           delete: {
             args: Prisma.AchievementDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$AchievementPayload>
@@ -1196,6 +1202,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.AchievementUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AchievementUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementPayload>[]
           }
           upsert: {
             args: Prisma.AchievementUpsertArgs<ExtArgs>
@@ -1247,6 +1257,10 @@ export namespace Prisma {
             args: Prisma.AchievementTypeCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.AchievementTypeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementTypePayload>[]
+          }
           delete: {
             args: Prisma.AchievementTypeDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$AchievementTypePayload>
@@ -1262,6 +1276,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.AchievementTypeUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AchievementTypeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AchievementTypePayload>[]
           }
           upsert: {
             args: Prisma.AchievementTypeUpsertArgs<ExtArgs>
@@ -1313,6 +1331,10 @@ export namespace Prisma {
             args: Prisma.PassingRecordCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.PassingRecordCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PassingRecordPayload>[]
+          }
           delete: {
             args: Prisma.PassingRecordDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$PassingRecordPayload>
@@ -1328,6 +1350,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.PassingRecordUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PassingRecordUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PassingRecordPayload>[]
           }
           upsert: {
             args: Prisma.PassingRecordUpsertArgs<ExtArgs>
@@ -1379,6 +1405,10 @@ export namespace Prisma {
             args: Prisma.CauseOfDeathCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.CauseOfDeathCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CauseOfDeathPayload>[]
+          }
           delete: {
             args: Prisma.CauseOfDeathDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$CauseOfDeathPayload>
@@ -1394,6 +1424,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.CauseOfDeathUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CauseOfDeathUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CauseOfDeathPayload>[]
           }
           upsert: {
             args: Prisma.CauseOfDeathUpsertArgs<ExtArgs>
@@ -1445,6 +1479,10 @@ export namespace Prisma {
             args: Prisma.BuriedPlaceCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.BuriedPlaceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuriedPlacePayload>[]
+          }
           delete: {
             args: Prisma.BuriedPlaceDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$BuriedPlacePayload>
@@ -1460,6 +1498,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.BuriedPlaceUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BuriedPlaceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BuriedPlacePayload>[]
           }
           upsert: {
             args: Prisma.BuriedPlaceUpsertArgs<ExtArgs>
@@ -1511,6 +1553,10 @@ export namespace Prisma {
             args: Prisma.PlaceOfOriginCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.PlaceOfOriginCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaceOfOriginPayload>[]
+          }
           delete: {
             args: Prisma.PlaceOfOriginDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$PlaceOfOriginPayload>
@@ -1526,6 +1572,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.PlaceOfOriginUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaceOfOriginPayload>[]
           }
           upsert: {
             args: Prisma.PlaceOfOriginUpsertArgs<ExtArgs>
@@ -1577,6 +1627,10 @@ export namespace Prisma {
             args: Prisma.FamilyMember_has_PlaceOfOriginCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.FamilyMember_has_PlaceOfOriginCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyMember_has_PlaceOfOriginPayload>[]
+          }
           delete: {
             args: Prisma.FamilyMember_has_PlaceOfOriginDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$FamilyMember_has_PlaceOfOriginPayload>
@@ -1592,6 +1646,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.FamilyMember_has_PlaceOfOriginUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.FamilyMember_has_PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$FamilyMember_has_PlaceOfOriginPayload>[]
           }
           upsert: {
             args: Prisma.FamilyMember_has_PlaceOfOriginUpsertArgs<ExtArgs>
@@ -1643,6 +1701,10 @@ export namespace Prisma {
             args: Prisma.SpouseRelationshipCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.SpouseRelationshipCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SpouseRelationshipPayload>[]
+          }
           delete: {
             args: Prisma.SpouseRelationshipDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$SpouseRelationshipPayload>
@@ -1658,6 +1720,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.SpouseRelationshipUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SpouseRelationshipUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SpouseRelationshipPayload>[]
           }
           upsert: {
             args: Prisma.SpouseRelationshipUpsertArgs<ExtArgs>
@@ -1709,6 +1775,10 @@ export namespace Prisma {
             args: Prisma.GuestEditorCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.GuestEditorCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestEditorPayload>[]
+          }
           delete: {
             args: Prisma.GuestEditorDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$GuestEditorPayload>
@@ -1724,6 +1794,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.GuestEditorUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GuestEditorUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestEditorPayload>[]
           }
           upsert: {
             args: Prisma.GuestEditorUpsertArgs<ExtArgs>
@@ -1775,6 +1849,10 @@ export namespace Prisma {
             args: Prisma.UserCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.UserCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+          }
           delete: {
             args: Prisma.UserDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$UserPayload>
@@ -1790,6 +1868,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.UserUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
           }
           upsert: {
             args: Prisma.UserUpsertArgs<ExtArgs>
@@ -1841,6 +1923,10 @@ export namespace Prisma {
             args: Prisma.AccountCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.AccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccountPayload>[]
+          }
           delete: {
             args: Prisma.AccountDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$AccountPayload>
@@ -1856,6 +1942,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.AccountUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AccountUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AccountPayload>[]
           }
           upsert: {
             args: Prisma.AccountUpsertArgs<ExtArgs>
@@ -1907,6 +1997,10 @@ export namespace Prisma {
             args: Prisma.SessionCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.SessionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>[]
+          }
           delete: {
             args: Prisma.SessionDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$SessionPayload>
@@ -1922,6 +2016,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.SessionUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.SessionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SessionPayload>[]
           }
           upsert: {
             args: Prisma.SessionUpsertArgs<ExtArgs>
@@ -1973,6 +2071,10 @@ export namespace Prisma {
             args: Prisma.VerificationTokenCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
+          createManyAndReturn: {
+            args: Prisma.VerificationTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationTokenPayload>[]
+          }
           delete: {
             args: Prisma.VerificationTokenDeleteArgs<ExtArgs>
             result: $Utils.PayloadToResult<Prisma.$VerificationTokenPayload>
@@ -1988,6 +2090,10 @@ export namespace Prisma {
           updateMany: {
             args: Prisma.VerificationTokenUpdateManyArgs<ExtArgs>
             result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.VerificationTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VerificationTokenPayload>[]
           }
           upsert: {
             args: Prisma.VerificationTokenUpsertArgs<ExtArgs>
@@ -2730,7 +2836,23 @@ export namespace Prisma {
     _count?: boolean | TreeOwnerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["treeOwner"]>
 
+  export type TreeOwnerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fullName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | TreeOwner$userArgs<ExtArgs>
+  }, ExtArgs["result"]["treeOwner"]>
 
+  export type TreeOwnerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fullName?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    userId?: boolean
+    user?: boolean | TreeOwner$userArgs<ExtArgs>
+  }, ExtArgs["result"]["treeOwner"]>
 
   export type TreeOwnerSelectScalar = {
     id?: boolean
@@ -2745,6 +2867,12 @@ export namespace Prisma {
     user?: boolean | TreeOwner$userArgs<ExtArgs>
     familyTrees?: boolean | TreeOwner$familyTreesArgs<ExtArgs>
     _count?: boolean | TreeOwnerCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TreeOwnerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TreeOwner$userArgs<ExtArgs>
+  }
+  export type TreeOwnerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | TreeOwner$userArgs<ExtArgs>
   }
 
   export type $TreeOwnerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2877,6 +3005,30 @@ export namespace Prisma {
     createMany<T extends TreeOwnerCreateManyArgs>(args?: SelectSubset<T, TreeOwnerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many TreeOwners and returns the data saved in the database.
+     * @param {TreeOwnerCreateManyAndReturnArgs} args - Arguments to create many TreeOwners.
+     * @example
+     * // Create many TreeOwners
+     * const treeOwner = await prisma.treeOwner.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TreeOwners and only return the `id`
+     * const treeOwnerWithIdOnly = await prisma.treeOwner.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreeOwnerCreateManyAndReturnArgs>(args?: SelectSubset<T, TreeOwnerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreeOwnerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a TreeOwner.
      * @param {TreeOwnerDeleteArgs} args - Arguments to delete one TreeOwner.
      * @example
@@ -2939,6 +3091,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends TreeOwnerUpdateManyArgs>(args: SelectSubset<T, TreeOwnerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TreeOwners and returns the data updated in the database.
+     * @param {TreeOwnerUpdateManyAndReturnArgs} args - Arguments to update many TreeOwners.
+     * @example
+     * // Update many TreeOwners
+     * const treeOwner = await prisma.treeOwner.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TreeOwners and only return the `id`
+     * const treeOwnerWithIdOnly = await prisma.treeOwner.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TreeOwnerUpdateManyAndReturnArgs>(args: SelectSubset<T, TreeOwnerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreeOwnerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one TreeOwner.
@@ -3364,7 +3546,28 @@ export namespace Prisma {
      * The data used to create many TreeOwners.
      */
     data: TreeOwnerCreateManyInput | TreeOwnerCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * TreeOwner createManyAndReturn
+   */
+  export type TreeOwnerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreeOwner
+     */
+    select?: TreeOwnerSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TreeOwner
+     */
+    omit?: TreeOwnerOmit<ExtArgs> | null
+    /**
+     * The data used to create many TreeOwners.
+     */
+    data: TreeOwnerCreateManyInput | TreeOwnerCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreeOwnerIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3409,6 +3612,36 @@ export namespace Prisma {
      * Limit how many TreeOwners to update.
      */
     limit?: number
+  }
+
+  /**
+   * TreeOwner updateManyAndReturn
+   */
+  export type TreeOwnerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TreeOwner
+     */
+    select?: TreeOwnerSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TreeOwner
+     */
+    omit?: TreeOwnerOmit<ExtArgs> | null
+    /**
+     * The data used to update TreeOwners.
+     */
+    data: XOR<TreeOwnerUpdateManyMutationInput, TreeOwnerUncheckedUpdateManyInput>
+    /**
+     * Filter which TreeOwners to update
+     */
+    where?: TreeOwnerWhereInput
+    /**
+     * Limit how many TreeOwners to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TreeOwnerIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -3773,7 +4006,29 @@ export namespace Prisma {
     _count?: boolean | FamilyTreeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["familyTree"]>
 
+  export type FamilyTreeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    familyName?: boolean
+    origin?: boolean
+    establishYear?: boolean
+    createdAt?: boolean
+    treeOwnerId?: boolean
+    rootMemberId?: boolean
+    treeOwner?: boolean | TreeOwnerDefaultArgs<ExtArgs>
+    rootMember?: boolean | FamilyTree$rootMemberArgs<ExtArgs>
+  }, ExtArgs["result"]["familyTree"]>
 
+  export type FamilyTreeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    familyName?: boolean
+    origin?: boolean
+    establishYear?: boolean
+    createdAt?: boolean
+    treeOwnerId?: boolean
+    rootMemberId?: boolean
+    treeOwner?: boolean | TreeOwnerDefaultArgs<ExtArgs>
+    rootMember?: boolean | FamilyTree$rootMemberArgs<ExtArgs>
+  }, ExtArgs["result"]["familyTree"]>
 
   export type FamilyTreeSelectScalar = {
     id?: boolean
@@ -3793,6 +4048,14 @@ export namespace Prisma {
     guestEditors?: boolean | FamilyTree$guestEditorsArgs<ExtArgs>
     achievementTypes?: boolean | FamilyTree$achievementTypesArgs<ExtArgs>
     _count?: boolean | FamilyTreeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type FamilyTreeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    treeOwner?: boolean | TreeOwnerDefaultArgs<ExtArgs>
+    rootMember?: boolean | FamilyTree$rootMemberArgs<ExtArgs>
+  }
+  export type FamilyTreeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    treeOwner?: boolean | TreeOwnerDefaultArgs<ExtArgs>
+    rootMember?: boolean | FamilyTree$rootMemberArgs<ExtArgs>
   }
 
   export type $FamilyTreePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3930,6 +4193,30 @@ export namespace Prisma {
     createMany<T extends FamilyTreeCreateManyArgs>(args?: SelectSubset<T, FamilyTreeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many FamilyTrees and returns the data saved in the database.
+     * @param {FamilyTreeCreateManyAndReturnArgs} args - Arguments to create many FamilyTrees.
+     * @example
+     * // Create many FamilyTrees
+     * const familyTree = await prisma.familyTree.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FamilyTrees and only return the `id`
+     * const familyTreeWithIdOnly = await prisma.familyTree.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FamilyTreeCreateManyAndReturnArgs>(args?: SelectSubset<T, FamilyTreeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyTreePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a FamilyTree.
      * @param {FamilyTreeDeleteArgs} args - Arguments to delete one FamilyTree.
      * @example
@@ -3992,6 +4279,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends FamilyTreeUpdateManyArgs>(args: SelectSubset<T, FamilyTreeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FamilyTrees and returns the data updated in the database.
+     * @param {FamilyTreeUpdateManyAndReturnArgs} args - Arguments to update many FamilyTrees.
+     * @example
+     * // Update many FamilyTrees
+     * const familyTree = await prisma.familyTree.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FamilyTrees and only return the `id`
+     * const familyTreeWithIdOnly = await prisma.familyTree.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FamilyTreeUpdateManyAndReturnArgs>(args: SelectSubset<T, FamilyTreeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyTreePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one FamilyTree.
@@ -4422,7 +4739,28 @@ export namespace Prisma {
      * The data used to create many FamilyTrees.
      */
     data: FamilyTreeCreateManyInput | FamilyTreeCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * FamilyTree createManyAndReturn
+   */
+  export type FamilyTreeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyTree
+     */
+    select?: FamilyTreeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyTree
+     */
+    omit?: FamilyTreeOmit<ExtArgs> | null
+    /**
+     * The data used to create many FamilyTrees.
+     */
+    data: FamilyTreeCreateManyInput | FamilyTreeCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyTreeIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4467,6 +4805,36 @@ export namespace Prisma {
      * Limit how many FamilyTrees to update.
      */
     limit?: number
+  }
+
+  /**
+   * FamilyTree updateManyAndReturn
+   */
+  export type FamilyTreeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyTree
+     */
+    select?: FamilyTreeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyTree
+     */
+    omit?: FamilyTreeOmit<ExtArgs> | null
+    /**
+     * The data used to update FamilyTrees.
+     */
+    data: XOR<FamilyTreeUpdateManyMutationInput, FamilyTreeUncheckedUpdateManyInput>
+    /**
+     * Filter which FamilyTrees to update
+     */
+    where?: FamilyTreeWhereInput
+    /**
+     * Limit how many FamilyTrees to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyTreeIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4672,7 +5040,7 @@ export namespace Prisma {
   export type FamilyMemberMinAggregateOutputType = {
     id: number | null
     fullName: string | null
-    gender: $Enums.Gender | null
+    gender: string | null
     birthday: Date | null
     address: string | null
     profilePicture: string | null
@@ -4686,7 +5054,7 @@ export namespace Prisma {
   export type FamilyMemberMaxAggregateOutputType = {
     id: number | null
     fullName: string | null
-    gender: $Enums.Gender | null
+    gender: string | null
     birthday: Date | null
     address: string | null
     profilePicture: string | null
@@ -4857,7 +5225,7 @@ export namespace Prisma {
   export type FamilyMemberGroupByOutputType = {
     id: number
     fullName: string
-    gender: $Enums.Gender | null
+    gender: string | null
     birthday: Date | null
     address: string | null
     profilePicture: string | null
@@ -4914,7 +5282,37 @@ export namespace Prisma {
     _count?: boolean | FamilyMemberCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["familyMember"]>
 
+  export type FamilyMemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fullName?: boolean
+    gender?: boolean
+    birthday?: boolean
+    address?: boolean
+    profilePicture?: boolean
+    generation?: boolean
+    isRootPerson?: boolean
+    isAdopted?: boolean
+    familyTreeId?: boolean
+    parentId?: boolean
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+    parent?: boolean | FamilyMember$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["familyMember"]>
 
+  export type FamilyMemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    fullName?: boolean
+    gender?: boolean
+    birthday?: boolean
+    address?: boolean
+    profilePicture?: boolean
+    generation?: boolean
+    isRootPerson?: boolean
+    isAdopted?: boolean
+    familyTreeId?: boolean
+    parentId?: boolean
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+    parent?: boolean | FamilyMember$parentArgs<ExtArgs>
+  }, ExtArgs["result"]["familyMember"]>
 
   export type FamilyMemberSelectScalar = {
     id?: boolean
@@ -4946,6 +5344,14 @@ export namespace Prisma {
     rootFor?: boolean | FamilyMember$rootForArgs<ExtArgs>
     _count?: boolean | FamilyMemberCountOutputTypeDefaultArgs<ExtArgs>
   }
+  export type FamilyMemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+    parent?: boolean | FamilyMember$parentArgs<ExtArgs>
+  }
+  export type FamilyMemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+    parent?: boolean | FamilyMember$parentArgs<ExtArgs>
+  }
 
   export type $FamilyMemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FamilyMember"
@@ -4966,7 +5372,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       fullName: string
-      gender: $Enums.Gender | null
+      gender: string | null
       birthday: Date | null
       address: string | null
       profilePicture: string | null
@@ -5093,6 +5499,30 @@ export namespace Prisma {
     createMany<T extends FamilyMemberCreateManyArgs>(args?: SelectSubset<T, FamilyMemberCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many FamilyMembers and returns the data saved in the database.
+     * @param {FamilyMemberCreateManyAndReturnArgs} args - Arguments to create many FamilyMembers.
+     * @example
+     * // Create many FamilyMembers
+     * const familyMember = await prisma.familyMember.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FamilyMembers and only return the `id`
+     * const familyMemberWithIdOnly = await prisma.familyMember.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FamilyMemberCreateManyAndReturnArgs>(args?: SelectSubset<T, FamilyMemberCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a FamilyMember.
      * @param {FamilyMemberDeleteArgs} args - Arguments to delete one FamilyMember.
      * @example
@@ -5155,6 +5585,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends FamilyMemberUpdateManyArgs>(args: SelectSubset<T, FamilyMemberUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FamilyMembers and returns the data updated in the database.
+     * @param {FamilyMemberUpdateManyAndReturnArgs} args - Arguments to update many FamilyMembers.
+     * @example
+     * // Update many FamilyMembers
+     * const familyMember = await prisma.familyMember.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FamilyMembers and only return the `id`
+     * const familyMemberWithIdOnly = await prisma.familyMember.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FamilyMemberUpdateManyAndReturnArgs>(args: SelectSubset<T, FamilyMemberUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one FamilyMember.
@@ -5358,7 +5818,7 @@ export namespace Prisma {
   interface FamilyMemberFieldRefs {
     readonly id: FieldRef<"FamilyMember", 'Int'>
     readonly fullName: FieldRef<"FamilyMember", 'String'>
-    readonly gender: FieldRef<"FamilyMember", 'Gender'>
+    readonly gender: FieldRef<"FamilyMember", 'String'>
     readonly birthday: FieldRef<"FamilyMember", 'DateTime'>
     readonly address: FieldRef<"FamilyMember", 'String'>
     readonly profilePicture: FieldRef<"FamilyMember", 'String'>
@@ -5596,7 +6056,28 @@ export namespace Prisma {
      * The data used to create many FamilyMembers.
      */
     data: FamilyMemberCreateManyInput | FamilyMemberCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * FamilyMember createManyAndReturn
+   */
+  export type FamilyMemberCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyMember
+     */
+    select?: FamilyMemberSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyMember
+     */
+    omit?: FamilyMemberOmit<ExtArgs> | null
+    /**
+     * The data used to create many FamilyMembers.
+     */
+    data: FamilyMemberCreateManyInput | FamilyMemberCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyMemberIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -5641,6 +6122,36 @@ export namespace Prisma {
      * Limit how many FamilyMembers to update.
      */
     limit?: number
+  }
+
+  /**
+   * FamilyMember updateManyAndReturn
+   */
+  export type FamilyMemberUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyMember
+     */
+    select?: FamilyMemberSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyMember
+     */
+    omit?: FamilyMemberOmit<ExtArgs> | null
+    /**
+     * The data used to update FamilyMembers.
+     */
+    data: XOR<FamilyMemberUpdateManyMutationInput, FamilyMemberUncheckedUpdateManyInput>
+    /**
+     * Filter which FamilyMembers to update
+     */
+    where?: FamilyMemberWhereInput
+    /**
+     * Limit how many FamilyMembers to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyMemberIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6187,7 +6698,23 @@ export namespace Prisma {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["occupation"]>
 
+  export type OccupationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jobTitle?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    familyMemberId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["occupation"]>
 
+  export type OccupationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    jobTitle?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    familyMemberId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["occupation"]>
 
   export type OccupationSelectScalar = {
     id?: boolean
@@ -6199,6 +6726,12 @@ export namespace Prisma {
 
   export type OccupationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "jobTitle" | "startDate" | "endDate" | "familyMemberId", ExtArgs["result"]["occupation"]>
   export type OccupationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type OccupationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type OccupationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }
 
@@ -6331,6 +6864,30 @@ export namespace Prisma {
     createMany<T extends OccupationCreateManyArgs>(args?: SelectSubset<T, OccupationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many Occupations and returns the data saved in the database.
+     * @param {OccupationCreateManyAndReturnArgs} args - Arguments to create many Occupations.
+     * @example
+     * // Create many Occupations
+     * const occupation = await prisma.occupation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Occupations and only return the `id`
+     * const occupationWithIdOnly = await prisma.occupation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OccupationCreateManyAndReturnArgs>(args?: SelectSubset<T, OccupationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OccupationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a Occupation.
      * @param {OccupationDeleteArgs} args - Arguments to delete one Occupation.
      * @example
@@ -6393,6 +6950,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends OccupationUpdateManyArgs>(args: SelectSubset<T, OccupationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Occupations and returns the data updated in the database.
+     * @param {OccupationUpdateManyAndReturnArgs} args - Arguments to update many Occupations.
+     * @example
+     * // Update many Occupations
+     * const occupation = await prisma.occupation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Occupations and only return the `id`
+     * const occupationWithIdOnly = await prisma.occupation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends OccupationUpdateManyAndReturnArgs>(args: SelectSubset<T, OccupationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OccupationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Occupation.
@@ -6817,7 +7404,28 @@ export namespace Prisma {
      * The data used to create many Occupations.
      */
     data: OccupationCreateManyInput | OccupationCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * Occupation createManyAndReturn
+   */
+  export type OccupationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Occupation
+     */
+    select?: OccupationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Occupation
+     */
+    omit?: OccupationOmit<ExtArgs> | null
+    /**
+     * The data used to create many Occupations.
+     */
+    data: OccupationCreateManyInput | OccupationCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OccupationIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6862,6 +7470,36 @@ export namespace Prisma {
      * Limit how many Occupations to update.
      */
     limit?: number
+  }
+
+  /**
+   * Occupation updateManyAndReturn
+   */
+  export type OccupationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Occupation
+     */
+    select?: OccupationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Occupation
+     */
+    omit?: OccupationOmit<ExtArgs> | null
+    /**
+     * The data used to update Occupations.
+     */
+    data: XOR<OccupationUpdateManyMutationInput, OccupationUncheckedUpdateManyInput>
+    /**
+     * Filter which Occupations to update
+     */
+    where?: OccupationWhereInput
+    /**
+     * Limit how many Occupations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OccupationIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7167,7 +7805,27 @@ export namespace Prisma {
     achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["achievement"]>
 
+  export type AchievementSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    achieveDate?: boolean
+    description?: boolean
+    familyMemberId?: boolean
+    achievementTypeId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["achievement"]>
 
+  export type AchievementSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    achieveDate?: boolean
+    description?: boolean
+    familyMemberId?: boolean
+    achievementTypeId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["achievement"]>
 
   export type AchievementSelectScalar = {
     id?: boolean
@@ -7180,6 +7838,14 @@ export namespace Prisma {
 
   export type AchievementOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "achieveDate" | "description" | "familyMemberId" | "achievementTypeId", ExtArgs["result"]["achievement"]>
   export type AchievementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
+  }
+  export type AchievementIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
+  }
+  export type AchievementIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
     achievementType?: boolean | AchievementTypeDefaultArgs<ExtArgs>
   }
@@ -7315,6 +7981,30 @@ export namespace Prisma {
     createMany<T extends AchievementCreateManyArgs>(args?: SelectSubset<T, AchievementCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many Achievements and returns the data saved in the database.
+     * @param {AchievementCreateManyAndReturnArgs} args - Arguments to create many Achievements.
+     * @example
+     * // Create many Achievements
+     * const achievement = await prisma.achievement.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Achievements and only return the `id`
+     * const achievementWithIdOnly = await prisma.achievement.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AchievementCreateManyAndReturnArgs>(args?: SelectSubset<T, AchievementCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a Achievement.
      * @param {AchievementDeleteArgs} args - Arguments to delete one Achievement.
      * @example
@@ -7377,6 +8067,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends AchievementUpdateManyArgs>(args: SelectSubset<T, AchievementUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Achievements and returns the data updated in the database.
+     * @param {AchievementUpdateManyAndReturnArgs} args - Arguments to update many Achievements.
+     * @example
+     * // Update many Achievements
+     * const achievement = await prisma.achievement.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Achievements and only return the `id`
+     * const achievementWithIdOnly = await prisma.achievement.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AchievementUpdateManyAndReturnArgs>(args: SelectSubset<T, AchievementUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Achievement.
@@ -7803,7 +8523,28 @@ export namespace Prisma {
      * The data used to create many Achievements.
      */
     data: AchievementCreateManyInput | AchievementCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * Achievement createManyAndReturn
+   */
+  export type AchievementCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * The data used to create many Achievements.
+     */
+    data: AchievementCreateManyInput | AchievementCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7848,6 +8589,36 @@ export namespace Prisma {
      * Limit how many Achievements to update.
      */
     limit?: number
+  }
+
+  /**
+   * Achievement updateManyAndReturn
+   */
+  export type AchievementUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Achievement
+     */
+    select?: AchievementSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Achievement
+     */
+    omit?: AchievementOmit<ExtArgs> | null
+    /**
+     * The data used to update Achievements.
+     */
+    data: XOR<AchievementUpdateManyMutationInput, AchievementUncheckedUpdateManyInput>
+    /**
+     * Filter which Achievements to update
+     */
+    where?: AchievementWhereInput
+    /**
+     * Limit how many Achievements to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -8126,7 +8897,19 @@ export namespace Prisma {
     _count?: boolean | AchievementTypeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["achievementType"]>
 
+  export type AchievementTypeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    typeName?: boolean
+    familyTreeId?: boolean
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["achievementType"]>
 
+  export type AchievementTypeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    typeName?: boolean
+    familyTreeId?: boolean
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["achievementType"]>
 
   export type AchievementTypeSelectScalar = {
     id?: boolean
@@ -8139,6 +8922,12 @@ export namespace Prisma {
     familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
     achievements?: boolean | AchievementType$achievementsArgs<ExtArgs>
     _count?: boolean | AchievementTypeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AchievementTypeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }
+  export type AchievementTypeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
   }
 
   export type $AchievementTypePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8269,6 +9058,30 @@ export namespace Prisma {
     createMany<T extends AchievementTypeCreateManyArgs>(args?: SelectSubset<T, AchievementTypeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many AchievementTypes and returns the data saved in the database.
+     * @param {AchievementTypeCreateManyAndReturnArgs} args - Arguments to create many AchievementTypes.
+     * @example
+     * // Create many AchievementTypes
+     * const achievementType = await prisma.achievementType.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AchievementTypes and only return the `id`
+     * const achievementTypeWithIdOnly = await prisma.achievementType.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AchievementTypeCreateManyAndReturnArgs>(args?: SelectSubset<T, AchievementTypeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementTypePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a AchievementType.
      * @param {AchievementTypeDeleteArgs} args - Arguments to delete one AchievementType.
      * @example
@@ -8331,6 +9144,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends AchievementTypeUpdateManyArgs>(args: SelectSubset<T, AchievementTypeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AchievementTypes and returns the data updated in the database.
+     * @param {AchievementTypeUpdateManyAndReturnArgs} args - Arguments to update many AchievementTypes.
+     * @example
+     * // Update many AchievementTypes
+     * const achievementType = await prisma.achievementType.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AchievementTypes and only return the `id`
+     * const achievementTypeWithIdOnly = await prisma.achievementType.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AchievementTypeUpdateManyAndReturnArgs>(args: SelectSubset<T, AchievementTypeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AchievementTypePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one AchievementType.
@@ -8754,7 +9597,28 @@ export namespace Prisma {
      * The data used to create many AchievementTypes.
      */
     data: AchievementTypeCreateManyInput | AchievementTypeCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * AchievementType createManyAndReturn
+   */
+  export type AchievementTypeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AchievementType
+     */
+    select?: AchievementTypeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AchievementType
+     */
+    omit?: AchievementTypeOmit<ExtArgs> | null
+    /**
+     * The data used to create many AchievementTypes.
+     */
+    data: AchievementTypeCreateManyInput | AchievementTypeCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementTypeIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -8799,6 +9663,36 @@ export namespace Prisma {
      * Limit how many AchievementTypes to update.
      */
     limit?: number
+  }
+
+  /**
+   * AchievementType updateManyAndReturn
+   */
+  export type AchievementTypeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AchievementType
+     */
+    select?: AchievementTypeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AchievementType
+     */
+    omit?: AchievementTypeOmit<ExtArgs> | null
+    /**
+     * The data used to update AchievementTypes.
+     */
+    data: XOR<AchievementTypeUpdateManyMutationInput, AchievementTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which AchievementTypes to update
+     */
+    where?: AchievementTypeWhereInput
+    /**
+     * Limit how many AchievementTypes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AchievementTypeIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9110,7 +10004,21 @@ export namespace Prisma {
     _count?: boolean | PassingRecordCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["passingRecord"]>
 
+  export type PassingRecordSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    dateOfPassing?: boolean
+    createdAt?: boolean
+    familyMemberId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["passingRecord"]>
 
+  export type PassingRecordSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    dateOfPassing?: boolean
+    createdAt?: boolean
+    familyMemberId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["passingRecord"]>
 
   export type PassingRecordSelectScalar = {
     id?: boolean
@@ -9125,6 +10033,12 @@ export namespace Prisma {
     causeOfDeath?: boolean | PassingRecord$causeOfDeathArgs<ExtArgs>
     buriedPlaces?: boolean | PassingRecord$buriedPlacesArgs<ExtArgs>
     _count?: boolean | PassingRecordCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PassingRecordIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type PassingRecordIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }
 
   export type $PassingRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9257,6 +10171,30 @@ export namespace Prisma {
     createMany<T extends PassingRecordCreateManyArgs>(args?: SelectSubset<T, PassingRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many PassingRecords and returns the data saved in the database.
+     * @param {PassingRecordCreateManyAndReturnArgs} args - Arguments to create many PassingRecords.
+     * @example
+     * // Create many PassingRecords
+     * const passingRecord = await prisma.passingRecord.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PassingRecords and only return the `id`
+     * const passingRecordWithIdOnly = await prisma.passingRecord.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PassingRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, PassingRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PassingRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a PassingRecord.
      * @param {PassingRecordDeleteArgs} args - Arguments to delete one PassingRecord.
      * @example
@@ -9319,6 +10257,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends PassingRecordUpdateManyArgs>(args: SelectSubset<T, PassingRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PassingRecords and returns the data updated in the database.
+     * @param {PassingRecordUpdateManyAndReturnArgs} args - Arguments to update many PassingRecords.
+     * @example
+     * // Update many PassingRecords
+     * const passingRecord = await prisma.passingRecord.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PassingRecords and only return the `id`
+     * const passingRecordWithIdOnly = await prisma.passingRecord.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PassingRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, PassingRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PassingRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one PassingRecord.
@@ -9744,7 +10712,28 @@ export namespace Prisma {
      * The data used to create many PassingRecords.
      */
     data: PassingRecordCreateManyInput | PassingRecordCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * PassingRecord createManyAndReturn
+   */
+  export type PassingRecordCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PassingRecord
+     */
+    select?: PassingRecordSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PassingRecord
+     */
+    omit?: PassingRecordOmit<ExtArgs> | null
+    /**
+     * The data used to create many PassingRecords.
+     */
+    data: PassingRecordCreateManyInput | PassingRecordCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PassingRecordIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -9789,6 +10778,36 @@ export namespace Prisma {
      * Limit how many PassingRecords to update.
      */
     limit?: number
+  }
+
+  /**
+   * PassingRecord updateManyAndReturn
+   */
+  export type PassingRecordUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PassingRecord
+     */
+    select?: PassingRecordSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PassingRecord
+     */
+    omit?: PassingRecordOmit<ExtArgs> | null
+    /**
+     * The data used to update PassingRecords.
+     */
+    data: XOR<PassingRecordUpdateManyMutationInput, PassingRecordUncheckedUpdateManyInput>
+    /**
+     * Filter which PassingRecords to update
+     */
+    where?: PassingRecordWhereInput
+    /**
+     * Limit how many PassingRecords to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PassingRecordIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10121,7 +11140,23 @@ export namespace Prisma {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["causeOfDeath"]>
 
+  export type CauseOfDeathSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    causeName?: boolean
+    passingRecordId?: boolean
+    familyMemberId?: boolean
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["causeOfDeath"]>
 
+  export type CauseOfDeathSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    causeName?: boolean
+    passingRecordId?: boolean
+    familyMemberId?: boolean
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["causeOfDeath"]>
 
   export type CauseOfDeathSelectScalar = {
     id?: boolean
@@ -10132,6 +11167,14 @@ export namespace Prisma {
 
   export type CauseOfDeathOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "causeName" | "passingRecordId" | "familyMemberId", ExtArgs["result"]["causeOfDeath"]>
   export type CauseOfDeathInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type CauseOfDeathIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type CauseOfDeathIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }
@@ -10265,6 +11308,30 @@ export namespace Prisma {
     createMany<T extends CauseOfDeathCreateManyArgs>(args?: SelectSubset<T, CauseOfDeathCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many CauseOfDeaths and returns the data saved in the database.
+     * @param {CauseOfDeathCreateManyAndReturnArgs} args - Arguments to create many CauseOfDeaths.
+     * @example
+     * // Create many CauseOfDeaths
+     * const causeOfDeath = await prisma.causeOfDeath.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CauseOfDeaths and only return the `id`
+     * const causeOfDeathWithIdOnly = await prisma.causeOfDeath.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CauseOfDeathCreateManyAndReturnArgs>(args?: SelectSubset<T, CauseOfDeathCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CauseOfDeathPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a CauseOfDeath.
      * @param {CauseOfDeathDeleteArgs} args - Arguments to delete one CauseOfDeath.
      * @example
@@ -10327,6 +11394,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends CauseOfDeathUpdateManyArgs>(args: SelectSubset<T, CauseOfDeathUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CauseOfDeaths and returns the data updated in the database.
+     * @param {CauseOfDeathUpdateManyAndReturnArgs} args - Arguments to update many CauseOfDeaths.
+     * @example
+     * // Update many CauseOfDeaths
+     * const causeOfDeath = await prisma.causeOfDeath.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CauseOfDeaths and only return the `id`
+     * const causeOfDeathWithIdOnly = await prisma.causeOfDeath.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CauseOfDeathUpdateManyAndReturnArgs>(args: SelectSubset<T, CauseOfDeathUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CauseOfDeathPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one CauseOfDeath.
@@ -10751,7 +11848,28 @@ export namespace Prisma {
      * The data used to create many CauseOfDeaths.
      */
     data: CauseOfDeathCreateManyInput | CauseOfDeathCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * CauseOfDeath createManyAndReturn
+   */
+  export type CauseOfDeathCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CauseOfDeath
+     */
+    select?: CauseOfDeathSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CauseOfDeath
+     */
+    omit?: CauseOfDeathOmit<ExtArgs> | null
+    /**
+     * The data used to create many CauseOfDeaths.
+     */
+    data: CauseOfDeathCreateManyInput | CauseOfDeathCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CauseOfDeathIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10796,6 +11914,36 @@ export namespace Prisma {
      * Limit how many CauseOfDeaths to update.
      */
     limit?: number
+  }
+
+  /**
+   * CauseOfDeath updateManyAndReturn
+   */
+  export type CauseOfDeathUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CauseOfDeath
+     */
+    select?: CauseOfDeathSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CauseOfDeath
+     */
+    omit?: CauseOfDeathOmit<ExtArgs> | null
+    /**
+     * The data used to update CauseOfDeaths.
+     */
+    data: XOR<CauseOfDeathUpdateManyMutationInput, CauseOfDeathUncheckedUpdateManyInput>
+    /**
+     * Filter which CauseOfDeaths to update
+     */
+    where?: CauseOfDeathWhereInput
+    /**
+     * Limit how many CauseOfDeaths to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CauseOfDeathIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -11088,7 +12236,23 @@ export namespace Prisma {
     passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["buriedPlace"]>
 
+  export type BuriedPlaceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    location?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    passingRecordId?: boolean
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["buriedPlace"]>
 
+  export type BuriedPlaceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    location?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    passingRecordId?: boolean
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["buriedPlace"]>
 
   export type BuriedPlaceSelectScalar = {
     id?: boolean
@@ -11100,6 +12264,12 @@ export namespace Prisma {
 
   export type BuriedPlaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "location" | "startDate" | "endDate" | "passingRecordId", ExtArgs["result"]["buriedPlace"]>
   export type BuriedPlaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+  }
+  export type BuriedPlaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
+  }
+  export type BuriedPlaceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     passingRecord?: boolean | PassingRecordDefaultArgs<ExtArgs>
   }
 
@@ -11232,6 +12402,30 @@ export namespace Prisma {
     createMany<T extends BuriedPlaceCreateManyArgs>(args?: SelectSubset<T, BuriedPlaceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many BuriedPlaces and returns the data saved in the database.
+     * @param {BuriedPlaceCreateManyAndReturnArgs} args - Arguments to create many BuriedPlaces.
+     * @example
+     * // Create many BuriedPlaces
+     * const buriedPlace = await prisma.buriedPlace.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BuriedPlaces and only return the `id`
+     * const buriedPlaceWithIdOnly = await prisma.buriedPlace.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BuriedPlaceCreateManyAndReturnArgs>(args?: SelectSubset<T, BuriedPlaceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuriedPlacePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a BuriedPlace.
      * @param {BuriedPlaceDeleteArgs} args - Arguments to delete one BuriedPlace.
      * @example
@@ -11294,6 +12488,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends BuriedPlaceUpdateManyArgs>(args: SelectSubset<T, BuriedPlaceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BuriedPlaces and returns the data updated in the database.
+     * @param {BuriedPlaceUpdateManyAndReturnArgs} args - Arguments to update many BuriedPlaces.
+     * @example
+     * // Update many BuriedPlaces
+     * const buriedPlace = await prisma.buriedPlace.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BuriedPlaces and only return the `id`
+     * const buriedPlaceWithIdOnly = await prisma.buriedPlace.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BuriedPlaceUpdateManyAndReturnArgs>(args: SelectSubset<T, BuriedPlaceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BuriedPlacePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one BuriedPlace.
@@ -11718,7 +12942,28 @@ export namespace Prisma {
      * The data used to create many BuriedPlaces.
      */
     data: BuriedPlaceCreateManyInput | BuriedPlaceCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * BuriedPlace createManyAndReturn
+   */
+  export type BuriedPlaceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuriedPlace
+     */
+    select?: BuriedPlaceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BuriedPlace
+     */
+    omit?: BuriedPlaceOmit<ExtArgs> | null
+    /**
+     * The data used to create many BuriedPlaces.
+     */
+    data: BuriedPlaceCreateManyInput | BuriedPlaceCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuriedPlaceIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -11763,6 +13008,36 @@ export namespace Prisma {
      * Limit how many BuriedPlaces to update.
      */
     limit?: number
+  }
+
+  /**
+   * BuriedPlace updateManyAndReturn
+   */
+  export type BuriedPlaceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BuriedPlace
+     */
+    select?: BuriedPlaceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BuriedPlace
+     */
+    omit?: BuriedPlaceOmit<ExtArgs> | null
+    /**
+     * The data used to update BuriedPlaces.
+     */
+    data: XOR<BuriedPlaceUpdateManyMutationInput, BuriedPlaceUncheckedUpdateManyInput>
+    /**
+     * Filter which BuriedPlaces to update
+     */
+    where?: BuriedPlaceWhereInput
+    /**
+     * Limit how many BuriedPlaces to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BuriedPlaceIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12028,7 +13303,15 @@ export namespace Prisma {
     _count?: boolean | PlaceOfOriginCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["placeOfOrigin"]>
 
+  export type PlaceOfOriginSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    location?: boolean
+  }, ExtArgs["result"]["placeOfOrigin"]>
 
+  export type PlaceOfOriginSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    location?: boolean
+  }, ExtArgs["result"]["placeOfOrigin"]>
 
   export type PlaceOfOriginSelectScalar = {
     id?: boolean
@@ -12040,6 +13323,8 @@ export namespace Prisma {
     familyMembers?: boolean | PlaceOfOrigin$familyMembersArgs<ExtArgs>
     _count?: boolean | PlaceOfOriginCountOutputTypeDefaultArgs<ExtArgs>
   }
+  export type PlaceOfOriginIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type PlaceOfOriginIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $PlaceOfOriginPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "PlaceOfOrigin"
@@ -12167,6 +13452,30 @@ export namespace Prisma {
     createMany<T extends PlaceOfOriginCreateManyArgs>(args?: SelectSubset<T, PlaceOfOriginCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many PlaceOfOrigins and returns the data saved in the database.
+     * @param {PlaceOfOriginCreateManyAndReturnArgs} args - Arguments to create many PlaceOfOrigins.
+     * @example
+     * // Create many PlaceOfOrigins
+     * const placeOfOrigin = await prisma.placeOfOrigin.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaceOfOrigins and only return the `id`
+     * const placeOfOriginWithIdOnly = await prisma.placeOfOrigin.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaceOfOriginCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaceOfOriginCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaceOfOriginPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a PlaceOfOrigin.
      * @param {PlaceOfOriginDeleteArgs} args - Arguments to delete one PlaceOfOrigin.
      * @example
@@ -12229,6 +13538,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends PlaceOfOriginUpdateManyArgs>(args: SelectSubset<T, PlaceOfOriginUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaceOfOrigins and returns the data updated in the database.
+     * @param {PlaceOfOriginUpdateManyAndReturnArgs} args - Arguments to update many PlaceOfOrigins.
+     * @example
+     * // Update many PlaceOfOrigins
+     * const placeOfOrigin = await prisma.placeOfOrigin.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaceOfOrigins and only return the `id`
+     * const placeOfOriginWithIdOnly = await prisma.placeOfOrigin.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaceOfOriginUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaceOfOriginPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one PlaceOfOrigin.
@@ -12650,7 +13989,24 @@ export namespace Prisma {
      * The data used to create many PlaceOfOrigins.
      */
     data: PlaceOfOriginCreateManyInput | PlaceOfOriginCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlaceOfOrigin createManyAndReturn
+   */
+  export type PlaceOfOriginCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaceOfOrigin
+     */
+    select?: PlaceOfOriginSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaceOfOrigin
+     */
+    omit?: PlaceOfOriginOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaceOfOrigins.
+     */
+    data: PlaceOfOriginCreateManyInput | PlaceOfOriginCreateManyInput[]
   }
 
   /**
@@ -12683,6 +14039,32 @@ export namespace Prisma {
    * PlaceOfOrigin updateMany
    */
   export type PlaceOfOriginUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaceOfOrigins.
+     */
+    data: XOR<PlaceOfOriginUpdateManyMutationInput, PlaceOfOriginUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaceOfOrigins to update
+     */
+    where?: PlaceOfOriginWhereInput
+    /**
+     * Limit how many PlaceOfOrigins to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaceOfOrigin updateManyAndReturn
+   */
+  export type PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaceOfOrigin
+     */
+    select?: PlaceOfOriginSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaceOfOrigin
+     */
+    omit?: PlaceOfOriginOmit<ExtArgs> | null
     /**
      * The data used to update PlaceOfOrigins.
      */
@@ -13004,7 +14386,23 @@ export namespace Prisma {
     placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["familyMember_has_PlaceOfOrigin"]>
 
+  export type FamilyMember_has_PlaceOfOriginSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    familyMemberId?: boolean
+    placeOfOriginId?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["familyMember_has_PlaceOfOrigin"]>
 
+  export type FamilyMember_has_PlaceOfOriginSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    familyMemberId?: boolean
+    placeOfOriginId?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["familyMember_has_PlaceOfOrigin"]>
 
   export type FamilyMember_has_PlaceOfOriginSelectScalar = {
     familyMemberId?: boolean
@@ -13015,6 +14413,14 @@ export namespace Prisma {
 
   export type FamilyMember_has_PlaceOfOriginOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"familyMemberId" | "placeOfOriginId" | "startDate" | "endDate", ExtArgs["result"]["familyMember_has_PlaceOfOrigin"]>
   export type FamilyMember_has_PlaceOfOriginInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
+  }
+  export type FamilyMember_has_PlaceOfOriginIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
+  }
+  export type FamilyMember_has_PlaceOfOriginIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
     placeOfOrigin?: boolean | PlaceOfOriginDefaultArgs<ExtArgs>
   }
@@ -13148,6 +14554,30 @@ export namespace Prisma {
     createMany<T extends FamilyMember_has_PlaceOfOriginCreateManyArgs>(args?: SelectSubset<T, FamilyMember_has_PlaceOfOriginCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many FamilyMember_has_PlaceOfOrigins and returns the data saved in the database.
+     * @param {FamilyMember_has_PlaceOfOriginCreateManyAndReturnArgs} args - Arguments to create many FamilyMember_has_PlaceOfOrigins.
+     * @example
+     * // Create many FamilyMember_has_PlaceOfOrigins
+     * const familyMember_has_PlaceOfOrigin = await prisma.familyMember_has_PlaceOfOrigin.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many FamilyMember_has_PlaceOfOrigins and only return the `familyMemberId`
+     * const familyMember_has_PlaceOfOriginWithFamilyMemberIdOnly = await prisma.familyMember_has_PlaceOfOrigin.createManyAndReturn({
+     *   select: { familyMemberId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends FamilyMember_has_PlaceOfOriginCreateManyAndReturnArgs>(args?: SelectSubset<T, FamilyMember_has_PlaceOfOriginCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyMember_has_PlaceOfOriginPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a FamilyMember_has_PlaceOfOrigin.
      * @param {FamilyMember_has_PlaceOfOriginDeleteArgs} args - Arguments to delete one FamilyMember_has_PlaceOfOrigin.
      * @example
@@ -13210,6 +14640,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends FamilyMember_has_PlaceOfOriginUpdateManyArgs>(args: SelectSubset<T, FamilyMember_has_PlaceOfOriginUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more FamilyMember_has_PlaceOfOrigins and returns the data updated in the database.
+     * @param {FamilyMember_has_PlaceOfOriginUpdateManyAndReturnArgs} args - Arguments to update many FamilyMember_has_PlaceOfOrigins.
+     * @example
+     * // Update many FamilyMember_has_PlaceOfOrigins
+     * const familyMember_has_PlaceOfOrigin = await prisma.familyMember_has_PlaceOfOrigin.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more FamilyMember_has_PlaceOfOrigins and only return the `familyMemberId`
+     * const familyMember_has_PlaceOfOriginWithFamilyMemberIdOnly = await prisma.familyMember_has_PlaceOfOrigin.updateManyAndReturn({
+     *   select: { familyMemberId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends FamilyMember_has_PlaceOfOriginUpdateManyAndReturnArgs>(args: SelectSubset<T, FamilyMember_has_PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyMember_has_PlaceOfOriginPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one FamilyMember_has_PlaceOfOrigin.
@@ -13634,7 +15094,28 @@ export namespace Prisma {
      * The data used to create many FamilyMember_has_PlaceOfOrigins.
      */
     data: FamilyMember_has_PlaceOfOriginCreateManyInput | FamilyMember_has_PlaceOfOriginCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * FamilyMember_has_PlaceOfOrigin createManyAndReturn
+   */
+  export type FamilyMember_has_PlaceOfOriginCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyMember_has_PlaceOfOrigin
+     */
+    select?: FamilyMember_has_PlaceOfOriginSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyMember_has_PlaceOfOrigin
+     */
+    omit?: FamilyMember_has_PlaceOfOriginOmit<ExtArgs> | null
+    /**
+     * The data used to create many FamilyMember_has_PlaceOfOrigins.
+     */
+    data: FamilyMember_has_PlaceOfOriginCreateManyInput | FamilyMember_has_PlaceOfOriginCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyMember_has_PlaceOfOriginIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13679,6 +15160,36 @@ export namespace Prisma {
      * Limit how many FamilyMember_has_PlaceOfOrigins to update.
      */
     limit?: number
+  }
+
+  /**
+   * FamilyMember_has_PlaceOfOrigin updateManyAndReturn
+   */
+  export type FamilyMember_has_PlaceOfOriginUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FamilyMember_has_PlaceOfOrigin
+     */
+    select?: FamilyMember_has_PlaceOfOriginSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the FamilyMember_has_PlaceOfOrigin
+     */
+    omit?: FamilyMember_has_PlaceOfOriginOmit<ExtArgs> | null
+    /**
+     * The data used to update FamilyMember_has_PlaceOfOrigins.
+     */
+    data: XOR<FamilyMember_has_PlaceOfOriginUpdateManyMutationInput, FamilyMember_has_PlaceOfOriginUncheckedUpdateManyInput>
+    /**
+     * Filter which FamilyMember_has_PlaceOfOrigins to update
+     */
+    where?: FamilyMember_has_PlaceOfOriginWhereInput
+    /**
+     * Limit how many FamilyMember_has_PlaceOfOrigins to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FamilyMember_has_PlaceOfOriginIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -13976,7 +15487,25 @@ export namespace Prisma {
     familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["spouseRelationship"]>
 
+  export type SpouseRelationshipSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    marriageDate?: boolean
+    divorceDate?: boolean
+    familyMember1Id?: boolean
+    familyMember2Id?: boolean
+    familyMember1?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["spouseRelationship"]>
 
+  export type SpouseRelationshipSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    marriageDate?: boolean
+    divorceDate?: boolean
+    familyMember1Id?: boolean
+    familyMember2Id?: boolean
+    familyMember1?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["spouseRelationship"]>
 
   export type SpouseRelationshipSelectScalar = {
     id?: boolean
@@ -13988,6 +15517,14 @@ export namespace Prisma {
 
   export type SpouseRelationshipOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "marriageDate" | "divorceDate" | "familyMember1Id" | "familyMember2Id", ExtArgs["result"]["spouseRelationship"]>
   export type SpouseRelationshipInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember1?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type SpouseRelationshipIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember1?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+  }
+  export type SpouseRelationshipIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     familyMember1?: boolean | FamilyMemberDefaultArgs<ExtArgs>
     familyMember2?: boolean | FamilyMemberDefaultArgs<ExtArgs>
   }
@@ -14122,6 +15659,30 @@ export namespace Prisma {
     createMany<T extends SpouseRelationshipCreateManyArgs>(args?: SelectSubset<T, SpouseRelationshipCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many SpouseRelationships and returns the data saved in the database.
+     * @param {SpouseRelationshipCreateManyAndReturnArgs} args - Arguments to create many SpouseRelationships.
+     * @example
+     * // Create many SpouseRelationships
+     * const spouseRelationship = await prisma.spouseRelationship.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SpouseRelationships and only return the `id`
+     * const spouseRelationshipWithIdOnly = await prisma.spouseRelationship.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SpouseRelationshipCreateManyAndReturnArgs>(args?: SelectSubset<T, SpouseRelationshipCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a SpouseRelationship.
      * @param {SpouseRelationshipDeleteArgs} args - Arguments to delete one SpouseRelationship.
      * @example
@@ -14184,6 +15745,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends SpouseRelationshipUpdateManyArgs>(args: SelectSubset<T, SpouseRelationshipUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SpouseRelationships and returns the data updated in the database.
+     * @param {SpouseRelationshipUpdateManyAndReturnArgs} args - Arguments to update many SpouseRelationships.
+     * @example
+     * // Update many SpouseRelationships
+     * const spouseRelationship = await prisma.spouseRelationship.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more SpouseRelationships and only return the `id`
+     * const spouseRelationshipWithIdOnly = await prisma.spouseRelationship.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SpouseRelationshipUpdateManyAndReturnArgs>(args: SelectSubset<T, SpouseRelationshipUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SpouseRelationshipPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one SpouseRelationship.
@@ -14609,7 +16200,28 @@ export namespace Prisma {
      * The data used to create many SpouseRelationships.
      */
     data: SpouseRelationshipCreateManyInput | SpouseRelationshipCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * SpouseRelationship createManyAndReturn
+   */
+  export type SpouseRelationshipCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SpouseRelationship
+     */
+    select?: SpouseRelationshipSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SpouseRelationship
+     */
+    omit?: SpouseRelationshipOmit<ExtArgs> | null
+    /**
+     * The data used to create many SpouseRelationships.
+     */
+    data: SpouseRelationshipCreateManyInput | SpouseRelationshipCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SpouseRelationshipIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -14654,6 +16266,36 @@ export namespace Prisma {
      * Limit how many SpouseRelationships to update.
      */
     limit?: number
+  }
+
+  /**
+   * SpouseRelationship updateManyAndReturn
+   */
+  export type SpouseRelationshipUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SpouseRelationship
+     */
+    select?: SpouseRelationshipSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the SpouseRelationship
+     */
+    omit?: SpouseRelationshipOmit<ExtArgs> | null
+    /**
+     * The data used to update SpouseRelationships.
+     */
+    data: XOR<SpouseRelationshipUpdateManyMutationInput, SpouseRelationshipUncheckedUpdateManyInput>
+    /**
+     * Filter which SpouseRelationships to update
+     */
+    where?: SpouseRelationshipWhereInput
+    /**
+     * Limit how many SpouseRelationships to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SpouseRelationshipIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -14951,7 +16593,25 @@ export namespace Prisma {
     familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["guestEditor"]>
 
+  export type GuestEditorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accessCode?: boolean
+    createDate?: boolean
+    familyMemberId?: boolean
+    familyTreeId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guestEditor"]>
 
+  export type GuestEditorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accessCode?: boolean
+    createDate?: boolean
+    familyMemberId?: boolean
+    familyTreeId?: boolean
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guestEditor"]>
 
   export type GuestEditorSelectScalar = {
     id?: boolean
@@ -14963,6 +16623,14 @@ export namespace Prisma {
 
   export type GuestEditorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accessCode" | "createDate" | "familyMemberId" | "familyTreeId", ExtArgs["result"]["guestEditor"]>
   export type GuestEditorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }
+  export type GuestEditorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
+    familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
+  }
+  export type GuestEditorIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     familyMember?: boolean | FamilyMemberDefaultArgs<ExtArgs>
     familyTree?: boolean | FamilyTreeDefaultArgs<ExtArgs>
   }
@@ -15097,6 +16765,30 @@ export namespace Prisma {
     createMany<T extends GuestEditorCreateManyArgs>(args?: SelectSubset<T, GuestEditorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many GuestEditors and returns the data saved in the database.
+     * @param {GuestEditorCreateManyAndReturnArgs} args - Arguments to create many GuestEditors.
+     * @example
+     * // Create many GuestEditors
+     * const guestEditor = await prisma.guestEditor.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuestEditors and only return the `id`
+     * const guestEditorWithIdOnly = await prisma.guestEditor.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuestEditorCreateManyAndReturnArgs>(args?: SelectSubset<T, GuestEditorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestEditorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a GuestEditor.
      * @param {GuestEditorDeleteArgs} args - Arguments to delete one GuestEditor.
      * @example
@@ -15159,6 +16851,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends GuestEditorUpdateManyArgs>(args: SelectSubset<T, GuestEditorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuestEditors and returns the data updated in the database.
+     * @param {GuestEditorUpdateManyAndReturnArgs} args - Arguments to update many GuestEditors.
+     * @example
+     * // Update many GuestEditors
+     * const guestEditor = await prisma.guestEditor.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GuestEditors and only return the `id`
+     * const guestEditorWithIdOnly = await prisma.guestEditor.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GuestEditorUpdateManyAndReturnArgs>(args: SelectSubset<T, GuestEditorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestEditorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one GuestEditor.
@@ -15584,7 +17306,28 @@ export namespace Prisma {
      * The data used to create many GuestEditors.
      */
     data: GuestEditorCreateManyInput | GuestEditorCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * GuestEditor createManyAndReturn
+   */
+  export type GuestEditorCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestEditor
+     */
+    select?: GuestEditorSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestEditor
+     */
+    omit?: GuestEditorOmit<ExtArgs> | null
+    /**
+     * The data used to create many GuestEditors.
+     */
+    data: GuestEditorCreateManyInput | GuestEditorCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestEditorIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -15629,6 +17372,36 @@ export namespace Prisma {
      * Limit how many GuestEditors to update.
      */
     limit?: number
+  }
+
+  /**
+   * GuestEditor updateManyAndReturn
+   */
+  export type GuestEditorUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuestEditor
+     */
+    select?: GuestEditorSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuestEditor
+     */
+    omit?: GuestEditorOmit<ExtArgs> | null
+    /**
+     * The data used to update GuestEditors.
+     */
+    data: XOR<GuestEditorUpdateManyMutationInput, GuestEditorUncheckedUpdateManyInput>
+    /**
+     * Filter which GuestEditors to update
+     */
+    where?: GuestEditorWhereInput
+    /**
+     * Limit how many GuestEditors to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestEditorIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -15886,7 +17659,21 @@ export namespace Prisma {
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
+  export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    emailVerified?: boolean
+    image?: boolean
+  }, ExtArgs["result"]["user"]>
 
+  export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    email?: boolean
+    emailVerified?: boolean
+    image?: boolean
+  }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
     id?: boolean
@@ -15903,6 +17690,8 @@ export namespace Prisma {
     treeOwner?: boolean | User$treeOwnerArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
@@ -16035,6 +17824,30 @@ export namespace Prisma {
     createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many Users and returns the data saved in the database.
+     * @param {UserCreateManyAndReturnArgs} args - Arguments to create many Users.
+     * @example
+     * // Create many Users
+     * const user = await prisma.user.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Users and only return the `id`
+     * const userWithIdOnly = await prisma.user.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserCreateManyAndReturnArgs>(args?: SelectSubset<T, UserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a User.
      * @param {UserDeleteArgs} args - Arguments to delete one User.
      * @example
@@ -16097,6 +17910,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Users and returns the data updated in the database.
+     * @param {UserUpdateManyAndReturnArgs} args - Arguments to update many Users.
+     * @example
+     * // Update many Users
+     * const user = await prisma.user.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Users and only return the `id`
+     * const userWithIdOnly = await prisma.user.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserUpdateManyAndReturnArgs>(args: SelectSubset<T, UserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one User.
@@ -16523,7 +18366,24 @@ export namespace Prisma {
      * The data used to create many Users.
      */
     data: UserCreateManyInput | UserCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * User createManyAndReturn
+   */
+  export type UserCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * The data used to create many Users.
+     */
+    data: UserCreateManyInput | UserCreateManyInput[]
   }
 
   /**
@@ -16556,6 +18416,32 @@ export namespace Prisma {
    * User updateMany
    */
   export type UserUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Users.
+     */
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyInput>
+    /**
+     * Filter which Users to update
+     */
+    where?: UserWhereInput
+    /**
+     * Limit how many Users to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * User updateManyAndReturn
+   */
+  export type UserUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
     /**
      * The data used to update Users.
      */
@@ -16979,7 +18865,37 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
 
+  export type AccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    provider?: boolean
+    providerAccountId?: boolean
+    refresh_token?: boolean
+    access_token?: boolean
+    expires_at?: boolean
+    token_type?: boolean
+    scope?: boolean
+    id_token?: boolean
+    session_state?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["account"]>
 
+  export type AccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    provider?: boolean
+    providerAccountId?: boolean
+    refresh_token?: boolean
+    access_token?: boolean
+    expires_at?: boolean
+    token_type?: boolean
+    scope?: boolean
+    id_token?: boolean
+    session_state?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["account"]>
 
   export type AccountSelectScalar = {
     id?: boolean
@@ -16998,6 +18914,12 @@ export namespace Prisma {
 
   export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "provider" | "providerAccountId" | "refresh_token" | "access_token" | "expires_at" | "token_type" | "scope" | "id_token" | "session_state", ExtArgs["result"]["account"]>
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
@@ -17137,6 +19059,30 @@ export namespace Prisma {
     createMany<T extends AccountCreateManyArgs>(args?: SelectSubset<T, AccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many Accounts and returns the data saved in the database.
+     * @param {AccountCreateManyAndReturnArgs} args - Arguments to create many Accounts.
+     * @example
+     * // Create many Accounts
+     * const account = await prisma.account.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Accounts and only return the `id`
+     * const accountWithIdOnly = await prisma.account.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AccountCreateManyAndReturnArgs>(args?: SelectSubset<T, AccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a Account.
      * @param {AccountDeleteArgs} args - Arguments to delete one Account.
      * @example
@@ -17199,6 +19145,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends AccountUpdateManyArgs>(args: SelectSubset<T, AccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Accounts and returns the data updated in the database.
+     * @param {AccountUpdateManyAndReturnArgs} args - Arguments to update many Accounts.
+     * @example
+     * // Update many Accounts
+     * const account = await prisma.account.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Accounts and only return the `id`
+     * const accountWithIdOnly = await prisma.account.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AccountUpdateManyAndReturnArgs>(args: SelectSubset<T, AccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Account.
@@ -17630,7 +19606,28 @@ export namespace Prisma {
      * The data used to create many Accounts.
      */
     data: AccountCreateManyInput | AccountCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * Account createManyAndReturn
+   */
+  export type AccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Account
+     */
+    select?: AccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Account
+     */
+    omit?: AccountOmit<ExtArgs> | null
+    /**
+     * The data used to create many Accounts.
+     */
+    data: AccountCreateManyInput | AccountCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AccountIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -17675,6 +19672,36 @@ export namespace Prisma {
      * Limit how many Accounts to update.
      */
     limit?: number
+  }
+
+  /**
+   * Account updateManyAndReturn
+   */
+  export type AccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Account
+     */
+    select?: AccountSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Account
+     */
+    omit?: AccountOmit<ExtArgs> | null
+    /**
+     * The data used to update Accounts.
+     */
+    data: XOR<AccountUpdateManyMutationInput, AccountUncheckedUpdateManyInput>
+    /**
+     * Filter which Accounts to update
+     */
+    where?: AccountWhereInput
+    /**
+     * Limit how many Accounts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AccountIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -17921,7 +19948,21 @@ export namespace Prisma {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
 
+  export type SessionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionToken?: boolean
+    userId?: boolean
+    expires?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["session"]>
 
+  export type SessionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    sessionToken?: boolean
+    userId?: boolean
+    expires?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["session"]>
 
   export type SessionSelectScalar = {
     id?: boolean
@@ -17932,6 +19973,12 @@ export namespace Prisma {
 
   export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "sessionToken" | "userId" | "expires", ExtArgs["result"]["session"]>
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SessionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type SessionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
@@ -18063,6 +20110,30 @@ export namespace Prisma {
     createMany<T extends SessionCreateManyArgs>(args?: SelectSubset<T, SessionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many Sessions and returns the data saved in the database.
+     * @param {SessionCreateManyAndReturnArgs} args - Arguments to create many Sessions.
+     * @example
+     * // Create many Sessions
+     * const session = await prisma.session.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Sessions and only return the `id`
+     * const sessionWithIdOnly = await prisma.session.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SessionCreateManyAndReturnArgs>(args?: SelectSubset<T, SessionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a Session.
      * @param {SessionDeleteArgs} args - Arguments to delete one Session.
      * @example
@@ -18125,6 +20196,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends SessionUpdateManyArgs>(args: SelectSubset<T, SessionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Sessions and returns the data updated in the database.
+     * @param {SessionUpdateManyAndReturnArgs} args - Arguments to update many Sessions.
+     * @example
+     * // Update many Sessions
+     * const session = await prisma.session.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Sessions and only return the `id`
+     * const sessionWithIdOnly = await prisma.session.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends SessionUpdateManyAndReturnArgs>(args: SelectSubset<T, SessionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one Session.
@@ -18548,7 +20649,28 @@ export namespace Prisma {
      * The data used to create many Sessions.
      */
     data: SessionCreateManyInput | SessionCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * Session createManyAndReturn
+   */
+  export type SessionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Session
+     */
+    omit?: SessionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Sessions.
+     */
+    data: SessionCreateManyInput | SessionCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18593,6 +20715,36 @@ export namespace Prisma {
      * Limit how many Sessions to update.
      */
     limit?: number
+  }
+
+  /**
+   * Session updateManyAndReturn
+   */
+  export type SessionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Session
+     */
+    select?: SessionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Session
+     */
+    omit?: SessionOmit<ExtArgs> | null
+    /**
+     * The data used to update Sessions.
+     */
+    data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyInput>
+    /**
+     * Filter which Sessions to update
+     */
+    where?: SessionWhereInput
+    /**
+     * Limit how many Sessions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SessionIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18838,7 +20990,19 @@ export namespace Prisma {
     expires?: boolean
   }, ExtArgs["result"]["verificationToken"]>
 
+  export type VerificationTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    identifier?: boolean
+    token?: boolean
+    expires?: boolean
+  }, ExtArgs["result"]["verificationToken"]>
 
+  export type VerificationTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    identifier?: boolean
+    token?: boolean
+    expires?: boolean
+  }, ExtArgs["result"]["verificationToken"]>
 
   export type VerificationTokenSelectScalar = {
     id?: boolean
@@ -18975,6 +21139,30 @@ export namespace Prisma {
     createMany<T extends VerificationTokenCreateManyArgs>(args?: SelectSubset<T, VerificationTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
+     * Create many VerificationTokens and returns the data saved in the database.
+     * @param {VerificationTokenCreateManyAndReturnArgs} args - Arguments to create many VerificationTokens.
+     * @example
+     * // Create many VerificationTokens
+     * const verificationToken = await prisma.verificationToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VerificationTokens and only return the `id`
+     * const verificationTokenWithIdOnly = await prisma.verificationToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VerificationTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, VerificationTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
      * Delete a VerificationToken.
      * @param {VerificationTokenDeleteArgs} args - Arguments to delete one VerificationToken.
      * @example
@@ -19037,6 +21225,36 @@ export namespace Prisma {
      * 
      */
     updateMany<T extends VerificationTokenUpdateManyArgs>(args: SelectSubset<T, VerificationTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VerificationTokens and returns the data updated in the database.
+     * @param {VerificationTokenUpdateManyAndReturnArgs} args - Arguments to update many VerificationTokens.
+     * @example
+     * // Update many VerificationTokens
+     * const verificationToken = await prisma.verificationToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more VerificationTokens and only return the `id`
+     * const verificationTokenWithIdOnly = await prisma.verificationToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends VerificationTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, VerificationTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
      * Create or update one VerificationToken.
@@ -19435,7 +21653,24 @@ export namespace Prisma {
      * The data used to create many VerificationTokens.
      */
     data: VerificationTokenCreateManyInput | VerificationTokenCreateManyInput[]
-    skipDuplicates?: boolean
+  }
+
+  /**
+   * VerificationToken createManyAndReturn
+   */
+  export type VerificationTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationToken
+     */
+    select?: VerificationTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationToken
+     */
+    omit?: VerificationTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many VerificationTokens.
+     */
+    data: VerificationTokenCreateManyInput | VerificationTokenCreateManyInput[]
   }
 
   /**
@@ -19464,6 +21699,32 @@ export namespace Prisma {
    * VerificationToken updateMany
    */
   export type VerificationTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VerificationTokens.
+     */
+    data: XOR<VerificationTokenUpdateManyMutationInput, VerificationTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which VerificationTokens to update
+     */
+    where?: VerificationTokenWhereInput
+    /**
+     * Limit how many VerificationTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * VerificationToken updateManyAndReturn
+   */
+  export type VerificationTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VerificationToken
+     */
+    select?: VerificationTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the VerificationToken
+     */
+    omit?: VerificationTokenOmit<ExtArgs> | null
     /**
      * The data used to update VerificationTokens.
      */
@@ -19556,9 +21817,6 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
-    ReadUncommitted: 'ReadUncommitted',
-    ReadCommitted: 'ReadCommitted',
-    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -19774,127 +22032,6 @@ export namespace Prisma {
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-  export const TreeOwnerOrderByRelevanceFieldEnum: {
-    fullName: 'fullName',
-    userId: 'userId'
-  };
-
-  export type TreeOwnerOrderByRelevanceFieldEnum = (typeof TreeOwnerOrderByRelevanceFieldEnum)[keyof typeof TreeOwnerOrderByRelevanceFieldEnum]
-
-
-  export const FamilyTreeOrderByRelevanceFieldEnum: {
-    familyName: 'familyName',
-    origin: 'origin'
-  };
-
-  export type FamilyTreeOrderByRelevanceFieldEnum = (typeof FamilyTreeOrderByRelevanceFieldEnum)[keyof typeof FamilyTreeOrderByRelevanceFieldEnum]
-
-
-  export const FamilyMemberOrderByRelevanceFieldEnum: {
-    fullName: 'fullName',
-    address: 'address',
-    profilePicture: 'profilePicture',
-    generation: 'generation'
-  };
-
-  export type FamilyMemberOrderByRelevanceFieldEnum = (typeof FamilyMemberOrderByRelevanceFieldEnum)[keyof typeof FamilyMemberOrderByRelevanceFieldEnum]
-
-
-  export const OccupationOrderByRelevanceFieldEnum: {
-    jobTitle: 'jobTitle'
-  };
-
-  export type OccupationOrderByRelevanceFieldEnum = (typeof OccupationOrderByRelevanceFieldEnum)[keyof typeof OccupationOrderByRelevanceFieldEnum]
-
-
-  export const AchievementOrderByRelevanceFieldEnum: {
-    title: 'title',
-    description: 'description'
-  };
-
-  export type AchievementOrderByRelevanceFieldEnum = (typeof AchievementOrderByRelevanceFieldEnum)[keyof typeof AchievementOrderByRelevanceFieldEnum]
-
-
-  export const AchievementTypeOrderByRelevanceFieldEnum: {
-    typeName: 'typeName'
-  };
-
-  export type AchievementTypeOrderByRelevanceFieldEnum = (typeof AchievementTypeOrderByRelevanceFieldEnum)[keyof typeof AchievementTypeOrderByRelevanceFieldEnum]
-
-
-  export const CauseOfDeathOrderByRelevanceFieldEnum: {
-    causeName: 'causeName'
-  };
-
-  export type CauseOfDeathOrderByRelevanceFieldEnum = (typeof CauseOfDeathOrderByRelevanceFieldEnum)[keyof typeof CauseOfDeathOrderByRelevanceFieldEnum]
-
-
-  export const BuriedPlaceOrderByRelevanceFieldEnum: {
-    location: 'location'
-  };
-
-  export type BuriedPlaceOrderByRelevanceFieldEnum = (typeof BuriedPlaceOrderByRelevanceFieldEnum)[keyof typeof BuriedPlaceOrderByRelevanceFieldEnum]
-
-
-  export const PlaceOfOriginOrderByRelevanceFieldEnum: {
-    location: 'location'
-  };
-
-  export type PlaceOfOriginOrderByRelevanceFieldEnum = (typeof PlaceOfOriginOrderByRelevanceFieldEnum)[keyof typeof PlaceOfOriginOrderByRelevanceFieldEnum]
-
-
-  export const GuestEditorOrderByRelevanceFieldEnum: {
-    accessCode: 'accessCode'
-  };
-
-  export type GuestEditorOrderByRelevanceFieldEnum = (typeof GuestEditorOrderByRelevanceFieldEnum)[keyof typeof GuestEditorOrderByRelevanceFieldEnum]
-
-
-  export const UserOrderByRelevanceFieldEnum: {
-    id: 'id',
-    name: 'name',
-    email: 'email',
-    image: 'image'
-  };
-
-  export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
-
-
-  export const AccountOrderByRelevanceFieldEnum: {
-    id: 'id',
-    userId: 'userId',
-    type: 'type',
-    provider: 'provider',
-    providerAccountId: 'providerAccountId',
-    refresh_token: 'refresh_token',
-    access_token: 'access_token',
-    token_type: 'token_type',
-    scope: 'scope',
-    id_token: 'id_token',
-    session_state: 'session_state'
-  };
-
-  export type AccountOrderByRelevanceFieldEnum = (typeof AccountOrderByRelevanceFieldEnum)[keyof typeof AccountOrderByRelevanceFieldEnum]
-
-
-  export const SessionOrderByRelevanceFieldEnum: {
-    id: 'id',
-    sessionToken: 'sessionToken',
-    userId: 'userId'
-  };
-
-  export type SessionOrderByRelevanceFieldEnum = (typeof SessionOrderByRelevanceFieldEnum)[keyof typeof SessionOrderByRelevanceFieldEnum]
-
-
-  export const VerificationTokenOrderByRelevanceFieldEnum: {
-    id: 'id',
-    identifier: 'identifier',
-    token: 'token'
-  };
-
-  export type VerificationTokenOrderByRelevanceFieldEnum = (typeof VerificationTokenOrderByRelevanceFieldEnum)[keyof typeof VerificationTokenOrderByRelevanceFieldEnum]
-
-
   /**
    * Field references
    */
@@ -19918,13 +22055,6 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'Gender'
-   */
-  export type EnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender'>
     
 
 
@@ -19966,7 +22096,6 @@ export namespace Prisma {
     userId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     familyTrees?: FamilyTreeOrderByRelationAggregateInput
-    _relevance?: TreeOwnerOrderByRelevanceInput
   }
 
   export type TreeOwnerWhereUniqueInput = Prisma.AtLeast<{
@@ -20037,7 +22166,6 @@ export namespace Prisma {
     familyMembers?: FamilyMemberOrderByRelationAggregateInput
     guestEditors?: GuestEditorOrderByRelationAggregateInput
     achievementTypes?: AchievementTypeOrderByRelationAggregateInput
-    _relevance?: FamilyTreeOrderByRelevanceInput
   }
 
   export type FamilyTreeWhereUniqueInput = Prisma.AtLeast<{
@@ -20092,7 +22220,7 @@ export namespace Prisma {
     NOT?: FamilyMemberWhereInput | FamilyMemberWhereInput[]
     id?: IntFilter<"FamilyMember"> | number
     fullName?: StringFilter<"FamilyMember"> | string
-    gender?: EnumGenderNullableFilter<"FamilyMember"> | $Enums.Gender | null
+    gender?: StringNullableFilter<"FamilyMember"> | string | null
     birthday?: DateTimeNullableFilter<"FamilyMember"> | Date | string | null
     address?: StringNullableFilter<"FamilyMember"> | string | null
     profilePicture?: StringNullableFilter<"FamilyMember"> | string | null
@@ -20139,7 +22267,6 @@ export namespace Prisma {
     spouse2?: SpouseRelationshipOrderByRelationAggregateInput
     guestEditors?: GuestEditorOrderByRelationAggregateInput
     rootFor?: FamilyTreeOrderByWithRelationInput
-    _relevance?: FamilyMemberOrderByRelevanceInput
   }
 
   export type FamilyMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -20148,7 +22275,7 @@ export namespace Prisma {
     OR?: FamilyMemberWhereInput[]
     NOT?: FamilyMemberWhereInput | FamilyMemberWhereInput[]
     fullName?: StringFilter<"FamilyMember"> | string
-    gender?: EnumGenderNullableFilter<"FamilyMember"> | $Enums.Gender | null
+    gender?: StringNullableFilter<"FamilyMember"> | string | null
     birthday?: DateTimeNullableFilter<"FamilyMember"> | Date | string | null
     address?: StringNullableFilter<"FamilyMember"> | string | null
     profilePicture?: StringNullableFilter<"FamilyMember"> | string | null
@@ -20196,7 +22323,7 @@ export namespace Prisma {
     NOT?: FamilyMemberScalarWhereWithAggregatesInput | FamilyMemberScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"FamilyMember"> | number
     fullName?: StringWithAggregatesFilter<"FamilyMember"> | string
-    gender?: EnumGenderNullableWithAggregatesFilter<"FamilyMember"> | $Enums.Gender | null
+    gender?: StringNullableWithAggregatesFilter<"FamilyMember"> | string | null
     birthday?: DateTimeNullableWithAggregatesFilter<"FamilyMember"> | Date | string | null
     address?: StringNullableWithAggregatesFilter<"FamilyMember"> | string | null
     profilePicture?: StringNullableWithAggregatesFilter<"FamilyMember"> | string | null
@@ -20226,7 +22353,6 @@ export namespace Prisma {
     endDate?: SortOrderInput | SortOrder
     familyMemberId?: SortOrder
     familyMember?: FamilyMemberOrderByWithRelationInput
-    _relevance?: OccupationOrderByRelevanceInput
   }
 
   export type OccupationWhereUniqueInput = Prisma.AtLeast<{
@@ -20288,7 +22414,6 @@ export namespace Prisma {
     achievementTypeId?: SortOrder
     familyMember?: FamilyMemberOrderByWithRelationInput
     achievementType?: AchievementTypeOrderByWithRelationInput
-    _relevance?: AchievementOrderByRelevanceInput
   }
 
   export type AchievementWhereUniqueInput = Prisma.AtLeast<{
@@ -20348,7 +22473,6 @@ export namespace Prisma {
     familyTreeId?: SortOrder
     familyTree?: FamilyTreeOrderByWithRelationInput
     achievements?: AchievementOrderByRelationAggregateInput
-    _relevance?: AchievementTypeOrderByRelevanceInput
   }
 
   export type AchievementTypeWhereUniqueInput = Prisma.AtLeast<{
@@ -20459,7 +22583,6 @@ export namespace Prisma {
     familyMemberId?: SortOrder
     passingRecord?: PassingRecordOrderByWithRelationInput
     familyMember?: FamilyMemberOrderByWithRelationInput
-    _relevance?: CauseOfDeathOrderByRelevanceInput
   }
 
   export type CauseOfDeathWhereUniqueInput = Prisma.AtLeast<{
@@ -20515,7 +22638,6 @@ export namespace Prisma {
     endDate?: SortOrderInput | SortOrder
     passingRecordId?: SortOrder
     passingRecord?: PassingRecordOrderByWithRelationInput
-    _relevance?: BuriedPlaceOrderByRelevanceInput
   }
 
   export type BuriedPlaceWhereUniqueInput = Prisma.AtLeast<{
@@ -20567,7 +22689,6 @@ export namespace Prisma {
     id?: SortOrder
     location?: SortOrder
     familyMembers?: FamilyMember_has_PlaceOfOriginOrderByRelationAggregateInput
-    _relevance?: PlaceOfOriginOrderByRelevanceInput
   }
 
   export type PlaceOfOriginWhereUniqueInput = Prisma.AtLeast<{
@@ -20734,7 +22855,6 @@ export namespace Prisma {
     familyTreeId?: SortOrder
     familyMember?: FamilyMemberOrderByWithRelationInput
     familyTree?: FamilyTreeOrderByWithRelationInput
-    _relevance?: GuestEditorOrderByRelevanceInput
   }
 
   export type GuestEditorWhereUniqueInput = Prisma.AtLeast<{
@@ -20797,7 +22917,6 @@ export namespace Prisma {
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     treeOwner?: TreeOwnerOrderByWithRelationInput
-    _relevance?: UserOrderByRelevanceInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -20869,7 +22988,6 @@ export namespace Prisma {
     id_token?: SortOrderInput | SortOrder
     session_state?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
-    _relevance?: AccountOrderByRelevanceInput
   }
 
   export type AccountWhereUniqueInput = Prisma.AtLeast<{
@@ -20947,7 +23065,6 @@ export namespace Prisma {
     userId?: SortOrder
     expires?: SortOrder
     user?: UserOrderByWithRelationInput
-    _relevance?: SessionOrderByRelevanceInput
   }
 
   export type SessionWhereUniqueInput = Prisma.AtLeast<{
@@ -20996,7 +23113,6 @@ export namespace Prisma {
     identifier?: SortOrder
     token?: SortOrder
     expires?: SortOrder
-    _relevance?: VerificationTokenOrderByRelevanceInput
   }
 
   export type VerificationTokenWhereUniqueInput = Prisma.AtLeast<{
@@ -21165,7 +23281,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -21189,7 +23305,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -21212,7 +23328,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21236,7 +23352,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21260,7 +23376,7 @@ export namespace Prisma {
   export type FamilyMemberCreateManyInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -21273,7 +23389,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateManyMutationInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21285,7 +23401,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22073,7 +24189,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
@@ -22110,7 +24225,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -22132,12 +24246,6 @@ export namespace Prisma {
 
   export type FamilyTreeOrderByRelationAggregateInput = {
     _count?: SortOrder
-  }
-
-  export type TreeOwnerOrderByRelevanceInput = {
-    fields: TreeOwnerOrderByRelevanceFieldEnum | TreeOwnerOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type TreeOwnerCountOrderByAggregateInput = {
@@ -22199,7 +24307,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -22245,7 +24352,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -22301,12 +24407,6 @@ export namespace Prisma {
 
   export type AchievementTypeOrderByRelationAggregateInput = {
     _count?: SortOrder
-  }
-
-  export type FamilyTreeOrderByRelevanceInput = {
-    fields: FamilyTreeOrderByRelevanceFieldEnum | FamilyTreeOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type FamilyTreeCountOrderByAggregateInput = {
@@ -22367,13 +24467,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type EnumGenderNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Gender[] | null
-    notIn?: $Enums.Gender[] | null
-    not?: NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
   }
 
   export type BoolNullableFilter<$PrismaModel = never> = {
@@ -22451,12 +24544,6 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type FamilyMemberOrderByRelevanceInput = {
-    fields: FamilyMemberOrderByRelevanceFieldEnum | FamilyMemberOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type FamilyMemberCountOrderByAggregateInput = {
     id?: SortOrder
     fullName?: SortOrder
@@ -22511,16 +24598,6 @@ export namespace Prisma {
     parentId?: SortOrder
   }
 
-  export type EnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Gender[] | null
-    notIn?: $Enums.Gender[] | null
-    not?: NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel> | $Enums.Gender | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumGenderNullableFilter<$PrismaModel>
-    _max?: NestedEnumGenderNullableFilter<$PrismaModel>
-  }
-
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
@@ -22532,12 +24609,6 @@ export namespace Prisma {
   export type FamilyMemberScalarRelationFilter = {
     is?: FamilyMemberWhereInput
     isNot?: FamilyMemberWhereInput
-  }
-
-  export type OccupationOrderByRelevanceInput = {
-    fields: OccupationOrderByRelevanceFieldEnum | OccupationOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type OccupationCountOrderByAggregateInput = {
@@ -22579,12 +24650,6 @@ export namespace Prisma {
     isNot?: AchievementTypeWhereInput
   }
 
-  export type AchievementOrderByRelevanceInput = {
-    fields: AchievementOrderByRelevanceFieldEnum | AchievementOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type AchievementCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -22622,12 +24687,6 @@ export namespace Prisma {
     id?: SortOrder
     familyMemberId?: SortOrder
     achievementTypeId?: SortOrder
-  }
-
-  export type AchievementTypeOrderByRelevanceInput = {
-    fields: AchievementTypeOrderByRelevanceFieldEnum | AchievementTypeOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type AchievementTypeCountOrderByAggregateInput = {
@@ -22709,12 +24768,6 @@ export namespace Prisma {
     isNot?: PassingRecordWhereInput
   }
 
-  export type CauseOfDeathOrderByRelevanceInput = {
-    fields: CauseOfDeathOrderByRelevanceFieldEnum | CauseOfDeathOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type CauseOfDeathCountOrderByAggregateInput = {
     id?: SortOrder
     causeName?: SortOrder
@@ -22746,12 +24799,6 @@ export namespace Prisma {
     id?: SortOrder
     passingRecordId?: SortOrder
     familyMemberId?: SortOrder
-  }
-
-  export type BuriedPlaceOrderByRelevanceInput = {
-    fields: BuriedPlaceOrderByRelevanceFieldEnum | BuriedPlaceOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type BuriedPlaceCountOrderByAggregateInput = {
@@ -22786,12 +24833,6 @@ export namespace Prisma {
   export type BuriedPlaceSumOrderByAggregateInput = {
     id?: SortOrder
     passingRecordId?: SortOrder
-  }
-
-  export type PlaceOfOriginOrderByRelevanceInput = {
-    fields: PlaceOfOriginOrderByRelevanceFieldEnum | PlaceOfOriginOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type PlaceOfOriginCountOrderByAggregateInput = {
@@ -22894,12 +24935,6 @@ export namespace Prisma {
     familyMember2Id?: SortOrder
   }
 
-  export type GuestEditorOrderByRelevanceInput = {
-    fields: GuestEditorOrderByRelevanceFieldEnum | GuestEditorOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type GuestEditorCountOrderByAggregateInput = {
     id?: SortOrder
     accessCode?: SortOrder
@@ -22961,12 +24996,6 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type UserOrderByRelevanceInput = {
-    fields: UserOrderByRelevanceFieldEnum | UserOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -22994,12 +25023,6 @@ export namespace Prisma {
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
-  }
-
-  export type AccountOrderByRelevanceInput = {
-    fields: AccountOrderByRelevanceFieldEnum | AccountOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type AccountProviderProviderAccountIdCompoundUniqueInput = {
@@ -23060,12 +25083,6 @@ export namespace Prisma {
     expires_at?: SortOrder
   }
 
-  export type SessionOrderByRelevanceInput = {
-    fields: SessionOrderByRelevanceFieldEnum | SessionOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
-  }
-
   export type SessionCountOrderByAggregateInput = {
     id?: SortOrder
     sessionToken?: SortOrder
@@ -23085,12 +25102,6 @@ export namespace Prisma {
     sessionToken?: SortOrder
     userId?: SortOrder
     expires?: SortOrder
-  }
-
-  export type VerificationTokenOrderByRelevanceInput = {
-    fields: VerificationTokenOrderByRelevanceFieldEnum | VerificationTokenOrderByRelevanceFieldEnum[]
-    sort: SortOrder
-    search: string
   }
 
   export type VerificationTokenIdentifierTokenCompoundUniqueInput = {
@@ -23513,10 +25524,6 @@ export namespace Prisma {
     create?: XOR<FamilyTreeCreateWithoutRootMemberInput, FamilyTreeUncheckedCreateWithoutRootMemberInput>
     connectOrCreate?: FamilyTreeCreateOrConnectWithoutRootMemberInput
     connect?: FamilyTreeWhereUniqueInput
-  }
-
-  export type NullableEnumGenderFieldUpdateOperationsInput = {
-    set?: $Enums.Gender | null
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -24333,7 +26340,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
@@ -24370,7 +26376,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
@@ -24412,7 +26417,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -24469,7 +26473,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -24503,26 +26506,9 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedEnumGenderNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Gender[] | null
-    notIn?: $Enums.Gender[] | null
-    not?: NestedEnumGenderNullableFilter<$PrismaModel> | $Enums.Gender | null
-  }
-
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
-  export type NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.Gender | EnumGenderFieldRefInput<$PrismaModel> | null
-    in?: $Enums.Gender[] | null
-    notIn?: $Enums.Gender[] | null
-    not?: NestedEnumGenderNullableWithAggregatesFilter<$PrismaModel> | $Enums.Gender | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumGenderNullableFilter<$PrismaModel>
-    _max?: NestedEnumGenderNullableFilter<$PrismaModel>
   }
 
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -24588,7 +26574,6 @@ export namespace Prisma {
 
   export type FamilyTreeCreateManyTreeOwnerInputEnvelope = {
     data: FamilyTreeCreateManyTreeOwnerInput | FamilyTreeCreateManyTreeOwnerInput[]
-    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutTreeOwnerInput = {
@@ -24673,7 +26658,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutRootForInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -24696,7 +26681,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutRootForInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -24723,7 +26708,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutFamilyTreeInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -24746,7 +26731,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutFamilyTreeInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -24773,7 +26758,6 @@ export namespace Prisma {
 
   export type FamilyMemberCreateManyFamilyTreeInputEnvelope = {
     data: FamilyMemberCreateManyFamilyTreeInput | FamilyMemberCreateManyFamilyTreeInput[]
-    skipDuplicates?: boolean
   }
 
   export type GuestEditorCreateWithoutFamilyTreeInput = {
@@ -24796,7 +26780,6 @@ export namespace Prisma {
 
   export type GuestEditorCreateManyFamilyTreeInputEnvelope = {
     data: GuestEditorCreateManyFamilyTreeInput | GuestEditorCreateManyFamilyTreeInput[]
-    skipDuplicates?: boolean
   }
 
   export type AchievementTypeCreateWithoutFamilyTreeInput = {
@@ -24817,7 +26800,6 @@ export namespace Prisma {
 
   export type AchievementTypeCreateManyFamilyTreeInputEnvelope = {
     data: AchievementTypeCreateManyFamilyTreeInput | AchievementTypeCreateManyFamilyTreeInput[]
-    skipDuplicates?: boolean
   }
 
   export type TreeOwnerUpsertWithoutFamilyTreesInput = {
@@ -24859,7 +26841,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutRootForInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24882,7 +26864,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutRootForInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24924,7 +26906,7 @@ export namespace Prisma {
     NOT?: FamilyMemberScalarWhereInput | FamilyMemberScalarWhereInput[]
     id?: IntFilter<"FamilyMember"> | number
     fullName?: StringFilter<"FamilyMember"> | string
-    gender?: EnumGenderNullableFilter<"FamilyMember"> | $Enums.Gender | null
+    gender?: StringNullableFilter<"FamilyMember"> | string | null
     birthday?: DateTimeNullableFilter<"FamilyMember"> | Date | string | null
     address?: StringNullableFilter<"FamilyMember"> | string | null
     profilePicture?: StringNullableFilter<"FamilyMember"> | string | null
@@ -25017,7 +26999,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutChildrenInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25040,7 +27022,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutChildrenInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25067,7 +27049,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutParentInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25090,7 +27072,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutParentInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25117,7 +27099,6 @@ export namespace Prisma {
 
   export type FamilyMemberCreateManyParentInputEnvelope = {
     data: FamilyMemberCreateManyParentInput | FamilyMemberCreateManyParentInput[]
-    skipDuplicates?: boolean
   }
 
   export type AchievementCreateWithoutFamilyMemberInput = {
@@ -25142,7 +27123,6 @@ export namespace Prisma {
 
   export type AchievementCreateManyFamilyMemberInputEnvelope = {
     data: AchievementCreateManyFamilyMemberInput | AchievementCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type PassingRecordCreateWithoutFamilyMemberInput = {
@@ -25167,7 +27147,6 @@ export namespace Prisma {
 
   export type PassingRecordCreateManyFamilyMemberInputEnvelope = {
     data: PassingRecordCreateManyFamilyMemberInput | PassingRecordCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type CauseOfDeathCreateWithoutFamilyMemberInput = {
@@ -25188,7 +27167,6 @@ export namespace Prisma {
 
   export type CauseOfDeathCreateManyFamilyMemberInputEnvelope = {
     data: CauseOfDeathCreateManyFamilyMemberInput | CauseOfDeathCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type OccupationCreateWithoutFamilyMemberInput = {
@@ -25211,7 +27189,6 @@ export namespace Prisma {
 
   export type OccupationCreateManyFamilyMemberInputEnvelope = {
     data: OccupationCreateManyFamilyMemberInput | OccupationCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type FamilyMember_has_PlaceOfOriginCreateWithoutFamilyMemberInput = {
@@ -25233,7 +27210,6 @@ export namespace Prisma {
 
   export type FamilyMember_has_PlaceOfOriginCreateManyFamilyMemberInputEnvelope = {
     data: FamilyMember_has_PlaceOfOriginCreateManyFamilyMemberInput | FamilyMember_has_PlaceOfOriginCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type SpouseRelationshipCreateWithoutFamilyMember1Input = {
@@ -25256,7 +27232,6 @@ export namespace Prisma {
 
   export type SpouseRelationshipCreateManyFamilyMember1InputEnvelope = {
     data: SpouseRelationshipCreateManyFamilyMember1Input | SpouseRelationshipCreateManyFamilyMember1Input[]
-    skipDuplicates?: boolean
   }
 
   export type SpouseRelationshipCreateWithoutFamilyMember2Input = {
@@ -25279,7 +27254,6 @@ export namespace Prisma {
 
   export type SpouseRelationshipCreateManyFamilyMember2InputEnvelope = {
     data: SpouseRelationshipCreateManyFamilyMember2Input | SpouseRelationshipCreateManyFamilyMember2Input[]
-    skipDuplicates?: boolean
   }
 
   export type GuestEditorCreateWithoutFamilyMemberInput = {
@@ -25302,7 +27276,6 @@ export namespace Prisma {
 
   export type GuestEditorCreateManyFamilyMemberInputEnvelope = {
     data: GuestEditorCreateManyFamilyMemberInput | GuestEditorCreateManyFamilyMemberInput[]
-    skipDuplicates?: boolean
   }
 
   export type FamilyTreeCreateWithoutRootMemberInput = {
@@ -25380,7 +27353,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutChildrenInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25403,7 +27376,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutChildrenInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25667,7 +27640,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutOccupationsInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25690,7 +27663,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutOccupationsInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25728,7 +27701,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutOccupationsInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25751,7 +27724,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutOccupationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25773,7 +27746,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutAchievementsInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25796,7 +27769,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutAchievementsInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -25850,7 +27823,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutAchievementsInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25873,7 +27846,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutAchievementsInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25965,7 +27938,6 @@ export namespace Prisma {
 
   export type AchievementCreateManyAchievementTypeInputEnvelope = {
     data: AchievementCreateManyAchievementTypeInput | AchievementCreateManyAchievementTypeInput[]
-    skipDuplicates?: boolean
   }
 
   export type FamilyTreeUpsertWithoutAchievementTypesInput = {
@@ -26020,7 +27992,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutPassingRecordsInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26043,7 +28015,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutPassingRecordsInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26104,7 +28076,6 @@ export namespace Prisma {
 
   export type BuriedPlaceCreateManyPassingRecordInputEnvelope = {
     data: BuriedPlaceCreateManyPassingRecordInput | BuriedPlaceCreateManyPassingRecordInput[]
-    skipDuplicates?: boolean
   }
 
   export type FamilyMemberUpsertWithoutPassingRecordsInput = {
@@ -26120,7 +28091,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutPassingRecordsInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26143,7 +28114,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutPassingRecordsInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26234,7 +28205,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutCausesOfDeathInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26257,7 +28228,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutCausesOfDeathInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26321,7 +28292,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutCausesOfDeathInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26344,7 +28315,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutCausesOfDeathInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26429,7 +28400,6 @@ export namespace Prisma {
 
   export type FamilyMember_has_PlaceOfOriginCreateManyPlaceOfOriginInputEnvelope = {
     data: FamilyMember_has_PlaceOfOriginCreateManyPlaceOfOriginInput | FamilyMember_has_PlaceOfOriginCreateManyPlaceOfOriginInput[]
-    skipDuplicates?: boolean
   }
 
   export type FamilyMember_has_PlaceOfOriginUpsertWithWhereUniqueWithoutPlaceOfOriginInput = {
@@ -26450,7 +28420,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutBirthPlacesInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26473,7 +28443,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutBirthPlacesInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26525,7 +28495,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutBirthPlacesInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26548,7 +28518,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutBirthPlacesInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26590,7 +28560,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutSpouse1Input = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26613,7 +28583,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutSpouse1Input = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26640,7 +28610,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutSpouse2Input = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26663,7 +28633,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutSpouse2Input = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26701,7 +28671,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutSpouse1Input = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26724,7 +28694,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutSpouse1Input = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26757,7 +28727,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutSpouse2Input = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26780,7 +28750,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutSpouse2Input = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26802,7 +28772,7 @@ export namespace Prisma {
 
   export type FamilyMemberCreateWithoutGuestEditorsInput = {
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26825,7 +28795,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedCreateWithoutGuestEditorsInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -26891,7 +28861,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutGuestEditorsInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26914,7 +28884,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutGuestEditorsInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27003,7 +28973,6 @@ export namespace Prisma {
 
   export type AccountCreateManyUserInputEnvelope = {
     data: AccountCreateManyUserInput | AccountCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -27025,7 +28994,6 @@ export namespace Prisma {
 
   export type SessionCreateManyUserInputEnvelope = {
     data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type TreeOwnerCreateWithoutUserInput = {
@@ -27290,7 +29258,7 @@ export namespace Prisma {
   export type FamilyMemberCreateManyFamilyTreeInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -27314,7 +29282,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutFamilyTreeInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27337,7 +29305,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutFamilyTreeInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27360,7 +29328,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateManyWithoutFamilyTreeInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27409,7 +29377,7 @@ export namespace Prisma {
   export type FamilyMemberCreateManyParentInput = {
     id?: number
     fullName: string
-    gender?: $Enums.Gender | null
+    gender?: string | null
     birthday?: Date | string | null
     address?: string | null
     profilePicture?: string | null
@@ -27475,7 +29443,7 @@ export namespace Prisma {
 
   export type FamilyMemberUpdateWithoutParentInput = {
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27498,7 +29466,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateWithoutParentInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27521,7 +29489,7 @@ export namespace Prisma {
   export type FamilyMemberUncheckedUpdateManyWithoutParentInput = {
     id?: IntFieldUpdateOperationsInput | number
     fullName?: StringFieldUpdateOperationsInput | string
-    gender?: NullableEnumGenderFieldUpdateOperationsInput | $Enums.Gender | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
     birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     profilePicture?: NullableStringFieldUpdateOperationsInput | string | null

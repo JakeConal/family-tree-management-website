@@ -1,15 +1,14 @@
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { createClient } from "@libsql/client";
+import { PrismaLibSQL } from "@prisma/adapter-libsql";
+import { PrismaClient } from "../app/generated/prisma";
 
-const adapter = new PrismaMariaDb({
-  host: "family-tree-blackyjake123-6784.f.aivencloud.com",
-  port: 13461,
-  user: "avnadmin",
-  password: process.env.DATABASE_PASSWORD!,
-  database: "defaultdb",
-  ssl: true,
+// Create LibSQL client for SQLite
+const libsql = createClient({
+  url: "file:dev.db",
 });
+
+// Create Prisma adapter
+const adapter = new PrismaLibSQL(libsql);
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
@@ -17,6 +16,7 @@ const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
     adapter,
+    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
