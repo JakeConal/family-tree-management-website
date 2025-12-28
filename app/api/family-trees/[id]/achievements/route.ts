@@ -88,11 +88,10 @@ export async function POST(
       );
     }
 
-    // Verify the achievement type belongs to this family tree
-    const achievementType = await prisma.achievementType.findFirst({
+    // Verify the achievement type exists (now global)
+    const achievementType = await prisma.achievementType.findUnique({
       where: {
         id: achievementTypeId,
-        familyTreeId: familyTreeId,
       },
     });
 

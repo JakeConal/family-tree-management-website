@@ -28,7 +28,6 @@ model FamilyTree {
   createdAt        DateTime          @default(now())
   treeOwnerId      Int
   rootMemberId     Int?              @unique
-  achievementTypes AchievementType[]
   familyMembers    FamilyMember[]
   rootMember       FamilyMember?     @relation("FamilyRoot", fields: [rootMemberId], references: [id])
   treeOwner        TreeOwner         @relation(fields: [treeOwnerId], references: [id], onDelete: Cascade)
@@ -98,12 +97,9 @@ model Achievement {
 
 model AchievementType {
   id           Int           @id @default(autoincrement())
-  typeName     String        @db.VarChar(225)
-  familyTreeId Int
+  typeName     String        @db.VarChar(225) @unique
   achievements Achievement[]
-  familyTree   FamilyTree    @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
 
-  @@index([familyTreeId], map: "AchievementType_familyTreeId_fkey")
   @@map("AchievementType")
 }
 

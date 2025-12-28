@@ -41,15 +41,43 @@ export async function GET(
       );
     }
 
-    // Get achievement types for this family tree
-    const achievementTypes = await prisma.achievementType.findMany({
-      where: {
-        familyTreeId: familyTreeId,
-      },
+    // Get all achievement types (now global)
+    let achievementTypes = await prisma.achievementType.findMany({
       orderBy: {
         typeName: "asc",
       },
     });
+
+    // If no achievement types exist globally, create the default ones
+    if (achievementTypes.length === 0) {
+      const defaultAchievementTypes = [
+        "Academic",
+        "Career",
+        "Sport",
+        "Health",
+        "Artistic",
+        "Environment",
+        "Community",
+        "Financial",
+        "Skill Development",
+        "Travel",
+      ];
+
+      for (const typeName of defaultAchievementTypes) {
+        await prisma.achievementType.create({
+          data: {
+            typeName,
+          },
+        });
+      }
+
+      // Fetch the newly created types
+      achievementTypes = await prisma.achievementType.findMany({
+        orderBy: {
+          typeName: "asc",
+        },
+      });
+    }
 
     return NextResponse.json(achievementTypes);
   } catch (error) {

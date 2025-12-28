@@ -19,6 +19,7 @@ import {
 
 import AddMemberModal from "../../../../components/modals/AddMemberModal";
 import RecordAchievementModal from "../../../../components/modals/RecordAchievementModal";
+import ChangeLogDetailsModal from "../../../../components/modals/ChangeLogDetailsModal";
 
 // Mock data types (representing API responses)
 interface FamilyTree {
@@ -86,6 +87,11 @@ export default function FamilyTreeDashboard() {
   const [isRecordAchievementModalOpen, setIsRecordAchievementModalOpen] =
     useState(false);
   const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
+  const [selectedChangeLog, setSelectedChangeLog] = useState<ChangeLog | null>(
+    null
+  );
+  const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] =
+    useState(false);
 
   // Initialize sidebar state from localStorage
   useEffect(() => {
@@ -359,7 +365,18 @@ export default function FamilyTreeDashboard() {
     switch (entityType) {
       case "FamilyMember":
         if (action === "create") {
-          message = "New family member added";
+          // Check if this is a birth (child with parent) or new root member
+          let newValues = null;
+          try {
+            newValues = log.newValues ? JSON.parse(log.newValues) : null;
+          } catch (e) {
+            // Ignore parsing errors
+          }
+          if (newValues && newValues.parentId) {
+            message = "Birth recorded";
+          } else {
+            message = "New family member added";
+          }
         } else if (action === "update") {
           message = "Family member information updated";
         } else if (action === "delete") {
@@ -403,6 +420,11 @@ export default function FamilyTreeDashboard() {
     if (diffInDays < 7) return `${diffInDays} days ago`;
 
     return date.toLocaleDateString();
+  };
+
+  const handleChangeLogClick = (log: ChangeLog) => {
+    setSelectedChangeLog(log);
+    setIsChangeLogDetailsModalOpen(true);
   };
 
   return (
@@ -648,7 +670,8 @@ export default function FamilyTreeDashboard() {
                 return message ? (
                   <div
                     key={log.id}
-                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg"
+                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleChangeLogClick(log)}
                   >
                     <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium text-green-700">
@@ -710,6 +733,15 @@ export default function FamilyTreeDashboard() {
             fetchActivities();
             fetchExistingMembers();
           }}
+        />
+      )}
+
+      {/* Change Log Details Modal */}
+      {isChangeLogDetailsModalOpen && (
+        <ChangeLogDetailsModal
+          isOpen={isChangeLogDetailsModalOpen}
+          onClose={() => setIsChangeLogDetailsModalOpen(false)}
+          changeLog={selectedChangeLog}
         />
       )}
     </div>
