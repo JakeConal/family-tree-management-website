@@ -108,6 +108,7 @@ export async function GET(request: NextRequest) {
                 title: a.title,
                 person: a.memberName,
                 date: formatDate(a.achieveDate),
+                rawDate: a.achieveDate || "", // YYYY-MM-DD format for edit form
                 description: a.description || "",
                 background: typeConfig.background,
                 iconPath: typeConfig.iconPath,
@@ -184,6 +185,136 @@ export async function POST(request: NextRequest) {
         console.error("Error creating achievement:", error);
         return NextResponse.json(
             { error: "Failed to create achievement" },
+            { status: 500 }
+        );
+    }
+}
+
+// DELETE - Delete an achievement
+export async function DELETE(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const achievementId = searchParams.get("id");
+
+        if (!achievementId) {
+            return NextResponse.json(
+                { error: "Achievement ID is required" },
+                { status: 400 }
+            );
+        }
+
+        const db = getDb();
+
+        // Delete the achievement
+        const stmt = db.prepare(`DELETE FROM Achievement WHERE id = ?`);
+        const result = stmt.run(parseInt(achievementId));
+
+        db.close();
+
+        if (result.changes === 0) {
+            return NextResponse.json(
+                { error: "Achievement not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Achievement deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting achievement:", error);
+        return NextResponse.json(
+            { error: "Failed to delete achievement" },
+            { status: 500 }
+        );
+    }
+}
+
+// PUT - Update an existing achievement
+export async function PUT(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { id, title, date, description, category } = body;
+
+        if (!id) {
+            return NextResponse.json(
+                { error: "Achievement ID is required" },
+                { status: 400 }
+            );
+        }
+
+        const db = getDb();
+
+        // If category is provided, find the achievement type ID
+        let achievementTypeId = null;
+        if (category) {
+            const typeResult = db.prepare(`
+                SELECT at.id FROM AchievementType at
+                JOIN Achievement a ON a.achievementTypeId = at.id
+                WHERE a.id = ?
+            `).get(id) as { id: number } | undefined;
+
+            // Try to find type by name
+            const typeByName = db.prepare(`
+                SELECT id FROM AchievementType WHERE typeName = ?
+            `).get(category) as { id: number } | undefined;
+
+            if (typeByName) {
+                achievementTypeId = typeByName.id;
+            }
+        }
+
+        // Build update query dynamically
+        const updates: string[] = [];
+        const params: (string | number)[] = [];
+
+        if (title !== undefined) {
+            updates.push("title = ?");
+            params.push(title);
+        }
+        if (date !== undefined) {
+            updates.push("achieveDate = ?");
+            params.push(date);
+        }
+        if (description !== undefined) {
+            updates.push("description = ?");
+            params.push(description);
+        }
+        if (achievementTypeId !== null) {
+            updates.push("achievementTypeId = ?");
+            params.push(achievementTypeId);
+        }
+
+        if (updates.length === 0) {
+            db.close();
+            return NextResponse.json(
+                { error: "No fields to update" },
+                { status: 400 }
+            );
+        }
+
+        params.push(parseInt(id));
+        const stmt = db.prepare(`UPDATE Achievement SET ${updates.join(", ")} WHERE id = ?`);
+        const result = stmt.run(...params);
+
+        db.close();
+
+        if (result.changes === 0) {
+            return NextResponse.json(
+                { error: "Achievement not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Achievement updated successfully",
+        });
+    } catch (error) {
+        console.error("Error updating achievement:", error);
+        return NextResponse.json(
+            { error: "Failed to update achievement" },
             { status: 500 }
         );
     }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb, formatDateShort, getYear } from "@/lib/db";
+import { getDb, formatDate, getYear } from "@/lib/db";
 
 interface SpouseRow {
     id: number;
@@ -80,12 +80,14 @@ export async function GET(request: NextRequest) {
             year: string;
             title: string;
             date: string;
+            rawDate: string; // YYYY-MM-DD format for edit form
             description: string;
             background: string;
             iconSrc: string;
             eventType: "marriage" | "divorce";
             member1: string;
             member2: string;
+            relationshipId: number; // Original relationship ID for updates
         }
 
         const events: LifeEventEntry[] = [];
@@ -97,7 +99,8 @@ export async function GET(request: NextRequest) {
                 id: `marriage-${rel.id}`,
                 year: marriageYear,
                 title: `${rel.member1Name} & ${rel.member2Name} Say "I Do"`,
-                date: formatDateShort(rel.marriageDate),
+                date: formatDate(rel.marriageDate),
+                rawDate: rel.marriageDate || "",
                 description:
                     "Happiness starts here! The couple held an intimate ceremony, marking the beginning of a new chapter in their lives.",
                 background: "#FECACA",
@@ -105,6 +108,7 @@ export async function GET(request: NextRequest) {
                 eventType: "marriage",
                 member1: rel.member1Name,
                 member2: rel.member2Name,
+                relationshipId: rel.id,
             });
 
             // Add divorce event if exists
@@ -114,7 +118,8 @@ export async function GET(request: NextRequest) {
                     id: `divorce-${rel.id}`,
                     year: divorceYear,
                     title: `${rel.member1Name}'s Separation from ${rel.member2Name}`,
-                    date: formatDateShort(rel.divorceDate),
+                    date: formatDate(rel.divorceDate),
+                    rawDate: rel.divorceDate || "",
                     description:
                         "The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.",
                     background: "#DCCCF4",
@@ -122,6 +127,7 @@ export async function GET(request: NextRequest) {
                     eventType: "divorce",
                     member1: rel.member1Name,
                     member2: rel.member2Name,
+                    relationshipId: rel.id,
                 });
             }
         }
@@ -156,6 +162,87 @@ export async function GET(request: NextRequest) {
         console.error("Error fetching life events:", error);
         return NextResponse.json(
             { error: "Failed to fetch life events" },
+            { status: 500 }
+        );
+    }
+}
+
+// PUT - Update a life event (marriage or divorce date, and member names)
+export async function PUT(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { relationshipId, eventType, date, member1, member2 } = body;
+
+        if (!relationshipId || !eventType) {
+            return NextResponse.json(
+                { error: "relationshipId and eventType are required" },
+                { status: 400 }
+            );
+        }
+
+        const db = getDb();
+
+        // Build dynamic update based on eventType
+        const updates: string[] = [];
+        const params: (string | number)[] = [];
+
+        // Update date if provided
+        if (date) {
+            if (eventType === "marriage") {
+                updates.push("marriageDate = ?");
+            } else if (eventType === "divorce") {
+                updates.push("divorceDate = ?");
+            }
+            params.push(date);
+        }
+
+        // Update member1 if provided (find member ID by name)
+        if (member1) {
+            const memberResult = db.prepare(`SELECT id FROM FamilyMember WHERE fullName = ?`).get(member1) as { id: number } | undefined;
+            if (memberResult) {
+                updates.push("familyMember1Id = ?");
+                params.push(memberResult.id);
+            }
+        }
+
+        // Update member2 if provided (find member ID by name)
+        if (member2) {
+            const memberResult = db.prepare(`SELECT id FROM FamilyMember WHERE fullName = ?`).get(member2) as { id: number } | undefined;
+            if (memberResult) {
+                updates.push("familyMember2Id = ?");
+                params.push(memberResult.id);
+            }
+        }
+
+        if (updates.length === 0) {
+            db.close();
+            return NextResponse.json(
+                { error: "No fields to update" },
+                { status: 400 }
+            );
+        }
+
+        params.push(parseInt(relationshipId));
+        const stmt = db.prepare(`UPDATE SpouseRelationship SET ${updates.join(", ")} WHERE id = ?`);
+        const result = stmt.run(...params);
+
+        db.close();
+
+        if (result.changes === 0) {
+            return NextResponse.json(
+                { error: "Life event not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Life event updated successfully",
+        });
+    } catch (error) {
+        console.error("Error updating life event:", error);
+        return NextResponse.json(
+            { error: "Failed to update life event" },
             { status: 500 }
         );
     }

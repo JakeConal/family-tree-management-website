@@ -46,12 +46,14 @@ const ACHIEVEMENT_ICON_CONFIG: Record<string, { iconPath: string; background: st
   Birth: { iconPath: "/icons/birth.png", background: "#D6EEFF" },
 };
 
+
 interface AchievementEntry {
   id: string;
   category: string;
   title: string;
   person: string;
   date: string;
+  rawDate?: string; // YYYY-MM-DD format for edit form
   description: string;
   background: string;
   iconPath: string;
@@ -75,12 +77,14 @@ interface LifeEventEntry {
   year: string;
   title: string;
   date: string;
+  rawDate?: string; // YYYY-MM-DD format for edit form
   description: string;
   background: string;
   iconSrc: string;
   eventType: "marriage" | "divorce";
   member1: string;
   member2: string;
+  relationshipId?: number; // Original relationship ID for updates
 }
 
 type AchievementFormData = Pick<
@@ -492,7 +496,7 @@ export default function AchievementListPage() {
     setAchievementFormData({
       person: entry.person,
       category: entry.category,
-      date: entry.date,
+      date: entry.rawDate || entry.date, // Use rawDate (YYYY-MM-DD) for edit form
       title: entry.title,
       description: entry.description,
     });
@@ -514,7 +518,7 @@ export default function AchievementListPage() {
     setLifeEventFormData({
       member1: entry.member1,
       member2: entry.member2,
-      date: entry.date,
+      date: entry.rawDate || entry.date, // Use rawDate (YYYY-MM-DD) for edit form
     });
   };
 
@@ -548,29 +552,33 @@ export default function AchievementListPage() {
     setLifeEventFormData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
 
-  const handleLifeEventSave = (event: FormEvent<HTMLFormElement>) => {
+  const handleLifeEventSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedLifeEvent || !selectedLifeEventYear || !lifeEventFormData) return;
 
-    // Update the life event sections state
-    setLifeEventSectionsState((prev) =>
-      prev.map((section) =>
-        section.year === selectedLifeEventYear
-          ? {
-            ...section,
-            entries: section.entries.map((entry) =>
-              entry.id === selectedLifeEvent.id
-                ? { ...entry, ...lifeEventFormData }
-                : entry
-            ),
-          }
-          : section
-      )
-    );
+    try {
+      const response = await fetch("/api/life-events", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          relationshipId: selectedLifeEvent.relationshipId,
+          eventType: selectedLifeEvent.eventType,
+          date: lifeEventFormData.date,
+          member1: lifeEventFormData.member1,
+          member2: lifeEventFormData.member2,
+        }),
+      });
 
-    // Update the selected life event and close modal
-    setSelectedLifeEvent({ ...selectedLifeEvent, ...lifeEventFormData });
-    handleLifeEventModalClose();
+      if (response.ok) {
+        // Refresh life events data from database
+        fetchLifeEvents();
+        handleLifeEventModalClose();
+      } else {
+        console.error("Failed to update life event");
+      }
+    } catch (error) {
+      console.error("Error updating life event:", error);
+    }
   };
 
   // Passing handlers
@@ -714,47 +722,56 @@ export default function AchievementListPage() {
     setIsDeleteConfirmOpen(false);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!selectedAchievement || !selectedAchievementYear) {
       setIsDeleteConfirmOpen(false);
       return;
     }
 
-    setAchievementSections((prev) =>
-      prev
-        .map((section) =>
-          section.year === selectedAchievementYear
-            ? {
-              ...section,
-              entries: section.entries.filter((entry) => entry.id !== selectedAchievement.id),
-            }
-            : section
-        )
-        .filter((section) => section.entries.length > 0)
-    );
+    try {
+      const response = await fetch(`/api/achievements?id=${selectedAchievement.id}`, {
+        method: "DELETE",
+      });
 
-    handleModalClose();
+      if (response.ok) {
+        // Refresh achievements data from database
+        fetchAchievements();
+        handleModalClose();
+      } else {
+        console.error("Failed to delete achievement");
+      }
+    } catch (error) {
+      console.error("Error deleting achievement:", error);
+    }
   };
 
-  const handleModalSave = (event: FormEvent<HTMLFormElement>) => {
+  const handleModalSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedAchievement || !selectedAchievementYear || !achievementFormData) return;
 
-    setAchievementSections((prev) =>
-      prev.map((section) =>
-        section.year === selectedAchievementYear
-          ? {
-            ...section,
-            entries: section.entries.map((entry) =>
-              entry.id === selectedAchievement.id ? { ...entry, ...achievementFormData } : entry
-            ),
-          }
-          : section
-      )
-    );
+    try {
+      const response = await fetch("/api/achievements", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: selectedAchievement.id,
+          title: achievementFormData.title,
+          date: achievementFormData.date,
+          description: achievementFormData.description,
+          category: achievementFormData.category,
+        }),
+      });
 
-    setSelectedAchievement({ ...selectedAchievement, ...achievementFormData });
-    handleModalClose();
+      if (response.ok) {
+        // Refresh achievements data from database
+        fetchAchievements();
+        handleModalClose();
+      } else {
+        console.error("Failed to update achievement");
+      }
+    } catch (error) {
+      console.error("Error updating achievement:", error);
+    }
   };
 
   // Add Achievement handlers
@@ -1180,21 +1197,33 @@ export default function AchievementListPage() {
                   </div>
 
                   <div className="flex w-full max-w-[461px] flex-col gap-4 md:flex-row">
+                    {/* Achievement Type Dropdown */}
                     <div className="flex flex-1 flex-col space-y-2">
                       <label className="text-sm font-medium text-[#111]">Achievement Type *</label>
-                      <input
-                        className="h-[35px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] md:max-w-[205px]"
+                      <select
+                        className="h-[35px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] md:max-w-[205px] appearance-none cursor-pointer"
                         value={achievementFormData?.category ?? ""}
                         onChange={handleFormChange("category")}
-                      />
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
+                      >
+                        <option value="">Select type</option>
+                        {availableTypes.map((type) => (
+                          <option key={type.id} value={type.name}>{type.name}</option>
+                        ))}
+                      </select>
                     </div>
+                    {/* Date Picker with Calendar Icon */}
                     <div className="flex flex-1 flex-col space-y-2">
                       <label className="text-sm font-medium text-[#111]">Date Achieved *</label>
-                      <input
-                        className="h-[35px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] md:max-w-[205px]"
-                        value={achievementFormData?.date ?? ""}
-                        onChange={handleFormChange("date")}
-                      />
+                      <div className="relative md:max-w-[205px]">
+                        <input
+                          type="date"
+                          className="h-[35px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-10 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-10 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                          value={achievementFormData?.date ?? ""}
+                          onChange={(e) => setAchievementFormData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                        />
+                        <CalendarDays className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
 
@@ -1413,11 +1442,15 @@ export default function AchievementListPage() {
                     <label className="text-sm font-medium text-[#111]">
                       {selectedLifeEvent.eventType === "marriage" ? "Date of Marriage *" : "Date of Divorce *"}
                     </label>
-                    <input
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
-                      value={lifeEventFormData?.date ?? ""}
-                      onChange={handleLifeEventFormChange("date")}
-                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                        value={lifeEventFormData?.date ?? ""}
+                        onChange={(e) => setLifeEventFormData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                      />
+                      <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
 
                   <div className="mt-4 flex justify-center gap-4">
