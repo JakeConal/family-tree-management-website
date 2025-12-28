@@ -51,29 +51,15 @@ export default function ChangeLogDetailsModal({
     const memberIds: number[] = [];
 
     try {
-      if (log.entityType === "Achievement") {
-        // For achievements, we need to get the family member from the newValues or oldValues
-        const newData = log.newValues ? JSON.parse(log.newValues) : null;
-        const oldData = log.oldValues ? JSON.parse(log.oldValues) : null;
-        const data = newData || oldData;
-        if (data?.familyMemberId) {
-          memberIds.push(data.familyMemberId);
-        }
-      } else if (log.entityType === "SpouseRelationship") {
+      // Note: Achievement and PassingRecord already store familyMemberName directly in the change log data
+      // So we don't need to fetch member information for these entity types
+      if (log.entityType === "SpouseRelationship") {
         // For spouse relationships, we need both members
         const newData = log.newValues ? JSON.parse(log.newValues) : null;
         const oldData = log.oldValues ? JSON.parse(log.oldValues) : null;
         const data = newData || oldData;
         if (data?.familyMember1Id) memberIds.push(data.familyMember1Id);
         if (data?.familyMember2Id) memberIds.push(data.familyMember2Id);
-      } else if (log.entityType === "PassingRecord") {
-        // For passing records, we need to get the family member
-        const newData = log.newValues ? JSON.parse(log.newValues) : null;
-        const oldData = log.oldValues ? JSON.parse(log.oldValues) : null;
-        const data = newData || oldData;
-        if (data?.familyMemberId) {
-          memberIds.push(data.familyMemberId);
-        }
       }
 
       if (memberIds.length > 0) {
@@ -260,10 +246,8 @@ export default function ChangeLogDetailsModal({
     }> = [];
 
     if (action === "CREATE" && newData) {
-      // Add member information first
-      const memberId = newData.familyMemberId;
-      const memberName =
-        relatedMembers[memberId]?.fullName || `Member #${memberId}`;
+      // Add member information first - use the name stored directly in the change log
+      const memberName = newData.familyMemberName || "Unknown Member";
       changes.push({
         field: "Family Member",
         oldValue: null,
@@ -446,10 +430,8 @@ export default function ChangeLogDetailsModal({
     }> = [];
 
     if (action === "CREATE" && newData) {
-      // Add member information first
-      const memberId = newData.familyMemberId;
-      const memberName =
-        relatedMembers[memberId]?.fullName || `Member #${memberId}`;
+      // Add member information first - use the name stored directly in the change log
+      const memberName = newData.familyMemberName || "Unknown Member";
       changes.push({
         field: "Family Member",
         oldValue: null,
