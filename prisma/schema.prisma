@@ -266,5 +266,4 @@ model ChangeLog {
 enum Gender {
   MALE
   FEMALE
-  OTHER
 }

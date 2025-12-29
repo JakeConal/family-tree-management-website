@@ -326,16 +326,59 @@ export default function NewFamilyTreePage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Origin <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={familyData.origin}
-                      onChange={(e) =>
-                        setFamilyData({ ...familyData, origin: e.target.value })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="e.g. Hanoi, Vietnam"
-                      required
-                    />
+                    <div className="relative">
+                      <select
+                        value={familyData.origin}
+                        onChange={(e) =>
+                          setFamilyData({
+                            ...familyData,
+                            origin: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                        required
+                      >
+                        <option value="">Select family origin</option>
+                        <option value="An Giang">An Giang</option>
+                        <option value="Ba Ria – Vung Tau">
+                          Ba Ria – Vung Tau
+                        </option>
+                        <option value="Bac Giang">Bac Giang</option>
+                        <option value="Bac Ninh">Bac Ninh</option>
+                        <option value="Binh Duong">Binh Duong</option>
+                        <option value="Binh Dinh">Binh Dinh</option>
+                        <option value="Binh Phuoc">Binh Phuoc</option>
+                        <option value="Binh Thuan">Binh Thuan</option>
+                        <option value="Ca Mau">Ca Mau</option>
+                        <option value="Dak Lak">Dak Lak</option>
+                        <option value="Dak Nong">Dak Nong</option>
+                        <option value="Dong Nai">Dong Nai</option>
+                        <option value="Dong Thap">Dong Thap</option>
+                        <option value="Gia Lai">Gia Lai</option>
+                        <option value="Ha Giang">Ha Giang</option>
+                        <option value="Ha Nam">Ha Nam</option>
+                        <option value="Ha Tinh">Ha Tinh</option>
+                        <option value="Khanh Hoa">Khanh Hoa</option>
+                        <option value="Kien Giang">Kien Giang</option>
+                        <option value="Lam Dong">Lam Dong</option>
+                        <option value="Lao Cai">Lao Cai</option>
+                        <option value="Long An">Long An</option>
+                        <option value="Nam Dinh">Nam Dinh</option>
+                        <option value="Nghe An">Nghe An</option>
+                        <option value="Ninh Binh">Ninh Binh</option>
+                        <option value="Phu Tho">Phu Tho</option>
+                        <option value="Quang Nam">Quang Nam</option>
+                        <option value="Hanoi">Hanoi</option>
+                        <option value="Ho Chi Minh City">
+                          Ho Chi Minh City
+                        </option>
+                        <option value="Hai Phong">Hai Phong</option>
+                        <option value="Da Nang">Da Nang</option>
+                        <option value="Can Tho">Can Tho</option>
+                        <option value="Hue">Hue</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-4 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
 
                   {/* Establish Year */}
@@ -417,7 +460,6 @@ export default function NewFamilyTreePage() {
                           <option value="">Select gender</option>
                           <option value="male">Male</option>
                           <option value="female">Female</option>
-                          <option value="other">Other</option>
                         </select>
                         <ChevronDown className="absolute right-3 top-4 w-5 h-5 text-gray-400 pointer-events-none" />
                       </div>
@@ -498,11 +540,43 @@ export default function NewFamilyTreePage() {
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                           >
                             <option value="">Choose origin</option>
-                            <option value="Vietnam">Vietnam</option>
-                            <option value="USA">USA</option>
-                            <option value="Canada">Canada</option>
-                            <option value="UK">UK</option>
-                            <option value="Australia">Australia</option>
+                            <option value="An Giang">An Giang</option>
+                            <option value="Ba Ria – Vung Tau">
+                              Ba Ria – Vung Tau
+                            </option>
+                            <option value="Bac Giang">Bac Giang</option>
+                            <option value="Bac Ninh">Bac Ninh</option>
+                            <option value="Binh Duong">Binh Duong</option>
+                            <option value="Binh Dinh">Binh Dinh</option>
+                            <option value="Binh Phuoc">Binh Phuoc</option>
+                            <option value="Binh Thuan">Binh Thuan</option>
+                            <option value="Ca Mau">Ca Mau</option>
+                            <option value="Dak Lak">Dak Lak</option>
+                            <option value="Dak Nong">Dak Nong</option>
+                            <option value="Dong Nai">Dong Nai</option>
+                            <option value="Dong Thap">Dong Thap</option>
+                            <option value="Gia Lai">Gia Lai</option>
+                            <option value="Ha Giang">Ha Giang</option>
+                            <option value="Ha Nam">Ha Nam</option>
+                            <option value="Ha Tinh">Ha Tinh</option>
+                            <option value="Khanh Hoa">Khanh Hoa</option>
+                            <option value="Kien Giang">Kien Giang</option>
+                            <option value="Lam Dong">Lam Dong</option>
+                            <option value="Lao Cai">Lao Cai</option>
+                            <option value="Long An">Long An</option>
+                            <option value="Nam Dinh">Nam Dinh</option>
+                            <option value="Nghe An">Nghe An</option>
+                            <option value="Ninh Binh">Ninh Binh</option>
+                            <option value="Phu Tho">Phu Tho</option>
+                            <option value="Quang Nam">Quang Nam</option>
+                            <option value="Hanoi">Hanoi</option>
+                            <option value="Ho Chi Minh City">
+                              Ho Chi Minh City
+                            </option>
+                            <option value="Hai Phong">Hai Phong</option>
+                            <option value="Da Nang">Da Nang</option>
+                            <option value="Can Tho">Can Tho</option>
+                            <option value="Hue">Hue</option>
                           </select>
 
                           <div className="grid grid-cols-2 gap-3">

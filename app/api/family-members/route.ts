@@ -251,14 +251,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate gender
-    let validatedGender: "MALE" | "FEMALE" | "OTHER" | null = null;
+    let validatedGender: "MALE" | "FEMALE" | null = null;
     if (gender) {
       const upperGender = gender.toUpperCase();
-      if (["MALE", "FEMALE", "OTHER"].includes(upperGender)) {
-        validatedGender = upperGender as "MALE" | "FEMALE" | "OTHER";
+      if (["MALE", "FEMALE"].includes(upperGender)) {
+        validatedGender = upperGender as "MALE" | "FEMALE";
       } else {
         return NextResponse.json(
-          { error: "Invalid gender. Must be MALE, FEMALE, or OTHER." },
+          { error: "Invalid gender. Must be MALE or FEMALE." },
           { status: 400 }
         );
       }

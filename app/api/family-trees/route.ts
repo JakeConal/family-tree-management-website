@@ -76,18 +76,54 @@ export async function POST(request: NextRequest) {
 
     const prisma = getPrisma();
 
+    // Ensure the user exists in the database
+    let user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      // Create user if it doesn't exist (for OAuth users)
+      user = await prisma.user.create({
+        data: {
+          id: session.user.id,
+          name: session.user.name || "Unknown",
+          email: session.user.email || null,
+          emailVerified: new Date(),
+        },
+      });
+    }
+
     // Find or create tree owner for this user
-    let treeOwner = await prisma.treeOwner.findUnique({
+    let treeOwner = await prisma.treeOwner.findFirst({
       where: { userId: session.user.id },
     });
 
     if (!treeOwner) {
+      // Create TreeOwner without userId first to avoid foreign key issues
       treeOwner = await prisma.treeOwner.create({
         data: {
           fullName: session.user.name || session.user.email || "Unknown",
-          userId: session.user.id,
         },
       });
+
+      // Try to link it to the user if the user exists
+      try {
+        const existingUser = await prisma.user.findUnique({
+          where: { id: session.user.id },
+        });
+
+        if (existingUser) {
+          treeOwner = await prisma.treeOwner.update({
+            where: { id: treeOwner.id },
+            data: {
+              userId: session.user.id,
+            },
+          });
+        }
+      } catch (error) {
+        // If linking fails, continue without userId
+        console.warn("Could not link TreeOwner to user:", error);
+      }
     }
 
     // Create the family tree
@@ -115,6 +151,25 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // Handle profile picture for root person (base64 string to Buffer)
+    let profilePictureBuffer: Buffer | null = null;
+    let profilePictureType: string | null = null;
+
+    if (
+      rootPerson.profilePicture &&
+      typeof rootPerson.profilePicture === "string"
+    ) {
+      // Remove data URL prefix if present (e.g., "data:image/jpeg;base64,")
+      const base64Data = rootPerson.profilePicture.replace(
+        /^data:image\/[a-z]+;base64,/,
+        ""
+      );
+      profilePictureBuffer = Buffer.from(base64Data, "base64");
+      // Extract MIME type from data URL
+      const mimeMatch = rootPerson.profilePicture.match(/^data:([^;]+)/);
+      profilePictureType = mimeMatch ? mimeMatch[1] : null;
+    }
+
     // Create the root family member
     const rootMember = await prisma.familyMember.create({
       data: {
@@ -124,11 +179,12 @@ export async function POST(request: NextRequest) {
             ? "MALE"
             : rootPerson.gender === "female"
             ? "FEMALE"
-            : "OTHER"
+            : null
           : null,
         birthday: rootPerson.birthDate ? new Date(rootPerson.birthDate) : null,
         address: rootPerson.address?.trim() || null,
-        profilePicture: rootPerson.profilePicture || null,
+        profilePicture: profilePictureBuffer,
+        profilePictureType: profilePictureType,
         generation: "1", // Root person is generation 1
         isRootPerson: true,
         familyTreeId: familyTree.id,

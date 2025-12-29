@@ -134,7 +134,7 @@ export async function POST(
       data: {
         fullName: fullName.trim(),
         gender:
-          gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : "OTHER",
+          gender === "male" ? "MALE" : gender === "female" ? "FEMALE" : null,
         birthday: new Date(birthDate),
         address: address.trim(),
         profilePicture: profilePicture || null,
