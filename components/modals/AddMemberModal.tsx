@@ -88,6 +88,7 @@ export default function AddMemberModal({
     placesOfOrigin: "",
     occupations: "",
   });
+  const [generalError, setGeneralError] = useState("");
 
   // Reset form when modal opens
   useEffect(() => {
@@ -148,38 +149,26 @@ export default function AddMemberModal({
 
   // Validation function
   const validateForm = () => {
-    const errors = {
-      fullName: "",
-      gender: "",
-      birthDate: "",
-      address: "",
-      relatedMemberId: "",
-      relationship: "",
-      relationshipDate: "",
-      placesOfOrigin: "",
-      occupations: "",
-    };
-
     if (!memberFormData.fullName.trim()) {
-      errors.fullName = "Full name is required";
+      return false;
     }
     if (!memberFormData.gender) {
-      errors.gender = "Gender is required";
+      return false;
     }
     if (!memberFormData.birthDate) {
-      errors.birthDate = "Birth date is required";
+      return false;
     }
     if (!memberFormData.address.trim()) {
-      errors.address = "Address is required";
+      return false;
     }
     if (!memberFormData.relatedMemberId) {
-      errors.relatedMemberId = "Related family member is required";
+      return false;
     }
     if (!memberFormData.relationship) {
-      errors.relationship = "Relationship is required";
+      return false;
     }
     if (!memberFormData.relationshipDate) {
-      errors.relationshipDate = "Relationship established date is required";
+      return false;
     }
 
     // Check if at least one place of origin is filled and has required start date
@@ -187,14 +176,40 @@ export default function AddMemberModal({
       (place) => place.location.trim() !== ""
     );
     if (!hasValidPlaceOfOrigin) {
-      errors.placesOfOrigin = "At least one place of origin is required";
+      return false;
     } else {
       // Check that places with location also have start date
       const invalidPlaces = placesOfOrigin.filter(
         (place) => place.location.trim() !== "" && !place.startDate
       );
       if (invalidPlaces.length > 0) {
-        errors.placesOfOrigin = "All places of origin must have a start date";
+        return false;
+      } else {
+        // Check that start dates are after birth date
+        const invalidBirthDatePlaces = placesOfOrigin.filter(
+          (place) =>
+            place.location.trim() !== "" &&
+            place.startDate &&
+            memberFormData.birthDate &&
+            place.startDate <= memberFormData.birthDate
+        );
+        if (invalidBirthDatePlaces.length > 0) {
+          return false;
+        } else {
+          // Check consecutive places date constraints
+          for (let i = 1; i < placesOfOrigin.length; i++) {
+            const currentPlace = placesOfOrigin[i];
+            const previousPlace = placesOfOrigin[i - 1];
+
+            if (currentPlace.location.trim() && currentPlace.startDate) {
+              if (!previousPlace.endDate) {
+                return false;
+              } else if (currentPlace.startDate <= previousPlace.endDate) {
+                return false;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -203,31 +218,62 @@ export default function AddMemberModal({
       (occupation) => occupation.title.trim() !== ""
     );
     if (!hasValidOccupation) {
-      errors.occupations = "At least one occupation is required";
+      return false;
     } else {
       // Check that occupations with title also have start date
       const invalidOccupations = occupations.filter(
         (occupation) => occupation.title.trim() !== "" && !occupation.startDate
       );
       if (invalidOccupations.length > 0) {
-        errors.occupations = "All occupations must have a start date";
+        return false;
+      } else {
+        // Check that start dates are after birth date
+        const invalidBirthDateOccupations = occupations.filter(
+          (occupation) =>
+            occupation.title.trim() !== "" &&
+            occupation.startDate &&
+            memberFormData.birthDate &&
+            occupation.startDate <= memberFormData.birthDate
+        );
+        if (invalidBirthDateOccupations.length > 0) {
+          return false;
+        } else {
+          // Check consecutive occupations date constraints
+          for (let i = 1; i < occupations.length; i++) {
+            const currentOccupation = occupations[i];
+            const previousOccupation = occupations[i - 1];
+
+            if (currentOccupation.title.trim() && currentOccupation.startDate) {
+              if (!previousOccupation.endDate) {
+                return false;
+              } else if (
+                currentOccupation.startDate <= previousOccupation.endDate
+              ) {
+                return false;
+              }
+            }
+          }
+        }
       }
     }
 
-    setValidationErrors(errors);
-    return Object.values(errors).every((error) => error === "");
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Clear any previous general error
+    setGeneralError("");
+
     // Validate form
     if (!validateForm()) {
+      setGeneralError("Please check your information");
       return;
     }
 
     if (!confirmAccuracy) {
-      alert("Please confirm that all information is accurate");
+      setGeneralError("Please check your information");
       return;
     }
 
@@ -394,27 +440,11 @@ export default function AddMemberModal({
                       ...memberFormData,
                       fullName: e.target.value,
                     });
-                    // Clear validation error when user starts typing
-                    if (validationErrors.fullName) {
-                      setValidationErrors({
-                        ...validationErrors,
-                        fullName: "",
-                      });
-                    }
                   }}
                   placeholder="Enter full name"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    validationErrors.fullName
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
-                {validationErrors.fullName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.fullName}
-                  </p>
-                )}
               </div>
 
               {/* Birth Date and Gender - Same Row */}
@@ -431,26 +461,10 @@ export default function AddMemberModal({
                         ...memberFormData,
                         birthDate: e.target.value,
                       });
-                      // Clear validation error when user starts typing
-                      if (validationErrors.birthDate) {
-                        setValidationErrors({
-                          ...validationErrors,
-                          birthDate: "",
-                        });
-                      }
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors.birthDate
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300"
-                    }`}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
-                  {validationErrors.birthDate && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {validationErrors.birthDate}
-                    </p>
-                  )}
                 </div>
 
                 <div>
@@ -464,30 +478,14 @@ export default function AddMemberModal({
                         ...memberFormData,
                         gender: e.target.value,
                       });
-                      // Clear validation error when user starts typing
-                      if (validationErrors.gender) {
-                        setValidationErrors({
-                          ...validationErrors,
-                          gender: "",
-                        });
-                      }
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      validationErrors.gender
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300"
-                    }`}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
                     <option value="">Select gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
-                  {validationErrors.gender && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {validationErrors.gender}
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -504,27 +502,11 @@ export default function AddMemberModal({
                       ...memberFormData,
                       address: e.target.value,
                     });
-                    // Clear validation error when user starts typing
-                    if (validationErrors.address) {
-                      setValidationErrors({
-                        ...validationErrors,
-                        address: "",
-                      });
-                    }
                   }}
                   placeholder="Enter full address"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    validationErrors.address
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
-                {validationErrors.address && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.address}
-                  </p>
-                )}
               </div>
 
               {/* Places of Origin */}
@@ -667,11 +649,6 @@ export default function AddMemberModal({
                 <p className="text-xs text-gray-500 mt-2">
                   Maximum 4 places of origin per person
                 </p>
-                {validationErrors.placesOfOrigin && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.placesOfOrigin}
-                  </p>
-                )}
               </div>
 
               {/* Occupations */}
@@ -777,11 +754,6 @@ export default function AddMemberModal({
                 <p className="text-xs text-gray-500 mt-2">
                   Maximum 15 occupations per person
                 </p>
-                {validationErrors.occupations && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.occupations}
-                  </p>
-                )}
               </div>
 
               {/* Profile Picture */}
@@ -855,19 +827,8 @@ export default function AddMemberModal({
                       ...memberFormData,
                       relatedMemberId: e.target.value,
                     });
-                    // Clear validation error when user starts typing
-                    if (validationErrors.relatedMemberId) {
-                      setValidationErrors({
-                        ...validationErrors,
-                        relatedMemberId: "",
-                      });
-                    }
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    validationErrors.relatedMemberId
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
                   <option value="">Select family member</option>
@@ -877,11 +838,6 @@ export default function AddMemberModal({
                     </option>
                   ))}
                 </select>
-                {validationErrors.relatedMemberId && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.relatedMemberId}
-                  </p>
-                )}
                 <p className="text-xs text-gray-500 mt-1 mb-3">
                   Choose the existing family member this person is related to
                 </p>
@@ -899,30 +855,14 @@ export default function AddMemberModal({
                       ...memberFormData,
                       relationship: e.target.value,
                     });
-                    // Clear validation error when user starts typing
-                    if (validationErrors.relationship) {
-                      setValidationErrors({
-                        ...validationErrors,
-                        relationship: "",
-                      });
-                    }
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    validationErrors.relationship
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 >
                   <option value="">Select relationship</option>
                   <option value="parent">Parent</option>
                   <option value="spouse">Spouse</option>
                 </select>
-                {validationErrors.relationship && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.relationship}
-                  </p>
-                )}
                 <p className="text-xs text-gray-500 mt-1 mb-3">
                   Select how this person is related to the chosen family member
                 </p>
@@ -942,26 +882,10 @@ export default function AddMemberModal({
                       ...memberFormData,
                       relationshipDate: e.target.value,
                     });
-                    // Clear validation error when user starts typing
-                    if (validationErrors.relationshipDate) {
-                      setValidationErrors({
-                        ...validationErrors,
-                        relationshipDate: "",
-                      });
-                    }
                   }}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    validationErrors.relationshipDate
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
-                {validationErrors.relationshipDate && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {validationErrors.relationshipDate}
-                  </p>
-                )}
                 <p className="text-xs text-gray-500 mt-1">
                   When did this relationship begin or get established?
                 </p>
@@ -1000,6 +924,15 @@ export default function AddMemberModal({
                 I confirm that all information provided is accurate and truthful
               </label>
             </div>
+
+            {/* General Error Message */}
+            {generalError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 font-medium text-center">
+                  {generalError}
+                </p>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">

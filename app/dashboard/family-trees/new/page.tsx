@@ -42,6 +42,7 @@ export default function NewFamilyTreePage() {
   // Validation state
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [generalError, setGeneralError] = useState<string>("");
 
   // Family Information
   const [familyData, setFamilyData] = useState({
@@ -142,11 +143,44 @@ export default function NewFamilyTreePage() {
       newErrors.placesOfOrigin =
         "At least one place of origin with location and start date is required";
     } else {
-      delete newErrors.placesOfOrigin;
+      // Check that start dates are after birth date
+      const invalidBirthDatePlaces = placesOfOrigin.filter(
+        (p) =>
+          p.location &&
+          p.startDate &&
+          rootPersonData.birthDate &&
+          p.startDate <= rootPersonData.birthDate
+      );
+      if (invalidBirthDatePlaces.length > 0) {
+        newErrors.placesOfOrigin =
+          "Place of origin start date must be after the birth date";
+      } else {
+        // Check consecutive places date constraints
+        for (let i = 1; i < placesOfOrigin.length; i++) {
+          const currentPlace = placesOfOrigin[i];
+          const previousPlace = placesOfOrigin[i - 1];
+
+          if (currentPlace.location && currentPlace.startDate) {
+            if (!previousPlace.endDate) {
+              newErrors.placesOfOrigin =
+                "Previous place of origin must have an end date";
+              break;
+            } else if (currentPlace.startDate <= previousPlace.endDate) {
+              newErrors.placesOfOrigin =
+                "Start date must be after the end date of the previous place of origin";
+              break;
+            }
+          }
+        }
+      }
+
+      if (!newErrors.placesOfOrigin) {
+        delete newErrors.placesOfOrigin;
+      }
     }
 
     setErrors(newErrors);
-    return hasValidPlace;
+    return hasValidPlace && !newErrors.placesOfOrigin;
   };
 
   const validateOccupations = () => {
@@ -156,11 +190,46 @@ export default function NewFamilyTreePage() {
     if (!hasValidOccupation) {
       newErrors.occupations = "At least one occupation is required";
     } else {
-      delete newErrors.occupations;
+      // Check that start dates are after birth date
+      const invalidBirthDateOccupations = occupations.filter(
+        (o) =>
+          o.title.trim() &&
+          o.startDate &&
+          rootPersonData.birthDate &&
+          o.startDate <= rootPersonData.birthDate
+      );
+      if (invalidBirthDateOccupations.length > 0) {
+        newErrors.occupations =
+          "Occupation start date must be after the birth date";
+      } else {
+        // Check consecutive occupations date constraints
+        for (let i = 1; i < occupations.length; i++) {
+          const currentOccupation = occupations[i];
+          const previousOccupation = occupations[i - 1];
+
+          if (currentOccupation.title.trim() && currentOccupation.startDate) {
+            if (!previousOccupation.endDate) {
+              newErrors.occupations =
+                "Previous occupation must have an end date";
+              break;
+            } else if (
+              currentOccupation.startDate <= previousOccupation.endDate
+            ) {
+              newErrors.occupations =
+                "Start date must be after the end date of the previous occupation";
+              break;
+            }
+          }
+        }
+      }
+
+      if (!newErrors.occupations) {
+        delete newErrors.occupations;
+      }
     }
 
     setErrors(newErrors);
-    return hasValidOccupation;
+    return hasValidOccupation && !newErrors.occupations;
   };
 
   const handleFieldChange = (field: string, value: string) => {
@@ -328,48 +397,52 @@ export default function NewFamilyTreePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Mark all fields as touched to show validation errors
-    const allFields = [
-      "familyName",
-      "origin",
-      "establishYear",
-      "fullName",
-      "gender",
-      "birthDate",
-      "address",
-    ];
-    const newTouched = allFields.reduce(
-      (acc, field) => ({ ...acc, [field]: true }),
-      {}
-    );
-    setTouched(newTouched);
+    // Clear any previous general error
+    setGeneralError("");
 
-    // Validate all fields
-    allFields.forEach((field) => {
-      const value = field.includes("family")
-        ? familyData[field as keyof typeof familyData]
-        : rootPersonData[field as keyof typeof rootPersonData];
-      validateField(field, value as string);
-    });
+    // Basic field validation
+    if (!familyData.familyName.trim()) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!familyData.origin) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!familyData.establishYear) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!rootPersonData.fullName.trim()) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!rootPersonData.gender) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!rootPersonData.birthDate) {
+      setGeneralError("Please check your information");
+      return;
+    }
+    if (!rootPersonData.address.trim()) {
+      setGeneralError("Please check your information");
+      return;
+    }
 
     const placesValid = validatePlacesOfOrigin();
     const occupationsValid = validateOccupations();
 
     // Check if all validations pass
-    const hasErrors =
-      Object.keys(errors).length > 0 || !placesValid || !occupationsValid;
+    const hasErrors = !placesValid || !occupationsValid;
 
     if (hasErrors) {
-      // Scroll to first error
-      const firstErrorField = document.querySelector('[data-error="true"]');
-      if (firstErrorField) {
-        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+      setGeneralError("Please check your information");
       return;
     }
 
     if (!confirmAccuracy) {
-      alert("Please confirm that all information is accurate");
+      setGeneralError("Please check your information");
       return;
     }
 
@@ -477,9 +550,6 @@ export default function NewFamilyTreePage() {
                         });
                         handleFieldChange("familyName", e.target.value);
                       }}
-                      onBlur={() =>
-                        validateField("familyName", familyData.familyName)
-                      }
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         errors.familyName && touched.familyName
                           ? "border-red-500 bg-red-50"
@@ -514,9 +584,6 @@ export default function NewFamilyTreePage() {
                           });
                           handleFieldChange("origin", e.target.value);
                         }}
-                        onBlur={() =>
-                          validateField("origin", familyData.origin)
-                        }
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
                           errors.origin && touched.origin
                             ? "border-red-500 bg-red-50"
@@ -589,9 +656,6 @@ export default function NewFamilyTreePage() {
                         });
                         handleFieldChange("establishYear", e.target.value);
                       }}
-                      onBlur={() =>
-                        validateField("establishYear", familyData.establishYear)
-                      }
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         errors.establishYear && touched.establishYear
                           ? "border-red-500 bg-red-50"
@@ -646,9 +710,6 @@ export default function NewFamilyTreePage() {
                           });
                           handleFieldChange("fullName", e.target.value);
                         }}
-                        onBlur={() =>
-                          validateField("fullName", rootPersonData.fullName)
-                        }
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                           errors.fullName && touched.fullName
                             ? "border-red-500 bg-red-50"
@@ -680,9 +741,6 @@ export default function NewFamilyTreePage() {
                             });
                             handleFieldChange("gender", e.target.value);
                           }}
-                          onBlur={() =>
-                            validateField("gender", rootPersonData.gender)
-                          }
                           className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
                             errors.gender && touched.gender
                               ? "border-red-500 bg-red-50"
@@ -722,9 +780,6 @@ export default function NewFamilyTreePage() {
                             });
                             handleFieldChange("birthDate", e.target.value);
                           }}
-                          onBlur={() =>
-                            validateField("birthDate", rootPersonData.birthDate)
-                          }
                           className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                             errors.birthDate && touched.birthDate
                               ? "border-red-500 bg-red-50"
@@ -1006,9 +1061,6 @@ export default function NewFamilyTreePage() {
                       });
                       handleFieldChange("address", e.target.value);
                     }}
-                    onBlur={() =>
-                      validateField("address", rootPersonData.address)
-                    }
                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                       errors.address && touched.address
                         ? "border-red-500 bg-red-50"
@@ -1107,6 +1159,15 @@ export default function NewFamilyTreePage() {
               </div>
             </form>
           </div>
+
+          {/* General Error Message */}
+          {generalError && (
+            <div className="px-6 py-3 bg-red-50 border-t border-red-200">
+              <p className="text-red-600 font-medium text-center">
+                {generalError}
+              </p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">

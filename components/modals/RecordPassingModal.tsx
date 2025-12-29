@@ -279,6 +279,26 @@ export default function RecordPassingModal({
       } else {
         delete newErrors[`burialPlaces_${index}_endDate`];
       }
+
+      // Validate consecutive burial places: current start date must be after previous end date
+      if (index > 0) {
+        const previousPlace = passingFormData.burialPlaces[index - 1];
+        if (
+          place.startDate &&
+          previousPlace.endDate &&
+          place.startDate <= previousPlace.endDate
+        ) {
+          newErrors[
+            `burialPlaces_${index}_startDate`
+          ] = `Start date must be after the end date of the previous burial place`;
+          hasDateErrors = true;
+        } else if (place.startDate && !previousPlace.endDate) {
+          newErrors[
+            `burialPlaces_${index}_startDate`
+          ] = `Previous burial place must have an end date`;
+          hasDateErrors = true;
+        }
+      }
     });
 
     setErrors(newErrors);
