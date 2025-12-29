@@ -63,9 +63,9 @@ export default function DashboardPage() {
   // Empty state when user has no family trees
   if (!hasFamilyTrees) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-130px)] relative overflow-hidden">
         {/* Background Logo */}
-        <div className="absolute top-[226px] left-1/2 -translate-x-1/2 w-[275px] h-[275px] opacity-50 blur-[2px] pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-15 blur-[1px] pointer-events-none">
           <Image
             src="/images/logo.png"
             alt="Background Logo"
@@ -74,23 +74,23 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
           {/* Main Heading */}
-          <h1 className="font-inter font-bold text-[48px] text-black mb-4 leading-tight">
+          <h1 className="font-inter font-bold text-[42px] text-black mb-4 leading-tight">
             Welcome to Family Tree
           </h1>
 
           {/* Subtitle */}
-          <p className="font-inter font-normal text-[26px] text-black mb-12 leading-relaxed max-w-[1036px]">
+          <p className="font-inter font-normal text-[22px] text-gray-600 mb-10 leading-relaxed">
             Start building your family legacy by creating your first family tree
           </p>
 
           {/* CTA Button */}
           <button
             onClick={() => router.push("/dashboard/family-trees/new")}
-            className="bg-[#84cc16] hover:bg-[#76b813] text-white w-[816px] h-[83px] text-[24px] font-semibold rounded-[30px] inline-flex items-center justify-center gap-3 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.6)] transition-all active:scale-[0.98]"
+            className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[72px] text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
           >
-            <Plus className="w-8 h-8" />
+            <Plus className="w-6 h-6" />
             Create your first family tree
           </button>
         </div>

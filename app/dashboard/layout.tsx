@@ -1,7 +1,10 @@
 "use client";
 
 import { Sidebar } from "../../components/ui/sidebar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useFamilyTrees } from "../../lib/useFamilyTrees";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +12,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const { familyTrees } = useFamilyTrees(session);
+
+  const activeFamilyTreeName = useMemo(() => {
+    const match = pathname.match(/\/dashboard\/family-trees\/(\d+)/);
+    if (match) {
+      const id = parseInt(match[1]);
+      const tree = familyTrees.find((t) => t.id === id);
+      return tree ? `${tree.familyName} Family` : "";
+    }
+    return "";
+  }, [pathname, familyTrees]);
 
   useEffect(() => {
     // Initialize from localStorage
@@ -39,7 +55,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen bg-white">
       {sidebarVisible && <Sidebar />}
       <div className="flex-1 flex flex-col">
-        <header className="h-[60px] flex items-center px-8 border-b border-gray-100">
+        <header className="h-[60px] flex items-center px-8 border-b border-gray-100 relative">
           <button
             onClick={() => {
               const newVisible = !sidebarVisible;
@@ -51,7 +67,7 @@ export default function DashboardLayout({
                 })
               );
             }}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors z-20"
           >
             <svg
               width="30"
@@ -69,6 +85,14 @@ export default function DashboardLayout({
               />
             </svg>
           </button>
+          
+          {activeFamilyTreeName && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <h1 className="font-inter font-semibold text-[20px] text-black">
+                {activeFamilyTreeName}
+              </h1>
+            </div>
+          )}
         </header>
         <main className="flex-1 p-8 transition-all duration-300">
           {children}

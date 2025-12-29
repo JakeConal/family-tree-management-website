@@ -49,7 +49,7 @@ export function Sidebar() {
   }, [activeFamilyTreeId, familyTrees]);
 
   return (
-    <div className="fixed left-0 top-0 z-40 h-screen w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col">
+    <div className="h-screen w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col sticky top-0">
       {/* Logo */}
       <div className="flex items-center h-[80px] px-[13px]">
         <Image
@@ -68,7 +68,7 @@ export function Sidebar() {
           <h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">
             My Family Trees
           </h2>
-          <div className="space-y-2 mb-4">
+          <div className="space-y-1 mb-4">
             {loading ? (
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
@@ -84,32 +84,36 @@ export function Sidebar() {
                   onClick={() =>
                     router.push(`/dashboard/family-trees/${tree.id}`)
                   }
-                  className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
+                  className={`w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter transition-colors rounded-[30px] ${
                     activeFamilyTreeId === tree.id
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : "text-gray-700 hover:bg-gray-200"
+                      ? "bg-[#d4d4d8] text-black"
+                      : "text-black hover:bg-gray-200"
                   }`}
                 >
-                  <span className="truncate">{tree.familyName}</span>
-                  {activeFamilyTreeId === tree.id && (
-                    <ChevronRight className="w-4 h-4" />
-                  )}
+                  <div className="w-[16px] h-[16px] flex items-center justify-center mr-[10px]">
+                    <div className="w-[4px] h-[4px] rounded-full bg-[#d9d4d8]" />
+                  </div>
+                  <span className="truncate font-normal">{tree.familyName}</span>
                 </button>
               ))
             )}
           </div>
           <button
             onClick={() => router.push("/dashboard/family-trees/new")}
-            className="flex items-center font-inter font-normal text-[16px] text-black hover:text-green-600 transition-colors"
+            className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
           >
-            <span className="font-bold mr-1">+</span> Create New Tree
+            <span>+ </span>
+            <span className="font-normal ml-1">Create New Tree</span>
           </button>
         </div>
       )}
 
       {/* Navigation */}
-      <div className="flex-1 px-4 py-6">
-        <nav className="space-y-2">
+      <div className="flex-1 px-[20px] py-2">
+        <h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">
+          Pages
+        </h2>
+        <nav className="space-y-1">
           {navigationItems.map((item) => {
             const isActive =
               item.name === "Dashboard"
@@ -125,13 +129,13 @@ export function Sidebar() {
               <button
                 key={item.name}
                 onClick={() => router.push(item.href)}
-                className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter font-normal rounded-[30px] transition-colors ${
                   isActive
-                    ? "bg-green-600 text-white shadow-sm"
-                    : "text-gray-700 hover:bg-gray-200"
+                    ? "bg-[#d4d4d8] text-black"
+                    : "text-black hover:bg-gray-200"
                 }`}
               >
-                <item.icon className={`w-4 h-4 mr-3 ${isActive ? "text-white" : "text-gray-400"}`} />
+                <item.icon className={`w-[20px] h-[20px] mr-[10px] ${isActive ? "text-black" : "text-gray-500"}`} />
                 {item.name}
               </button>
             );
