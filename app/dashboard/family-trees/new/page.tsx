@@ -39,6 +39,10 @@ export default function NewFamilyTreePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
 
+  // Validation state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
   // Family Information
   const [familyData, setFamilyData] = useState({
     familyName: "",
@@ -65,6 +69,113 @@ export default function NewFamilyTreePage() {
   // Profile picture
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [confirmAccuracy, setConfirmAccuracy] = useState(false);
+
+  // Validation functions
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+
+    switch (field) {
+      case "familyName":
+        if (!value.trim()) {
+          newErrors.familyName = "Family name is required";
+        } else {
+          delete newErrors.familyName;
+        }
+        break;
+      case "origin":
+        if (!value) {
+          newErrors.origin = "Family origin is required";
+        } else {
+          delete newErrors.origin;
+        }
+        break;
+      case "establishYear":
+        if (!value) {
+          newErrors.establishYear = "Establish year is required";
+        } else {
+          const year = parseInt(value);
+          if (year < 1000 || year > new Date().getFullYear()) {
+            newErrors.establishYear = "Please enter a valid year";
+          } else {
+            delete newErrors.establishYear;
+          }
+        }
+        break;
+      case "fullName":
+        if (!value.trim()) {
+          newErrors.fullName = "Full name is required";
+        } else {
+          delete newErrors.fullName;
+        }
+        break;
+      case "gender":
+        if (!value) {
+          newErrors.gender = "Gender is required";
+        } else {
+          delete newErrors.gender;
+        }
+        break;
+      case "birthDate":
+        if (!value) {
+          newErrors.birthDate = "Birth date is required";
+        } else {
+          delete newErrors.birthDate;
+        }
+        break;
+      case "address":
+        if (!value.trim()) {
+          newErrors.address = "Address is required";
+        } else {
+          delete newErrors.address;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const validatePlacesOfOrigin = () => {
+    const newErrors = { ...errors };
+    const hasValidPlace = placesOfOrigin.some((p) => p.location && p.startDate);
+
+    if (!hasValidPlace) {
+      newErrors.placesOfOrigin =
+        "At least one place of origin with location and start date is required";
+    } else {
+      delete newErrors.placesOfOrigin;
+    }
+
+    setErrors(newErrors);
+    return hasValidPlace;
+  };
+
+  const validateOccupations = () => {
+    const newErrors = { ...errors };
+    const hasValidOccupation = occupations.some((o) => o.title.trim());
+
+    if (!hasValidOccupation) {
+      newErrors.occupations = "At least one occupation is required";
+    } else {
+      delete newErrors.occupations;
+    }
+
+    setErrors(newErrors);
+    return hasValidOccupation;
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+
+    // Mark field as touched
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -149,6 +260,14 @@ export default function NewFamilyTreePage() {
         place.id === id ? { ...place, [field]: value } : place
       )
     );
+    // Clear places of origin error when user makes changes
+    if (errors.placesOfOrigin) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.placesOfOrigin;
+        return newErrors;
+      });
+    }
   };
 
   const addOccupation = () => {
@@ -179,6 +298,14 @@ export default function NewFamilyTreePage() {
         occ.id === id ? { ...occ, [field]: value } : occ
       )
     );
+    // Clear occupations error when user makes changes
+    if (errors.occupations) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.occupations;
+        return newErrors;
+      });
+    }
   };
 
   const handleProfilePictureUpload = (
@@ -201,9 +328,43 @@ export default function NewFamilyTreePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!familyData.familyName.trim() || !rootPersonData.fullName.trim()) {
-      alert("Please fill in all required fields");
+    // Mark all fields as touched to show validation errors
+    const allFields = [
+      "familyName",
+      "origin",
+      "establishYear",
+      "fullName",
+      "gender",
+      "birthDate",
+      "address",
+    ];
+    const newTouched = allFields.reduce(
+      (acc, field) => ({ ...acc, [field]: true }),
+      {}
+    );
+    setTouched(newTouched);
+
+    // Validate all fields
+    allFields.forEach((field) => {
+      const value = field.includes("family")
+        ? familyData[field as keyof typeof familyData]
+        : rootPersonData[field as keyof typeof rootPersonData];
+      validateField(field, value as string);
+    });
+
+    const placesValid = validatePlacesOfOrigin();
+    const occupationsValid = validateOccupations();
+
+    // Check if all validations pass
+    const hasErrors =
+      Object.keys(errors).length > 0 || !placesValid || !occupationsValid;
+
+    if (hasErrors) {
+      // Scroll to first error
+      const firstErrorField = document.querySelector('[data-error="true"]');
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
 
@@ -309,16 +470,33 @@ export default function NewFamilyTreePage() {
                     <input
                       type="text"
                       value={familyData.familyName}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFamilyData({
                           ...familyData,
                           familyName: e.target.value,
-                        })
+                        });
+                        handleFieldChange("familyName", e.target.value);
+                      }}
+                      onBlur={() =>
+                        validateField("familyName", familyData.familyName)
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        errors.familyName && touched.familyName
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="e.g. The Hunter Family"
-                      required
+                      data-error={
+                        errors.familyName && touched.familyName
+                          ? "true"
+                          : "false"
+                      }
                     />
+                    {errors.familyName && touched.familyName && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.familyName}
+                      </p>
+                    )}
                   </div>
 
                   {/* Origin */}
@@ -329,14 +507,24 @@ export default function NewFamilyTreePage() {
                     <div className="relative">
                       <select
                         value={familyData.origin}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFamilyData({
                             ...familyData,
                             origin: e.target.value,
-                          })
+                          });
+                          handleFieldChange("origin", e.target.value);
+                        }}
+                        onBlur={() =>
+                          validateField("origin", familyData.origin)
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-                        required
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                          errors.origin && touched.origin
+                            ? "border-red-500 bg-red-50"
+                            : "border-gray-300"
+                        }`}
+                        data-error={
+                          errors.origin && touched.origin ? "true" : "false"
+                        }
                       >
                         <option value="">Select family origin</option>
                         <option value="An Giang">An Giang</option>
@@ -379,6 +567,11 @@ export default function NewFamilyTreePage() {
                       </select>
                       <ChevronDown className="absolute right-3 top-4 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
+                    {errors.origin && touched.origin && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.origin}
+                      </p>
+                    )}
                   </div>
 
                   {/* Establish Year */}
@@ -389,18 +582,35 @@ export default function NewFamilyTreePage() {
                     <input
                       type="number"
                       value={familyData.establishYear}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setFamilyData({
                           ...familyData,
                           establishYear: e.target.value,
-                        })
+                        });
+                        handleFieldChange("establishYear", e.target.value);
+                      }}
+                      onBlur={() =>
+                        validateField("establishYear", familyData.establishYear)
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        errors.establishYear && touched.establishYear
+                          ? "border-red-500 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                       placeholder="e.g. 1945"
                       min="1000"
                       max={new Date().getFullYear()}
-                      required
+                      data-error={
+                        errors.establishYear && touched.establishYear
+                          ? "true"
+                          : "false"
+                      }
                     />
+                    {errors.establishYear && touched.establishYear && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.establishYear}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -429,15 +639,30 @@ export default function NewFamilyTreePage() {
                       <input
                         type="text"
                         value={rootPersonData.fullName}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setRootPersonData({
                             ...rootPersonData,
                             fullName: e.target.value,
-                          })
+                          });
+                          handleFieldChange("fullName", e.target.value);
+                        }}
+                        onBlur={() =>
+                          validateField("fullName", rootPersonData.fullName)
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                          errors.fullName && touched.fullName
+                            ? "border-red-500 bg-red-50"
+                            : "border-gray-300"
+                        }`}
+                        data-error={
+                          errors.fullName && touched.fullName ? "true" : "false"
+                        }
                       />
+                      {errors.fullName && touched.fullName && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.fullName}
+                        </p>
+                      )}
                     </div>
 
                     {/* Gender */}
@@ -448,14 +673,24 @@ export default function NewFamilyTreePage() {
                       <div className="relative">
                         <select
                           value={rootPersonData.gender}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setRootPersonData({
                               ...rootPersonData,
                               gender: e.target.value,
-                            })
+                            });
+                            handleFieldChange("gender", e.target.value);
+                          }}
+                          onBlur={() =>
+                            validateField("gender", rootPersonData.gender)
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
-                          required
+                          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none ${
+                            errors.gender && touched.gender
+                              ? "border-red-500 bg-red-50"
+                              : "border-gray-300"
+                          }`}
+                          data-error={
+                            errors.gender && touched.gender ? "true" : "false"
+                          }
                         >
                           <option value="">Select gender</option>
                           <option value="male">Male</option>
@@ -463,6 +698,11 @@ export default function NewFamilyTreePage() {
                         </select>
                         <ChevronDown className="absolute right-3 top-4 w-5 h-5 text-gray-400 pointer-events-none" />
                       </div>
+                      {errors.gender && touched.gender && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.gender}
+                        </p>
+                      )}
                     </div>
 
                     {/* Birth Date */}
@@ -475,16 +715,33 @@ export default function NewFamilyTreePage() {
                         <input
                           type="date"
                           value={rootPersonData.birthDate}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setRootPersonData({
                               ...rootPersonData,
                               birthDate: e.target.value,
-                            })
+                            });
+                            handleFieldChange("birthDate", e.target.value);
+                          }}
+                          onBlur={() =>
+                            validateField("birthDate", rootPersonData.birthDate)
                           }
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          required
+                          className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                            errors.birthDate && touched.birthDate
+                              ? "border-red-500 bg-red-50"
+                              : "border-gray-300"
+                          }`}
+                          data-error={
+                            errors.birthDate && touched.birthDate
+                              ? "true"
+                              : "false"
+                          }
                         />
                       </div>
+                      {errors.birthDate && touched.birthDate && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.birthDate}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -624,6 +881,11 @@ export default function NewFamilyTreePage() {
                   <p className="text-xs text-gray-500 mt-2">
                     Maximum 4 places of origin per person
                   </p>
+                  {errors.placesOfOrigin && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.placesOfOrigin}
+                    </p>
+                  )}
                 </div>
 
                 {/* Occupation */}
@@ -722,6 +984,11 @@ export default function NewFamilyTreePage() {
                   <p className="text-xs text-gray-500 mt-2">
                     Maximum 5 occupations per person
                   </p>
+                  {errors.occupations && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.occupations}
+                    </p>
+                  )}
                 </div>
 
                 {/* Address */}
@@ -732,16 +999,31 @@ export default function NewFamilyTreePage() {
                   <input
                     type="text"
                     value={rootPersonData.address}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setRootPersonData({
                         ...rootPersonData,
                         address: e.target.value,
-                      })
+                      });
+                      handleFieldChange("address", e.target.value);
+                    }}
+                    onBlur={() =>
+                      validateField("address", rootPersonData.address)
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      errors.address && touched.address
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
                     placeholder="Enter full address"
-                    required
+                    data-error={
+                      errors.address && touched.address ? "true" : "false"
+                    }
                   />
+                  {errors.address && touched.address && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.address}
+                    </p>
+                  )}
                 </div>
 
                 {/* Profile Picture */}

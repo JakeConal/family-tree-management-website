@@ -76,6 +76,19 @@ export default function AddMemberModal({
   const [confirmAccuracy, setConfirmAccuracy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState({
+    fullName: "",
+    gender: "",
+    birthDate: "",
+    address: "",
+    relatedMemberId: "",
+    relationship: "",
+    relationshipDate: "",
+    placesOfOrigin: "",
+    occupations: "",
+  });
+
   // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -133,16 +146,83 @@ export default function AddMemberModal({
     };
   }, [isOpen, onClose]);
 
+  // Validation function
+  const validateForm = () => {
+    const errors = {
+      fullName: "",
+      gender: "",
+      birthDate: "",
+      address: "",
+      relatedMemberId: "",
+      relationship: "",
+      relationshipDate: "",
+      placesOfOrigin: "",
+      occupations: "",
+    };
+
+    if (!memberFormData.fullName.trim()) {
+      errors.fullName = "Full name is required";
+    }
+    if (!memberFormData.gender) {
+      errors.gender = "Gender is required";
+    }
+    if (!memberFormData.birthDate) {
+      errors.birthDate = "Birth date is required";
+    }
+    if (!memberFormData.address.trim()) {
+      errors.address = "Address is required";
+    }
+    if (!memberFormData.relatedMemberId) {
+      errors.relatedMemberId = "Related family member is required";
+    }
+    if (!memberFormData.relationship) {
+      errors.relationship = "Relationship is required";
+    }
+    if (!memberFormData.relationshipDate) {
+      errors.relationshipDate = "Relationship established date is required";
+    }
+
+    // Check if at least one place of origin is filled and has required start date
+    const hasValidPlaceOfOrigin = placesOfOrigin.some(
+      (place) => place.location.trim() !== ""
+    );
+    if (!hasValidPlaceOfOrigin) {
+      errors.placesOfOrigin = "At least one place of origin is required";
+    } else {
+      // Check that places with location also have start date
+      const invalidPlaces = placesOfOrigin.filter(
+        (place) => place.location.trim() !== "" && !place.startDate
+      );
+      if (invalidPlaces.length > 0) {
+        errors.placesOfOrigin = "All places of origin must have a start date";
+      }
+    }
+
+    // Check if at least one occupation is filled and has required start date
+    const hasValidOccupation = occupations.some(
+      (occupation) => occupation.title.trim() !== ""
+    );
+    if (!hasValidOccupation) {
+      errors.occupations = "At least one occupation is required";
+    } else {
+      // Check that occupations with title also have start date
+      const invalidOccupations = occupations.filter(
+        (occupation) => occupation.title.trim() !== "" && !occupation.startDate
+      );
+      if (invalidOccupations.length > 0) {
+        errors.occupations = "All occupations must have a start date";
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.values(errors).every((error) => error === "");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (
-      !memberFormData.fullName.trim() ||
-      !memberFormData.gender ||
-      !memberFormData.birthDate
-    ) {
-      alert("Please fill in all required fields");
+    // Validate form
+    if (!validateForm()) {
       return;
     }
 
@@ -210,7 +290,7 @@ export default function AddMemberModal({
   };
 
   const addOccupation = () => {
-    if (occupations.length < 5) {
+    if (occupations.length < 15) {
       setOccupations([
         ...occupations,
         {
@@ -301,90 +381,157 @@ export default function AddMemberModal({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Full Name - Single Row */}
+              <div className="mb-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={memberFormData.fullName}
+                  onChange={(e) => {
+                    setMemberFormData({
+                      ...memberFormData,
+                      fullName: e.target.value,
+                    });
+                    // Clear validation error when user starts typing
+                    if (validationErrors.fullName) {
+                      setValidationErrors({
+                        ...validationErrors,
+                        fullName: "",
+                      });
+                    }
+                  }}
+                  placeholder="Enter full name"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    validationErrors.fullName
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  required
+                />
+                {validationErrors.fullName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.fullName}
+                  </p>
+                )}
+              </div>
+
+              {/* Birth Date and Gender - Same Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name*
+                    Birth Date <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
-                    value={memberFormData.fullName}
-                    onChange={(e) =>
+                    type="date"
+                    value={memberFormData.birthDate}
+                    onChange={(e) => {
                       setMemberFormData({
                         ...memberFormData,
-                        fullName: e.target.value,
-                      })
-                    }
-                    placeholder="Enter full name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        birthDate: e.target.value,
+                      });
+                      // Clear validation error when user starts typing
+                      if (validationErrors.birthDate) {
+                        setValidationErrors({
+                          ...validationErrors,
+                          birthDate: "",
+                        });
+                      }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      validationErrors.birthDate
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300"
+                    }`}
                     required
                   />
+                  {validationErrors.birthDate && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {validationErrors.birthDate}
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Gender*
+                    Gender <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={memberFormData.gender}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setMemberFormData({
                         ...memberFormData,
                         gender: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      });
+                      // Clear validation error when user starts typing
+                      if (validationErrors.gender) {
+                        setValidationErrors({
+                          ...validationErrors,
+                          gender: "",
+                        });
+                      }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      validationErrors.gender
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300"
+                    }`}
                     required
                   >
                     <option value="">Select gender</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
+                  {validationErrors.gender && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {validationErrors.gender}
+                    </p>
+                  )}
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Birth Date*
-                  </label>
-                  <input
-                    type="date"
-                    value={memberFormData.birthDate}
-                    onChange={(e) =>
-                      setMemberFormData({
-                        ...memberFormData,
-                        birthDate: e.target.value,
-                      })
+              {/* Address - Single Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={memberFormData.address}
+                  onChange={(e) => {
+                    setMemberFormData({
+                      ...memberFormData,
+                      address: e.target.value,
+                    });
+                    // Clear validation error when user starts typing
+                    if (validationErrors.address) {
+                      setValidationErrors({
+                        ...validationErrors,
+                        address: "",
+                      });
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address*
-                  </label>
-                  <input
-                    type="text"
-                    value={memberFormData.address}
-                    onChange={(e) =>
-                      setMemberFormData({
-                        ...memberFormData,
-                        address: e.target.value,
-                      })
-                    }
-                    placeholder="Enter full address"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
+                  }}
+                  placeholder="Enter full address"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    validationErrors.address
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  required
+                />
+                {validationErrors.address && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.address}
+                  </p>
+                )}
               </div>
 
               {/* Places of Origin */}
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <label className="block text-sm font-medium text-gray-700">
-                    Place of Origin
+                    Place of Origin <span className="text-red-500">*</span>
                   </label>
                   <button
                     type="button"
@@ -475,7 +622,7 @@ export default function AddMemberModal({
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-600 mb-1">
-                            Start Date
+                            Start Date <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -520,18 +667,23 @@ export default function AddMemberModal({
                 <p className="text-xs text-gray-500 mt-2">
                   Maximum 4 places of origin per person
                 </p>
+                {validationErrors.placesOfOrigin && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.placesOfOrigin}
+                  </p>
+                )}
               </div>
 
               {/* Occupations */}
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <label className="block text-sm font-medium text-gray-700">
-                    Occupation
+                    Occupation <span className="text-red-500">*</span>
                   </label>
                   <button
                     type="button"
                     onClick={addOccupation}
-                    disabled={occupations.length >= 5}
+                    disabled={occupations.length >= 15}
                     className="flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
                   >
                     <Plus className="w-4 h-4 mr-1" />
@@ -580,7 +732,7 @@ export default function AddMemberModal({
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-600 mb-1">
-                            Start Date
+                            Start Date <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="date"
@@ -623,8 +775,13 @@ export default function AddMemberModal({
                 ))}
 
                 <p className="text-xs text-gray-500 mt-2">
-                  Maximum 5 occupations per person
+                  Maximum 15 occupations per person
                 </p>
+                {validationErrors.occupations && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.occupations}
+                  </p>
+                )}
               </div>
 
               {/* Profile Picture */}
@@ -686,74 +843,129 @@ export default function AddMemberModal({
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Related Family Member*
-                  </label>
-                  <select
-                    value={memberFormData.relatedMemberId}
-                    onChange={(e) =>
-                      setMemberFormData({
-                        ...memberFormData,
-                        relatedMemberId: e.target.value,
-                      })
+              {/* Related Family Member - Single Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Related Family Member <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={memberFormData.relatedMemberId}
+                  onChange={(e) => {
+                    setMemberFormData({
+                      ...memberFormData,
+                      relatedMemberId: e.target.value,
+                    });
+                    // Clear validation error when user starts typing
+                    if (validationErrors.relatedMemberId) {
+                      setValidationErrors({
+                        ...validationErrors,
+                        relatedMemberId: "",
+                      });
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Select family member</option>
-                    {existingMembers.map((member) => (
-                      <option key={member.id} value={member.id}>
-                        {member.fullName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Relationship*
-                  </label>
-                  <select
-                    value={memberFormData.relationship}
-                    onChange={(e) =>
-                      setMemberFormData({
-                        ...memberFormData,
-                        relationship: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Select relationship</option>
-                    <option value="parent">Parent</option>
-                    <option value="spouse">Spouse</option>
-                  </select>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Relationship Established Date*
-                  </label>
-                  <input
-                    type="date"
-                    value={memberFormData.relationshipDate}
-                    onChange={(e) =>
-                      setMemberFormData({
-                        ...memberFormData,
-                        relationshipDate: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
+                  }}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    validationErrors.relatedMemberId
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  required
+                >
+                  <option value="">Select family member</option>
+                  {existingMembers.map((member) => (
+                    <option key={member.id} value={member.id}>
+                      {member.fullName}
+                    </option>
+                  ))}
+                </select>
+                {validationErrors.relatedMemberId && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relatedMemberId}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1 mb-3">
+                  Choose the existing family member this person is related to
+                </p>
               </div>
 
-              <p className="text-sm text-gray-600 mt-3">
-                Relationship of the new member to the selected person
-              </p>
+              {/* Relationship - Single Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Relationship <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={memberFormData.relationship}
+                  onChange={(e) => {
+                    setMemberFormData({
+                      ...memberFormData,
+                      relationship: e.target.value,
+                    });
+                    // Clear validation error when user starts typing
+                    if (validationErrors.relationship) {
+                      setValidationErrors({
+                        ...validationErrors,
+                        relationship: "",
+                      });
+                    }
+                  }}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    validationErrors.relationship
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  required
+                >
+                  <option value="">Select relationship</option>
+                  <option value="parent">Parent</option>
+                  <option value="spouse">Spouse</option>
+                </select>
+                {validationErrors.relationship && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relationship}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1 mb-3">
+                  Select how this person is related to the chosen family member
+                </p>
+              </div>
+
+              {/* Relationship Established Date - Single Row */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Relationship Established Date{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={memberFormData.relationshipDate}
+                  onChange={(e) => {
+                    setMemberFormData({
+                      ...memberFormData,
+                      relationshipDate: e.target.value,
+                    });
+                    // Clear validation error when user starts typing
+                    if (validationErrors.relationshipDate) {
+                      setValidationErrors({
+                        ...validationErrors,
+                        relationshipDate: "",
+                      });
+                    }
+                  }}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    validationErrors.relationshipDate
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  required
+                />
+                {validationErrors.relationshipDate && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relationshipDate}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  When did this relationship begin or get established?
+                </p>
+              </div>
             </div>
 
             {/* Confirmation */}

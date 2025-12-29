@@ -22,6 +22,7 @@ interface FamilyMember {
 interface BurialPlace {
   location: string;
   startDate: string;
+  endDate: string;
 }
 
 interface RecordPassingModalProps {
@@ -46,7 +47,14 @@ export default function RecordPassingModal({
     burialPlaces: [] as BurialPlace[],
   });
 
+  const [selectedMemberBirthDate, setSelectedMemberBirthDate] =
+    useState<string>("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Validation state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Reset form when modal opens
   useEffect(() => {
@@ -55,8 +63,11 @@ export default function RecordPassingModal({
         familyMemberId: "",
         dateOfPassing: "",
         causesOfDeath: [""], // Start with one empty cause of death
-        burialPlaces: [{ location: "", startDate: "" }], // Start with one empty burial place
+        burialPlaces: [{ location: "", startDate: "", endDate: "" }], // Start with one empty burial place
       });
+      setSelectedMemberBirthDate("");
+      setErrors({});
+      setTouched({});
       setIsSubmitting(false);
     }
   }, [isOpen]);
@@ -83,15 +94,53 @@ export default function RecordPassingModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
-    if (
-      !passingFormData.familyMemberId ||
-      !passingFormData.dateOfPassing ||
-      passingFormData.causesOfDeath.length === 0 ||
-      passingFormData.burialPlaces.length === 0
-    ) {
-      alert("Please fill in all required fields");
+    // Mark all fields as touched to show validation errors
+    const allFields = ["familyMemberId", "dateOfPassing"];
+    const newTouched = allFields.reduce(
+      (acc, field) => ({ ...acc, [field]: true }),
+      {}
+    );
+    setTouched(newTouched);
+
+    // Validate all fields
+    allFields.forEach((field) => {
+      const value = passingFormData[field as keyof typeof passingFormData];
+      validateField(field, value as string);
+    });
+
+    const causesValid = validateCausesOfDeath();
+    const placesValid = validateBurialPlaces();
+    const datesValid = validateDates();
+
+    // Check if all validations pass
+    const hasErrors =
+      Object.keys(errors).length > 0 ||
+      !causesValid ||
+      !placesValid ||
+      !datesValid;
+
+    if (hasErrors) {
+      // Scroll to first error
+      const firstErrorField = document.querySelector('[data-error="true"]');
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
+    }
+
+    // Check if family member already has a passing record
+    if (passingFormData.familyMemberId) {
+      const hasExistingRecord = await checkExistingPassingRecord(
+        passingFormData.familyMemberId
+      );
+      if (hasExistingRecord) {
+        setErrors((prev) => ({
+          ...prev,
+          familyMemberId:
+            "This family member already has a passing record. Each person can only have one passing record.",
+        }));
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -128,11 +177,148 @@ export default function RecordPassingModal({
     }
   };
 
-  const addCauseOfDeath = () => {
-    setPassingFormData({
-      ...passingFormData,
-      causesOfDeath: [...passingFormData.causesOfDeath, ""],
+  // Validation functions
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+
+    switch (field) {
+      case "familyMemberId":
+        if (!value) {
+          newErrors.familyMemberId = "Family member is required";
+        } else {
+          delete newErrors.familyMemberId;
+        }
+        break;
+      case "dateOfPassing":
+        if (!value) {
+          newErrors.dateOfPassing = "Date of passing is required";
+        } else {
+          delete newErrors.dateOfPassing;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const validateCausesOfDeath = () => {
+    const newErrors = { ...errors };
+    const hasValidCause = passingFormData.causesOfDeath.some(
+      (cause) => cause.trim() !== ""
+    );
+
+    if (!hasValidCause) {
+      newErrors.causesOfDeath = "At least one cause of passing is required";
+    } else {
+      delete newErrors.causesOfDeath;
+    }
+
+    setErrors(newErrors);
+    return hasValidCause;
+  };
+
+  const validateBurialPlaces = () => {
+    const newErrors = { ...errors };
+    const hasValidPlace = passingFormData.burialPlaces.some(
+      (place) => place.location.trim() !== "" && place.startDate !== ""
+    );
+
+    if (!hasValidPlace) {
+      newErrors.burialPlaces =
+        "At least one burial place with location and start date is required";
+    } else {
+      delete newErrors.burialPlaces;
+    }
+
+    setErrors(newErrors);
+    return hasValidPlace;
+  };
+
+  const validateDates = () => {
+    const newErrors = { ...errors };
+    let hasDateErrors = false;
+
+    // Validate date of passing is after birth date
+    if (
+      passingFormData.dateOfPassing &&
+      selectedMemberBirthDate &&
+      passingFormData.dateOfPassing <= selectedMemberBirthDate
+    ) {
+      newErrors.dateOfPassing = "Date of passing must be after the birth date";
+      hasDateErrors = true;
+    } else {
+      delete newErrors.dateOfPassing;
+    }
+
+    // Validate burial dates
+    passingFormData.burialPlaces.forEach((place, index) => {
+      // Validate burial start date is on or after date of passing
+      if (
+        place.startDate &&
+        passingFormData.dateOfPassing &&
+        place.startDate < passingFormData.dateOfPassing
+      ) {
+        newErrors[
+          `burialPlaces_${index}_startDate`
+        ] = `Burial start date must be on or after the date of passing`;
+        hasDateErrors = true;
+      } else {
+        delete newErrors[`burialPlaces_${index}_startDate`];
+      }
+
+      // Validate burial end date is after start date
+      if (
+        place.endDate &&
+        place.startDate &&
+        place.endDate <= place.startDate
+      ) {
+        newErrors[
+          `burialPlaces_${index}_endDate`
+        ] = `Burial end date must be after the start date`;
+        hasDateErrors = true;
+      } else {
+        delete newErrors[`burialPlaces_${index}_endDate`];
+      }
     });
+
+    setErrors(newErrors);
+    return !hasDateErrors;
+  };
+
+  const checkExistingPassingRecord = async (familyMemberId: string) => {
+    try {
+      const response = await fetch(
+        `/api/family-trees/${familyTreeId}/passing-records/check/${familyMemberId}`
+      );
+      const data = await response.json();
+      return data.hasRecord;
+    } catch (error) {
+      console.error("Error checking existing passing record:", error);
+      return false;
+    }
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+
+    // Mark field as touched
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const addCauseOfDeath = () => {
+    if (passingFormData.causesOfDeath.length < 12) {
+      setPassingFormData({
+        ...passingFormData,
+        causesOfDeath: [...passingFormData.causesOfDeath, ""],
+      });
+    }
   };
 
   const updateCauseOfDeath = (index: number, value: string) => {
@@ -142,6 +328,14 @@ export default function RecordPassingModal({
       ...passingFormData,
       causesOfDeath: updatedCauses,
     });
+    // Clear causes of death error when user makes changes
+    if (errors.causesOfDeath) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.causesOfDeath;
+        return newErrors;
+      });
+    }
   };
 
   const removeCauseOfDeath = (index: number) => {
@@ -158,13 +352,15 @@ export default function RecordPassingModal({
   };
 
   const addBurialPlace = () => {
-    setPassingFormData({
-      ...passingFormData,
-      burialPlaces: [
-        ...passingFormData.burialPlaces,
-        { location: "", startDate: "" },
-      ],
-    });
+    if (passingFormData.burialPlaces.length < 3) {
+      setPassingFormData({
+        ...passingFormData,
+        burialPlaces: [
+          ...passingFormData.burialPlaces,
+          { location: "", startDate: "", endDate: "" },
+        ],
+      });
+    }
   };
 
   const updateBurialPlace = (
@@ -178,6 +374,15 @@ export default function RecordPassingModal({
       ...passingFormData,
       burialPlaces: updatedPlaces,
     });
+
+    // Clear burial places error when user makes changes
+    if (errors.burialPlaces) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.burialPlaces;
+        return newErrors;
+      });
+    }
   };
 
   const removeBurialPlace = (index: number) => {
@@ -242,18 +447,39 @@ export default function RecordPassingModal({
             {/* Family Member Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Family Member*
+                Family Member <span className="text-red-500">*</span>
               </label>
               <select
                 value={passingFormData.familyMemberId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const selectedMember = existingMembers.find(
+                    (member) => member.id.toString() === selectedId
+                  );
+
                   setPassingFormData({
                     ...passingFormData,
-                    familyMemberId: e.target.value,
-                  })
+                    familyMemberId: selectedId,
+                  });
+                  setSelectedMemberBirthDate(selectedMember?.birthday || "");
+                  handleFieldChange("familyMemberId", selectedId);
+                }}
+                onBlur={() =>
+                  validateField(
+                    "familyMemberId",
+                    passingFormData.familyMemberId
+                  )
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.familyMemberId && touched.familyMemberId
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300"
+                }`}
+                data-error={
+                  errors.familyMemberId && touched.familyMemberId
+                    ? "true"
+                    : "false"
+                }
               >
                 <option value="">Select member</option>
                 {existingMembers.map((member) => (
@@ -262,41 +488,67 @@ export default function RecordPassingModal({
                   </option>
                 ))}
               </select>
+              {errors.familyMemberId && touched.familyMemberId && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.familyMemberId}
+                </p>
+              )}
             </div>
 
             {/* Date of Passing */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date of Passing*
+                Date of Passing <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <input
                   type="date"
                   value={passingFormData.dateOfPassing}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setPassingFormData({
                       ...passingFormData,
                       dateOfPassing: e.target.value,
-                    })
+                    });
+                    handleFieldChange("dateOfPassing", e.target.value);
+                  }}
+                  onBlur={() =>
+                    validateField(
+                      "dateOfPassing",
+                      passingFormData.dateOfPassing
+                    )
                   }
-                  className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.dateOfPassing && touched.dateOfPassing
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300"
+                  }`}
                   placeholder="MM/DD/YYYY"
-                  required
+                  data-error={
+                    errors.dateOfPassing && touched.dateOfPassing
+                      ? "true"
+                      : "false"
+                  }
                 />
                 <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
               </div>
+              {errors.dateOfPassing && touched.dateOfPassing && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.dateOfPassing}
+                </p>
+              )}
             </div>
 
             {/* Cause of Passing */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Cause of Passing*
+                  Cause of Passing <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
                   onClick={addCauseOfDeath}
-                  className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+                  disabled={passingFormData.causesOfDeath.length >= 12}
+                  className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Cause
@@ -337,17 +589,26 @@ export default function RecordPassingModal({
                 </div>
               )}
             </div>
+            {errors.causesOfDeath && (
+              <p className="mt-2 text-sm text-red-600">
+                {errors.causesOfDeath}
+              </p>
+            )}
+            <p className="text-xs text-gray-500 mt-2">
+              Maximum 12 causes of death per record
+            </p>
 
             {/* Burial Places */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Burial Places*
+                  Burial Places <span className="text-red-500">*</span>
                 </label>
                 <button
                   type="button"
                   onClick={addBurialPlace}
-                  className="flex items-center text-sm text-blue-600 hover:text-blue-800"
+                  disabled={passingFormData.burialPlaces.length >= 3}
+                  className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Add Place
@@ -396,26 +657,59 @@ export default function RecordPassingModal({
                           required
                         />
                       </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">
-                          Start Date*
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="date"
-                            value={place.startDate}
-                            onChange={(e) =>
-                              updateBurialPlace(
-                                index,
-                                "startDate",
-                                e.target.value
-                              )
-                            }
-                            className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="MM/DD/YYYY"
-                            required
-                          />
-                          <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            Start Date*
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={place.startDate}
+                              onChange={(e) =>
+                                updateBurialPlace(
+                                  index,
+                                  "startDate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="MM/DD/YYYY"
+                              required
+                            />
+                            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                          </div>
+                          {errors[`burialPlaces_${index}_startDate`] && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors[`burialPlaces_${index}_startDate`]}
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">
+                            End Date
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              value={place.endDate}
+                              onChange={(e) =>
+                                updateBurialPlace(
+                                  index,
+                                  "endDate",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="MM/DD/YYYY"
+                            />
+                            <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                          </div>
+                          {errors[`burialPlaces_${index}_endDate`] && (
+                            <p className="mt-1 text-xs text-red-600">
+                              {errors[`burialPlaces_${index}_endDate`]}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -423,6 +717,12 @@ export default function RecordPassingModal({
                 </div>
               )}
             </div>
+            {errors.burialPlaces && (
+              <p className="mt-2 text-sm text-red-600">{errors.burialPlaces}</p>
+            )}
+            <p className="text-xs text-gray-500 mt-2">
+              Maximum 3 burial places per record
+            </p>
 
             {/* Important Notice */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -440,6 +740,15 @@ export default function RecordPassingModal({
                 </div>
               </div>
             </div>
+
+            {/* Error Message */}
+            {Object.keys(errors).length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <p className="text-sm font-medium text-red-800">
+                  Please check your information
+                </p>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
