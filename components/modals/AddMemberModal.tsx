@@ -191,7 +191,7 @@ export default function AddMemberModal({
             place.location.trim() !== "" &&
             place.startDate &&
             memberFormData.birthDate &&
-            place.startDate <= memberFormData.birthDate
+            place.startDate < memberFormData.birthDate
         );
         if (invalidBirthDatePlaces.length > 0) {
           return false;
@@ -290,7 +290,20 @@ export default function AddMemberModal({
       formData.append("familyTreeId", familyTreeId);
 
       if (memberFormData.relatedMemberId) {
-        formData.append("parentId", memberFormData.relatedMemberId);
+        if (memberFormData.relationship === "parent") {
+          formData.append("parentId", memberFormData.relatedMemberId);
+          if (memberFormData.relationshipDate) {
+            formData.append(
+              "relationshipEstablishedDate",
+              memberFormData.relationshipDate
+            );
+          }
+        } else if (memberFormData.relationship === "spouse") {
+          formData.append("spouseId", memberFormData.relatedMemberId);
+          if (memberFormData.relationshipDate) {
+            formData.append("marriageDate", memberFormData.relationshipDate);
+          }
+        }
       }
 
       if (profilePicture) {

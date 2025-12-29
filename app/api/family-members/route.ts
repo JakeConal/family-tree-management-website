@@ -158,6 +158,11 @@ export async function POST(request: NextRequest) {
     const isAdopted = formData.get("isAdopted") === "true";
     const familyTreeId = formData.get("familyTreeId") as string;
     const parentId = formData.get("parentId") as string;
+    const spouseId = formData.get("spouseId") as string;
+    const relationshipEstablishedDate = formData.get(
+      "relationshipEstablishedDate"
+    ) as string;
+    const marriageDate = formData.get("marriageDate") as string;
     const profilePictureFile = formData.get("profilePicture") as File | null;
 
     if (
@@ -209,6 +214,23 @@ export async function POST(request: NextRequest) {
       if (!parent) {
         return NextResponse.json(
           { error: "Parent not found in this family tree" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // If spouseId is provided, verify it exists and belongs to the same family tree
+    if (spouseId) {
+      const spouse = await prisma.familyMember.findFirst({
+        where: {
+          id: parseInt(spouseId),
+          familyTreeId: parseInt(familyTreeId),
+        },
+      });
+
+      if (!spouse) {
+        return NextResponse.json(
+          { error: "Spouse not found in this family tree" },
           { status: 400 }
         );
       }
@@ -277,6 +299,9 @@ export async function POST(request: NextRequest) {
         isAdopted: isAdopted || false,
         familyTreeId: parseInt(familyTreeId),
         parentId: parentId ? parseInt(parentId) : null,
+        relationshipEstablishedDate: relationshipEstablishedDate
+          ? new Date(relationshipEstablishedDate)
+          : null,
       },
       select: {
         id: true,
@@ -289,6 +314,7 @@ export async function POST(request: NextRequest) {
         isAdopted: true,
         familyTreeId: true,
         parentId: true,
+        relationshipEstablishedDate: true,
         parent: {
           select: {
             id: true,
@@ -303,6 +329,17 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // If spouseId is provided, create the spouse relationship
+    if (spouseId && marriageDate) {
+      await prisma.spouseRelationship.create({
+        data: {
+          familyMember1Id: parseInt(spouseId),
+          familyMember2Id: familyMember.id,
+          marriageDate: new Date(marriageDate),
+        },
+      });
+    }
 
     // Log the creation
     await logChange(
@@ -320,6 +357,9 @@ export async function POST(request: NextRequest) {
         generation: familyMember.generation,
         isAdopted: familyMember.isAdopted,
         parentId: familyMember.parentId,
+        relationshipEstablishedDate: familyMember.relationshipEstablishedDate,
+        spouseId: spouseId ? parseInt(spouseId) : null,
+        marriageDate: marriageDate ? new Date(marriageDate) : null,
       }
     );
 
