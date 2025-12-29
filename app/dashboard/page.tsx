@@ -87,7 +87,7 @@ export default function DashboardPage() {
 
           {/* CTA Button */}
           <button
-            onClick={() => router.push("/dashboard/family-trees/new")}
+            onClick={() => router.push("/dashboard?create=true")}
             className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[72px] text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
           >
             <Plus className="w-6 h-6" />

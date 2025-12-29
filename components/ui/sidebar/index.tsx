@@ -99,7 +99,7 @@ export function Sidebar() {
             )}
           </div>
           <button
-            onClick={() => router.push("/dashboard/family-trees/new")}
+            onClick={() => router.push(`${pathname}?create=true`)}
             className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
           >
             <span>+ </span>
