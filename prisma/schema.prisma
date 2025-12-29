@@ -51,6 +51,7 @@ model FamilyMember {
   isAdopted      Boolean?                         @default(false)
   familyTreeId   Int
   parentId       Int?
+  relationshipEstablishedDate DateTime?
   achievements   Achievement[]
   causesOfDeath  CauseOfDeath[]
   familyTree     FamilyTree                       @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
