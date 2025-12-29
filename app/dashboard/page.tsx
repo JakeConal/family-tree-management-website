@@ -63,39 +63,36 @@ export default function DashboardPage() {
   // Empty state when user has no family trees
   if (!hasFamilyTrees) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          {/* DNA Icon */}
-          <div className="mb-8">
-            <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center shadow-sm">
-              <Image
-                src="/images/logo.png"
-                alt="Family Tree Logo"
-                width={48}
-                height={48}
-                className="rounded-lg"
-              />
-            </div>
-          </div>
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Background Logo */}
+        <div className="absolute top-[226px] left-1/2 -translate-x-1/2 w-[275px] h-[275px] opacity-50 blur-[2px] pointer-events-none">
+          <Image
+            src="/images/logo.png"
+            alt="Background Logo"
+            fill
+            className="object-contain"
+          />
+        </div>
 
+        <div className="relative z-10 text-center max-w-4xl mx-auto">
           {/* Main Heading */}
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="font-inter font-bold text-[48px] text-black mb-4 leading-tight">
             Welcome to Family Tree
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+          <p className="font-inter font-normal text-[26px] text-black mb-12 leading-relaxed max-w-[1036px]">
             Start building your family legacy by creating your first family tree
           </p>
 
           {/* CTA Button */}
-          <RippleButton
+          <button
             onClick={() => router.push("/dashboard/family-trees/new")}
-            className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-semibold rounded-xl inline-flex items-center gap-3 shadow-lg hover:shadow-xl transition-shadow"
+            className="bg-[#84cc16] hover:bg-[#76b813] text-white w-[816px] h-[83px] text-[24px] font-semibold rounded-[30px] inline-flex items-center justify-center gap-3 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.6)] transition-all active:scale-[0.98]"
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-8 h-8" />
             Create your first family tree
-          </RippleButton>
+          </button>
         </div>
       </div>
     );

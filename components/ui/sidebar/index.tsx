@@ -49,23 +49,23 @@ export function Sidebar() {
   }, [activeFamilyTreeId, familyTrees]);
 
   return (
-    <div className="fixed left-0 top-0 z-40 h-screen w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+    <div className="fixed left-0 top-0 z-40 h-screen w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col">
       {/* Logo */}
-      <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+      <div className="flex items-center h-[80px] px-[13px]">
         <Image
           src="/images/logo.png"
           alt="Family Tree Logo"
-          width={24}
-          height={24}
-          className="mr-2"
+          width={42}
+          height={41}
+          className="mr-[5px]"
         />
-        <span className="text-xl font-bold text-gray-900">Family Tree</span>
+        <span className="font-playfair font-bold text-[23.908px] text-black">Family Tree</span>
       </div>
 
       {/* Family Trees Section */}
       {status === "authenticated" && (
-        <div className="px-4 py-6 border-b border-gray-200">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">
+        <div className="px-[20px] py-[20px]">
+          <h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">
             My Family Trees
           </h2>
           <div className="space-y-2 mb-4">
@@ -74,7 +74,7 @@ export function Sidebar() {
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
               </div>
             ) : familyTrees.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-gray-500 py-4">
                 No family trees yet
               </p>
             ) : (
@@ -87,7 +87,7 @@ export function Sidebar() {
                   className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
                     activeFamilyTreeId === tree.id
                       ? "bg-green-100 text-green-700 border border-green-200"
-                      : "text-gray-700 hover:bg-gray-100"
+                      : "text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   <span className="truncate">{tree.familyName}</span>
@@ -100,10 +100,9 @@ export function Sidebar() {
           </div>
           <button
             onClick={() => router.push("/dashboard/family-trees/new")}
-            className="flex items-center w-full px-4 py-3 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border border-green-200"
+            className="flex items-center font-inter font-normal text-[16px] text-black hover:text-green-600 transition-colors"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Create New Tree
+            <span className="font-bold mr-1">+</span> Create New Tree
           </button>
         </div>
       )}
@@ -128,11 +127,11 @@ export function Sidebar() {
                 onClick={() => router.push(item.href)}
                 className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                   isActive
-                    ? "bg-green-100 text-green-700 border border-green-200"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-green-600 text-white shadow-sm"
+                    : "text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                <item.icon className="w-4 h-4 mr-3" />
+                <item.icon className={`w-4 h-4 mr-3 ${isActive ? "text-white" : "text-gray-400"}`} />
                 {item.name}
               </button>
             );
@@ -141,35 +140,38 @@ export function Sidebar() {
       </div>
 
       {/* User Profile Section */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center">
-          {session?.user?.image ? (
-            <Image
-              src={session.user.image}
-              alt="Profile"
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full mr-3"
-            />
-          ) : (
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-              <span className="text-sm font-medium text-green-700">
-                {session?.user?.name?.charAt(0) ||
-                  session?.user?.email?.charAt(0) ||
-                  "U"}
-              </span>
+      <div className="p-[20px] border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-200">
+              {session?.user?.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="Profile"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-green-100 flex items-center justify-center">
+                  <span className="text-sm font-bold text-green-700">
+                    {session?.user?.name?.charAt(0) ||
+                      session?.user?.email?.charAt(0) ||
+                      "U"}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900">
-              {session?.user?.name || "User"}
-            </p>
+            <div className="ml-[13px]">
+              <p className="font-inter font-bold text-[14px] text-black truncate max-w-[100px]">
+                {session?.user?.name || "User"}
+              </p>
+            </div>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/welcome" })}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5" />
           </button>
         </div>
       </div>
