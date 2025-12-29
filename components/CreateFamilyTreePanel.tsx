@@ -255,21 +255,20 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex justify-end">
-      <div className="bg-white w-full max-w-[600px] h-full overflow-y-auto relative flex flex-col">
-        {/* Header */}
-        <div className="p-6 flex flex-col items-center relative">
+    <div className="w-full h-full overflow-y-auto relative flex flex-col bg-white">
+      {/* Header */}
+      <div className="p-4 lg:p-6 flex flex-col items-center relative">
           <button
             onClick={onClose}
-            className="absolute left-6 top-6 flex items-center text-black hover:opacity-70 transition-opacity"
+            className="absolute left-4 lg:left-6 top-4 lg:top-6 flex items-center text-black hover:opacity-70 transition-opacity"
           >
             <span className="text-xl font-light mr-2">{"<"}</span>
             <span className="font-medium">Back</span>
           </button>
-          <h1 className="text-[26px] font-bold mt-8 text-black">Create New Family Tree</h1>
+          <h1 className="text-[20px] lg:text-[26px] font-bold mt-8 text-black text-center">Create New Family Tree</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-12 pb-12 flex-1">
+        <form onSubmit={handleSubmit} className="px-4 lg:px-12 pb-12 flex-1">
           {/* Family Information Section */}
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
@@ -674,7 +673,6 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
             </div>
           </div>
         </form>
-      </div>
     </div>
   );
 }

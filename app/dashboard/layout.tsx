@@ -13,20 +13,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isCreatePanelOpen = searchParams.get("create") === "true";
   const { data: session } = useSession();
   const { familyTrees } = useFamilyTrees(session);
-
-  useEffect(() => {
-    if (searchParams.get("create") === "true") {
-      setIsCreatePanelOpen(true);
-    } else {
-      setIsCreatePanelOpen(false);
-    }
-  }, [searchParams]);
 
   const closeCreatePanel = () => {
     const params = new URLSearchParams(searchParams.toString());
@@ -48,7 +40,13 @@ export default function DashboardLayout({
     // Initialize from localStorage
     const saved = localStorage.getItem("sidebar-visible");
     if (saved !== null) {
-      setSidebarVisible(saved === "true");
+      const isVisible = saved === "true";
+      setSidebarVisible((prev) => (prev !== isVisible ? isVisible : prev));
+    } else {
+      // Default to false on mobile
+      if (window.innerWidth < 1024) {
+        setSidebarVisible((prev) => (prev !== false ? false : prev));
+      }
     }
 
     // Listen for sidebar toggle events
@@ -70,11 +68,35 @@ export default function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-white overflow-hidden">
-      {sidebarVisible && <Sidebar />}
-      <div className="flex-1 flex flex-row min-w-0">
-        <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
-          <header className="h-[60px] flex items-center px-8 border-b border-gray-100 relative flex-shrink-0">
+    <div className="flex h-screen bg-white overflow-hidden relative">
+      {/* Sidebar Overlay for mobile */}
+      {sidebarVisible && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-30 lg:hidden"
+          onClick={() => {
+            setSidebarVisible(false);
+            localStorage.setItem("sidebar-visible", "false");
+            window.dispatchEvent(new CustomEvent("sidebar-toggle", { detail: { visible: false } }));
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div 
+        className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out lg:relative ${
+          sidebarVisible 
+            ? "translate-x-0 w-[220px]" 
+            : "-translate-x-full lg:translate-x-0 lg:w-0"
+        } overflow-hidden bg-[#f4f4f5] h-full`}
+      >
+        <div className="w-[220px] h-full">
+          <Sidebar />
+        </div>
+      </div>
+
+      <div className="flex-1 flex flex-row min-w-0 h-full">
+        <div className="flex-1 flex flex-col min-w-0 h-full">
+          <header className="h-[60px] flex items-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
             <button
               onClick={() => {
                 const newVisible = !sidebarVisible;
@@ -86,7 +108,7 @@ export default function DashboardLayout({
                   })
                 );
               }}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors z-20"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <svg
                 width="30"
@@ -106,35 +128,38 @@ export default function DashboardLayout({
             </button>
             
             {activeFamilyTreeName && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <h1 className="font-inter font-semibold text-[20px] text-black">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-16">
+                <h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">
                   {activeFamilyTreeName}
                 </h1>
               </div>
             )}
           </header>
-          <main className="flex-1 p-8 overflow-y-auto">
+          <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
             {children}
           </main>
         </div>
 
-        {/* Create Family Tree Panel */}
+        {/* Create Family Tree Panel - Desktop (Push) */}
         <aside 
-          className={`fixed top-0 right-0 h-full bg-white border-l border-[#e4e4e7] shadow-2xl transition-all duration-300 z-50 overflow-hidden ${
-            isCreatePanelOpen ? 'w-[600px] translate-x-0' : 'w-0 translate-x-full'
+          className={`hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden flex-shrink-0 h-full ${
+            isCreatePanelOpen ? 'w-[600px]' : 'w-0'
           }`}
         >
           <div className="w-[600px] h-full">
             <CreateFamilyTreePanel onClose={closeCreatePanel} />
           </div>
         </aside>
-
-        {/* Spacer to push content when panel is open */}
-        <div 
-          className="hidden md:block transition-all duration-300 overflow-hidden flex-shrink-0" 
-          style={{ width: isCreatePanelOpen ? '600px' : '0px' }}
-        />
       </div>
+
+      {/* Create Family Tree Panel - Mobile (Overlay) */}
+      <aside 
+        className={`md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out ${
+          isCreatePanelOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <CreateFamilyTreePanel onClose={closeCreatePanel} />
+      </aside>
     </div>
   );
 }
