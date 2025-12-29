@@ -69,7 +69,10 @@ export default function AddMemberModal({
   const [occupations, setOccupations] = useState<Occupation[]>([
     { id: "1", title: "", startDate: "", endDate: "" },
   ]);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<
+    string | null
+  >(null);
   const [confirmAccuracy, setConfirmAccuracy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -105,6 +108,7 @@ export default function AddMemberModal({
       ]);
       setOccupations([{ id: "1", title: "", startDate: "", endDate: "" }]);
       setProfilePicture(null);
+      setProfilePicturePreview(null);
       setConfirmAccuracy(false);
       setIsSubmitting(false);
     }
@@ -150,27 +154,27 @@ export default function AddMemberModal({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        `/api/family-trees/${familyTreeId}/members`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            fullName: memberFormData.fullName,
-            gender: memberFormData.gender,
-            birthDate: memberFormData.birthDate,
-            address: memberFormData.address,
-            relatedMemberId: memberFormData.relatedMemberId || null,
-            relationship: memberFormData.relationship || null,
-            relationshipDate: memberFormData.relationshipDate || null,
-            placesOfOrigin: placesOfOrigin.filter((p) => p.location.trim()),
-            occupations: occupations.filter((o) => o.title.trim()),
-            profilePicture,
-          }),
-        }
-      );
+      const formData = new FormData();
+      formData.append("fullName", memberFormData.fullName);
+      formData.append("gender", memberFormData.gender);
+      formData.append("birthday", memberFormData.birthDate);
+      formData.append("address", memberFormData.address);
+      formData.append("generation", "1"); // Default generation
+      formData.append("isAdopted", "false");
+      formData.append("familyTreeId", familyTreeId);
+
+      if (memberFormData.relatedMemberId) {
+        formData.append("parentId", memberFormData.relatedMemberId);
+      }
+
+      if (profilePicture) {
+        formData.append("profilePicture", profilePicture);
+      }
+
+      const response = await fetch(`/api/family-members`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (response.ok) {
         onMemberAdded();
@@ -226,9 +230,32 @@ export default function AddMemberModal({
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert(
+          "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed."
+        );
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size too large. Maximum size is 5MB.");
+        return;
+      }
+
+      setProfilePicture(file);
+
+      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfilePicture(e.target?.result as string);
+        setProfilePicturePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -607,10 +634,10 @@ export default function AddMemberModal({
                   Profile Picture (optional)
                 </label>
 
-                {profilePicture ? (
+                {profilePicturePreview ? (
                   <div className="flex items-center space-x-4">
                     <Image
-                      src={profilePicture}
+                      src={profilePicturePreview}
                       alt="Profile preview"
                       width={80}
                       height={80}
@@ -618,7 +645,10 @@ export default function AddMemberModal({
                     />
                     <button
                       type="button"
-                      onClick={() => setProfilePicture(null)}
+                      onClick={() => {
+                        setProfilePicture(null);
+                        setProfilePicturePreview(null);
+                      }}
                       className="text-red-500 hover:text-red-700 text-sm"
                     >
                       Remove

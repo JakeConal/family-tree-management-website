@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { getPrisma } from "../../../lib/prisma";
+import { logChange } from "../../../lib/utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,7 +42,17 @@ export async function GET(request: NextRequest) {
 
     const familyMembers = await prisma.familyMember.findMany({
       where: { familyTreeId: parseInt(familyTreeId) },
-      include: {
+      select: {
+        id: true,
+        fullName: true,
+        gender: true,
+        birthday: true,
+        address: true,
+        generation: true,
+        isRootPerson: true,
+        isAdopted: true,
+        familyTreeId: true,
+        parentId: true,
         parent: {
           select: {
             id: true,
@@ -105,7 +116,21 @@ export async function GET(request: NextRequest) {
       orderBy: { id: "asc" },
     });
 
-    return NextResponse.json(familyMembers);
+    // Add hasProfilePicture field to each member
+    const membersWithProfilePicture = await Promise.all(
+      familyMembers.map(async (member) => {
+        const profileData = await prisma.familyMember.findUnique({
+          where: { id: member.id },
+          select: { profilePicture: true },
+        });
+        return {
+          ...member,
+          hasProfilePicture: !!profileData?.profilePicture,
+        };
+      })
+    );
+
+    return NextResponse.json(membersWithProfilePicture);
   } catch (error) {
     console.error("Error fetching family members:", error);
     return NextResponse.json(
@@ -123,18 +148,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const {
-      fullName,
-      gender,
-      birthday,
-      address,
-      profilePicture,
-      generation,
-      isAdopted,
-      familyTreeId,
-      parentId,
-    } = body;
+    // Handle multipart form data
+    const formData = await request.formData();
+    const fullName = formData.get("fullName") as string;
+    const gender = formData.get("gender") as string;
+    const birthday = formData.get("birthday") as string;
+    const address = formData.get("address") as string;
+    const generation = formData.get("generation") as string;
+    const isAdopted = formData.get("isAdopted") === "true";
+    const familyTreeId = formData.get("familyTreeId") as string;
+    const parentId = formData.get("parentId") as string;
+    const profilePictureFile = formData.get("profilePicture") as File | null;
 
     if (
       !fullName ||
@@ -190,20 +214,81 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Handle profile picture upload
+    let profilePicture: Buffer | null = null;
+    let profilePictureType: string | null = null;
+
+    if (profilePictureFile) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+      ];
+      if (!allowedTypes.includes(profilePictureFile.type)) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (max 5MB)
+      if (profilePictureFile.size > 5 * 1024 * 1024) {
+        return NextResponse.json(
+          { error: "File size too large. Maximum size is 5MB." },
+          { status: 400 }
+        );
+      }
+
+      // Convert file to buffer
+      const arrayBuffer = await profilePictureFile.arrayBuffer();
+      profilePicture = Buffer.from(arrayBuffer);
+      profilePictureType = profilePictureFile.type;
+    }
+
+    // Validate gender
+    let validatedGender: "MALE" | "FEMALE" | "OTHER" | null = null;
+    if (gender) {
+      const upperGender = gender.toUpperCase();
+      if (["MALE", "FEMALE", "OTHER"].includes(upperGender)) {
+        validatedGender = upperGender as "MALE" | "FEMALE" | "OTHER";
+      } else {
+        return NextResponse.json(
+          { error: "Invalid gender. Must be MALE, FEMALE, or OTHER." },
+          { status: 400 }
+        );
+      }
+    }
+
     // Create the family member
     const familyMember = await prisma.familyMember.create({
       data: {
         fullName: fullName.trim(),
-        gender: gender || null,
+        gender: validatedGender,
         birthday: birthday ? new Date(birthday) : null,
         address: address?.trim() || null,
-        profilePicture: profilePicture?.trim() || null,
+        profilePicture: profilePicture,
+        profilePictureType: profilePictureType,
         generation: generation?.trim() || null,
         isAdopted: isAdopted || false,
         familyTreeId: parseInt(familyTreeId),
         parentId: parentId ? parseInt(parentId) : null,
       },
-      include: {
+      select: {
+        id: true,
+        fullName: true,
+        gender: true,
+        birthday: true,
+        address: true,
+        generation: true,
+        isRootPerson: true,
+        isAdopted: true,
+        familyTreeId: true,
+        parentId: true,
         parent: {
           select: {
             id: true,
@@ -219,7 +304,32 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(familyMember, { status: 201 });
+    // Log the creation
+    await logChange(
+      "FamilyMember",
+      familyMember.id,
+      "CREATE",
+      parseInt(familyTreeId),
+      session.user.id,
+      null,
+      {
+        fullName: familyMember.fullName,
+        gender: familyMember.gender,
+        birthday: familyMember.birthday,
+        address: familyMember.address,
+        generation: familyMember.generation,
+        isAdopted: familyMember.isAdopted,
+        parentId: familyMember.parentId,
+      }
+    );
+
+    return NextResponse.json(
+      {
+        ...familyMember,
+        hasProfilePicture: !!profilePicture,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating family member:", error);
     return NextResponse.json(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "../../../auth";
 import { getPrisma } from "../../../lib/prisma";
+import { logChange } from "../../../lib/utils";
 
 export async function GET() {
   try {
@@ -99,6 +100,21 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Log the family tree creation
+    await logChange(
+      "FamilyTree",
+      familyTree.id,
+      "CREATE",
+      familyTree.id,
+      session.user.id,
+      null,
+      {
+        familyName: familyTree.familyName,
+        origin: familyTree.origin,
+        establishYear: familyTree.establishYear,
+      }
+    );
+
     // Create the root family member
     const rootMember = await prisma.familyMember.create({
       data: {
@@ -118,6 +134,24 @@ export async function POST(request: NextRequest) {
         familyTreeId: familyTree.id,
       },
     });
+
+    // Log the root member creation
+    await logChange(
+      "FamilyMember",
+      rootMember.id,
+      "CREATE",
+      familyTree.id,
+      session.user.id,
+      null,
+      {
+        fullName: rootMember.fullName,
+        gender: rootMember.gender,
+        birthday: rootMember.birthday,
+        address: rootMember.address,
+        generation: rootMember.generation,
+        isRootPerson: rootMember.isRootPerson,
+      }
+    );
 
     // Create places of origin if provided
     if (rootPerson.placesOfOrigin && Array.isArray(rootPerson.placesOfOrigin)) {

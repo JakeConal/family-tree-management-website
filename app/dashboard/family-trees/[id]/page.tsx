@@ -21,6 +21,7 @@ import AddMemberModal from "../../../../components/modals/AddMemberModal";
 import RecordAchievementModal from "../../../../components/modals/RecordAchievementModal";
 import RecordPassingModal from "../../../../components/modals/RecordPassingModal";
 import ChangeLogDetailsModal from "../../../../components/modals/ChangeLogDetailsModal";
+import EditFamilyTreeModal from "../../../../components/modals/EditFamilyTreeModal";
 
 // Mock data types (representing API responses)
 interface FamilyTree {
@@ -95,6 +96,8 @@ export default function FamilyTreeDashboard() {
   );
   const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] =
     useState(false);
+  const [isEditFamilyTreeModalOpen, setIsEditFamilyTreeModalOpen] =
+    useState(false);
 
   // Initialize sidebar state from localStorage
   useEffect(() => {
@@ -151,25 +154,85 @@ export default function FamilyTreeDashboard() {
             1
           );
 
-          // Mock growth data (in real app, this would come from historical data)
+          // Fetch change logs to calculate trends
+          const logsResponse = await fetch(
+            `/api/change-logs?familyTreeId=${familyTreeId}`
+          );
+          let changeLogs: ChangeLog[] = [];
+          if (logsResponse.ok) {
+            changeLogs = await logsResponse.json();
+          }
+
+          // Calculate trends from change logs (last 30 days)
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+          const recentLogs = changeLogs.filter(
+            (log) => new Date(log.createdAt) >= thirtyDaysAgo
+          );
+
+          const memberGrowthCount = recentLogs.filter(
+            (log) =>
+              log.entityType === "FamilyMember" && log.action === "CREATE"
+          ).length;
+          const deathTrendCount = recentLogs.filter(
+            (log) =>
+              log.entityType === "PassingRecord" && log.action === "CREATE"
+          ).length;
+          const marriagesCount = recentLogs.filter(
+            (log) =>
+              log.entityType === "SpouseRelationship" && log.action === "CREATE"
+          ).length;
+          const divorcesCount = recentLogs.filter(
+            (log) =>
+              log.entityType === "SpouseRelationship" && log.action === "DELETE"
+          ).length;
+          const achievementGrowthCount = recentLogs.filter(
+            (log) => log.entityType === "Achievement" && log.action === "CREATE"
+          ).length;
+
+          // For percentages, we need previous period data. For simplicity, use total as base
+          const memberGrowthPercentage =
+            totalMembers > 0
+              ? Math.round((memberGrowthCount / totalMembers) * 100)
+              : 0;
+          const deathTrendPercentage =
+            totalMembers > 0
+              ? Math.round((deathTrendCount / totalMembers) * 100)
+              : 0;
+          const achievementGrowthPercentage =
+            totalMembers > 0
+              ? Math.round((achievementGrowthCount / totalMembers) * 100)
+              : 0;
+
           const statistics: FamilyStatistics = {
             totalGenerations,
             totalMembers,
             livingMembers,
-            memberGrowth: { count: 0, percentage: 0 }, // Would need historical data
-            deathTrend: { count: totalMembers - livingMembers, percentage: 0 },
-            marriageTrend: { marriages: 0, divorces: 0 }, // Would need relationship data
-            achievementGrowth: { count: 0, percentage: 0 }, // Would need achievement data
+            memberGrowth: {
+              count: memberGrowthCount,
+              percentage: memberGrowthPercentage,
+            },
+            deathTrend: {
+              count: deathTrendCount,
+              percentage: deathTrendPercentage,
+            },
+            marriageTrend: {
+              marriages: marriagesCount,
+              divorces: divorcesCount,
+            },
+            achievementGrowth: {
+              count: achievementGrowthCount,
+              percentage: achievementGrowthPercentage,
+            },
           };
 
           setStatistics(statistics);
+          setChangeLogs(changeLogs); // Also set change logs here
         }
 
         // For now, keep empty activities array until we implement activity API
         setActivities([]);
-
-        // Fetch change logs
-        await fetchActivities();
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         setFamilyTree(null);
@@ -252,15 +315,72 @@ export default function FamilyTreeDashboard() {
           1
         );
 
-        // Mock growth data (in real app, this would come from historical data)
+        // Fetch change logs to calculate trends
+        const logsResponse = await fetch(
+          `/api/change-logs?familyTreeId=${familyTreeId}`
+        );
+        let changeLogs: ChangeLog[] = [];
+        if (logsResponse.ok) {
+          changeLogs = await logsResponse.json();
+        }
+
+        // Calculate trends from change logs (last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const recentLogs = changeLogs.filter(
+          (log) => new Date(log.createdAt) >= thirtyDaysAgo
+        );
+
+        const memberGrowthCount = recentLogs.filter(
+          (log) => log.entityType === "FamilyMember" && log.action === "CREATE"
+        ).length;
+        const deathTrendCount = recentLogs.filter(
+          (log) => log.entityType === "PassingRecord" && log.action === "CREATE"
+        ).length;
+        const marriagesCount = recentLogs.filter(
+          (log) =>
+            log.entityType === "SpouseRelationship" && log.action === "CREATE"
+        ).length;
+        const divorcesCount = recentLogs.filter(
+          (log) =>
+            log.entityType === "SpouseRelationship" && log.action === "DELETE"
+        ).length;
+        const achievementGrowthCount = recentLogs.filter(
+          (log) => log.entityType === "Achievement" && log.action === "CREATE"
+        ).length;
+
+        // For percentages, we need previous period data. For simplicity, use total as base
+        const memberGrowthPercentage =
+          totalMembers > 0
+            ? Math.round((memberGrowthCount / totalMembers) * 100)
+            : 0;
+        const deathTrendPercentage =
+          totalMembers > 0
+            ? Math.round((deathTrendCount / totalMembers) * 100)
+            : 0;
+        const achievementGrowthPercentage =
+          totalMembers > 0
+            ? Math.round((achievementGrowthCount / totalMembers) * 100)
+            : 0;
+
         const statistics: FamilyStatistics = {
           totalGenerations,
           totalMembers,
           livingMembers,
-          memberGrowth: { count: 0, percentage: 0 }, // Would need historical data
-          deathTrend: { count: totalMembers - livingMembers, percentage: 0 },
-          marriageTrend: { marriages: 0, divorces: 0 }, // Would need relationship data
-          achievementGrowth: { count: 0, percentage: 0 }, // Would need achievement data
+          memberGrowth: {
+            count: memberGrowthCount,
+            percentage: memberGrowthPercentage,
+          },
+          deathTrend: {
+            count: deathTrendCount,
+            percentage: deathTrendPercentage,
+          },
+          marriageTrend: { marriages: marriagesCount, divorces: divorcesCount },
+          achievementGrowth: {
+            count: achievementGrowthCount,
+            percentage: achievementGrowthPercentage,
+          },
         };
 
         setStatistics(statistics);
@@ -357,6 +477,7 @@ export default function FamilyTreeDashboard() {
       "PassingRecord",
       "Achievement",
       "SpouseRelationship",
+      "FamilyTree",
     ];
 
     if (!majorEvents.includes(entityType)) {
@@ -397,6 +518,11 @@ export default function FamilyTreeDashboard() {
           message = "Marriage recorded";
         } else if (action === "delete") {
           message = "Divorce recorded";
+        }
+        break;
+      case "FamilyTree":
+        if (action === "update") {
+          message = "Family tree information updated";
         }
         break;
       default:
@@ -457,7 +583,11 @@ export default function FamilyTreeDashboard() {
             <h2 className="text-xl font-semibold text-gray-900">
               Family Information Overview
             </h2>
-            <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => setIsEditFamilyTreeModalOpen(true)}
+              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Edit family information"
+            >
               <Pencil className="w-4 h-4 text-gray-500" />
             </button>
           </div>
@@ -763,6 +893,19 @@ export default function FamilyTreeDashboard() {
           isOpen={isChangeLogDetailsModalOpen}
           onClose={() => setIsChangeLogDetailsModalOpen(false)}
           changeLog={selectedChangeLog}
+        />
+      )}
+
+      {/* Edit Family Tree Modal */}
+      {isEditFamilyTreeModalOpen && familyTree && (
+        <EditFamilyTreeModal
+          isOpen={isEditFamilyTreeModalOpen}
+          onClose={() => setIsEditFamilyTreeModalOpen(false)}
+          familyTree={familyTree}
+          onFamilyTreeUpdated={() => {
+            // Refresh family tree data after update
+            fetchFamilyTreeData();
+          }}
         />
       )}
     </div>

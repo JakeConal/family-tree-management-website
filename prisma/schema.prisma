@@ -44,7 +44,8 @@ model FamilyMember {
   gender         Gender?
   birthday       DateTime?
   address        String?                          @db.VarChar(1000)
-  profilePicture String?                          @db.VarChar(500)
+  profilePicture Bytes?                           @db.MediumBlob
+  profilePictureType String?                      @db.VarChar(50)
   generation     String?                          @db.VarChar(45)
   isRootPerson   Boolean?                         @default(false)
   isAdopted      Boolean?                         @default(false)

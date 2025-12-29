@@ -43,15 +43,15 @@ export default function FamilyNode({ node, member, style }: FamilyNodeProps) {
     >
       {/* Profile Image */}
       <div className="flex justify-center mb-2">
-        <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-          {member.profilePicture ? (
+        <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+          {(member as any).hasProfilePicture ? (
             <img
-              src={member.profilePicture}
+              src={`/api/family-members/${member.id}/profile-picture`}
               alt={member.fullName}
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-gray-600 text-lg font-bold">
+            <span className="text-gray-600 text-xl font-bold">
               {member.fullName.charAt(0).toUpperCase()}
             </span>
           )}
