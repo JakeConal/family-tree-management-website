@@ -37,6 +37,13 @@ export default function DashboardLayout({
   }, [pathname, familyTrees]);
 
   useEffect(() => {
+    // Close sidebar on mobile when navigating
+    if (window.innerWidth < 1024) {
+      setSidebarVisible((prev) => (prev !== false ? false : prev));
+    }
+  }, [pathname]);
+
+  useEffect(() => {
     // Initialize from localStorage
     const saved = localStorage.getItem("sidebar-visible");
     if (saved !== null) {
@@ -49,17 +56,31 @@ export default function DashboardLayout({
       }
     }
 
+    // Handle window resize
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setSidebarVisible((prev) => (prev !== false ? false : prev));
+      } else {
+        // Restore from localStorage on desktop if it was saved as visible
+        const savedDesktop = localStorage.getItem("sidebar-visible");
+        const shouldBeVisible = savedDesktop === "true" || savedDesktop === null;
+        setSidebarVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
+      }
+    };
+
     // Listen for sidebar toggle events
     const handleSidebarToggle = (event: CustomEvent) => {
       setSidebarVisible(event.detail.visible);
     };
 
+    window.addEventListener("resize", handleResize);
     window.addEventListener(
       "sidebar-toggle",
       handleSidebarToggle as EventListener
     );
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       window.removeEventListener(
         "sidebar-toggle",
         handleSidebarToggle as EventListener
