@@ -4,14 +4,15 @@ import { useMemo } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Settings, Plus } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useFamilyTrees } from "@/lib/useFamilyTrees";
 import { NavigationButton } from "./NavigationButton";
 
 interface NavigationItem {
 	name: string;
 	href: string;
-	icon: any;
+	icon: LucideIcon;
 	alwaysShow?: boolean;
 	familyTreeOnly?: boolean;
 	disabled?: boolean;
@@ -91,7 +92,7 @@ export function Sidebar() {
 							onClick={() => router.push(`${pathname}?create=true`)}
 							className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
 						>
-							<span>+ </span>
+							<Plus className="w-5 h-5 mr-1" />
 							<span className="font-normal ml-1">Create New Tree</span>
 						</button>
 					</div>

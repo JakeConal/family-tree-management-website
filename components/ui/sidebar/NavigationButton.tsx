@@ -30,7 +30,7 @@ export function NavigationButton({
 		<button
 			onClick={handleClick}
 			disabled={disabled}
-			className={`w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors ${
+			className={`w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors cursor-pointer ${
 				isActive
 					? "bg-[#d4d4d8] text-black"
 					: disabled
