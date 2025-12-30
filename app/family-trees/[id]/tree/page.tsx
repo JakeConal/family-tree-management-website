@@ -282,9 +282,13 @@ export default function FamilyTreePage() {
       const positionedNodes = relativesTree(nodes, {
         rootId: rootMember?.id.toString() || members[0]?.id.toString() || "",
       });
+      // Deduplicate nodes by ID to avoid React key warnings
+      const uniqueNodes = Array.from(
+        new Map(positionedNodes.nodes.map((node) => [node.id, node])).values()
+      );
       // Update treeNodes with positioned nodes
-      setTreeNodes([...positionedNodes.nodes]);
-      setPositionedNodes([...positionedNodes.nodes]);
+      setTreeNodes([...uniqueNodes]);
+      setPositionedNodes([...uniqueNodes]);
     } catch (err) {
       setError("Failed to process family tree data");
       setLoading(false);
