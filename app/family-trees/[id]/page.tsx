@@ -442,8 +442,9 @@ export default function FamilyTreeDashboard() {
 	};
 
 	return (
-		<div className="space-y-8">
-			{/* Overview Section */}
+		<div className="flex-1 overflow-y-auto p-4 lg:p-8">
+			<div className="space-y-8">
+				{/* Overview Section */}
 			<div className="flex flex-col xl:flex-row gap-6">
 				{/* Family Information Overview Box */}
 				<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
@@ -714,18 +715,19 @@ export default function FamilyTreeDashboard() {
 				/>
 			)}
 
-			{/* Edit Family Tree Modal */}
-			{isEditFamilyTreeModalOpen && familyTree && (
-				<EditFamilyTreeModal
-					isOpen={isEditFamilyTreeModalOpen}
-					onClose={() => setIsEditFamilyTreeModalOpen(false)}
-					familyTree={familyTree}
-					onFamilyTreeUpdated={() => {
-						// Refresh family tree data after update
-						fetchFamilyTreeData();
-					}}
-				/>
-			)}
+				{/* Edit Family Tree Modal */}
+				{isEditFamilyTreeModalOpen && familyTree && (
+					<EditFamilyTreeModal
+						isOpen={isEditFamilyTreeModalOpen}
+						onClose={() => setIsEditFamilyTreeModalOpen(false)}
+						familyTree={familyTree}
+						onFamilyTreeUpdated={() => {
+							// Refresh family tree data after update
+							fetchFamilyTreeData();
+						}}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

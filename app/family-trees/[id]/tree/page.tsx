@@ -324,7 +324,7 @@ export default function FamilyTreePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="h-full bg-white p-4 overflow-y-auto">
       <div className="max-w-full mx-auto">
         {/* Top Control Bar */}
         <div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
