@@ -19,9 +19,10 @@ import {
   Users,
   Crown,
 } from "lucide-react";
+import classNames from "classnames";
 import FamilyNode from "@/components/FamilyNode";
 import AddMemberModal from "@/components/modals/AddMemberModal";
-import ViewEditMemberModal from "@/components/modals/ViewEditMemberModal";
+import ViewEditMemberPanel from "@/components/ViewEditMemberPanel";
 import RecordAchievementModal from "@/components/modals/RecordAchievementModal";
 import RecordPassingModal from "@/components/modals/RecordPassingModal";
 import ChangeLogDetailsModal from "@/components/modals/ChangeLogDetailsModal";
@@ -87,12 +88,10 @@ export default function FamilyTreePage() {
 
   // Modal states
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
-  const [showViewEditMemberModal, setShowViewEditMemberModal] = useState(false);
-  const [viewEditMemberMode, setViewEditMemberMode] = useState<"view" | "edit">(
-    "view"
-  );
-  const [selectedMemberForViewEdit, setSelectedMemberForViewEdit] =
-    useState<ExtendedFamilyMember | null>(null);
+  const [selectedMemberIdForPanel, setSelectedMemberIdForPanel] = useState<
+    number | null
+  >(null);
+  const [panelMode, setPanelMode] = useState<"view" | "edit">("view");
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [showPassingModal, setShowPassingModal] = useState(false);
   const [showChangeLogModal, setShowChangeLogModal] = useState(false);
@@ -324,350 +323,390 @@ export default function FamilyTreePage() {
   }
 
   return (
-    <div className="h-full bg-white p-4 overflow-y-auto">
-      <div className="max-w-full mx-auto">
-        {/* Top Control Bar */}
-        <div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
-          {/* Left Side */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
-                <option>All Generation</option>
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+    <div className="flex h-full overflow-hidden bg-white">
+      <div
+        className={classNames(
+          "flex flex-col overflow-y-auto p-4 transition-all duration-300",
+          {
+            "w-full": selectedMemberIdForPanel === null,
+            "flex-1": selectedMemberIdForPanel !== null,
+          }
+        )}
+      >
+        <div className="w-full">
+          {/* Top Control Bar */}
+          <div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
+            {/* Left Side */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
+                  <option>All Generation</option>
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+              </div>
+              <button
+                onClick={() => setShowAddMemberModal(true)}
+                className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Add Member
+              </button>
             </div>
-            <button
-              onClick={() => setShowAddMemberModal(true)}
-              className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
-            >
-              <Plus className="w-4 h-4" />
-              Add Member
-            </button>
+
+            {/* Right Side - Zoom Controls */}
+            <div className="flex items-center bg-white rounded-full border border-gray-200 px-2 py-1 shadow-sm">
+              <button
+                onClick={() => zoomFunctions?.zoomOut()}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                title="Zoom Out"
+              >
+                <Minus className="w-4 h-4 text-black" />
+              </button>
+              <span className="px-4 text-sm font-bold text-black min-w-[4rem] text-center border-x border-gray-100">
+                {zoomPercentage}%
+              </span>
+              <button
+                onClick={() => zoomFunctions?.zoomIn()}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                title="Zoom In"
+              >
+                <Plus className="w-4 h-4 text-black" />
+              </button>
+            </div>
           </div>
 
-          {/* Right Side - Zoom Controls */}
-          <div className="flex items-center bg-white rounded-full border border-gray-200 px-2 py-1 shadow-sm">
-            <button
-              onClick={() => zoomFunctions?.zoomOut()}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              title="Zoom Out"
-            >
-              <Minus className="w-4 h-4 text-black" />
-            </button>
-            <span className="px-4 text-sm font-bold text-black min-w-[4rem] text-center border-x border-gray-100">
-              {zoomPercentage}%
-            </span>
-            <button
-              onClick={() => zoomFunctions?.zoomIn()}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              title="Zoom In"
-            >
-              <Plus className="w-4 h-4 text-black" />
-            </button>
-          </div>
-        </div>
-
-        {/* Tree Container */}
-        <div
-          className="bg-[#f4f4f5] rounded-[30px] p-8 relative overflow-hidden shadow-inner"
-          style={{ height: "75vh", minHeight: "600px" }}
-        >
-          <TransformWrapper
-            initialScale={0.8}
-            minScale={0.1}
-            maxScale={3}
-            centerOnInit={true}
-            wheel={{ step: 0.1 }}
-            pinch={{ step: 0.1 }}
-            doubleClick={{ mode: "zoomIn" }}
-            panning={{ velocityDisabled: false, disabled: false }}
-            limitToBounds={false}
-            onInit={(ref) => {
-              setZoomFunctions({
-                zoomIn: () => ref.zoomIn(),
-                zoomOut: () => ref.zoomOut(),
-              });
-            }}
-            onTransformed={(ref, state) => {
-              setZoomPercentage(Math.round(state.scale * 100));
-            }}
+          {/* Tree Container */}
+          <div
+            className="bg-[#f4f4f5] rounded-[30px] p-8 relative overflow-hidden shadow-inner"
+            style={{ height: "75vh", minHeight: "600px" }}
           >
-            {({ zoomIn, zoomOut, resetTransform }) => (
-              <>
-                <TransformComponent
-                  wrapperStyle={{
-                    width: "100%",
-                    height: "100%",
-                    overflow: "visible",
-                    position: "relative",
-                  }}
-                  contentStyle={{
-                    width: "auto",
-                    height: "auto",
-                    minWidth: "100%",
-                    minHeight: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <div className="relative w-auto h-auto">
-                    {/* Manual node rendering */}
-                    <div className="relative">
-                      {positionedNodes.map((node) => {
-                        const member = getMemberById(node.id);
-                        if (!member) return null;
-
-                        return (
-                          <FamilyNode
-                            key={node.id}
-                            node={node as ExtNode}
-                            member={member}
-                            style={{
-                              position: "absolute",
-                              width: 150,
-                              height: 200,
-                              left: node.left * 120 - 75,
-                              top: node.top * 150 - 100,
-                            }}
-                            onClick={() => {
-                              setSelectedMemberForViewEdit(member);
-                              setViewEditMemberMode("view");
-                              setShowViewEditMemberModal(true);
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                    <svg
-                      className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                      style={{
-                        zIndex: -1,
-                        minWidth: "10000px",
-                        minHeight: "10000px",
-                        overflow: "visible",
-                      }}
-                    >
-                      {/* Spouse connections */}
-                      {(() => {
-                        const renderedPairs = new Set<string>();
-                        return positionedNodes.map((node) => {
+            <TransformWrapper
+              initialScale={0.8}
+              minScale={0.1}
+              maxScale={3}
+              centerOnInit={true}
+              wheel={{ step: 0.1 }}
+              pinch={{ step: 0.1 }}
+              doubleClick={{ mode: "zoomIn" }}
+              panning={{ velocityDisabled: false, disabled: false }}
+              limitToBounds={false}
+              onInit={(ref) => {
+                setZoomFunctions({
+                  zoomIn: () => ref.zoomIn(),
+                  zoomOut: () => ref.zoomOut(),
+                });
+              }}
+              onTransformed={(ref, state) => {
+                setZoomPercentage(Math.round(state.scale * 100));
+              }}
+            >
+              {({ zoomIn, zoomOut, resetTransform }) => (
+                <>
+                  <TransformComponent
+                    wrapperStyle={{
+                      width: "100%",
+                      height: "100%",
+                      overflow: "visible",
+                      position: "relative",
+                    }}
+                    contentStyle={{
+                      width: "auto",
+                      height: "auto",
+                      minWidth: "100%",
+                      minHeight: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div className="relative w-auto h-auto">
+                      {/* Manual node rendering */}
+                      <div className="relative">
+                        {positionedNodes.map((node) => {
                           const member = getMemberById(node.id);
                           if (!member) return null;
 
-                          const spouseRelations = [
-                            ...(member.spouse1 || []).map((spouse) => ({
-                              spouseId: spouse.familyMember2.id.toString(),
-                              relation: spouse,
-                            })),
-                            ...(member.spouse2 || []).map((spouse) => ({
-                              spouseId: spouse.familyMember1.id.toString(),
-                              relation: spouse,
-                            })),
-                          ];
+                          return (
+                            <FamilyNode
+                              key={node.id}
+                              node={node as ExtNode}
+                              member={member}
+                              style={{
+                                position: "absolute",
+                                width: 150,
+                                height: 200,
+                                left: node.left * 120 - 75,
+                                top: node.top * 150 - 100,
+                              }}
+                              onClick={() => {
+                                setSelectedMemberIdForPanel(member.id);
+                                setPanelMode("view");
+                              }}
+                            />
+                          );
+                        })}
+                      </div>
+                      <svg
+                        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                        style={{
+                          zIndex: -1,
+                          minWidth: "10000px",
+                          minHeight: "10000px",
+                          overflow: "visible",
+                        }}
+                      >
+                        {/* Spouse connections */}
+                        {(() => {
+                          const renderedPairs = new Set<string>();
+                          return positionedNodes.map((node) => {
+                            const member = getMemberById(node.id);
+                            if (!member) return null;
 
-                          return spouseRelations.map(({ spouseId }) => {
-                            const pairKey = [node.id, spouseId]
-                              .sort()
-                              .join("-");
+                            const spouseRelations = [
+                              ...(member.spouse1 || []).map((spouse) => ({
+                                spouseId: spouse.familyMember2.id.toString(),
+                                relation: spouse,
+                              })),
+                              ...(member.spouse2 || []).map((spouse) => ({
+                                spouseId: spouse.familyMember1.id.toString(),
+                                relation: spouse,
+                              })),
+                            ];
 
-                            if (renderedPairs.has(pairKey)) return null;
-                            renderedPairs.add(pairKey);
+                            return spouseRelations.map(({ spouseId }) => {
+                              const pairKey = [node.id, spouseId]
+                                .sort()
+                                .join("-");
 
-                            const spouseNode = positionedNodes.find(
-                              (n) => n.id === spouseId
-                            );
-                            if (!spouseNode) return null;
+                              if (renderedPairs.has(pairKey)) return null;
+                              renderedPairs.add(pairKey);
 
-                            // Calculate midpoint between spouses
-                            const nodeX = node.left * 120;
-                            const nodeY = node.top * 150;
-                            const spouseX = spouseNode.left * 120;
-                            const spouseY = spouseNode.top * 150;
+                              const spouseNode = positionedNodes.find(
+                                (n) => n.id === spouseId
+                              );
+                              if (!spouseNode) return null;
 
-                            const midX = (nodeX + spouseX) / 2;
-                            const midY = (nodeY + spouseY) / 2;
+                              // Calculate midpoint between spouses
+                              const nodeX = node.left * 120;
+                              const nodeY = node.top * 150;
+                              const spouseX = spouseNode.left * 120;
+                              const spouseY = spouseNode.top * 150;
 
-                            return (
-                              <g key={`spouse-${pairKey}`}>
-                                {/* Spouse connection line */}
-                                <line
-                                  x1={nodeX}
-                                  y1={nodeY}
-                                  x2={spouseX}
-                                  y2={spouseY}
-                                  stroke="black"
-                                  strokeWidth="2"
-                                />
-                                {/* Add child circle */}
-                                <circle
-                                  cx={midX}
-                                  cy={midY}
-                                  r="15"
-                                  fill="white"
-                                  stroke="gray"
-                                  strokeWidth="2"
-                                  className="cursor-pointer hover:fill-yellow-200"
-                                  onClick={() => {
-                                    setSelectedMemberId(
-                                      `${node.id},${spouseId}`
-                                    );
-                                    setShowAddMemberModal(true);
-                                  }}
-                                />
-                                {/* Add icon */}
-                                <text
-                                  x={midX}
-                                  y={midY + 5}
-                                  textAnchor="middle"
-                                  fontSize="20"
-                                  fill="black"
-                                  className="cursor-pointer pointer-events-none"
-                                  style={{ userSelect: "none" }}
-                                >
-                                  +
-                                </text>
-                              </g>
-                            );
+                              const midX = (nodeX + spouseX) / 2;
+                              const midY = (nodeY + spouseY) / 2;
+
+                              return (
+                                <g key={`spouse-${pairKey}`}>
+                                  {/* Spouse connection line */}
+                                  <line
+                                    x1={nodeX}
+                                    y1={nodeY}
+                                    x2={spouseX}
+                                    y2={spouseY}
+                                    stroke="black"
+                                    strokeWidth="2"
+                                  />
+                                  {/* Add child circle */}
+                                  <circle
+                                    cx={midX}
+                                    cy={midY}
+                                    r="15"
+                                    fill="white"
+                                    stroke="gray"
+                                    strokeWidth="2"
+                                    className="cursor-pointer hover:fill-yellow-200"
+                                    onClick={() => {
+                                      setSelectedMemberId(
+                                        `${node.id},${spouseId}`
+                                      );
+                                      setShowAddMemberModal(true);
+                                    }}
+                                  />
+                                  {/* Add icon */}
+                                  <text
+                                    x={midX}
+                                    y={midY + 5}
+                                    textAnchor="middle"
+                                    fontSize="20"
+                                    fill="black"
+                                    className="cursor-pointer pointer-events-none"
+                                    style={{ userSelect: "none" }}
+                                  >
+                                    +
+                                  </text>
+                                </g>
+                              );
+                            });
                           });
-                        });
-                      })()}
+                        })()}
 
-                      {/* Parent-child connections */}
-                      {(() => {
-                        const renderedConnections = new Set<string>();
-                        const parentGroups = new Map<string, string[]>();
+                        {/* Parent-child connections */}
+                        {(() => {
+                          const renderedConnections = new Set<string>();
+                          const parentGroups = new Map<string, string[]>();
 
-                        // Group children by their actual parent (from database)
-                        members.forEach((m) => {
-                          if (m.parentId) {
-                            const parentId = m.parentId.toString();
-                            if (!parentGroups.has(parentId))
-                              parentGroups.set(parentId, []);
-                            parentGroups.get(parentId)!.push(m.id.toString());
-                          }
-                        });
+                          // Group children by their actual parent (from database)
+                          members.forEach((m) => {
+                            if (m.parentId) {
+                              const parentId = m.parentId.toString();
+                              if (!parentGroups.has(parentId))
+                                parentGroups.set(parentId, []);
+                              parentGroups.get(parentId)!.push(m.id.toString());
+                            }
+                          });
 
-                        return Array.from(parentGroups.entries()).map(
-                          ([parentId, childIds]) => {
-                            const parentNode = positionedNodes.find(
-                              (n) => n.id === parentId
-                            );
-                            const childNodes = childIds
-                              .map((id) =>
-                                positionedNodes.find((n) => n.id === id)
-                              )
-                              .filter(Boolean) as ExtNode[];
+                          return Array.from(parentGroups.entries()).map(
+                            ([parentId, childIds]) => {
+                              const parentNode = positionedNodes.find(
+                                (n) => n.id === parentId
+                              );
+                              const childNodes = childIds
+                                .map((id) =>
+                                  positionedNodes.find((n) => n.id === id)
+                                )
+                                .filter(Boolean) as ExtNode[];
 
-                            if (!parentNode || childNodes.length === 0)
-                              return null;
+                              if (!parentNode || childNodes.length === 0)
+                                return null;
 
-                            // Check if this connection has already been rendered
-                            const connectionKey = [
-                              parentId,
-                              ...childIds.sort(),
-                            ].join("-");
-                            if (renderedConnections.has(connectionKey))
-                              return null;
-                            renderedConnections.add(connectionKey);
+                              // Check if this connection has already been rendered
+                              const connectionKey = [
+                                parentId,
+                                ...childIds.sort(),
+                              ].join("-");
+                              if (renderedConnections.has(connectionKey))
+                                return null;
+                              renderedConnections.add(connectionKey);
 
-                            const parentX = parentNode.left * 120;
-                            const parentY = parentNode.top * 150 + 100;
-                            const childY = childNodes[0].top * 150 - 100;
-                            const childXs = childNodes
-                              .map((n) => n.left * 120)
-                              .sort((a, b) => a - b);
-                            const minX = childXs[0];
-                            const maxX = childXs[childXs.length - 1];
-                            const midY = (parentY + childY) / 2;
+                              const parentX = parentNode.left * 120;
+                              const parentY = parentNode.top * 150 + 100;
+                              const childY = childNodes[0].top * 150 - 100;
+                              const childXs = childNodes
+                                .map((n) => n.left * 120)
+                                .sort((a, b) => a - b);
+                              const minX = childXs[0];
+                              const maxX = childXs[childXs.length - 1];
+                              const midY = (parentY + childY) / 2;
 
-                            return (
-                              <g key={parentId}>
-                                {/* White background paths to cover old connections */}
-                                <path
-                                  d={`M ${parentX} ${parentY} Q ${parentX} ${
-                                    (parentY + midY) / 2
-                                  } ${parentX} ${midY} Q ${
-                                    (parentX + minX) / 2
-                                  } ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
-                                  stroke="white"
-                                  strokeWidth="20"
-                                  fill="none"
-                                />
-                                {childNodes.map((childNode) => {
-                                  const childX = childNode.left * 120;
-                                  return (
-                                    <path
-                                      key={`bg-${childNode.id}`}
-                                      d={`M ${childX} ${midY} Q ${childX} ${
-                                        (midY + childY) / 2
-                                      } ${childX} ${childY}`}
-                                      stroke="white"
-                                      strokeWidth="20"
-                                      fill="none"
-                                    />
-                                  );
-                                })}
-                                {/* Black foreground paths */}
-                                <path
-                                  d={`M ${parentX} ${parentY} Q ${parentX} ${
-                                    (parentY + midY) / 2
-                                  } ${parentX} ${midY} Q ${
-                                    (parentX + minX) / 2
-                                  } ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
-                                  stroke="gray"
-                                  strokeWidth="2"
-                                  fill="none"
-                                />
-                                {childNodes.map((childNode) => {
-                                  const childX = childNode.left * 120;
-                                  return (
-                                    <path
-                                      key={childNode.id}
-                                      d={`M ${childX} ${midY} Q ${childX} ${
-                                        (midY + childY) / 2
-                                      } ${childX} ${childY}`}
-                                      stroke="gray"
-                                      strokeWidth="2"
-                                      fill="none"
-                                    />
-                                  );
-                                })}
-                              </g>
-                            );
-                          }
-                        );
-                      })()}
-                    </svg>
-                  </div>
-                </TransformComponent>
-              </>
-            )}
-          </TransformWrapper>
-        </div>
-
-        {/* Bottom Legend */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-[#f4f4f5] rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-0.5 bg-gray-400 rounded-full"></div>
-            <span className="text-sm font-medium text-black">Child - Parent</span>
+                              return (
+                                <g key={parentId}>
+                                  {/* White background paths to cover old connections */}
+                                  <path
+                                    d={`M ${parentX} ${parentY} Q ${parentX} ${
+                                      (parentY + midY) / 2
+                                    } ${parentX} ${midY} Q ${
+                                      (parentX + minX) / 2
+                                    } ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
+                                    stroke="white"
+                                    strokeWidth="20"
+                                    fill="none"
+                                  />
+                                  {childNodes.map((childNode) => {
+                                    const childX = childNode.left * 120;
+                                    return (
+                                      <path
+                                        key={`bg-${childNode.id}`}
+                                        d={`M ${childX} ${midY} Q ${childX} ${
+                                          (midY + childY) / 2
+                                        } ${childX} ${childY}`}
+                                        stroke="white"
+                                        strokeWidth="20"
+                                        fill="none"
+                                      />
+                                    );
+                                  })}
+                                  {/* Black foreground paths */}
+                                  <path
+                                    d={`M ${parentX} ${parentY} Q ${parentX} ${
+                                      (parentY + midY) / 2
+                                    } ${parentX} ${midY} Q ${
+                                      (parentX + minX) / 2
+                                    } ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
+                                    stroke="gray"
+                                    strokeWidth="2"
+                                    fill="none"
+                                  />
+                                  {childNodes.map((childNode) => {
+                                    const childX = childNode.left * 120;
+                                    return (
+                                      <path
+                                        key={childNode.id}
+                                        d={`M ${childX} ${midY} Q ${childX} ${
+                                          (midY + childY) / 2
+                                        } ${childX} ${childY}`}
+                                        stroke="gray"
+                                        strokeWidth="2"
+                                        fill="none"
+                                      />
+                                    );
+                                  })}
+                                </g>
+                              );
+                            }
+                          );
+                        })()}
+                      </svg>
+                    </div>
+                  </TransformComponent>
+                </>
+              )}
+            </TransformWrapper>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-0.5 border-t-2 border-dotted border-gray-400"></div>
-            <span className="text-sm font-medium text-black">Former Spouse</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Plus className="w-4 h-4 text-black" />
-            <span className="text-sm font-medium text-black">Current Spouse</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-white p-1.5 rounded-full shadow-sm">
-              <Skull className="w-4 h-4 text-black" />
+
+          {/* Bottom Legend */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-[#f4f4f5] rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-0.5 bg-gray-400 rounded-full"></div>
+              <span className="text-sm font-medium text-black">
+                Child - Parent
+              </span>
             </div>
-            <span className="text-sm font-medium text-black">Passed away</span>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-0.5 border-t-2 border-dotted border-gray-400"></div>
+              <span className="text-sm font-medium text-black">
+                Former Spouse
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Plus className="w-4 h-4 text-black" />
+              <span className="text-sm font-medium text-black">
+                Current Spouse
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-1.5 rounded-full shadow-sm">
+                <Skull className="w-4 h-4 text-black" />
+              </div>
+              <span className="text-sm font-medium text-black">
+                Passed away
+              </span>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Member Panel Sidebar - Push Style */}
+      <aside
+        className={classNames(
+          "transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full",
+          {
+            "w-[600px]": selectedMemberIdForPanel !== null,
+            "w-0": selectedMemberIdForPanel === null,
+          }
+        )}
+      >
+        {selectedMemberIdForPanel !== null && (
+          <ViewEditMemberPanel
+            memberId={selectedMemberIdForPanel}
+            familyTreeId={familyTreeId}
+            existingMembers={members as any}
+            mode={panelMode}
+            onModeChange={setPanelMode}
+            onClose={() => setSelectedMemberIdForPanel(null)}
+            onSuccess={fetchFamilyMembers}
+          />
+        )}
+      </aside>
 
       {/* Modals */}
       <AddMemberModal
@@ -699,46 +738,6 @@ export default function FamilyTreePage() {
         isOpen={showChangeLogModal}
         onClose={() => setShowChangeLogModal(false)}
         changeLog={null}
-      />
-
-      <ViewEditMemberModal
-        isOpen={showViewEditMemberModal}
-        onClose={() => setShowViewEditMemberModal(false)}
-        familyTreeId={familyTreeId}
-        existingMembers={members as any}
-        member={
-          selectedMemberForViewEdit
-            ? {
-                ...selectedMemberForViewEdit,
-                birthday: selectedMemberForViewEdit.birthday
-                  ? typeof selectedMemberForViewEdit.birthday === "string"
-                    ? selectedMemberForViewEdit.birthday
-                    : selectedMemberForViewEdit.birthday.toISOString()
-                  : null,
-                hasProfilePicture:
-                  (selectedMemberForViewEdit as any).hasProfilePicture || false,
-                birthPlaces:
-                  (selectedMemberForViewEdit as any).birthPlaces || [],
-                occupations:
-                  selectedMemberForViewEdit.occupations?.map((occ) => ({
-                    ...occ,
-                    startDate: occ.startDate
-                      ? typeof occ.startDate === "string"
-                        ? occ.startDate
-                        : occ.startDate.toISOString()
-                      : null,
-                    endDate: occ.endDate
-                      ? typeof occ.endDate === "string"
-                        ? occ.endDate
-                        : occ.endDate.toISOString()
-                      : null,
-                  })) || [],
-              }
-            : null
-        }
-        onMemberUpdated={fetchFamilyMembers}
-        mode={viewEditMemberMode}
-        onModeChange={setViewEditMemberMode}
       />
     </div>
   );
