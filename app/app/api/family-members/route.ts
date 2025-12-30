@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const treeId = searchParams.get("treeId");
+        const excludeDeceased = searchParams.get("excludeDeceased") === "true";
 
         if (!treeId) {
             return NextResponse.json(
@@ -20,17 +21,25 @@ export async function GET(request: NextRequest) {
 
         const db = getDb();
 
-        // Get all family members for this tree
-        const members = db
-            .prepare(
-                `
-      SELECT id, fullName 
-      FROM FamilyMember 
-      WHERE familyTreeId = ?
-      ORDER BY fullName
-    `
-            )
-            .all(treeId) as MemberRow[];
+        // Build query - optionally exclude members who already have passing records
+        let query = `
+            SELECT fm.id, fm.fullName 
+            FROM FamilyMember fm
+            WHERE fm.familyTreeId = ?
+        `;
+
+        if (excludeDeceased) {
+            query += `
+                AND fm.id NOT IN (
+                    SELECT DISTINCT familyMemberId 
+                    FROM PassingRecord
+                )
+            `;
+        }
+
+        query += ` ORDER BY fm.fullName`;
+
+        const members = db.prepare(query).all(treeId) as MemberRow[];
 
         db.close();
 

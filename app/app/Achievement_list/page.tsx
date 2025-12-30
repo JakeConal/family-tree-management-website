@@ -65,10 +65,11 @@ interface PassingEntry {
   title: string;
   person: string;
   date: string;
+  rawDate: string; // YYYY-MM-DD format for date picker
   location: string;
   cause: string;
   causes: string[];
-  burialPlaces: { location: string; startDate: string }[];
+  burialPlaces: { location: string; startDate: string; rawStartDate: string }[];
   iconPath: string;
 }
 
@@ -181,11 +182,12 @@ const passingSections: { year: string; entries: PassingEntry[] }[] = [
         title: "The passing of Thomas",
         person: "Thomas",
         date: "08/15/2015",
+        rawDate: "2015-08-15",
         location: "Family Tomb Area in Dong Nai",
         cause: "Causes: Stage IV pancreatic cancer and severe weight loss.",
         causes: ["Stage IV pancreatic cancer", "Severe weight loss"],
         burialPlaces: [
-          { location: "Family Tomb Area, Dong Nai", startDate: "08/20/2015" },
+          { location: "Family Tomb Area, Dong Nai", startDate: "08/20/2015", rawStartDate: "2015-08-20" },
         ],
         iconPath: "/icons/passing.png",
       },
@@ -200,6 +202,7 @@ const passingSections: { year: string; entries: PassingEntry[] }[] = [
         title: "The passing of Pablo",
         person: "Pablo",
         date: "11/22/2010",
+        rawDate: "2010-11-22",
         location: "Vinh Hang Memorial Park, Ha Noi",
         cause:
           "Causes: Advanced Alzheimer's disease, respiratory failure, pneumonia, and general physical debilitation.",
@@ -210,8 +213,8 @@ const passingSections: { year: string; entries: PassingEntry[] }[] = [
           "General physical debilitation.",
         ],
         burialPlaces: [
-          { location: "Lac Canh Vien Cemetery, Hoa Binh", startDate: "11/22/2010" },
-          { location: "Vinh Hang Memorial Park, Ha Noi", startDate: "12/12/2011" },
+          { location: "Lac Canh Vien Cemetery, Hoa Binh", startDate: "11/22/2010", rawStartDate: "2010-11-22" },
+          { location: "Vinh Hang Memorial Park, Ha Noi", startDate: "12/12/2011", rawStartDate: "2011-12-12" },
         ],
         iconPath: "/icons/passing.png",
       },
@@ -337,6 +340,15 @@ export default function AchievementListPage() {
     date: "",
   });
 
+  // Add Passing modal states
+  const [isAddPassingOpen, setIsAddPassingOpen] = useState(false);
+  const [newPassingFormData, setNewPassingFormData] = useState({
+    memberId: "",
+    date: "",
+    causes: [""],
+    burialPlaces: [{ location: "", startDate: "" }],
+  });
+
   // Passing modal states
   const [selectedPassing, setSelectedPassing] = useState<PassingEntry | null>(null);
   const [selectedPassingYear, setSelectedPassingYear] = useState<string | null>(null);
@@ -361,6 +373,7 @@ export default function AchievementListPage() {
   const [availableYears, setAvailableYears] = useState<string[]>([]);
   const [availableTypes, setAvailableTypes] = useState<{ id: string; name: string }[]>([]);
   const [availableMembers, setAvailableMembers] = useState<{ id: string; name: string }[]>([]);
+  const [livingMembers, setLivingMembers] = useState<{ id: string; name: string }[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   // Dropdown visibility states
@@ -596,9 +609,12 @@ export default function AchievementListPage() {
     setIsEditingPassing(false);
     setPassingFormData({
       person: entry.person,
-      date: entry.date,
+      date: entry.rawDate, // Use raw date for date picker (YYYY-MM-DD format)
       causes: [...entry.causes],
-      burialPlaces: entry.burialPlaces.map(p => ({ ...p })),
+      burialPlaces: entry.burialPlaces.map(p => ({
+        location: p.location,
+        startDate: p.rawStartDate // Use raw date for date picker
+      })),
     });
   };
 
@@ -673,38 +689,77 @@ export default function AchievementListPage() {
     });
   };
 
-  const handlePassingSave = (event: FormEvent<HTMLFormElement>) => {
+  // Add cause in edit mode
+  const handleAddEditCause = () => {
+    setPassingFormData(prev => {
+      if (!prev) return prev;
+      return { ...prev, causes: [...prev.causes, ""] };
+    });
+  };
+
+  // Add burial place in edit mode
+  const handleAddEditBurialPlace = () => {
+    setPassingFormData(prev => {
+      if (!prev) return prev;
+      return { ...prev, burialPlaces: [...prev.burialPlaces, { location: "", startDate: "" }] };
+    });
+  };
+
+  const handlePassingSave = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedPassing || !selectedPassingYear || !passingFormData) return;
 
-    // Create updated passing entry
-    const updatedPassing = {
-      ...selectedPassing,
-      person: passingFormData.person,
-      date: passingFormData.date,
-      causes: passingFormData.causes,
-      burialPlaces: passingFormData.burialPlaces,
-      // Update the cause string for display
-      cause: `Causes: ${passingFormData.causes.join(", ")}`,
-    };
+    // Validate Date of Passing
+    if (!passingFormData.date || passingFormData.date.trim() === "") {
+      alert("Vui lòng nhập Date Of Passing!");
+      return;
+    }
 
-    // Update the passing sections state
-    setPassingSectionsState((prev) =>
-      prev.map((section) =>
-        section.year === selectedPassingYear
-          ? {
-            ...section,
-            entries: section.entries.map((entry) =>
-              entry.id === selectedPassing.id ? updatedPassing : entry
-            ),
-          }
-          : section
-      )
-    );
+    // Validate Start Date for each burial place that has a location
+    const burialPlacesWithLocation = passingFormData.burialPlaces.filter(bp => bp.location.trim() !== "");
+    const missingStartDate = burialPlacesWithLocation.find(bp => !bp.startDate || bp.startDate.trim() === "");
+    if (missingStartDate) {
+      alert("Vui lòng nhập Start Date cho tất cả Burial Places!");
+      return;
+    }
 
-    // Update selected passing and close modal
-    setSelectedPassing(updatedPassing);
-    handlePassingModalClose();
+    // Validate Date of Passing <= all Burial Start Dates
+    const passingDate = new Date(passingFormData.date);
+    for (const bp of passingFormData.burialPlaces) {
+      if (bp.location.trim() !== "" && bp.startDate) {
+        const burialDate = new Date(bp.startDate);
+        if (passingDate > burialDate) {
+          alert("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
+          return;
+        }
+      }
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/passing-records", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: selectedPassing.id,
+          dateOfPassing: passingFormData.date,
+          causes: passingFormData.causes.filter(c => c.trim() !== ""),
+          burialPlaces: passingFormData.burialPlaces.filter(bp => bp.location.trim() !== ""),
+        }),
+      });
+
+      if (response.ok) {
+        // Refresh passing records from database
+        fetchPassingRecords();
+        handlePassingModalClose();
+      } else {
+        console.error("Failed to update passing record");
+      }
+    } catch (error) {
+      console.error("Error updating passing record:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleEditClick = () => {
@@ -895,6 +950,167 @@ export default function AchievementListPage() {
     }
   };
 
+  // Add Passing handlers
+  const handleAddPassingOpen = async () => {
+    setIsAddPassingOpen(true);
+    setNewPassingFormData({
+      memberId: "",
+      date: "",
+      causes: [""],
+      burialPlaces: [{ location: "", startDate: "" }],
+    });
+
+    // Fetch living members (exclude those who already have passing records)
+    if (selectedTreeId) {
+      try {
+        const res = await fetch(`/api/family-members?treeId=${selectedTreeId}&excludeDeceased=true`);
+        const data = await res.json();
+        setLivingMembers(data.members || []);
+      } catch (error) {
+        console.error("Failed to fetch living members:", error);
+      }
+    }
+  };
+
+  const handleAddPassingClose = () => {
+    setIsAddPassingOpen(false);
+    setNewPassingFormData({
+      memberId: "",
+      date: "",
+      causes: [""],
+      burialPlaces: [{ location: "", startDate: "" }],
+    });
+  };
+
+  const handleAddPassingCause = () => {
+    setNewPassingFormData(prev => ({
+      ...prev,
+      causes: [...prev.causes, ""],
+    }));
+  };
+
+  const handleRemovePassingCause = (index: number) => {
+    setNewPassingFormData(prev => ({
+      ...prev,
+      causes: prev.causes.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleNewPassingCauseChange = (index: number, value: string) => {
+    setNewPassingFormData(prev => {
+      const newCauses = [...prev.causes];
+      newCauses[index] = value;
+      return { ...prev, causes: newCauses };
+    });
+  };
+
+  const handleAddPassingBurialPlace = () => {
+    setNewPassingFormData(prev => ({
+      ...prev,
+      burialPlaces: [...prev.burialPlaces, { location: "", startDate: "" }],
+    }));
+  };
+
+  const handleRemovePassingBurialPlace = (index: number) => {
+    setNewPassingFormData(prev => ({
+      ...prev,
+      burialPlaces: prev.burialPlaces.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleNewPassingBurialPlaceChange = (index: number, field: "location" | "startDate", value: string) => {
+    setNewPassingFormData(prev => {
+      const newBurialPlaces = [...prev.burialPlaces];
+      newBurialPlaces[index] = { ...newBurialPlaces[index], [field]: value };
+      return { ...prev, burialPlaces: newBurialPlaces };
+    });
+  };
+
+  const handleAddPassingSave = async () => {
+    // Validate Family Member
+    if (!newPassingFormData.memberId) {
+      alert("Vui lòng chọn Family Member!");
+      return;
+    }
+
+    // Validate Date of Passing
+    if (!newPassingFormData.date || newPassingFormData.date.trim() === "") {
+      alert("Vui lòng nhập Date Of Passing!");
+      return;
+    }
+
+    // Validate at least one Cause is filled
+    const filledCauses = newPassingFormData.causes.filter(c => c.trim() !== "");
+    if (filledCauses.length === 0) {
+      alert("Vui lòng nhập ít nhất một Cause Of Passing!");
+      return;
+    }
+
+    // Check if any cause field is empty
+    const emptyCause = newPassingFormData.causes.find(c => c.trim() === "");
+    if (emptyCause !== undefined) {
+      alert("Vui lòng nhập đầy đủ tất cả Cause Of Passing hoặc xóa các trường trống!");
+      return;
+    }
+
+    // Validate at least one Burial Place
+    const filledBurialPlaces = newPassingFormData.burialPlaces.filter(bp => bp.location.trim() !== "");
+    if (filledBurialPlaces.length === 0) {
+      alert("Vui lòng nhập ít nhất một Burial Place!");
+      return;
+    }
+
+    // Validate all burial places have both Location and Start Date
+    for (const bp of newPassingFormData.burialPlaces) {
+      if (bp.location.trim() !== "" && (!bp.startDate || bp.startDate.trim() === "")) {
+        alert("Vui lòng nhập Start Date cho tất cả Burial Places!");
+        return;
+      }
+      if (bp.location.trim() === "" && bp.startDate && bp.startDate.trim() !== "") {
+        alert("Vui lòng nhập Location cho tất cả Burial Places!");
+        return;
+      }
+    }
+
+    // Validate Date of Passing <= all Burial Start Dates
+    const passingDate = new Date(newPassingFormData.date);
+    for (const bp of newPassingFormData.burialPlaces) {
+      if (bp.location.trim() !== "" && bp.startDate) {
+        const burialDate = new Date(bp.startDate);
+        if (passingDate > burialDate) {
+          alert("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
+          return;
+        }
+      }
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/passing-records", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          treeId: selectedTreeId,
+          memberId: newPassingFormData.memberId,
+          dateOfPassing: newPassingFormData.date,
+          causes: newPassingFormData.causes.filter(c => c.trim() !== ""),
+          burialPlaces: newPassingFormData.burialPlaces.filter(bp => bp.location.trim() !== ""),
+        }),
+      });
+
+      if (response.ok) {
+        fetchPassingRecords();
+        handleAddPassingClose();
+      } else {
+        console.error("Failed to save passing record");
+      }
+    } catch (error) {
+      console.error("Error saving passing record:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const addButtonLabel = useMemo(() => {
     if (activeTab === "Passing") return "Add Passing";
     if (activeTab === "Life Event") return "Add Divorce";
@@ -1013,7 +1229,15 @@ export default function AchievementListPage() {
               )}
 
               <button
-                onClick={() => activeTab === "Life Event" ? handleAddDivorceOpen() : setIsAddAchievementOpen(true)}
+                onClick={() => {
+                  if (activeTab === "Life Event") {
+                    handleAddDivorceOpen();
+                  } else if (activeTab === "Passing") {
+                    handleAddPassingOpen();
+                  } else {
+                    setIsAddAchievementOpen(true);
+                  }
+                }}
                 className="ml-auto flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#101828] text-sm font-semibold text-gray-900"
               >
                 <Plus className="h-4 w-4" />
@@ -1034,7 +1258,7 @@ export default function AchievementListPage() {
                     <div className="h-px flex-1 bg-[#D9CDA6]" />
                   </div>
 
-                  <div className="mx-auto flex max-w-[900px] flex-col gap-[24px]">
+                  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     {entries.map((entry) => {
                       return (
                         <article
@@ -1619,29 +1843,44 @@ export default function AchievementListPage() {
 
               {isEditingPassing ? (
                 <form onSubmit={handlePassingSave} className="mt-6 flex flex-col gap-5 overflow-y-auto pr-2" style={{ maxHeight: "calc(90vh - 280px)" }}>
-                  {/* Family Member */}
+                  {/* Family Member - Read only (cannot change after created) */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Family Member *</label>
                     <input
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                      className="h-[40px] w-full cursor-default rounded-full border border-[#B6B6B6] bg-[#E5E5E5] px-4 text-sm text-[#666]"
                       value={passingFormData?.person ?? ""}
-                      onChange={handlePassingFormChange("person")}
+                      readOnly
+                      disabled
                     />
                   </div>
 
-                  {/* Date of Passing */}
+                  {/* Date of Passing with Calendar Icon */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Date Of Passing *</label>
-                    <input
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
-                      value={passingFormData?.date ?? ""}
-                      onChange={handlePassingFormChange("date")}
-                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                        value={passingFormData?.date ?? ""}
+                        onChange={(e) => setPassingFormData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                      />
+                      <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                    </div>
                   </div>
 
-                  {/* Cause of Passing */}
+                  {/* Cause of Passing with Add Button */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#111]">Cause Of Passing *</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-[#111]">Cause Of Passing *</label>
+                      <button
+                        type="button"
+                        onClick={handleAddEditCause}
+                        className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-full px-3 py-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add Cause
+                      </button>
+                    </div>
                     <div className="flex flex-col gap-2">
                       {passingFormData?.causes.map((cause, index) => (
                         <div key={index} className="flex items-center gap-2">
@@ -1649,24 +1888,34 @@ export default function AchievementListPage() {
                             className="h-[40px] flex-1 rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
                             value={cause}
                             onChange={handlePassingCauseChange(index)}
+                            placeholder="e.g., old age"
                           />
                           {index > 0 && (
                             <button
                               type="button"
                               onClick={() => handleDeleteCause(index)}
-                              className="flex h-8 w-8 items-center justify-center"
+                              className="flex h-8 w-8 items-center justify-center hover:opacity-70"
                             >
-                              <Image src="/icons/thung_rac.png" alt="Delete" width={20} height={20} />
+                              <Image src="/icons/thung_rac.png" alt="Delete" width={16} height={16} />
                             </button>
                           )}
                         </div>
                       ))}
                     </div>
                   </div>
-
-                  {/* Burial Places */}
+                  {/* Burial Places with Add Button */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-[#111]">Burial Places *</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-[#111]">Burial Places *</label>
+                      <button
+                        type="button"
+                        onClick={handleAddEditBurialPlace}
+                        className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-full px-3 py-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add Place
+                      </button>
+                    </div>
                     <div className="flex flex-col gap-4">
                       {passingFormData?.burialPlaces.map((place, index) => (
                         <div
@@ -1677,27 +1926,32 @@ export default function AchievementListPage() {
                             <button
                               type="button"
                               onClick={() => handleDeleteBurialPlace(index)}
-                              className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center"
+                              className="absolute right-3 top-3 p-1 hover:opacity-70"
                             >
                               <Image src="/icons/thung_rac.png" alt="Delete" width={16} height={16} />
                             </button>
                           )}
                           <div className="space-y-3">
                             <div className="space-y-1">
-                              <label className="text-xs font-medium text-[#555]">Location *</label>
+                              <label className="text-xs font-medium text-[#111]">Location *</label>
                               <input
-                                className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                                className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-white px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
                                 value={place.location}
                                 onChange={handlePassingBurialPlaceChange(index, "location")}
+                                placeholder="Enter location"
                               />
                             </div>
                             <div className="space-y-1">
-                              <label className="text-xs font-medium text-[#555]">Start Date *</label>
-                              <input
-                                className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
-                                value={place.startDate}
-                                onChange={handlePassingBurialPlaceChange(index, "startDate")}
-                              />
+                              <label className="text-xs font-medium text-[#111]">Start Date *</label>
+                              <div className="relative">
+                                <input
+                                  type="date"
+                                  className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-white px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                                  value={place.startDate}
+                                  onChange={handlePassingBurialPlaceChange(index, "startDate")}
+                                />
+                                <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1715,9 +1969,10 @@ export default function AchievementListPage() {
                     </button>
                     <button
                       type="submit"
-                      className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white"
+                      disabled={isSaving}
+                      className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white disabled:opacity-50"
                     >
-                      Save
+                      {isSaving ? "Saving..." : "Save"}
                     </button>
                   </div>
                 </form>
@@ -2039,6 +2294,180 @@ export default function AchievementListPage() {
                   <button
                     type="button"
                     onClick={handleAddDivorceSave}
+                    disabled={isSaving}
+                    className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white disabled:opacity-50"
+                  >
+                    {isSaving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Passing Modal */}
+        {isAddPassingOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="relative w-full max-w-[460px] rounded-[24px] bg-white p-8 shadow-2xl" style={{ maxHeight: "90vh", overflowY: "auto" }}>
+              {/* Back button */}
+              <button
+                onClick={handleAddPassingClose}
+                className="absolute left-6 top-6 flex items-center gap-1 text-sm text-[#111]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </button>
+
+              {/* Icon and Title */}
+              <div className="mt-6 flex flex-col items-center">
+                <Image src="/icons/passing.png" alt="Passing" width={48} height={48} />
+                <h2 className="mt-4 text-center text-[22px] font-medium text-[#000]">Record Passing</h2>
+              </div>
+
+              {/* Form */}
+              <div className="mt-8 flex flex-col gap-5">
+                {/* Family Member */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Family Member *</label>
+                  <select
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
+                    value={newPassingFormData.memberId}
+                    onChange={(e) => setNewPassingFormData(prev => ({ ...prev, memberId: e.target.value }))}
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
+                  >
+                    <option value="">Select member</option>
+                    {livingMembers.map((member) => (
+                      <option key={member.id} value={member.id}>{member.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date of Passing */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Date Of Passing *</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      value={newPassingFormData.date}
+                      onChange={(e) => setNewPassingFormData(prev => ({ ...prev, date: e.target.value }))}
+                    />
+                    <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Cause of Passing */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-[#111]">Cause Of Passing *</label>
+                    <button
+                      type="button"
+                      onClick={handleAddPassingCause}
+                      className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-full px-3 py-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Add Cause
+                    </button>
+                  </div>
+                  {newPassingFormData.causes.map((cause, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g., old age"
+                        className="h-[40px] flex-1 rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                        value={cause}
+                        onChange={(e) => handleNewPassingCauseChange(index, e.target.value)}
+                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePassingCause(index)}
+                          className="flex-shrink-0 p-2 hover:opacity-70"
+                        >
+                          <Image src="/icons/thung_rac.png" alt="Delete" width={16} height={16} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Burial Places */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-[#111]">Burial Places *</label>
+                    <button
+                      type="button"
+                      onClick={handleAddPassingBurialPlace}
+                      className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-gray-900 border border-gray-300 rounded-full px-3 py-1"
+                    >
+                      <Plus className="h-3 w-3" />
+                      Add Place
+                    </button>
+                  </div>
+                  {newPassingFormData.burialPlaces.map((place, index) => (
+                    <div key={index} className="relative rounded-xl border border-[#B6B6B6] bg-[#E8F4FD] p-4">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePassingBurialPlace(index)}
+                          className="absolute right-3 top-3 p-1 hover:opacity-70"
+                        >
+                          <Image src="/icons/thung_rac.png" alt="Delete" width={16} height={16} />
+                        </button>
+                      )}
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-medium text-[#111]">Location *</label>
+                          <input
+                            type="text"
+                            placeholder="Enter location"
+                            className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-white px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                            value={place.location}
+                            onChange={(e) => handleNewPassingBurialPlaceChange(index, "location", e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-medium text-[#111]">Start Date *</label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              className="h-[36px] w-full rounded-full border border-[#B6B6B6] bg-white px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                              value={place.startDate}
+                              onChange={(e) => handleNewPassingBurialPlaceChange(index, "startDate", e.target.value)}
+                            />
+                            <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Important Notice */}
+                <div className="mt-2 rounded-xl bg-[#BFDBFE] p-4">
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">⚠️</span>
+                    <div>
+                      <p className="text-sm font-semibold text-[#111]">Important</p>
+                      <p className="mt-1 text-xs text-[#6B7280]">
+                        The <span className="font-semibold text-[#111]">Family Member selected</span> for this record <span className="font-semibold text-[#111]">cannot be changed</span> once saved. Furthermore, this record is <span className="font-semibold text-[#111]">permanent</span> and <span className="font-semibold text-[#111]">cannot be deleted</span>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="mt-4 flex justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleAddPassingClose}
+                    className="h-10 w-[100px] rounded-[20px] border border-[#111] text-sm font-semibold text-[#111]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddPassingSave}
                     disabled={isSaving}
                     className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white disabled:opacity-50"
                   >
