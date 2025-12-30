@@ -2,7 +2,7 @@
 
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Providers } from "./providers";
-import { Sidebar } from "../components/ui/sidebar";
+import { Sidebar } from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";

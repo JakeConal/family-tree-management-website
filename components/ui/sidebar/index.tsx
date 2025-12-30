@@ -5,7 +5,16 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { LogOut, LayoutDashboard, TreePine, Users, Calendar, BarChart3, Settings } from "lucide-react";
-import { useFamilyTrees } from "../../../lib/useFamilyTrees";
+import { useFamilyTrees } from "@/lib/useFamilyTrees";
+
+interface NavigationItem {
+	name: string;
+	href: string;
+	icon: any;
+	alwaysShow?: boolean;
+	familyTreeOnly?: boolean;
+	disabled?: boolean;
+}
 
 export function Sidebar() {
 	const { data: session, status } = useSession();
@@ -21,28 +30,28 @@ export function Sidebar() {
 
 	const activeFamilyTreeId = getFamilyTreeIdFromPath();
 
-	const navigationItems = useMemo(() => {
-		const FamilyTreeDashboard = activeFamilyTreeId
-			? `/family-trees/${activeFamilyTreeId}`
-			: familyTrees.length > 0
-			? `/family-trees/${familyTrees[0].id}`
-			: "/dashboard";
+	const navigationItems = useMemo<NavigationItem[]>(() => {
+		// Base navigation items
+		const baseItems: NavigationItem[] = [{ name: "Home", href: "/dashboard", icon: LayoutDashboard, alwaysShow: true }];
 
-		const familyTreeHref = activeFamilyTreeId
-			? `/family-trees/${activeFamilyTreeId}/tree`
-			: familyTrees.length > 0
-			? `/family-trees/${familyTrees[0].id}/tree`
-			: "/dashboard";
+		// Family tree specific items (only show when viewing a family tree)
+		const familyTreeItems: NavigationItem[] = activeFamilyTreeId
+			? [
+					{ name: "Overview", href: `/family-trees/${activeFamilyTreeId}`, icon: LayoutDashboard, familyTreeOnly: true },
+					{ name: "Family Tree", href: `/family-trees/${activeFamilyTreeId}/tree`, icon: TreePine, familyTreeOnly: true },
+			  ]
+			: [];
 
-		return [
-			{ name: "Dashboard", href: FamilyTreeDashboard, icon: LayoutDashboard },
-			{ name: "Family Tree", href: familyTreeHref, icon: TreePine },
-			{ name: "Members", href: "/dashboard/members", icon: Users },
-			{ name: "Life Event", href: "/dashboard/events", icon: Calendar },
-			{ name: "Reports", href: "/dashboard/reports", icon: BarChart3 },
-			{ name: "Settings", href: "/dashboard/settings", icon: Settings },
+		// Future feature items (placeholder)
+		const futureItems: NavigationItem[] = [
+			{ name: "Members", href: "/members", icon: Users, disabled: true },
+			{ name: "Life Events", href: "/events", icon: Calendar, disabled: true },
+			{ name: "Reports", href: "/reports", icon: BarChart3, disabled: true },
+			{ name: "Settings", href: "/settings", icon: Settings, disabled: true },
 		];
-	}, [activeFamilyTreeId, familyTrees]);
+
+		return [...baseItems, ...familyTreeItems, ...futureItems];
+	}, [activeFamilyTreeId]);
 
 	return (
 		<div className="h-full w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col">
@@ -98,21 +107,22 @@ export function Sidebar() {
 					<nav className="space-y-1">
 						{navigationItems.map((item) => {
 							const isActive =
-								item.name === "Dashboard"
-									? pathname === "/dashboard" || (pathname.startsWith("/family-trees/") && !pathname.includes("/tree") && !pathname.endsWith("/new"))
-									: item.name === "Family Tree"
-									? pathname.includes("/tree")
-									: pathname === item.href;
+								pathname === item.href ||
+								(item.name === "Overview" && pathname.startsWith(`/family-trees/${activeFamilyTreeId}`) && !pathname.includes("/tree"));
 
 							return (
 								<button
 									key={item.name}
-									onClick={() => router.push(item.href)}
+									onClick={() => !item.disabled && router.push(item.href)}
+									disabled={item.disabled}
 									className={`w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter font-normal rounded-[30px] transition-colors ${
-										isActive ? "bg-[#d4d4d8] text-black" : "text-black hover:bg-gray-200"
+										isActive ? "bg-[#d4d4d8] text-black" : item.disabled ? "text-gray-400 cursor-not-allowed" : "text-black hover:bg-gray-200"
 									}`}
+									title={item.disabled ? "Coming soon" : undefined}
 								>
-									<item.icon className={`w-[20px] h-[20px] mr-[10px] ${isActive ? "text-black" : "text-gray-500"}`} />
+									<item.icon
+										className={`w-[20px] h-[20px] mr-[10px] ${isActive ? "text-black" : item.disabled ? "text-gray-400" : "text-gray-500"}`}
+									/>
 									{item.name}
 								</button>
 							);
