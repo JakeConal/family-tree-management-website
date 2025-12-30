@@ -403,44 +403,46 @@ export default function MemberListPage() {
   return (
     <div className="flex h-full overflow-hidden bg-white">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto p-4 lg:p-8">
-        {/* Controls Component */}
-        <MemberControls
-          selectedGeneration={selectedGeneration}
-          searchQuery={searchQuery}
-          generations={generations}
-          onGenerationChange={setSelectedGeneration}
-          onSearchChange={setSearchQuery}
-          onAddMember={() => setIsAddMemberModalOpen(true)}
-        />
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <div className="p-4 lg:p-8">
+          {/* Controls Component */}
+          <MemberControls
+            selectedGeneration={selectedGeneration}
+            searchQuery={searchQuery}
+            generations={generations}
+            onGenerationChange={setSelectedGeneration}
+            onSearchChange={setSearchQuery}
+            onAddMember={() => setIsAddMemberModalOpen(true)}
+          />
 
-        {/* Table Component */}
-        <MemberTable
-          members={filteredMembers}
-          onViewMember={handleViewMember}
-          onEditMember={handleEditMember}
-          onDeleteMember={handleDeleteMember}
-        />
+          {/* Table Component */}
+          <MemberTable
+            members={filteredMembers}
+            onViewMember={handleViewMember}
+            onEditMember={handleEditMember}
+            onDeleteMember={handleDeleteMember}
+          />
 
-        {/* Pagination */}
-        <div className="flex items-center justify-center gap-4 mt-6">
-          <button
-            className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"
-            disabled
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 flex items-center justify-center bg-green-600 text-white rounded-full text-sm font-medium">
-              1
-            </span>
+          {/* Pagination */}
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <button
+              className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"
+              disabled
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 flex items-center justify-center bg-green-600 text-white rounded-full text-sm font-medium">
+                1
+              </span>
+            </div>
+            <button
+              className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"
+              disabled
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
-          <button
-            className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50"
-            disabled
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
@@ -470,8 +472,9 @@ export default function MemberListPage() {
       <AddMemberModal
         isOpen={isAddMemberModalOpen}
         onClose={() => setIsAddMemberModalOpen(false)}
-        familyTreeId={parseInt(familyTreeId)}
-        onSuccess={fetchData}
+        familyTreeId={familyTreeId}
+        existingMembers={members}
+        onMemberAdded={fetchData}
       />
     </div>
   );
