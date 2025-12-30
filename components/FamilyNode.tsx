@@ -37,13 +37,13 @@ export default function FamilyNode({ node, member, style }: FamilyNodeProps) {
       `}
       style={{
         ...style,
-        width: "180px",
+        width: "150px",
         height: "200px",
       }}
     >
       {/* Profile Image */}
       <div className="flex justify-center mb-2">
-        <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+        <div className="w-20 h-20 rounded-lg bg-gray-300 flex items-center justify-center overflow-hidden">
           {(member as any).hasProfilePicture ? (
             <img
               src={`/api/family-members/${member.id}/profile-picture`}

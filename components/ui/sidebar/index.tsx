@@ -57,7 +57,9 @@ export function Sidebar() {
           height={41}
           className="mr-[5px]"
         />
-        <span className="font-playfair font-bold text-[23.908px] text-black">Family Tree</span>
+        <span className="font-playfair font-bold text-[23.908px] text-black">
+          Family Tree
+        </span>
       </div>
 
       {/* Scrollable Content Area */}
@@ -93,7 +95,9 @@ export function Sidebar() {
                     <div className="w-[16px] h-[16px] flex items-center justify-center mr-[10px]">
                       <div className="w-[4px] h-[4px] rounded-full bg-[#d9d4d8]" />
                     </div>
-                    <span className="truncate font-normal">{tree.familyName}</span>
+                    <span className="truncate font-normal">
+                      {tree.familyName}
+                    </span>
                   </button>
                 ))
               )}
@@ -135,7 +139,11 @@ export function Sidebar() {
                       : "text-black hover:bg-gray-200"
                   }`}
                 >
-                  <item.icon className={`w-[20px] h-[20px] mr-[10px] ${isActive ? "text-black" : "text-gray-500"}`} />
+                  <item.icon
+                    className={`w-[20px] h-[20px] mr-[10px] ${
+                      isActive ? "text-black" : "text-gray-500"
+                    }`}
+                  />
                   {item.name}
                 </button>
               );
