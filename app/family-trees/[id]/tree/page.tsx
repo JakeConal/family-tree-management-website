@@ -324,15 +324,7 @@ export default function FamilyTreePage() {
 
   return (
     <div className="flex h-full overflow-hidden bg-white">
-      <div
-        className={classNames(
-          "flex flex-col overflow-y-auto p-4 transition-all duration-300",
-          {
-            "w-full": selectedMemberIdForPanel === null,
-            "flex-1": selectedMemberIdForPanel !== null,
-          }
-        )}
-      >
+      <div className="flex-1 flex flex-col overflow-y-auto p-4">
         <div className="w-full">
           {/* Top Control Bar */}
           <div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
