@@ -42,7 +42,7 @@ export function Sidebar() {
 			? [
 					{ name: "Overview", href: `/family-trees/${activeFamilyTreeId}`, icon: LayoutDashboard, familyTreeOnly: true },
 					{ name: "Family Tree", href: `/family-trees/${activeFamilyTreeId}/tree`, icon: TreePine, familyTreeOnly: true },
-					{ name: "Members", href: "/members", icon: Users, disabled: true },
+					{ name: "Members", href: `/family-trees/${activeFamilyTreeId}/members`, icon: Users, familyTreeOnly: true },
 					{ name: "Life Events", href: "/events", icon: Calendar, disabled: true },
 					{ name: "Reports", href: "/reports", icon: BarChart3, disabled: true },
 					{ name: "Settings", href: "/settings", icon: Settings, disabled: true },
@@ -113,9 +113,7 @@ export function Sidebar() {
 						<h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">Family Tree </h2>
 						<nav className="space-y-1">
 							{navigationItems.map((item) => {
-								const isActive =
-									pathname === item.href ||
-									(item.name === "Overview" && pathname.startsWith(`/family-trees/${activeFamilyTreeId}`) && !pathname.includes("/tree"));
+								const isActive = pathname === item.href;
 
 								return (
 									<NavigationButton key={item.name} name={item.name} href={item.href} icon={item.icon} isActive={isActive} disabled={item.disabled} />

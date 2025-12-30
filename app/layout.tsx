@@ -5,11 +5,12 @@ import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Providers } from "./providers";
 import { Sidebar } from "@/components/ui/sidebar";
 import CreateFamilyTreePanel from "@/components/CreateFamilyTreePanel";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { closeCreatePanel } from "@/lib/store/createPanelSlice";
+import { useFamilyTrees } from "@/lib/useFamilyTrees";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,6 +39,17 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	const { data: session, status } = useSession();
 	const dispatch = useAppDispatch();
 	const isCreatePanelOpen = useAppSelector((state) => state.createPanel.isOpen);
+	const { familyTrees } = useFamilyTrees(session);
+
+	const activeFamilyTreeName = useMemo(() => {
+		const match = pathname.match(/\/family-trees\/(\d+)/);
+		if (match) {
+			const id = parseInt(match[1]);
+			const tree = familyTrees.find((t) => t.id === id);
+			return tree ? `${tree.familyName} Family` : "";
+		}
+		return "";
+	}, [pathname, familyTrees]);
 
 	// Only show sidebar when authenticated and not on welcome/login/signup pages
 	const shouldShowSidebar = status === "authenticated" && !pathname.startsWith("/welcome") && !pathname.startsWith("/signup");
@@ -124,8 +136,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0 h-full">
-				{/* Header with hamburger menu */}
-				<header className="h-[60px] flex items-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
+				{/* Header with hamburger menu and family tree name */}
+				<header className="h-[60px] flex items-center justify-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
 					<button
 						onClick={() => {
 							const newVisible = !sidebarVisible;
@@ -137,12 +149,15 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 								})
 							);
 						}}
-						className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+						className="absolute left-4 lg:left-8 p-2 hover:bg-gray-100 rounded-lg transition-colors"
 					>
 						<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M3.75 7.5H11.25M3.75 15H26.25M3.75 22.5H11.25" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 						</svg>
 					</button>
+					{activeFamilyTreeName && (
+						<h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">{activeFamilyTreeName}</h1>
+					)}
 				</header>
 
 				{/* Content */}

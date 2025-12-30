@@ -295,11 +295,23 @@ export async function GET(
         gender: true,
         birthday: true,
         generation: true,
+        profilePicture: true,
+        parent: {
+          select: {
+            fullName: true,
+          },
+        },
       },
       orderBy: { fullName: "asc" },
     });
 
-    return NextResponse.json(members);
+    const membersWithFlag = members.map((m) => ({
+      ...m,
+      hasProfilePicture: !!m.profilePicture,
+      profilePicture: undefined,
+    }));
+
+    return NextResponse.json(membersWithFlag);
   } catch (error) {
     console.error("Error fetching family members:", error);
     return NextResponse.json(

@@ -10,6 +10,7 @@ export async function GET(
     const session = await auth();
 
     if (!session?.user?.id) {
+      console.log("Profile picture request unauthorized: No session found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
