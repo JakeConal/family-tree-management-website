@@ -14,6 +14,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useFamilyTrees } from "../../../lib/useFamilyTrees";
+import FamilyTreeDashboard from "../../../app/dashboard/family-trees/[id]/page";
 
 export function Sidebar() {
   const { data: session, status } = useSession();
@@ -30,6 +31,12 @@ export function Sidebar() {
   const activeFamilyTreeId = getFamilyTreeIdFromPath();
 
   const navigationItems = useMemo(() => {
+    const FamilyTreeDashboard = activeFamilyTreeId
+      ? `/dashboard/family-trees/${activeFamilyTreeId}`
+      : familyTrees.length > 0
+      ? `/dashboard/family-trees/${familyTrees[0].id}`
+      : "/dashboard";
+
     const familyTreeHref = activeFamilyTreeId
       ? `/dashboard/family-trees/${activeFamilyTreeId}/tree`
       : familyTrees.length > 0
@@ -37,7 +44,7 @@ export function Sidebar() {
       : "/dashboard";
 
     return [
-      { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Dashboard", href: FamilyTreeDashboard, icon: LayoutDashboard },
       { name: "Family Tree", href: familyTreeHref, icon: TreePine },
       { name: "Members", href: "/dashboard/members", icon: Users },
       { name: "Life Event", href: "/dashboard/events", icon: Calendar },
