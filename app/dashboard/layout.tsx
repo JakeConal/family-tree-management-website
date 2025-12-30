@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -44,9 +45,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 			{/* Create Family Tree Panel - Desktop (Push) */}
 			<aside
-				className={`hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden flex-shrink-0 h-full ${
-					isCreatePanelOpen ? "w-[600px]" : "w-0"
-				}`}
+				className={classNames(
+					"hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden flex-shrink-0 h-full",
+					{
+						"w-[600px]": isCreatePanelOpen,
+						"w-0": !isCreatePanelOpen,
+					}
+				)}
 			>
 				<div className="w-[600px] h-full">
 					<CreateFamilyTreePanel onClose={closeCreatePanel} />
@@ -55,9 +60,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 			{/* Create Family Tree Panel - Mobile (Overlay) */}
 			<aside
-				className={`md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out ${
-					isCreatePanelOpen ? "translate-x-0" : "translate-x-full"
-				}`}
+				className={classNames(
+					"md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out",
+					{
+						"translate-x-0": isCreatePanelOpen,
+						"translate-x-full": !isCreatePanelOpen,
+					}
+				)}
 			>
 				<CreateFamilyTreePanel onClose={closeCreatePanel} />
 			</aside>

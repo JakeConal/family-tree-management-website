@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useState, useEffect } from "react";
 import {
   X,
@@ -557,9 +558,10 @@ export default function ChangeLogDetailsModal({
         <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div
-              className={`p-2 rounded-full ${getActionColor(
-                changeLog?.action || ""
-              )}`}
+              className={classNames(
+                "p-2 rounded-full",
+                getActionColor(changeLog?.action || "")
+              )}
             >
               {getEntityIcon(changeLog?.entityType || "")}
             </div>

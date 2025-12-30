@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { LucideIcon } from "lucide-react";
 
@@ -30,23 +31,22 @@ export function NavigationButton({
 		<button
 			onClick={handleClick}
 			disabled={disabled}
-			className={`w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors cursor-pointer ${
-				isActive
-					? "bg-[#d4d4d8] text-black"
-					: disabled
-					? "text-gray-400 cursor-not-allowed"
-					: "text-black hover:bg-gray-200"
-			}`}
+			className={classNames(
+				"w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors cursor-pointer",
+				{
+					"bg-[#d4d4d8] text-black": isActive,
+					"text-gray-400 cursor-not-allowed": disabled && !isActive,
+					"text-black hover:bg-gray-200": !disabled && !isActive,
+				}
+			)}
 			title={disabled ? "Coming soon" : undefined}
 		>
 			<Icon
-				className={`w-5 h-5 mr-2.5 ${
-					isActive
-						? "text-black"
-						: disabled
-						? "text-gray-400"
-						: "text-gray-500"
-				}`}
+				className={classNames("w-5 h-5 mr-2.5", {
+					"text-black": isActive,
+					"text-gray-400": disabled && !isActive,
+					"text-gray-500": !disabled && !isActive,
+				})}
 			/>
 			{name}
 		</button>

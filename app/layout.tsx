@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Providers } from "./providers";
 import { Sidebar } from "@/components/ui/sidebar";
@@ -103,9 +104,13 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 
 			{/* Sidebar */}
 			<div
-				className={`fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out lg:relative ${
-					sidebarVisible ? "translate-x-0 w-[220px]" : "-translate-x-full lg:translate-x-0 lg:w-0"
-				} overflow-hidden bg-[#f4f4f5] h-full`}
+				className={classNames(
+					"fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out lg:relative overflow-hidden bg-[#f4f4f5] h-full",
+					{
+						"translate-x-0 w-[220px]": sidebarVisible,
+						"-translate-x-full lg:translate-x-0 lg:w-0": !sidebarVisible,
+					}
+				)}
 			>
 				<div className="w-[220px] h-full">
 					<Sidebar />
@@ -149,7 +154,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${inter.variable} antialiased`}>
+			<body className={classNames(geistSans.variable, geistMono.variable, playfair.variable, inter.variable, "antialiased")}>
 				<Providers>
 					<RootLayoutContent>{children}</RootLayoutContent>
 				</Providers>

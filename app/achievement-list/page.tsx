@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import Image from "next/image";
 import { type ChangeEvent, type ComponentType, type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
@@ -1148,16 +1149,17 @@ export default function AchievementListPage() {
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-1 items-center justify-center py-3 text-base font-semibold transition ${activeTab === tab.id
-                      ? "bg-[#E1E3E9] text-[#111322]"
-                      : "text-[#4C5364]"
-                      } ${index === 0
-                        ? "pl-6"
-                        : index === achievementTabs.length - 1
-                          ? "pr-6"
-                          : "px-6"
-                      } ${index !== 0 ? "border-l border-[#C4C7D0]" : ""
-                      }`}
+                    className={classNames(
+                      "flex flex-1 items-center justify-center py-3 text-base font-semibold transition",
+                      {
+                        "bg-[#E1E3E9] text-[#111322]": activeTab === tab.id,
+                        "text-[#4C5364]": activeTab !== tab.id,
+                        "pl-6": index === 0,
+                        "pr-6": index === achievementTabs.length - 1 && index !== 0,
+                        "px-6": index !== 0 && index !== achievementTabs.length - 1,
+                        "border-l border-[#C4C7D0]": index !== 0,
+                      }
+                    )}
                   >
                     {tab.label}
                   </button>
@@ -1170,16 +1172,27 @@ export default function AchievementListPage() {
               <div className="relative">
                 <button
                   onClick={() => { setIsYearDropdownOpen(!isYearDropdownOpen); setIsTypeDropdownOpen(false); }}
-                  className={`flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border ${yearFilter !== "all" ? "border-[#0064FF] bg-blue-50" : "border-[#C9CDD4] bg-white"} text-sm font-medium text-gray-700`}
+                  className={classNames(
+                    "flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border text-sm font-medium text-gray-700",
+                    {
+                      "border-[#0064FF] bg-blue-50": yearFilter !== "all",
+                      "border-[#C9CDD4] bg-white": yearFilter === "all",
+                    }
+                  )}
                 >
-                  <CalendarDays className={`h-4 w-4 ${yearFilter !== "all" ? "text-[#0064FF]" : "text-gray-500"}`} />
+                  <CalendarDays className={classNames("h-4 w-4", {
+                    "text-[#0064FF]": yearFilter !== "all",
+                    "text-gray-500": yearFilter === "all",
+                  })} />
                   {yearFilter === "all" ? "All Years" : yearFilter}
                 </button>
                 {isYearDropdownOpen && (
                   <div className="absolute top-full left-0 mt-1 w-[150px] rounded-lg border border-gray-200 bg-white shadow-lg z-50">
                     <button
                       onClick={() => { setYearFilter("all"); setIsYearDropdownOpen(false); }}
-                      className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${yearFilter === "all" ? "font-semibold text-[#0064FF]" : ""}`}
+                      className={classNames("w-full px-4 py-2 text-left text-sm hover:bg-gray-100", {
+                        "font-semibold text-[#0064FF]": yearFilter === "all",
+                      })}
                     >
                       All Years
                     </button>
@@ -1187,7 +1200,9 @@ export default function AchievementListPage() {
                       <button
                         key={year}
                         onClick={() => { setYearFilter(year); setIsYearDropdownOpen(false); }}
-                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${yearFilter === year ? "font-semibold text-[#0064FF]" : ""}`}
+                        className={classNames("w-full px-4 py-2 text-left text-sm hover:bg-gray-100", {
+                          "font-semibold text-[#0064FF]": yearFilter === year,
+                        })}
                       >
                         {year}
                       </button>
@@ -1201,16 +1216,27 @@ export default function AchievementListPage() {
                 <div className="relative">
                   <button
                     onClick={() => { setIsTypeDropdownOpen(!isTypeDropdownOpen); setIsYearDropdownOpen(false); }}
-                    className={`flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border ${typeFilter !== "all" ? "border-[#0064FF] bg-blue-50" : "border-[#C9CDD4] bg-white"} text-sm font-medium text-gray-700`}
+                    className={classNames(
+                      "flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border text-sm font-medium text-gray-700",
+                      {
+                        "border-[#0064FF] bg-blue-50": typeFilter !== "all",
+                        "border-[#C9CDD4] bg-white": typeFilter === "all",
+                      }
+                    )}
                   >
-                    <ListChecks className={`h-4 w-4 ${typeFilter !== "all" ? "text-[#0064FF]" : "text-gray-500"}`} />
+                    <ListChecks className={classNames("h-4 w-4", {
+                      "text-[#0064FF]": typeFilter !== "all",
+                      "text-gray-500": typeFilter === "all",
+                    })} />
                     {typeFilter === "all" ? "All Types" : typeFilter}
                   </button>
                   {isTypeDropdownOpen && (
                     <div className="absolute top-full left-0 mt-1 w-[180px] rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-[300px] overflow-y-auto">
                       <button
                         onClick={() => { setTypeFilter("all"); setIsTypeDropdownOpen(false); }}
-                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${typeFilter === "all" ? "font-semibold text-[#0064FF]" : ""}`}
+                        className={classNames("w-full px-4 py-2 text-left text-sm hover:bg-gray-100", {
+                          "font-semibold text-[#0064FF]": typeFilter === "all",
+                        })}
                       >
                         All Types
                       </button>
@@ -1218,7 +1244,9 @@ export default function AchievementListPage() {
                         <button
                           key={type.id}
                           onClick={() => { setTypeFilter(type.name); setIsTypeDropdownOpen(false); }}
-                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 ${typeFilter === type.name ? "font-semibold text-[#0064FF]" : ""}`}
+                          className={classNames("w-full px-4 py-2 text-left text-sm hover:bg-gray-100", {
+                            "font-semibold text-[#0064FF]": typeFilter === type.name,
+                          })}
                         >
                           {type.name}
                         </button>

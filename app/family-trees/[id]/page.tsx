@@ -514,7 +514,7 @@ export default function FamilyTreeDashboard() {
 					</div>
 
 					{/* Death Trend */}
-					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
 						<div className="flex justify-between items-start">
 							<p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
 							<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -527,7 +527,7 @@ export default function FamilyTreeDashboard() {
 					</div>
 
 					{/* Marriage Trend */}
-					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
 						<div className="flex justify-between items-start">
 							<p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
 							<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -541,7 +541,7 @@ export default function FamilyTreeDashboard() {
 					</div>
 
 					{/* Achievement Growth */}
-					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+					<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
 						<div className="flex justify-between items-start">
 							<p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
 							<div className="bg-[#d4d4d8] p-2 rounded-[10px]">

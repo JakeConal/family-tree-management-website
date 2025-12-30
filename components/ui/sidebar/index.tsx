@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useMemo } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
@@ -76,9 +77,13 @@ export function Sidebar() {
 									<button
 										key={tree.id}
 										onClick={() => router.push(`/family-trees/${tree.id}`)}
-										className={`w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter transition-colors rounded-[30px] ${
-											activeFamilyTreeId === tree.id ? "bg-[#d4d4d8] text-black" : "text-black hover:bg-gray-200"
-										}`}
+										className={classNames(
+											"w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter transition-colors rounded-[30px]",
+											{
+												"bg-[#d4d4d8] text-black": activeFamilyTreeId === tree.id,
+												"text-black hover:bg-gray-200": activeFamilyTreeId !== tree.id,
+											}
+										)}
 									>
 										<div className="w-[16px] h-[16px] flex items-center justify-center mr-[10px]">
 											<div className="w-[4px] h-[4px] rounded-full bg-[#d9d4d8]" />

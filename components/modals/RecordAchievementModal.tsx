@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import { useState, useEffect } from "react";
 import { X, Trophy, ArrowLeft, Calendar, Check } from "lucide-react";
 
@@ -354,11 +355,13 @@ export default function RecordAchievementModal({
                     achievementFormData.familyMemberId
                   )
                 }
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.familyMemberId && touched.familyMemberId
-                    ? "border-red-500 bg-red-50"
-                    : "border-gray-300"
-                }`}
+                className={classNames(
+                  "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  {
+                    "border-red-500 bg-red-50": errors.familyMemberId && touched.familyMemberId,
+                    "border-gray-300": !(errors.familyMemberId && touched.familyMemberId),
+                  }
+                )}
                 data-error={
                   errors.familyMemberId && touched.familyMemberId
                     ? "true"
@@ -399,11 +402,13 @@ export default function RecordAchievementModal({
                     achievementFormData.achievementTypeId
                   )
                 }
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.achievementTypeId && touched.achievementTypeId
-                    ? "border-red-500 bg-red-50"
-                    : "border-gray-300"
-                }`}
+                className={classNames(
+                  "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  {
+                    "border-red-500 bg-red-50": errors.achievementTypeId && touched.achievementTypeId,
+                    "border-gray-300": !(errors.achievementTypeId && touched.achievementTypeId),
+                  }
+                )}
                 data-error={
                   errors.achievementTypeId && touched.achievementTypeId
                     ? "true"
@@ -449,11 +454,13 @@ export default function RecordAchievementModal({
                       achievementFormData.achieveDate
                     )
                   }
-                  className={`w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.achieveDate && touched.achieveDate
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
+                  className={classNames(
+                    "w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                    {
+                      "border-red-500 bg-red-50": errors.achieveDate && touched.achieveDate,
+                      "border-gray-300": !(errors.achieveDate && touched.achieveDate),
+                    }
+                  )}
                   placeholder="MM/DD/YYYY"
                   data-error={
                     errors.achieveDate && touched.achieveDate ? "true" : "false"
