@@ -149,26 +149,38 @@ export default function AddMemberModal({
 
   // Validation function
   const validateForm = () => {
+    const errors = {
+      fullName: "",
+      gender: "",
+      birthDate: "",
+      address: "",
+      relatedMemberId: "",
+      relationship: "",
+      relationshipDate: "",
+      placesOfOrigin: "",
+      occupations: "",
+    };
+
     if (!memberFormData.fullName.trim()) {
-      return false;
+      errors.fullName = "Full name is required";
     }
     if (!memberFormData.gender) {
-      return false;
+      errors.gender = "Gender is required";
     }
     if (!memberFormData.birthDate) {
-      return false;
+      errors.birthDate = "Birth date is required";
     }
     if (!memberFormData.address.trim()) {
-      return false;
+      errors.address = "Address is required";
     }
     if (!memberFormData.relatedMemberId) {
-      return false;
+      errors.relatedMemberId = "Related member is required";
     }
     if (!memberFormData.relationship) {
-      return false;
+      errors.relationship = "Relationship is required";
     }
     if (!memberFormData.relationshipDate) {
-      return false;
+      errors.relationshipDate = "Relationship date is required";
     }
 
     // Check if at least one place of origin is filled and has required start date
@@ -176,14 +188,14 @@ export default function AddMemberModal({
       (place) => place.location.trim() !== ""
     );
     if (!hasValidPlaceOfOrigin) {
-      return false;
+      errors.placesOfOrigin = "At least one place of origin is required";
     } else {
       // Check that places with location also have start date
       const invalidPlaces = placesOfOrigin.filter(
         (place) => place.location.trim() !== "" && !place.startDate
       );
       if (invalidPlaces.length > 0) {
-        return false;
+        errors.placesOfOrigin = "Places of origin must have start dates";
       } else {
         // Check that start dates are after birth date
         const invalidBirthDatePlaces = placesOfOrigin.filter(
@@ -194,7 +206,8 @@ export default function AddMemberModal({
             place.startDate < memberFormData.birthDate
         );
         if (invalidBirthDatePlaces.length > 0) {
-          return false;
+          errors.placesOfOrigin =
+            "Place of origin start dates must be after birth date";
         } else {
           // Check consecutive places date constraints
           for (let i = 1; i < placesOfOrigin.length; i++) {
@@ -203,9 +216,13 @@ export default function AddMemberModal({
 
             if (currentPlace.location.trim() && currentPlace.startDate) {
               if (!previousPlace.endDate) {
-                return false;
+                errors.placesOfOrigin =
+                  "Previous place of origin must have an end date";
+                break;
               } else if (currentPlace.startDate <= previousPlace.endDate) {
-                return false;
+                errors.placesOfOrigin =
+                  "Start date must be after the end date of the previous place";
+                break;
               }
             }
           }
@@ -213,30 +230,31 @@ export default function AddMemberModal({
       }
     }
 
-    // Check if at least one occupation is filled and has required start date
+    // Check occupations
     const hasValidOccupation = occupations.some(
-      (occupation) => occupation.title.trim() !== ""
+      (occ) => occ.title.trim() !== ""
     );
     if (!hasValidOccupation) {
-      return false;
+      errors.occupations = "At least one occupation is required";
     } else {
       // Check that occupations with title also have start date
       const invalidOccupations = occupations.filter(
-        (occupation) => occupation.title.trim() !== "" && !occupation.startDate
+        (occ) => occ.title.trim() !== "" && !occ.startDate
       );
       if (invalidOccupations.length > 0) {
-        return false;
+        errors.occupations = "Occupations must have start dates";
       } else {
         // Check that start dates are after birth date
         const invalidBirthDateOccupations = occupations.filter(
-          (occupation) =>
-            occupation.title.trim() !== "" &&
-            occupation.startDate &&
+          (occ) =>
+            occ.title.trim() !== "" &&
+            occ.startDate &&
             memberFormData.birthDate &&
-            occupation.startDate <= memberFormData.birthDate
+            occ.startDate < memberFormData.birthDate
         );
         if (invalidBirthDateOccupations.length > 0) {
-          return false;
+          errors.occupations =
+            "Occupation start dates must be after birth date";
         } else {
           // Check consecutive occupations date constraints
           for (let i = 1; i < occupations.length; i++) {
@@ -245,11 +263,15 @@ export default function AddMemberModal({
 
             if (currentOccupation.title.trim() && currentOccupation.startDate) {
               if (!previousOccupation.endDate) {
-                return false;
+                errors.occupations =
+                  "Previous occupation must have an end date";
+                break;
               } else if (
                 currentOccupation.startDate <= previousOccupation.endDate
               ) {
-                return false;
+                errors.occupations =
+                  "Start date must be after the end date of the previous occupation";
+                break;
               }
             }
           }
@@ -257,7 +279,10 @@ export default function AddMemberModal({
       }
     }
 
-    return true;
+    setValidationErrors(errors);
+
+    // Check if any errors
+    return Object.values(errors).every((error) => error === "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -285,7 +310,6 @@ export default function AddMemberModal({
       formData.append("gender", memberFormData.gender);
       formData.append("birthday", memberFormData.birthDate);
       formData.append("address", memberFormData.address);
-      formData.append("generation", "1"); // Default generation
       formData.append("isAdopted", "false");
       formData.append("familyTreeId", familyTreeId);
 
@@ -458,6 +482,11 @@ export default function AddMemberModal({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
+                {validationErrors.fullName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.fullName}
+                  </p>
+                )}
               </div>
 
               {/* Birth Date and Gender - Same Row */}
@@ -478,6 +507,11 @@ export default function AddMemberModal({
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
+                  {validationErrors.birthDate && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {validationErrors.birthDate}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -499,6 +533,11 @@ export default function AddMemberModal({
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
+                  {validationErrors.gender && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {validationErrors.gender}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -520,6 +559,11 @@ export default function AddMemberModal({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
+                {validationErrors.address && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.address}
+                  </p>
+                )}
               </div>
 
               {/* Places of Origin */}
@@ -538,6 +582,11 @@ export default function AddMemberModal({
                     Add Place
                   </button>
                 </div>
+                {validationErrors.placesOfOrigin && (
+                  <p className="text-red-500 text-xs mt-1 mb-3">
+                    {validationErrors.placesOfOrigin}
+                  </p>
+                )}
 
                 {placesOfOrigin.map((place, index) => (
                   <div
@@ -680,6 +729,11 @@ export default function AddMemberModal({
                     Add Occupation
                   </button>
                 </div>
+                {validationErrors.occupations && (
+                  <p className="text-red-500 text-xs mt-1 mb-3">
+                    {validationErrors.occupations}
+                  </p>
+                )}
 
                 {occupations.map((occupation, index) => (
                   <div
@@ -851,6 +905,11 @@ export default function AddMemberModal({
                     </option>
                   ))}
                 </select>
+                {validationErrors.relatedMemberId && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relatedMemberId}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1 mb-3">
                   Choose the existing family member this person is related to
                 </p>
@@ -876,6 +935,11 @@ export default function AddMemberModal({
                   <option value="parent">Parent</option>
                   <option value="spouse">Spouse</option>
                 </select>
+                {validationErrors.relationship && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relationship}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1 mb-3">
                   Select how this person is related to the chosen family member
                 </p>
@@ -899,6 +963,11 @@ export default function AddMemberModal({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
+                {validationErrors.relationshipDate && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {validationErrors.relationshipDate}
+                  </p>
+                )}
                 <p className="text-xs text-gray-500 mt-1">
                   When did this relationship begin or get established?
                 </p>

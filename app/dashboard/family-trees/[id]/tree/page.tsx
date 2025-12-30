@@ -438,9 +438,9 @@ export default function FamilyTreePage() {
                             member={member}
                             style={{
                               position: "absolute",
-                              width: 180,
+                              width: 150,
                               height: 200,
-                              left: node.left * 120 - 90,
+                              left: node.left * 120 - 75,
                               top: node.top * 150 - 100,
                             }}
                           />
@@ -453,6 +453,7 @@ export default function FamilyTreePage() {
                         zIndex: -1,
                         minWidth: "10000px",
                         minHeight: "10000px",
+                        overflow: "visible",
                       }}
                     >
                       {/* Spouse connections */}
@@ -512,9 +513,9 @@ export default function FamilyTreePage() {
                                   cy={midY}
                                   r="15"
                                   fill="white"
-                                  stroke="black"
+                                  stroke="gray"
                                   strokeWidth="2"
-                                  className="cursor-pointer hover:fill-blue-100"
+                                  className="cursor-pointer hover:fill-yellow-200"
                                   onClick={() => {
                                     setSelectedMemberId(
                                       `${node.id},${spouseId}`
@@ -622,7 +623,7 @@ export default function FamilyTreePage() {
                                   } ${parentX} ${midY} Q ${
                                     (parentX + minX) / 2
                                   } ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
-                                  stroke="black"
+                                  stroke="gray"
                                   strokeWidth="2"
                                   fill="none"
                                 />
@@ -634,7 +635,7 @@ export default function FamilyTreePage() {
                                       d={`M ${childX} ${midY} Q ${childX} ${
                                         (midY + childY) / 2
                                       } ${childX} ${childY}`}
-                                      stroke="black"
+                                      stroke="gray"
                                       strokeWidth="2"
                                       fill="none"
                                     />
