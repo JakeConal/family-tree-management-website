@@ -1,8 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import {
   Search,
   Plus,
@@ -11,12 +11,11 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Menu,
 } from "lucide-react";
 import Image from "next/image";
 import classNames from "classnames";
 import AddMemberModal from "@/components/modals/AddMemberModal";
-import MemberPanel from "@/components/MemberPanel";
+import ViewEditMemberPanel from "@/components/ViewEditMemberPanel";
 
 interface FamilyMember {
   id: number;
@@ -28,11 +27,6 @@ interface FamilyMember {
   parent?: {
     fullName: string;
   };
-}
-
-interface FamilyTree {
-  id: number;
-  familyName: string;
 }
 
 const MemberAvatar = ({
@@ -62,32 +56,6 @@ const MemberAvatar = ({
         className="object-cover w-full h-full"
         onError={() => setError(true)}
       />
-    </div>
-  );
-};
-
-// Header Component
-const MemberListHeader = ({
-  familyName,
-  onToggleSidebar,
-}: {
-  familyName?: string;
-  onToggleSidebar: () => void;
-}) => {
-  return (
-    <div className="flex items-center justify-between mb-8">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onToggleSidebar}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          title="Toggle Sidebar"
-        >
-          <Menu className="w-6 h-6 text-gray-600" />
-        </button>
-        <h1 className="text-2xl font-semibold font-inter text-black">
-          {familyName || "Family Tree"}
-        </h1>
-      </div>
     </div>
   );
 };
@@ -286,66 +254,40 @@ const MemberTable = ({
 export default function MemberListPage() {
   const { data: session } = useSession();
   const params = useParams();
-  const router = useRouter();
   const familyTreeId = params.id as string;
 
   const [members, setMembers] = useState<FamilyMember[]>([]);
-  const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGeneration, setSelectedGeneration] =
     useState("All Generation");
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
-  const [memberPanelMode, setMemberPanelMode] = useState<"view" | "edit">(
-    "view"
-  );
-  const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [panelMode, setPanelMode] = useState<"view" | "edit">("view");
 
-  useEffect(() => {
-    const saved = localStorage.getItem("sidebar-visible");
-    if (saved !== null) {
-      setSidebarVisible(saved === "true");
-    }
-  }, []);
-
-  const toggleSidebar = () => {
-    const newVisibility = !sidebarVisible;
-    setSidebarVisible(newVisibility);
-    localStorage.setItem("sidebar-visible", newVisibility.toString());
-    window.dispatchEvent(
-      new CustomEvent("sidebar-toggle", {
-        detail: { visible: newVisibility },
-      })
-    );
-  };
-
-  useEffect(() => {
-    if (session && familyTreeId) {
-      fetchData();
-    }
-  }, [session, familyTreeId]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [membersRes, treeRes] = await Promise.all([
-        fetch(`/api/family-trees/${familyTreeId}/members`),
-        fetch(`/api/family-trees/${familyTreeId}`),
-      ]);
+      const membersRes = await fetch(
+        `/api/family-trees/${familyTreeId}/members`
+      );
 
-      if (membersRes.ok && treeRes.ok) {
+      if (membersRes.ok) {
         const membersData = await membersRes.json();
-        const treeData = await treeRes.json();
         setMembers(membersData);
-        setFamilyTree(treeData);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [familyTreeId]);
+
+  useEffect(() => {
+    if (session && familyTreeId) {
+      fetchData();
+    }
+  }, [session, familyTreeId, fetchData]);
 
   const filteredMembers = useMemo(() => {
     return members.filter((member) => {
@@ -382,14 +324,22 @@ export default function MemberListPage() {
     }
   };
 
-  const handleViewMember = async (id: number) => {
+  const handleViewMember = (id: number) => {
     setSelectedMemberId(id);
-    setMemberPanelMode("view");
+    setPanelMode("view");
   };
 
-  const handleEditMember = async (id: number) => {
+  const handleEditMember = (id: number) => {
     setSelectedMemberId(id);
-    setMemberPanelMode("edit");
+    setPanelMode("edit");
+  };
+
+  const handleClosePanel = () => {
+    setSelectedMemberId(null);
+  };
+
+  const handlePanelModeChange = (mode: "view" | "edit") => {
+    setPanelMode(mode);
   };
 
   if (loading) {
@@ -446,10 +396,10 @@ export default function MemberListPage() {
         </div>
       </div>
 
-      {/* Member Panel Sidebar - Desktop (Push) */}
+      {/* Member Panel Sidebar - Push Style */}
       <aside
         className={classNames(
-          "hidden md:block transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full",
+          "transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full",
           {
             "w-[600px]": selectedMemberId !== null,
             "w-0": selectedMemberId === null,
@@ -457,12 +407,13 @@ export default function MemberListPage() {
         )}
       >
         {selectedMemberId !== null && (
-          <MemberPanel
+          <ViewEditMemberPanel
             memberId={selectedMemberId}
             familyTreeId={familyTreeId}
-            mode={memberPanelMode}
-            onModeChange={setMemberPanelMode}
-            onClose={() => setSelectedMemberId(null)}
+            existingMembers={members}
+            mode={panelMode}
+            onModeChange={handlePanelModeChange}
+            onClose={handleClosePanel}
             onSuccess={fetchData}
           />
         )}
