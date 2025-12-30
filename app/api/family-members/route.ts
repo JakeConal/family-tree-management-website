@@ -219,20 +219,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // If spouseId is provided, verify it exists and belongs to the same family tree
-    if (spouseId) {
-      const spouse = await prisma.familyMember.findFirst({
-        where: {
-          id: parseInt(spouseId),
-          familyTreeId: parseInt(familyTreeId),
-        },
+    // Calculate generation based on relationship
+    let calculatedGeneration: number | null = null;
+
+    if (!parentId && !spouseId) {
+      // Root member
+      calculatedGeneration = 0;
+    } else if (parentId) {
+      // Parent relationship - get parent's generation + 1
+      const parent = await prisma.familyMember.findUnique({
+        where: { id: parseInt(parentId) },
+        select: { generation: true },
       });
 
-      if (!spouse) {
-        return NextResponse.json(
-          { error: "Spouse not found in this family tree" },
-          { status: 400 }
-        );
+      if (parent?.generation !== null && parent?.generation !== undefined) {
+        const parentGen = parseInt(parent.generation);
+        calculatedGeneration = isNaN(parentGen) ? 1 : parentGen + 1;
+      } else {
+        // If parent has no generation, assume it's 0 and add 1
+        calculatedGeneration = 1;
+      }
+    } else if (spouseId) {
+      // Spouse relationship - use spouse's generation
+      const spouse = await prisma.familyMember.findUnique({
+        where: { id: parseInt(spouseId) },
+        select: { generation: true },
+      });
+
+      if (spouse?.generation !== null && spouse?.generation !== undefined) {
+        const spouseGen = parseInt(spouse.generation);
+        calculatedGeneration = isNaN(spouseGen) ? 0 : spouseGen;
+      } else {
+        // If spouse has no generation, assume it's 0
+        calculatedGeneration = 0;
       }
     }
 
@@ -295,7 +314,7 @@ export async function POST(request: NextRequest) {
         address: address?.trim() || null,
         profilePicture: profilePicture,
         profilePictureType: profilePictureType,
-        generation: generation?.trim() || null,
+        generation: calculatedGeneration?.toString() || null,
         isAdopted: isAdopted || false,
         familyTreeId: parseInt(familyTreeId),
         parentId: parentId ? parseInt(parentId) : null,

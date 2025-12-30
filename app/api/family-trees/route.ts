@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
         address: rootPerson.address?.trim() || null,
         profilePicture: profilePictureBuffer,
         profilePictureType: profilePictureType,
-        generation: "1", // Root person is generation 1
+        generation: "0", // Root person is generation 0
         isRootPerson: true,
         familyTreeId: familyTree.id,
       },
