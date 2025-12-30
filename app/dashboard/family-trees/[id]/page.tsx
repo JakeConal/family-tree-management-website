@@ -558,23 +558,6 @@ export default function FamilyTreeDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Top Header Bar */}
-      <div className="bg-white rounded-lg py-3 px-6">
-        <div className="flex items-center justify-between">
-          <button
-            onClick={toggleSidebar}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title={sidebarVisible ? "Hide sidebar" : "Show sidebar"}
-          >
-            <Menu className="w-5 h-5 text-gray-600" />
-          </button>
-          <h1 className="text-xl font-semibold text-gray-900">
-            {familyTree.familyName}
-          </h1>
-          <div className="w-10"></div> {/* Spacer for centering */}
-        </div>
-      </div>
-
       {/* Family Information Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Overview Card */}
