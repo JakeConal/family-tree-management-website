@@ -15,6 +15,10 @@ import {
   Skull,
   Menu,
   Pencil,
+  Info,
+  MapPin,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 
 import AddMemberModal from "../../../../components/modals/AddMemberModal";
@@ -558,265 +562,236 @@ export default function FamilyTreeDashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Family Information Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Overview Card */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
+      {/* Overview Section */}
+      <div className="flex flex-col xl:flex-row gap-6">
+        {/* Family Information Overview Box */}
+        <div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-white p-2 rounded-[10px] shadow-sm">
+              <Info className="w-5 h-5 text-black" />
+            </div>
+            <h2 className="font-inter font-bold text-[15px] text-black">
               Family Information Overview
             </h2>
             <button
               onClick={() => setIsEditFamilyTreeModalOpen(true)}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Edit family information"
+              className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
             >
               <Pencil className="w-4 h-4 text-gray-500" />
             </button>
           </div>
 
-          {/* Family Details */}
-          <div className="space-y-3 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Family Name
-              </label>
-              <p className="text-lg font-medium text-gray-900">
-                {familyTree.familyName}
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 mb-8 ml-2">
+            <div className="flex items-center gap-3">
+              <Users className="w-4 h-4 text-black" />
+              <span className="font-inter font-bold text-[15px] text-black">Family Name:</span>
+              <span className="font-inter font-normal text-[#827f7f] text-[15px]">{familyTree.familyName}</span>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Origin
-              </label>
-              <p className="text-lg font-medium text-gray-900">
-                {familyTree.origin || "Not specified"}
-              </p>
+            <div className="flex items-center gap-3">
+              <MapPin className="w-4 h-4 text-black" />
+              <span className="font-inter font-bold text-[15px] text-black">Origin:</span>
+              <span className="font-inter font-normal text-[#827f7f] text-[15px]">{familyTree.origin || "Not specified"}</span>
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">
-                Established
-              </label>
-              <p className="text-lg font-medium text-gray-900">
-                {familyTree.establishYear}{" "}
-                {calculateAge(familyTree.establishYear) &&
-                  `(${calculateAge(familyTree.establishYear)} years)`}
-              </p>
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4 text-black" />
+              <span className="font-inter font-bold text-[15px] text-black">Established:</span>
+              <span className="font-inter font-normal text-[#827f7f] text-[15px]">
+                {familyTree.establishYear} {calculateAge(familyTree.establishYear) && `(${calculateAge(familyTree.establishYear)} years)`}
+              </span>
             </div>
           </div>
 
-          {/* Stat Pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="bg-gray-50 rounded-lg px-3 py-2 text-center min-w-[80px]">
-              <div className="text-lg font-bold text-gray-900">
-                {statistics?.totalGenerations}
-              </div>
-              <div className="text-xs text-gray-600">Generations</div>
+          {/* Stat Boxes */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+              <p className="font-inter font-medium text-[11.6px] text-black mb-1">Total generations</p>
+              <p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalGenerations}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg px-3 py-2 text-center min-w-[80px]">
-              <div className="text-lg font-bold text-gray-900">
-                {statistics?.totalMembers}
-              </div>
-              <div className="text-xs text-gray-600">All Members</div>
+            <div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+              <p className="font-inter font-medium text-[11.6px] text-black mb-1">All Members</p>
+              <p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalMembers}</p>
             </div>
-            <div className="bg-gray-50 rounded-lg px-3 py-2 text-center min-w-[80px]">
-              <div className="text-lg font-bold text-gray-900">
-                {statistics?.livingMembers}
-              </div>
-              <div className="text-xs text-gray-600">Living</div>
+            <div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+              <p className="font-inter font-medium text-[11.6px] text-black mb-1">Living Members</p>
+              <p className="font-inter font-medium text-[17.5px] text-black">{statistics?.livingMembers}</p>
             </div>
           </div>
         </div>
 
-        {/* Insight Cards - 2x2 Grid */}
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Trends Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:w-[468px]">
           {/* Member Growth */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Member Growth
-                </p>
-                <p className="text-xl font-bold text-gray-900">
-                  +{statistics?.memberGrowth.count}
-                </p>
-                <p className="text-sm text-green-600">
-                  +{statistics?.memberGrowth.percentage}%
-                </p>
+          <div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+            <div className="flex justify-between items-start">
+              <p className="font-roboto font-normal text-[12px] text-black">Member growth</p>
+              <div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+                <Users className="w-5 h-5 text-black" />
               </div>
-              <div className="bg-green-100 p-2 rounded-full">
-                <Users className="w-5 h-5 text-green-600" />
+            </div>
+            <div>
+              <p className="font-roboto font-semibold text-[16px] text-black">+{statistics?.memberGrowth.count} Member</p>
+              <div className="flex items-center gap-1">
+                <span className="font-inter font-light text-[12px] text-black">+{statistics?.memberGrowth.percentage}%</span>
+                <TrendingUp className="w-4 h-4 text-green-600" />
               </div>
             </div>
           </div>
 
           {/* Death Trend */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Death Trend</p>
-                <p className="text-xl font-bold text-gray-900">
-                  +{statistics?.deathTrend.count}
-                </p>
-                <p className="text-sm text-red-600">
-                  +{statistics?.deathTrend.percentage}%
-                </p>
+          <div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
+              <div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+                <Skull className="w-5 h-5 text-black" />
               </div>
-              <div className="bg-red-100 p-2 rounded-full">
-                <Skull className="w-5 h-5 text-red-600" />
-              </div>
+            </div>
+            <div>
+              <p className="font-roboto font-semibold text-[16px] text-black">+{statistics?.deathTrend.count} Death</p>
             </div>
           </div>
 
           {/* Marriage Trend */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Marriage Trend
-                </p>
-                <p className="text-lg font-bold text-gray-900">
-                  +{statistics?.marriageTrend.marriages}
-                </p>
-                <p className="text-sm text-blue-600">
-                  -{statistics?.marriageTrend.divorces} divorced
-                </p>
+          <div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
+              <div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+                <Heart className="w-5 h-5 text-black" />
               </div>
-              <div className="bg-blue-100 p-2 rounded-full">
-                <Heart className="w-5 h-5 text-blue-600" />
-              </div>
+            </div>
+            <div>
+              <p className="font-roboto font-semibold text-[16px] text-black">+{statistics?.marriageTrend.marriages} Married</p>
+              <p className="font-roboto font-semibold text-[16px] text-black">+{statistics?.marriageTrend.divorces} Divorced</p>
             </div>
           </div>
 
           {/* Achievement Growth */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Achievement Growth
-                </p>
-                <p className="text-xl font-bold text-gray-900">
-                  +{statistics?.achievementGrowth.count}
-                </p>
-                <p className="text-sm text-yellow-600">
-                  +{statistics?.achievementGrowth.percentage}%
-                </p>
+          <div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
+              <div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+                <Trophy className="w-5 h-5 text-black" />
               </div>
-              <div className="bg-yellow-100 p-2 rounded-full">
-                <Trophy className="w-5 h-5 text-yellow-600" />
+            </div>
+            <div>
+              <p className="font-roboto font-semibold text-[16px] text-black">+{statistics?.achievementGrowth.count} Achievements</p>
+              <div className="flex items-center gap-1">
+                <span className="font-inter font-light text-[12px] text-black">+{statistics?.achievementGrowth.percentage}%</span>
+                <TrendingUp className="w-4 h-4 text-green-600" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Quick Action Section */}
+      <div className="space-y-4">
+        <h2 className="font-inter font-bold text-[18px] text-black">Quick Action</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <button
             onClick={() => {
               setIsAddMemberModalOpen(true);
               fetchExistingMembers();
             }}
-            className="flex flex-col items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border border-green-200"
+            className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
           >
-            <UserPlus className="w-8 h-8 text-green-600 mb-2" />
-            <span className="text-sm font-medium text-green-700">
-              Add Member
-            </span>
+            <UserPlus className="w-5 h-5 text-black" />
+            <span className="font-roboto font-semibold text-[16px] text-black">Add Member</span>
           </button>
           <button
             onClick={() => {
               setIsRecordAchievementModalOpen(true);
               fetchExistingMembers();
             }}
-            className="flex flex-col items-center p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors border border-yellow-200"
+            className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
           >
-            <Trophy className="w-8 h-8 text-yellow-600 mb-2" />
-            <span className="text-sm font-medium text-yellow-700">
-              Record Achievement
-            </span>
+            <Trophy className="w-5 h-5 text-black" />
+            <span className="font-roboto font-semibold text-[16px] text-black">Record Achievement</span>
           </button>
           <button
             onClick={() => {
               setIsRecordPassingModalOpen(true);
               fetchExistingMembers();
             }}
-            className="flex flex-col items-center p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-200"
+            className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
           >
-            <Skull className="w-8 h-8 text-red-600 mb-2" />
-            <span className="text-sm font-medium text-red-700">
-              Record Passing
-            </span>
+            <Skull className="w-5 h-5 text-black" />
+            <span className="font-roboto font-semibold text-[16px] text-black">Record Passing</span>
           </button>
           <button
-            onClick={() =>
-              router.push(`/dashboard/family-trees/${familyTreeId}/tree`)
-            }
-            className="flex flex-col items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
+            onClick={() => router.push(`/dashboard/family-trees/${familyTreeId}/tree`)}
+            className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
           >
-            <TreePine className="w-8 h-8 text-blue-600 mb-2" />
-            <span className="text-sm font-medium text-blue-700">
-              View Family Tree
-            </span>
+            <TreePine className="w-5 h-5 text-black" />
+            <span className="font-roboto font-semibold text-[16px] text-black">View Family Tree</span>
           </button>
         </div>
       </div>
 
-      {/* Recent Changes */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Recent Events
-        </h2>
+      {/* Recent Changes Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-inter font-bold text-[18px] text-black">Recent Changes</h2>
+          <div className="flex gap-2">
+            <button className="w-[50px] h-[50px] bg-[#f4f4f5] rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+              <ChevronRight className="w-5 h-5 text-black rotate-180" />
+            </button>
+            <button className="w-[50px] h-[50px] bg-[#f4f4f5] rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+              <ChevronRight className="w-5 h-5 text-black" />
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-4">
           {changeLogs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 bg-[#f4f4f5] rounded-[20px]">
               <p>No major changes recorded yet.</p>
-              <p className="text-sm">
-                Major events like adding members, marriages, and achievements
-                will appear here.
-              </p>
             </div>
           ) : (
             changeLogs
+              .slice(0, 4)
               .map((log) => {
                 const message = formatChangeLogMessage(log);
                 return message ? (
                   <div
                     key={log.id}
-                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between p-6 bg-[#f4f4f5] rounded-[20px] cursor-pointer hover:bg-gray-200 transition-colors"
                     onClick={() => handleChangeLogClick(log)}
                   >
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-green-700">
-                        {getActionIcon(log.action)}
+                    <div className="flex items-center gap-4">
+                      <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center">
+                        {log.avatar ? (
+                          <Image
+                            src={log.avatar}
+                            alt=""
+                            width={50}
+                            height={50}
+                            className="object-cover"
+                          />
+                        ) : (
+                          <Users className="w-6 h-6 text-gray-500" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-inter font-medium text-[18px] text-black">
+                          {log.user || "User"}
+                        </p>
+                        <p className="font-inter font-light text-[18px] text-black">
+                          {message}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-black" />
+                      <span className="font-inter font-light text-[18px] text-black">
+                        {formatChangeLogTimestamp(log.createdAt)}
                       </span>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {message}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatChangeLogTimestamp(log.createdAt)}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
                   </div>
                 ) : null;
               })
-              .filter(Boolean) // Remove null entries
+              .filter(Boolean)
           )}
         </div>
-        {changeLogs.length > 0 && (
-          <div className="mt-4 text-center">
-            <button className="text-sm text-green-600 hover:text-green-700 font-medium">
-              Load More Events
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Add Member Modal */}

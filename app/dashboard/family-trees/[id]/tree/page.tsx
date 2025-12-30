@@ -10,6 +10,15 @@ import {
 import relativesTree from "relatives-tree";
 import type { Node, ExtNode } from "relatives-tree/lib/types";
 import { FamilyMember } from "@prisma/client";
+import {
+  ChevronDown,
+  Plus,
+  Minus,
+  Skull,
+  Calendar,
+  Users,
+  Crown,
+} from "lucide-react";
 import FamilyNode from "@/components/FamilyNode";
 import AddMemberModal from "@/components/modals/AddMemberModal";
 import ViewEditMemberModal from "@/components/modals/ViewEditMemberModal";
@@ -311,86 +320,53 @@ export default function FamilyTreePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="max-w-full mx-auto">
         {/* Top Control Bar */}
-        <div className="mb-4 flex items-center justify-between bg-white rounded-full border border-gray-200 shadow-sm px-6 py-3">
+        <div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
           {/* Left Side */}
           <div className="flex items-center gap-4">
-            <select className="bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>All Generation</option>
-            </select>
+            <div className="relative">
+              <select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
+                <option>All Generation</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            </div>
             <button
               onClick={() => setShowAddMemberModal(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors"
+              className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
             >
+              <Plus className="w-4 h-4" />
               Add Member
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
             </button>
           </div>
 
           {/* Right Side - Zoom Controls */}
-          <div className="flex items-center bg-gray-50 rounded-full border border-gray-200 px-3 py-1">
+          <div className="flex items-center bg-white rounded-full border border-gray-200 px-2 py-1 shadow-sm">
             <button
               onClick={() => zoomFunctions?.zoomOut()}
-              className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               title="Zoom Out"
             >
-              <svg
-                className="w-4 h-4 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 12H4"
-                />
-              </svg>
+              <Minus className="w-4 h-4 text-black" />
             </button>
-            <span className="px-3 text-sm font-medium text-gray-700 min-w-[3rem] text-center">
+            <span className="px-4 text-sm font-bold text-black min-w-[4rem] text-center border-x border-gray-100">
               {zoomPercentage}%
             </span>
             <button
               onClick={() => zoomFunctions?.zoomIn()}
-              className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               title="Zoom In"
             >
-              <svg
-                className="w-4 h-4 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
+              <Plus className="w-4 h-4 text-black" />
             </button>
           </div>
         </div>
 
         {/* Tree Container */}
         <div
-          className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden"
-          style={{ height: "80vh", minHeight: "600px" }}
+          className="bg-[#f4f4f5] rounded-[30px] p-8 relative overflow-hidden shadow-inner"
+          style={{ height: "75vh", minHeight: "600px" }}
         >
           <TransformWrapper
             initialScale={0.8}
@@ -667,46 +643,24 @@ export default function FamilyTreePage() {
         </div>
 
         {/* Bottom Legend */}
-        <div className="mt-4 flex items-center justify-center gap-8 bg-white rounded-lg border border-gray-200 shadow-sm py-3 px-6">
-          <div className="flex items-center gap-2 text-gray-600">
-            <div className="w-4 h-0.5 bg-gray-400"></div>
-            <span className="text-sm">Child - Parent</span>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-[#f4f4f5] rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-0.5 bg-gray-400 rounded-full"></div>
+            <span className="text-sm font-medium text-black">Child - Parent</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <div className="w-4 h-0.5 border-t-2 border-dotted border-gray-400"></div>
-            <span className="text-sm">Former Spouse</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-0.5 border-t-2 border-dotted border-gray-400"></div>
+            <span className="text-sm font-medium text-black">Former Spouse</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            <span className="text-sm">Current Spouse</span>
+          <div className="flex items-center gap-3">
+            <Plus className="w-4 h-4 text-black" />
+            <span className="text-sm font-medium text-black">Current Spouse</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-600">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            <span className="text-sm">Passed away</span>
+          <div className="flex items-center gap-3">
+            <div className="bg-white p-1.5 rounded-full shadow-sm">
+              <Skull className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-sm font-medium text-black">Passed away</span>
           </div>
         </div>
       </div>
