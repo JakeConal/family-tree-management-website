@@ -4,9 +4,12 @@ import classNames from "classnames";
 import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
 import { Providers } from "./providers";
 import { Sidebar } from "@/components/ui/sidebar";
+import CreateFamilyTreePanel from "@/components/CreateFamilyTreePanel";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { closeCreatePanel } from "@/lib/store/createPanelSlice";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,6 +36,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	const [sidebarVisible, setSidebarVisible] = useState(true);
 	const pathname = usePathname();
 	const { data: session, status } = useSession();
+	const dispatch = useAppDispatch();
+	const isCreatePanelOpen = useAppSelector((state) => state.createPanel.isOpen);
 
 	// Only show sidebar when authenticated and not on welcome/login/signup pages
 	const shouldShowSidebar = status === "authenticated" && !pathname.startsWith("/welcome") && !pathname.startsWith("/signup");
@@ -40,7 +45,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		// Close sidebar on mobile when navigating
 		if (window.innerWidth < 1024) {
-			setSidebarVisible((prev) => (prev !== false ? false : prev));
+			setSidebarVisible(false);
 		}
 	}, [pathname]);
 
@@ -49,23 +54,23 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 		const saved = localStorage.getItem("sidebar-visible");
 		if (saved !== null) {
 			const isVisible = saved === "true";
-			setSidebarVisible((prev) => (prev !== isVisible ? isVisible : prev));
+			setSidebarVisible(isVisible);
 		} else {
 			// Default to false on mobile
 			if (window.innerWidth < 1024) {
-				setSidebarVisible((prev) => (prev !== false ? false : prev));
+				setSidebarVisible(false);
 			}
 		}
 
 		// Handle window resize
 		const handleResize = () => {
 			if (window.innerWidth < 1024) {
-				setSidebarVisible((prev) => (prev !== false ? false : prev));
+				setSidebarVisible(false);
 			} else {
 				// Restore from localStorage on desktop if it was saved as visible
 				const savedDesktop = localStorage.getItem("sidebar-visible");
 				const shouldBeVisible = savedDesktop === "true" || savedDesktop === null;
-				setSidebarVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
+				setSidebarVisible(shouldBeVisible);
 			}
 		};
 
@@ -143,6 +148,34 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 				{/* Content */}
 				<div className="flex-1 overflow-y-auto">{children}</div>
 			</div>
+
+			{/* Create Family Tree Panel - Desktop (Push) */}
+			<aside
+				className={classNames(
+					"hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden shrink-0 h-full",
+					{
+						"w-[600px]": isCreatePanelOpen,
+						"w-0": !isCreatePanelOpen,
+					}
+				)}
+			>
+				<div className="w-[600px] h-full">
+					<CreateFamilyTreePanel onClose={() => dispatch(closeCreatePanel())} />
+				</div>
+			</aside>
+
+			{/* Create Family Tree Panel - Mobile (Overlay) */}
+			<aside
+				className={classNames(
+					"md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out",
+					{
+						"translate-x-0": isCreatePanelOpen,
+						"translate-x-full": !isCreatePanelOpen,
+					}
+				)}
+			>
+				<CreateFamilyTreePanel onClose={() => dispatch(closeCreatePanel())} />
+			</aside>
 		</div>
 	);
 }

@@ -17,9 +17,7 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { FamilySidebar } from "../../components/family-sidebar";
-import { FamilyTreeLogo } from "../../components/icons/family-tree-logo";
-import { PersonIcon, CalendarIcon } from "../../components/icons/achievement-metadata";
+import { PersonIcon, CalendarIcon } from "@/components/icons/achievement-metadata";
 
 type AchievementIcon = ComponentType<{ className?: string }>;
 
@@ -1121,21 +1119,6 @@ export default function AchievementListPage() {
   return (
     <div className="min-h-screen w-full bg-[#F5F6F8] text-gray-900">
       <div className="mx-auto flex min-h-screen w-full max-w-[1440px]">
-        <FamilySidebar
-          brand={{
-            title: "Family Tree",
-            logo: <FamilyTreeLogo className="h-7 w-7" />,
-          }}
-          trees={familyTrees}
-          navItems={sidebarNavItems}
-          footerUser={{
-            name: "Forrest",
-            role: "Owner",
-            avatarSrc: "/images/forrest-avatar.svg",
-            arrowSrc: "/sidebar-icons/logout-arrow.png",
-          }}
-        />
-
         <main className="box-border flex-1 bg-white px-6 pb-16 pt-10 overflow-x-hidden" style={{ minHeight: "1024px" }}>
           <header className="border-b border-gray-200 pb-8">
             <div className="text-center">
@@ -1231,7 +1214,7 @@ export default function AchievementListPage() {
                     {typeFilter === "all" ? "All Types" : typeFilter}
                   </button>
                   {isTypeDropdownOpen && (
-                    <div className="absolute top-full left-0 mt-1 w-[180px] rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-[300px] overflow-y-auto">
+                    <div className="absolute top-full left-0 mt-1 w-45 rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-75 overflow-y-auto">
                       <button
                         onClick={() => { setTypeFilter("all"); setIsTypeDropdownOpen(false); }}
                         className={classNames("w-full px-4 py-2 text-left text-sm hover:bg-gray-100", {
@@ -1727,7 +1710,7 @@ export default function AchievementListPage() {
                     <select
                       className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                       value={lifeEventFormData?.member1 ?? ""}
-                      onChange={handleLifeEventFormChange("member1")}
+                      onChange={() => handleLifeEventFormChange("member1")}
                       style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
                     >
                       <option value="">Select member</option>
@@ -1742,7 +1725,7 @@ export default function AchievementListPage() {
                     <select
                       className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                       value={lifeEventFormData?.member2 ?? ""}
-                      onChange={handleLifeEventFormChange("member2")}
+                      onChange={() => handleLifeEventFormChange("member2")}
                       style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
                     >
                       <option value="">Select member</option>

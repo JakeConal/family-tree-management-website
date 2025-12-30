@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion, type Transition } from "motion/react";
 
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 
 type GradientTextProps = React.ComponentProps<"span"> & {
   text: string;

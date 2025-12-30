@@ -1,25 +1,14 @@
 "use client";
 
-import classNames from "classnames";
 import { useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useFamilyTrees } from "../../lib/useFamilyTrees";
-import CreateFamilyTreePanel from "../../components/CreateFamilyTreePanel";
+import { useFamilyTrees } from "@/lib/useFamilyTrees";
 
 export default function FamilyTreesLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const isCreatePanelOpen = searchParams.get("create") === "true";
 	const { data: session } = useSession();
 	const { familyTrees } = useFamilyTrees(session);
-
-	const closeCreatePanel = () => {
-		const params = new URLSearchParams(searchParams.toString());
-		params.delete("create");
-		router.push(`${pathname}${params.toString() ? `?${params.toString()}` : ""}`);
-	};
 
 	const activeFamilyTreeName = useMemo(() => {
 		const match = pathname.match(/\/family-trees\/(\d+)/);
@@ -42,34 +31,6 @@ export default function FamilyTreesLayout({ children }: { children: React.ReactN
 				)}
 				<main className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</main>
 			</div>
-
-			{/* Create Family Tree Panel - Desktop (Push) */}
-			<aside
-				className={classNames(
-					"hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden shrink-0 h-full",
-					{
-						"w-[600px]": isCreatePanelOpen,
-						"w-0": !isCreatePanelOpen,
-					}
-				)}
-			>
-				<div className="w-[600px] h-full">
-					<CreateFamilyTreePanel onClose={closeCreatePanel} />
-				</div>
-			</aside>
-
-			{/* Create Family Tree Panel - Mobile (Overlay) */}
-			<aside
-				className={classNames(
-					"md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out",
-					{
-						"translate-x-0": isCreatePanelOpen,
-						"translate-x-full": !isCreatePanelOpen,
-					}
-				)}
-			>
-				<CreateFamilyTreePanel onClose={closeCreatePanel} />
-			</aside>
 		</div>
 	);
 }

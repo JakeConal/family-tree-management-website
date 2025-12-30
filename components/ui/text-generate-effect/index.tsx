@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, stagger, useAnimate } from "motion/react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 
 type TextGenerateEffectProps = Omit<React.ComponentProps<"div">, "children"> & {
   words: string;

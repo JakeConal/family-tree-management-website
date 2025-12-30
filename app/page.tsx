@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, Users, Award, BarChart3 } from "lucide-react";
-import { TextGenerateEffect } from "../components/ui/text-generate-effect";
-import { RippleButton } from "../components/ui/ripple-button";
-import { GradientText } from "../components/ui/gradient-text";
-import { InteractiveGridPattern } from "../components/ui/interactive-grid-pattern";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { RippleButton } from "@/components/ui/ripple-button";
+import { GradientText } from "@/components/ui/gradient-text";
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
 
 export default function Home() {
   const { data: session, status } = useSession();

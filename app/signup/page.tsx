@@ -11,7 +11,7 @@ import {
   Lock,
   ChevronRight,
 } from "lucide-react";
-import { RippleButton } from "../../components/ui/ripple-button";
+import { RippleButton } from "@/components/ui/ripple-button";
 
 export default function SignUpPage() {
   const { status } = useSession();

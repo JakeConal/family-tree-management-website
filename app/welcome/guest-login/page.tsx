@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronLeft, KeyRound, ChevronRight } from "lucide-react";
-import { RippleButton } from "../../../components/ui/ripple-button";
+import { RippleButton } from "@/components/ui/ripple-button";
 
 export default function GuestLoginPage() {
   const [accessCode, setAccessCode] = useState("");

@@ -4,12 +4,15 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { RippleButton } from "../../components/ui/ripple-button";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { Users, Trophy, Plus, ArrowRight } from "lucide-react";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { openCreatePanel } from "@/lib/store/createPanelSlice";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [hasFamilyTrees, setHasFamilyTrees] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -87,7 +90,7 @@ export default function DashboardPage() {
 
           {/* CTA Button */}
           <button
-            onClick={() => router.push("/dashboard?create=true")}
+            onClick={() => dispatch(openCreatePanel())}
             className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[72px] text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
           >
             <Plus className="w-6 h-6" />

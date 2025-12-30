@@ -9,6 +9,8 @@ import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Se
 import type { LucideIcon } from "lucide-react";
 import { useFamilyTrees } from "@/lib/useFamilyTrees";
 import { NavigationButton } from "./NavigationButton";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { openCreatePanel } from "@/lib/store/createPanelSlice";
 
 interface NavigationItem {
 	name: string;
@@ -24,6 +26,7 @@ export function Sidebar() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const { familyTrees, loading } = useFamilyTrees(session);
+	const dispatch = useAppDispatch();
 
 	// Extract family tree ID from pathname for active state
 	const getFamilyTreeIdFromPath = () => {
@@ -48,7 +51,8 @@ export function Sidebar() {
 	}, [activeFamilyTreeId]);
 
 	return (
-		<div className="h-full w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col">
+		<>
+			<div className="h-full w-[220px] bg-[#f4f4f5] border-r border-gray-200 flex flex-col">
 			{/* Logo */}
 			<div className="flex items-center h-[80px] px-[13px] flex-shrink-0">
 				<Image src="/images/logo.png" alt="Family Tree Logo" width={42} height={41} className="mr-[5px]" />
@@ -94,7 +98,7 @@ export function Sidebar() {
 							)}
 						</div>
 						<button
-							onClick={() => router.push(`${pathname}?create=true`)}
+							onClick={() => dispatch(openCreatePanel())}
 							className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
 						>
 							<Plus className="w-5 h-5 mr-1" />
@@ -145,5 +149,6 @@ export function Sidebar() {
 				</div>
 			</div>
 		</div>
+		</>
 	);
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronLeft, Mail, Lock, ChevronRight } from "lucide-react";
-import { RippleButton } from "../../../components/ui/ripple-button";
+import { RippleButton } from "@/components/ui/ripple-button";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 

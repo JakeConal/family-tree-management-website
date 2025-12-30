@@ -1,4 +1,4 @@
-import { handlers } from "../../../../auth";
+import { handlers } from "@/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
