@@ -1,0 +1,561 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { X, Trophy, ArrowLeft, Calendar, Check } from "lucide-react";
+
+interface FamilyMember {
+  id: number;
+  fullName: string;
+  gender: string;
+  birthday: string;
+}
+
+interface AchievementType {
+  id: number;
+  typeName: string;
+}
+
+interface RecordAchievementModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  familyTreeId: string;
+  existingMembers: FamilyMember[];
+  onAchievementRecorded: () => void;
+}
+
+export default function RecordAchievementModal({
+  isOpen,
+  onClose,
+  familyTreeId,
+  existingMembers,
+  onAchievementRecorded,
+}: RecordAchievementModalProps) {
+  const [achievementFormData, setAchievementFormData] = useState({
+    familyMemberId: "",
+    achievementTypeId: "",
+    achieveDate: "",
+    title: "",
+    description: "",
+  });
+
+  const [achievementTypes, setAchievementTypes] = useState<AchievementType[]>(
+    []
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingTypes, setIsLoadingTypes] = useState(false);
+
+  // Member data state
+  const [selectedMemberBirthDate, setSelectedMemberBirthDate] =
+    useState<string>("");
+  const [selectedMemberPassingDate, setSelectedMemberPassingDate] =
+    useState<string>("");
+
+  // Validation state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setAchievementFormData({
+        familyMemberId: "",
+        achievementTypeId: "",
+        achieveDate: "",
+        title: "",
+        description: "",
+      });
+      setSelectedMemberBirthDate("");
+      setSelectedMemberPassingDate("");
+      setErrors({});
+      setTouched({});
+      setIsSubmitting(false);
+      fetchAchievementTypes();
+    }
+  }, [isOpen]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, onClose]);
+
+  const fetchAchievementTypes = async () => {
+    setIsLoadingTypes(true);
+    try {
+      const response = await fetch(
+        `/api/family-trees/${familyTreeId}/achievement-types`
+      );
+      if (response.ok) {
+        const types = await response.json();
+        setAchievementTypes(types);
+      }
+    } catch (error) {
+      console.error("Error fetching achievement types:", error);
+    } finally {
+      setIsLoadingTypes(false);
+    }
+  };
+
+  const fetchMemberPassingRecord = async (memberId: string) => {
+    try {
+      const response = await fetch(
+        `/api/family-trees/${familyTreeId}/passing-records/check/${memberId}`
+      );
+      const data = await response.json();
+      if (data.hasRecord && data.passingRecord) {
+        setSelectedMemberPassingDate(data.passingRecord.dateOfPassing);
+      } else {
+        setSelectedMemberPassingDate("");
+      }
+    } catch (error) {
+      console.error("Error fetching member passing record:", error);
+      setSelectedMemberPassingDate("");
+    }
+  };
+
+  // Validation functions
+  const validateField = (field: string, value: string) => {
+    const newErrors = { ...errors };
+
+    switch (field) {
+      case "familyMemberId":
+        if (!value) {
+          newErrors.familyMemberId = "Family member is required";
+        } else {
+          delete newErrors.familyMemberId;
+        }
+        break;
+      case "achievementTypeId":
+        if (!value) {
+          newErrors.achievementTypeId = "Achievement type is required";
+        } else {
+          delete newErrors.achievementTypeId;
+        }
+        break;
+      case "achieveDate":
+        if (!value) {
+          newErrors.achieveDate = "Date achieved is required";
+        } else {
+          delete newErrors.achieveDate;
+        }
+        break;
+      case "title":
+        if (!value.trim()) {
+          newErrors.title = "Achievement title is required";
+        } else {
+          delete newErrors.title;
+        }
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  const validateDates = () => {
+    const newErrors = { ...errors };
+    let hasDateErrors = false;
+
+    // Validate achievement date constraints
+    if (achievementFormData.achieveDate) {
+      if (
+        selectedMemberBirthDate &&
+        achievementFormData.achieveDate <= selectedMemberBirthDate
+      ) {
+        newErrors.achieveDate = "Achievement date must be after the birth date";
+        hasDateErrors = true;
+      } else if (
+        selectedMemberPassingDate &&
+        achievementFormData.achieveDate >= selectedMemberPassingDate
+      ) {
+        newErrors.achieveDate =
+          "Achievement date must be before the date of passing";
+        hasDateErrors = true;
+      } else {
+        delete newErrors.achieveDate;
+      }
+    }
+
+    setErrors(newErrors);
+    return !hasDateErrors;
+  };
+
+  const handleFieldChange = (field: string, value: string) => {
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+
+    // Mark field as touched
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Mark all fields as touched to show validation errors
+    const allFields = [
+      "familyMemberId",
+      "achievementTypeId",
+      "achieveDate",
+      "title",
+    ];
+    const newTouched = allFields.reduce(
+      (acc, field) => ({ ...acc, [field]: true }),
+      {}
+    );
+    setTouched(newTouched);
+
+    // Validate all fields
+    allFields.forEach((field) => {
+      const value =
+        achievementFormData[field as keyof typeof achievementFormData];
+      validateField(field, value as string);
+    });
+
+    const datesValid = validateDates();
+
+    // Check if all validations pass
+    const hasErrors = Object.keys(errors).length > 0 || !datesValid;
+
+    if (hasErrors) {
+      // Scroll to first error
+      const firstErrorField = document.querySelector('[data-error="true"]');
+      if (firstErrorField) {
+        firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(
+        `/api/family-trees/${familyTreeId}/achievements`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            familyMemberId: parseInt(achievementFormData.familyMemberId),
+            achievementTypeId: parseInt(achievementFormData.achievementTypeId),
+            achieveDate: achievementFormData.achieveDate,
+            title: achievementFormData.title.trim() || null,
+            description: achievementFormData.description.trim() || null,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        onAchievementRecorded();
+        onClose();
+      } else {
+        const error = await response.json();
+        alert(error.error || "Failed to record achievement");
+      }
+    } catch (error) {
+      console.error("Error recording achievement:", error);
+      alert("Failed to record achievement");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isFormValid = () => {
+    return (
+      achievementFormData.familyMemberId &&
+      achievementFormData.achievementTypeId &&
+      achievementFormData.achieveDate &&
+      achievementFormData.title
+    );
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <button
+            onClick={onClose}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            <span className="font-medium">Back</span>
+          </button>
+          <div className="flex items-center">
+            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
+              <Trophy className="w-5 h-5 text-yellow-600" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Record Achievement
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Form Content */}
+        <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Family Member Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Family Member <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={achievementFormData.familyMemberId}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const selectedMember = existingMembers.find(
+                    (member) => member.id.toString() === selectedId
+                  );
+
+                  setAchievementFormData({
+                    ...achievementFormData,
+                    familyMemberId: selectedId,
+                  });
+                  setSelectedMemberBirthDate(selectedMember?.birthday || "");
+
+                  // Fetch passing record for the selected member
+                  if (selectedId) {
+                    fetchMemberPassingRecord(selectedId);
+                  } else {
+                    setSelectedMemberPassingDate("");
+                  }
+
+                  handleFieldChange("familyMemberId", selectedId);
+                }}
+                onBlur={() =>
+                  validateField(
+                    "familyMemberId",
+                    achievementFormData.familyMemberId
+                  )
+                }
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.familyMemberId && touched.familyMemberId
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300"
+                }`}
+                data-error={
+                  errors.familyMemberId && touched.familyMemberId
+                    ? "true"
+                    : "false"
+                }
+              >
+                <option value="">Select member</option>
+                {existingMembers.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.fullName}
+                  </option>
+                ))}
+              </select>
+              {errors.familyMemberId && touched.familyMemberId && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.familyMemberId}
+                </p>
+              )}
+            </div>
+
+            {/* Achievement Type Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Achievement Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={achievementFormData.achievementTypeId}
+                onChange={(e) => {
+                  setAchievementFormData({
+                    ...achievementFormData,
+                    achievementTypeId: e.target.value,
+                  });
+                  handleFieldChange("achievementTypeId", e.target.value);
+                }}
+                onBlur={() =>
+                  validateField(
+                    "achievementTypeId",
+                    achievementFormData.achievementTypeId
+                  )
+                }
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.achievementTypeId && touched.achievementTypeId
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300"
+                }`}
+                data-error={
+                  errors.achievementTypeId && touched.achievementTypeId
+                    ? "true"
+                    : "false"
+                }
+                disabled={isLoadingTypes}
+              >
+                <option value="">
+                  {isLoadingTypes ? "Loading types..." : "Select type"}
+                </option>
+                {achievementTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.typeName}
+                  </option>
+                ))}
+              </select>
+              {errors.achievementTypeId && touched.achievementTypeId && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.achievementTypeId}
+                </p>
+              )}
+            </div>
+
+            {/* Date Achieved */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Date Achieved <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  value={achievementFormData.achieveDate}
+                  onChange={(e) => {
+                    setAchievementFormData({
+                      ...achievementFormData,
+                      achieveDate: e.target.value,
+                    });
+                    handleFieldChange("achieveDate", e.target.value);
+                  }}
+                  onBlur={() =>
+                    validateField(
+                      "achieveDate",
+                      achievementFormData.achieveDate
+                    )
+                  }
+                  className={`w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    errors.achieveDate && touched.achieveDate
+                      ? "border-red-500 bg-red-50"
+                      : "border-gray-300"
+                  }`}
+                  placeholder="MM/DD/YYYY"
+                  data-error={
+                    errors.achieveDate && touched.achieveDate ? "true" : "false"
+                  }
+                />
+                <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+              </div>
+              {errors.achieveDate && touched.achieveDate && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.achieveDate}
+                </p>
+              )}
+            </div>
+
+            {/* Achievement Title */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Achievement Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={achievementFormData.title}
+                onChange={(e) => {
+                  setAchievementFormData({
+                    ...achievementFormData,
+                    title: e.target.value,
+                  });
+                  handleFieldChange("title", e.target.value);
+                }}
+                onBlur={() => validateField("title", achievementFormData.title)}
+                placeholder="e.g. Bachelor of Computer Science"
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.title && touched.title
+                    ? "border-red-500 bg-red-50"
+                    : "border-gray-300"
+                }`}
+                data-error={errors.title && touched.title ? "true" : "false"}
+              />
+              {errors.title && touched.title && (
+                <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+              )}
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                value={achievementFormData.description}
+                onChange={(e) =>
+                  setAchievementFormData({
+                    ...achievementFormData,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="Describe the achievement"
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              />
+            </div>
+
+            {/* Error Message */}
+            {Object.keys(errors).length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                <p className="text-sm font-medium text-red-800">
+                  Please check your information
+                </p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !isFormValid()}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Recording...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Record Achievement
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
