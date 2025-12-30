@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useFamilyTrees } from "../../lib/useFamilyTrees";
 import CreateFamilyTreePanel from "../../components/CreateFamilyTreePanel";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function FamilyTreesLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 			<div className="flex-1 flex flex-col min-w-0 h-full">
 				{/* Header showing active family tree name */}
 				{activeFamilyTreeName && (
-					<header className="h-[60px] flex items-center justify-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
+					<header className="h-[60px] flex items-center justify-center px-4 lg:px-8 border-b border-gray-100 relative shrink-0 bg-white z-20">
 						<h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">{activeFamilyTreeName}</h1>
 					</header>
 				)}
@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 			{/* Create Family Tree Panel - Desktop (Push) */}
 			<aside
-				className={`hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden flex-shrink-0 h-full ${
+				className={`hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden shrink-0 h-full ${
 					isCreatePanelOpen ? "w-[600px]" : "w-0"
 				}`}
 			>
