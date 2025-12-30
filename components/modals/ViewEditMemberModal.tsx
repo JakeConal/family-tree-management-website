@@ -14,6 +14,9 @@ import {
   ArrowLeft,
   User,
   Heart,
+  Edit,
+  Eye,
+  Save,
 } from "lucide-react";
 
 interface PlaceOfOrigin {
@@ -25,7 +28,7 @@ interface PlaceOfOrigin {
 
 interface Occupation {
   id: string;
-  title: string;
+  jobTitle: string;
   startDate: string;
   endDate: string;
 }
@@ -37,23 +40,70 @@ interface FamilyMember {
   birthday: string;
 }
 
-interface AddMemberModalProps {
+interface ExistingMember {
+  id: number;
+  fullName: string;
+  gender: "MALE" | "FEMALE" | null;
+  birthday: string | null;
+  address: string | null;
+  generation: string | null;
+  isRootPerson: boolean | null;
+  isAdopted: boolean | null;
+  hasProfilePicture?: boolean;
+  birthPlaces?: {
+    startDate: string;
+    endDate: string;
+    placeOfOrigin: {
+      location: string;
+    };
+  }[];
+  occupations?: {
+    id: number;
+    jobTitle: string;
+    startDate: string | null;
+    endDate: string | null;
+  }[];
+  parent?: {
+    id: number;
+    fullName: string;
+  } | null;
+  spouse1?: Array<{
+    divorceDate: Date | null;
+    familyMember2: {
+      id: number;
+      fullName: string;
+    };
+  }>;
+  spouse2?: Array<{
+    divorceDate: Date | null;
+    familyMember1: {
+      id: number;
+      fullName: string;
+    };
+  }>;
+}
+
+interface ViewEditMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
   familyTreeId: string;
   existingMembers: FamilyMember[];
-  onMemberAdded: () => void;
-  selectedMemberId?: string;
+  member: ExistingMember | null;
+  onMemberUpdated: () => void;
+  mode: "view" | "edit";
+  onModeChange: (mode: "view" | "edit") => void;
 }
 
-export default function AddMemberModal({
+export default function ViewEditMemberModal({
   isOpen,
   onClose,
   familyTreeId,
   existingMembers,
-  onMemberAdded,
-  selectedMemberId,
-}: AddMemberModalProps) {
+  member,
+  onMemberUpdated,
+  mode,
+  onModeChange,
+}: ViewEditMemberModalProps) {
   const [memberFormData, setMemberFormData] = useState({
     fullName: "",
     gender: "",
@@ -67,7 +117,7 @@ export default function AddMemberModal({
     { id: "1", location: "", startDate: "", endDate: "" },
   ]);
   const [occupations, setOccupations] = useState<Occupation[]>([
-    { id: "1", title: "", startDate: "", endDate: "" },
+    { id: "1", jobTitle: "", startDate: "", endDate: "" },
   ]);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<
@@ -90,43 +140,86 @@ export default function AddMemberModal({
   });
   const [generalError, setGeneralError] = useState("");
 
-  // Reset form when modal opens
+  // Load member data when modal opens or member changes
   useEffect(() => {
-    if (isOpen) {
-      let initialRelationship = "";
-      let initialRelatedMemberId = "";
+    if (isOpen && member) {
+      // Load member data
+      setMemberFormData({
+        fullName: member.fullName || "",
+        gender: member.gender || "",
+        birthDate: member.birthday ? member.birthday.split("T")[0] : "",
+        address: member.address || "",
+        relatedMemberId: member.parent?.id.toString() || "",
+        relationship: member.parent ? "parent" : "",
+        relationshipDate: "",
+      });
 
-      if (selectedMemberId) {
-        if (selectedMemberId.includes(",")) {
-          // Adding child to spouse pair - use first spouse as parent
-          initialRelatedMemberId = selectedMemberId.split(",")[0];
-          initialRelationship = "child";
-        } else {
-          // Adding to single member
-          initialRelatedMemberId = selectedMemberId;
-          initialRelationship = "child"; // Default to child, user can change
-        }
+      // Load places of origin
+      if (member.birthPlaces && member.birthPlaces.length > 0) {
+        setPlacesOfOrigin(
+          member.birthPlaces.map((place, index) => ({
+            id: (index + 1).toString(),
+            location: place.placeOfOrigin.location,
+            startDate: place.startDate ? place.startDate.split("T")[0] : "",
+            endDate: place.endDate ? place.endDate.split("T")[0] : "",
+          }))
+        );
+      } else {
+        setPlacesOfOrigin([
+          { id: "1", location: "", startDate: "", endDate: "" },
+        ]);
       }
 
-      setMemberFormData({
+      // Load occupations
+      if (member.occupations && member.occupations.length > 0) {
+        setOccupations(
+          member.occupations.map((occ, index) => ({
+            id: (index + 1).toString(),
+            jobTitle: occ.jobTitle,
+            startDate: occ.startDate ? occ.startDate.split("T")[0] : "",
+            endDate: occ.endDate ? occ.endDate.split("T")[0] : "",
+          }))
+        );
+      } else {
+        setOccupations([{ id: "1", jobTitle: "", startDate: "", endDate: "" }]);
+      }
+
+      // Load profile picture
+      if ((member as any).hasProfilePicture) {
+        // Fetch profile picture from API
+        fetch(`/api/family-members/${member.id}/profile-picture`)
+          .then((response) => response.blob())
+          .then((blob) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              setProfilePicturePreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch(() => {
+            setProfilePicturePreview(null);
+          });
+      } else {
+        setProfilePicturePreview(null);
+      }
+
+      setProfilePicture(null);
+      setConfirmAccuracy(false);
+      setIsSubmitting(false);
+      setValidationErrors({
         fullName: "",
         gender: "",
         birthDate: "",
         address: "",
-        relatedMemberId: initialRelatedMemberId,
-        relationship: initialRelationship,
+        relatedMemberId: "",
+        relationship: "",
         relationshipDate: "",
+        placesOfOrigin: "",
+        occupations: "",
       });
-      setPlacesOfOrigin([
-        { id: "1", location: "", startDate: "", endDate: "" },
-      ]);
-      setOccupations([{ id: "1", title: "", startDate: "", endDate: "" }]);
-      setProfilePicture(null);
-      setProfilePicturePreview(null);
-      setConfirmAccuracy(false);
-      setIsSubmitting(false);
+      setGeneralError("");
     }
-  }, [isOpen, selectedMemberId]);
+  }, [isOpen, member]);
 
   // Handle escape key
   useEffect(() => {
@@ -252,14 +345,14 @@ export default function AddMemberModal({
 
     // Check occupations
     const hasValidOccupation = occupations.some(
-      (occ) => occ.title.trim() !== ""
+      (occ) => occ.jobTitle.trim() !== ""
     );
     if (!hasValidOccupation) {
       errors.occupations = "At least one occupation is required";
     } else {
       // Check that occupations with title also have start date
       const invalidOccupations = occupations.filter(
-        (occ) => occ.title.trim() !== "" && !occ.startDate
+        (occ) => occ.jobTitle.trim() !== "" && !occ.startDate
       );
       if (invalidOccupations.length > 0) {
         errors.occupations = "Occupations must have start dates";
@@ -267,7 +360,7 @@ export default function AddMemberModal({
         // Check that start dates are after birth date
         const invalidBirthDateOccupations = occupations.filter(
           (occ) =>
-            occ.title.trim() !== "" &&
+            occ.jobTitle.trim() !== "" &&
             occ.startDate &&
             memberFormData.birthDate &&
             occ.startDate < memberFormData.birthDate
@@ -281,7 +374,10 @@ export default function AddMemberModal({
             const currentOccupation = occupations[i];
             const previousOccupation = occupations[i - 1];
 
-            if (currentOccupation.title.trim() && currentOccupation.startDate) {
+            if (
+              currentOccupation.jobTitle.trim() &&
+              currentOccupation.startDate
+            ) {
               if (!previousOccupation.endDate) {
                 errors.occupations =
                   "Previous occupation must have an end date";
@@ -354,21 +450,22 @@ export default function AddMemberModal({
         formData.append("profilePicture", profilePicture);
       }
 
-      const response = await fetch(`/api/family-members`, {
-        method: "POST",
+      // For editing, we need to use PUT/PATCH method to update existing member
+      const response = await fetch(`/api/family-members/${member?.id}`, {
+        method: "PUT",
         body: formData,
       });
 
       if (response.ok) {
-        onMemberAdded();
+        onMemberUpdated();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to add family member");
+        alert(error.error || "Failed to update family member");
       }
     } catch (error) {
-      console.error("Error adding member:", error);
-      alert("Failed to add family member");
+      console.error("Error updating member:", error);
+      alert("Failed to update family member");
     } finally {
       setIsSubmitting(false);
     }
@@ -398,7 +495,7 @@ export default function AddMemberModal({
         ...occupations,
         {
           id: Date.now().toString(),
-          title: "",
+          jobTitle: "",
           startDate: "",
           endDate: "",
         },
@@ -444,7 +541,9 @@ export default function AddMemberModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !member) return null;
+
+  const isViewMode = mode === "view";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
@@ -459,17 +558,40 @@ export default function AddMemberModal({
             <span className="font-medium">Back</span>
           </button>
           <div className="flex items-center">
-            <User className="w-6 h-6 text-blue-600 mr-3" />
+            {isViewMode ? (
+              <Eye className="w-6 h-6 text-blue-600 mr-3" />
+            ) : (
+              <Edit className="w-6 h-6 text-blue-600 mr-3" />
+            )}
             <h2 className="text-xl font-semibold text-gray-900">
-              Add New Family Member
+              {isViewMode ? "View Family Member" : "Edit Family Member"}
             </h2>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          <div className="flex items-center space-x-2">
+            {isViewMode ? (
+              <button
+                onClick={() => onModeChange("edit")}
+                className="flex items-center px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Edit className="w-4 h-4 mr-1" />
+                Edit
+              </button>
+            ) : (
+              <button
+                onClick={() => onModeChange("view")}
+                className="flex items-center px-3 py-1 text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                View
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Form Content */}
@@ -498,9 +620,9 @@ export default function AddMemberModal({
                       fullName: e.target.value,
                     });
                   }}
-                  placeholder="Enter full name"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                  disabled={isViewMode}
                 />
                 {validationErrors.fullName && (
                   <p className="text-red-500 text-xs mt-1">
@@ -509,11 +631,11 @@ export default function AddMemberModal({
                 )}
               </div>
 
-              {/* Birth Date and Gender - Same Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+              {/* Birth Date and Gender - Two Column Row */}
+              <div className="grid grid-cols-2 gap-4 mb-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Birth Date <span className="text-red-500">*</span>
+                    Date of Birth <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -526,6 +648,7 @@ export default function AddMemberModal({
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
+                    disabled={isViewMode}
                   />
                   {validationErrors.birthDate && (
                     <p className="text-red-500 text-xs mt-1">
@@ -533,7 +656,6 @@ export default function AddMemberModal({
                     </p>
                   )}
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Gender <span className="text-red-500">*</span>
@@ -548,10 +670,11 @@ export default function AddMemberModal({
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
+                    disabled={isViewMode}
                   >
                     <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
                   </select>
                   {validationErrors.gender && (
                     <p className="text-red-500 text-xs mt-1">
@@ -562,7 +685,7 @@ export default function AddMemberModal({
               </div>
 
               {/* Address - Single Row */}
-              <div>
+              <div className="mb-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Address <span className="text-red-500">*</span>
                 </label>
@@ -575,9 +698,10 @@ export default function AddMemberModal({
                       address: e.target.value,
                     });
                   }}
-                  placeholder="Enter full address"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter current address"
                   required
+                  disabled={isViewMode}
                 />
                 {validationErrors.address && (
                   <p className="text-red-500 text-xs mt-1">
@@ -586,21 +710,71 @@ export default function AddMemberModal({
                 )}
               </div>
 
-              {/* Places of Origin */}
-              <div className="mt-6">
+              {/* Profile Picture Upload */}
+              <div className="mb-3">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Picture
+                </label>
+                <div className="flex items-center space-x-4">
+                  <div className="w-20 h-20 rounded-lg bg-gray-300 flex items-center justify-center overflow-hidden">
+                    {profilePicturePreview ? (
+                      <Image
+                        src={profilePicturePreview}
+                        alt="Profile preview"
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-gray-600 text-xl font-bold">
+                        {memberFormData.fullName.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  {!isViewMode && (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="profile-picture-upload"
+                      />
+                      <label
+                        htmlFor="profile-picture-upload"
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
+                      >
+                        <Camera className="w-4 h-4 mr-2" />
+                        Upload Photo
+                      </label>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Max 5MB. JPEG, PNG, GIF, WebP only.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Places of Origin Section */}
+              <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Place of Origin <span className="text-red-500">*</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={addPlaceOfOrigin}
-                    disabled={placesOfOrigin.length >= 4}
-                    className="flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Place
-                  </button>
+                  <div className="flex items-center">
+                    <MapPin className="w-5 h-5 text-green-600 mr-2" />
+                    <label className="block text-sm font-medium text-gray-700">
+                      Place of Origin <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+                  {!isViewMode && (
+                    <button
+                      type="button"
+                      onClick={addPlaceOfOrigin}
+                      disabled={placesOfOrigin.length >= 15}
+                      className="flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Place
+                    </button>
+                  )}
                 </div>
                 {validationErrors.placesOfOrigin && (
                   <p className="text-red-500 text-xs mt-1 mb-3">
@@ -617,7 +791,7 @@ export default function AddMemberModal({
                       <span className="text-sm font-medium text-gray-700">
                         Place {index + 1}
                       </span>
-                      {placesOfOrigin.length > 1 && (
+                      {!isViewMode && placesOfOrigin.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removePlaceOfOrigin(place.id)}
@@ -628,126 +802,84 @@ export default function AddMemberModal({
                       )}
                     </div>
 
-                    <div className="space-y-3">
+                    {/* City and Country - Two Column Row */}
+                    <div className="grid grid-cols-2 gap-4 mb-3">
                       <div>
-                        <select
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Location <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
                           value={place.location}
                           onChange={(e) => {
-                            const updated = placesOfOrigin.map((p) =>
-                              p.id === place.id
-                                ? { ...p, location: e.target.value }
-                                : p
-                            );
-                            setPlacesOfOrigin(updated);
+                            const updatedPlaces = [...placesOfOrigin];
+                            updatedPlaces[index].location = e.target.value;
+                            setPlacesOfOrigin(updatedPlaces);
                           }}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                          <option value="">Select place of origin</option>
-                          <option value="An Giang">An Giang</option>
-                          <option value="Ba Ria – Vung Tau">
-                            Ba Ria – Vung Tau
-                          </option>
-                          <option value="Bac Giang">Bac Giang</option>
-                          <option value="Bac Ninh">Bac Ninh</option>
-                          <option value="Binh Duong">Binh Duong</option>
-                          <option value="Binh Dinh">Binh Dinh</option>
-                          <option value="Binh Phuoc">Binh Phuoc</option>
-                          <option value="Binh Thuan">Binh Thuan</option>
-                          <option value="Ca Mau">Ca Mau</option>
-                          <option value="Dak Lak">Dak Lak</option>
-                          <option value="Dak Nong">Dak Nong</option>
-                          <option value="Dong Nai">Dong Nai</option>
-                          <option value="Dong Thap">Dong Thap</option>
-                          <option value="Gia Lai">Gia Lai</option>
-                          <option value="Ha Giang">Ha Giang</option>
-                          <option value="Ha Nam">Ha Nam</option>
-                          <option value="Ha Tinh">Ha Tinh</option>
-                          <option value="Khanh Hoa">Khanh Hoa</option>
-                          <option value="Kien Giang">Kien Giang</option>
-                          <option value="Lam Dong">Lam Dong</option>
-                          <option value="Lao Cai">Lao Cai</option>
-                          <option value="Long An">Long An</option>
-                          <option value="Nam Dinh">Nam Dinh</option>
-                          <option value="Nghe An">Nghe An</option>
-                          <option value="Ninh Binh">Ninh Binh</option>
-                          <option value="Phu Tho">Phu Tho</option>
-                          <option value="Quang Nam">Quang Nam</option>
-                          <option value="Hanoi">Hanoi</option>
-                          <option value="Ho Chi Minh City">
-                            Ho Chi Minh City
-                          </option>
-                          <option value="Hai Phong">Hai Phong</option>
-                          <option value="Da Nang">Da Nang</option>
-                          <option value="Can Tho">Can Tho</option>
-                          <option value="Hue">Hue</option>
-                        </select>
+                          placeholder="Enter location"
+                          disabled={isViewMode}
+                        />
                       </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">
-                            Start Date <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="date"
-                            value={place.startDate}
-                            onChange={(e) => {
-                              const updated = placesOfOrigin.map((p) =>
-                                p.id === place.id
-                                  ? { ...p, startDate: e.target.value }
-                                  : p
-                              );
-                              setPlacesOfOrigin(updated);
-                            }}
-                            placeholder="Start date"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">
-                            End Date
-                          </label>
-                          <input
-                            type="date"
-                            value={place.endDate}
-                            onChange={(e) => {
-                              const updated = placesOfOrigin.map((p) =>
-                                p.id === place.id
-                                  ? { ...p, endDate: e.target.value }
-                                  : p
-                              );
-                              setPlacesOfOrigin(updated);
-                            }}
-                            placeholder="End date (optional)"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Date <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          value={place.startDate}
+                          onChange={(e) => {
+                            const updatedPlaces = [...placesOfOrigin];
+                            updatedPlaces[index].startDate = e.target.value;
+                            setPlacesOfOrigin(updatedPlaces);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          disabled={isViewMode}
+                        />
                       </div>
+                    </div>
+
+                    {/* End Date - Single Row */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={place.endDate}
+                        onChange={(e) => {
+                          const updatedPlaces = [...placesOfOrigin];
+                          updatedPlaces[index].endDate = e.target.value;
+                          setPlacesOfOrigin(updatedPlaces);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isViewMode}
+                      />
                     </div>
                   </div>
                 ))}
-
-                <p className="text-xs text-gray-500 mt-2">
-                  Maximum 4 places of origin per person
-                </p>
               </div>
 
-              {/* Occupations */}
-              <div className="mt-6">
+              {/* Occupations Section */}
+              <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Occupation <span className="text-red-500">*</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={addOccupation}
-                    disabled={occupations.length >= 15}
-                    className="flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Occupation
-                  </button>
+                  <div className="flex items-center">
+                    <Briefcase className="w-5 h-5 text-purple-600 mr-2" />
+                    <label className="block text-sm font-medium text-gray-700">
+                      Occupation <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+                  {!isViewMode && (
+                    <button
+                      type="button"
+                      onClick={addOccupation}
+                      disabled={occupations.length >= 15}
+                      className="flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Occupation
+                    </button>
+                  )}
                 </div>
                 {validationErrors.occupations && (
                   <p className="text-red-500 text-xs mt-1 mb-3">
@@ -764,7 +896,7 @@ export default function AddMemberModal({
                       <span className="text-sm font-medium text-gray-700">
                         Occupation {index + 1}
                       </span>
-                      {occupations.length > 1 && (
+                      {!isViewMode && occupations.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeOccupation(occupation.id)}
@@ -775,123 +907,75 @@ export default function AddMemberModal({
                       )}
                     </div>
 
-                    <div className="space-y-3">
+                    {/* Title and Start Date - Two Column Row */}
+                    <div className="grid grid-cols-2 gap-4 mb-3">
                       <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Title <span className="text-red-500">*</span>
+                        </label>
                         <input
                           type="text"
-                          value={occupation.title}
+                          value={occupation.jobTitle}
                           onChange={(e) => {
-                            const updated = occupations.map((o) =>
-                              o.id === occupation.id
-                                ? { ...o, title: e.target.value }
-                                : o
-                            );
-                            setOccupations(updated);
+                            const updatedOccupations = [...occupations];
+                            updatedOccupations[index].jobTitle = e.target.value;
+                            setOccupations(updatedOccupations);
                           }}
-                          placeholder="e.g. Software Engineer"
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Enter occupation title"
+                          disabled={isViewMode}
                         />
                       </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">
-                            Start Date <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="date"
-                            value={occupation.startDate}
-                            onChange={(e) => {
-                              const updated = occupations.map((o) =>
-                                o.id === occupation.id
-                                  ? { ...o, startDate: e.target.value }
-                                  : o
-                              );
-                              setOccupations(updated);
-                            }}
-                            placeholder="Start date"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 mb-1">
-                            End Date
-                          </label>
-                          <input
-                            type="date"
-                            value={occupation.endDate}
-                            onChange={(e) => {
-                              const updated = occupations.map((o) =>
-                                o.id === occupation.id
-                                  ? { ...o, endDate: e.target.value }
-                                  : o
-                              );
-                              setOccupations(updated);
-                            }}
-                            placeholder="End date (optional)"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Date <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          value={occupation.startDate}
+                          onChange={(e) => {
+                            const updatedOccupations = [...occupations];
+                            updatedOccupations[index].startDate =
+                              e.target.value;
+                            setOccupations(updatedOccupations);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          disabled={isViewMode}
+                        />
                       </div>
+                    </div>
+
+                    {/* End Date - Single Row */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={occupation.endDate}
+                        onChange={(e) => {
+                          const updatedOccupations = [...occupations];
+                          updatedOccupations[index].endDate = e.target.value;
+                          setOccupations(updatedOccupations);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isViewMode}
+                      />
                     </div>
                   </div>
                 ))}
-
-                <p className="text-xs text-gray-500 mt-2">
-                  Maximum 15 occupations per person
-                </p>
-              </div>
-
-              {/* Profile Picture */}
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Profile Picture (optional)
-                </label>
-
-                {profilePicturePreview ? (
-                  <div className="flex items-center space-x-4">
-                    <Image
-                      src={profilePicturePreview}
-                      alt="Profile preview"
-                      width={80}
-                      height={80}
-                      className="rounded-lg object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProfilePicture(null);
-                        setProfilePicturePreview(null);
-                      }}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-2">
-                      Click to upload profile picture
-                    </p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="profile-picture"
-                    />
-                    <label
-                      htmlFor="profile-picture"
-                      className="text-blue-600 hover:text-blue-700 cursor-pointer text-sm font-medium"
-                    >
-                      Choose file
-                    </label>
-                  </div>
-                )}
               </div>
             </div>
+
+            {/* General Error */}
+            {generalError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <Info className="w-5 h-5 text-red-600 mr-2" />
+                  <p className="text-red-800 text-sm">{generalError}</p>
+                </div>
+              </div>
+            )}
 
             {/* Family Connection Section */}
             <div>
@@ -902,8 +986,8 @@ export default function AddMemberModal({
                 </h3>
               </div>
 
-              {/* Related Family Member - Single Row */}
-              <div>
+              {/* Related Member - Single Row */}
+              <div className="mb-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Related Family Member <span className="text-red-500">*</span>
                 </label>
@@ -917,11 +1001,12 @@ export default function AddMemberModal({
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                  disabled={isViewMode}
                 >
                   <option value="">Select family member</option>
-                  {existingMembers.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.fullName}
+                  {existingMembers.map((existingMember) => (
+                    <option key={existingMember.id} value={existingMember.id}>
+                      {existingMember.fullName}
                     </option>
                   ))}
                 </select>
@@ -936,7 +1021,7 @@ export default function AddMemberModal({
               </div>
 
               {/* Relationship - Single Row */}
-              <div>
+              <div className="mb-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Relationship <span className="text-red-500">*</span>
                 </label>
@@ -950,6 +1035,7 @@ export default function AddMemberModal({
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                  disabled={isViewMode}
                 >
                   <option value="">Select relationship</option>
                   <option value="parent">Parent</option>
@@ -966,7 +1052,7 @@ export default function AddMemberModal({
               </div>
 
               {/* Relationship Established Date - Single Row */}
-              <div>
+              <div className="mb-3">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Relationship Established Date{" "}
                   <span className="text-red-500">*</span>
@@ -982,6 +1068,7 @@ export default function AddMemberModal({
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                  disabled={isViewMode}
                 />
                 {validationErrors.relationshipDate && (
                   <p className="text-red-500 text-xs mt-1">
@@ -994,73 +1081,44 @@ export default function AddMemberModal({
               </div>
             </div>
 
-            {/* Confirmation */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+            {/* Confirmation Checkbox */}
+            {!isViewMode && (
+              <div className="flex items-start space-x-3">
+                <input
+                  type="checkbox"
+                  id="confirm-accuracy"
+                  checked={confirmAccuracy}
+                  onChange={(e) => setConfirmAccuracy(e.target.checked)}
+                  className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
                 <div>
-                  <h4 className="text-sm font-semibold text-blue-900 mb-1">
-                    Important Notice
-                  </h4>
-                  <p className="text-sm text-blue-800">
-                    Once a family member is added, their record becomes
-                    permanent and cannot be deleted from the system. Please
-                    ensure all information is accurate before submitting.
+                  <label
+                    htmlFor="confirm-accuracy"
+                    className="text-sm text-gray-700 font-medium"
+                  >
+                    I confirm that all information provided is accurate to the
+                    best of my knowledge
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Please verify all dates and relationships before submitting.
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="confirm-accuracy"
-                checked={confirmAccuracy}
-                onChange={(e) => setConfirmAccuracy(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="confirm-accuracy"
-                className="ml-2 text-sm text-gray-700"
-              >
-                I confirm that all information provided is accurate and truthful
-              </label>
-            </div>
-
-            {/* General Error Message */}
-            {generalError && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 font-medium text-center">
-                  {generalError}
-                </p>
-              </div>
             )}
 
-            {/* Actions */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Adding Member...
-                  </>
-                ) : (
-                  "Add Member"
-                )}
-              </button>
-            </div>
+            {/* Submit Button */}
+            {!isViewMode && (
+              <div className="flex justify-end pt-4 border-t border-gray-200">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Save className="w-5 h-5 mr-2" />
+                  {isSubmitting ? "Updating..." : "Update Member"}
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>

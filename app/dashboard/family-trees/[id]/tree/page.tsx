@@ -12,6 +12,7 @@ import type { Node, ExtNode } from "relatives-tree/lib/types";
 import { FamilyMember } from "@prisma/client";
 import FamilyNode from "@/components/FamilyNode";
 import AddMemberModal from "@/components/modals/AddMemberModal";
+import ViewEditMemberModal from "@/components/modals/ViewEditMemberModal";
 import RecordAchievementModal from "@/components/modals/RecordAchievementModal";
 import RecordPassingModal from "@/components/modals/RecordPassingModal";
 import ChangeLogDetailsModal from "@/components/modals/ChangeLogDetailsModal";
@@ -77,6 +78,12 @@ export default function FamilyTreePage() {
 
   // Modal states
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showViewEditMemberModal, setShowViewEditMemberModal] = useState(false);
+  const [viewEditMemberMode, setViewEditMemberMode] = useState<"view" | "edit">(
+    "view"
+  );
+  const [selectedMemberForViewEdit, setSelectedMemberForViewEdit] =
+    useState<ExtendedFamilyMember | null>(null);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [showPassingModal, setShowPassingModal] = useState(false);
   const [showChangeLogModal, setShowChangeLogModal] = useState(false);
@@ -443,6 +450,11 @@ export default function FamilyTreePage() {
                               left: node.left * 120 - 75,
                               top: node.top * 150 - 100,
                             }}
+                            onClick={() => {
+                              setSelectedMemberForViewEdit(member);
+                              setViewEditMemberMode("view");
+                              setShowViewEditMemberModal(true);
+                            }}
                           />
                         );
                       })}
@@ -729,6 +741,46 @@ export default function FamilyTreePage() {
         isOpen={showChangeLogModal}
         onClose={() => setShowChangeLogModal(false)}
         changeLog={null}
+      />
+
+      <ViewEditMemberModal
+        isOpen={showViewEditMemberModal}
+        onClose={() => setShowViewEditMemberModal(false)}
+        familyTreeId={familyTreeId}
+        existingMembers={members as any}
+        member={
+          selectedMemberForViewEdit
+            ? {
+                ...selectedMemberForViewEdit,
+                birthday: selectedMemberForViewEdit.birthday
+                  ? typeof selectedMemberForViewEdit.birthday === "string"
+                    ? selectedMemberForViewEdit.birthday
+                    : selectedMemberForViewEdit.birthday.toISOString()
+                  : null,
+                hasProfilePicture:
+                  (selectedMemberForViewEdit as any).hasProfilePicture || false,
+                birthPlaces:
+                  (selectedMemberForViewEdit as any).birthPlaces || [],
+                occupations:
+                  selectedMemberForViewEdit.occupations?.map((occ) => ({
+                    ...occ,
+                    startDate: occ.startDate
+                      ? typeof occ.startDate === "string"
+                        ? occ.startDate
+                        : occ.startDate.toISOString()
+                      : null,
+                    endDate: occ.endDate
+                      ? typeof occ.endDate === "string"
+                        ? occ.endDate
+                        : occ.endDate.toISOString()
+                      : null,
+                  })) || [],
+              }
+            : null
+        }
+        onMemberUpdated={fetchFamilyMembers}
+        mode={viewEditMemberMode}
+        onModeChange={setViewEditMemberMode}
       />
     </div>
   );

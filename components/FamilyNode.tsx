@@ -6,9 +6,15 @@ interface FamilyNodeProps {
   node: ExtNode;
   member: FamilyMember;
   style: React.CSSProperties;
+  onClick?: () => void;
 }
 
-export default function FamilyNode({ node, member, style }: FamilyNodeProps) {
+export default function FamilyNode({
+  node,
+  member,
+  style,
+  onClick,
+}: FamilyNodeProps) {
   const formatDate = (date: Date | null) => {
     if (!date) return "";
     return new Intl.DateTimeFormat("en-US", {
@@ -40,6 +46,7 @@ export default function FamilyNode({ node, member, style }: FamilyNodeProps) {
         width: "150px",
         height: "200px",
       }}
+      onClick={onClick}
     >
       {/* Profile Image */}
       <div className="flex justify-center mb-2">
