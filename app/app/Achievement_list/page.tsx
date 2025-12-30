@@ -329,6 +329,14 @@ export default function AchievementListPage() {
   const [lifeEventFormData, setLifeEventFormData] = useState<{ member1: string; member2: string; date: string } | null>(null);
   const [lifeEventSectionsState, setLifeEventSectionsState] = useState(lifeEventSections);
 
+  // Add Divorce modal states
+  const [isAddDivorceOpen, setIsAddDivorceOpen] = useState(false);
+  const [newDivorceFormData, setNewDivorceFormData] = useState({
+    member1: "",
+    member2: "",
+    date: "",
+  });
+
   // Passing modal states
   const [selectedPassing, setSelectedPassing] = useState<PassingEntry | null>(null);
   const [selectedPassingYear, setSelectedPassingYear] = useState<string | null>(null);
@@ -845,6 +853,48 @@ export default function AchievementListPage() {
     }
   };
 
+  // Add Divorce handlers
+  const handleAddDivorceOpen = () => {
+    setIsAddDivorceOpen(true);
+    setNewDivorceFormData({ member1: "", member2: "", date: "" });
+  };
+
+  const handleAddDivorceClose = () => {
+    setIsAddDivorceOpen(false);
+    setNewDivorceFormData({ member1: "", member2: "", date: "" });
+  };
+
+  const handleAddDivorceSave = async () => {
+    if (!newDivorceFormData.member1 || !newDivorceFormData.member2 || !newDivorceFormData.date) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/life-events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          treeId: selectedTreeId,
+          member1: newDivorceFormData.member1,
+          member2: newDivorceFormData.member2,
+          divorceDate: newDivorceFormData.date,
+        }),
+      });
+
+      if (response.ok) {
+        fetchLifeEvents();
+        handleAddDivorceClose();
+      } else {
+        console.error("Failed to save divorce");
+      }
+    } catch (error) {
+      console.error("Error saving divorce:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const addButtonLabel = useMemo(() => {
     if (activeTab === "Passing") return "Add Passing";
     if (activeTab === "Life Event") return "Add Divorce";
@@ -963,7 +1013,7 @@ export default function AchievementListPage() {
               )}
 
               <button
-                onClick={() => setIsAddAchievementOpen(true)}
+                onClick={() => activeTab === "Life Event" ? handleAddDivorceOpen() : setIsAddAchievementOpen(true)}
                 className="ml-auto flex h-9 w-[150px] items-center justify-center gap-2 rounded-[999px] border border-[#101828] text-sm font-semibold text-gray-900"
               >
                 <Plus className="h-4 w-4" />
@@ -1422,20 +1472,32 @@ export default function AchievementListPage() {
                 <form onSubmit={handleLifeEventSave} className="mt-8 flex flex-col gap-5">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Member 1 *</label>
-                    <input
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    <select
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                       value={lifeEventFormData?.member1 ?? ""}
                       onChange={handleLifeEventFormChange("member1")}
-                    />
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
+                    >
+                      <option value="">Select member</option>
+                      {availableMembers.map((member) => (
+                        <option key={member.id} value={member.name}>{member.name}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-[#111]">Member 2 *</label>
-                    <input
-                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A]"
+                    <select
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
                       value={lifeEventFormData?.member2 ?? ""}
                       onChange={handleLifeEventFormChange("member2")}
-                    />
+                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
+                    >
+                      <option value="">Select member</option>
+                      {availableMembers.map((member) => (
+                        <option key={member.id} value={member.name}>{member.name}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="space-y-2">
@@ -1881,6 +1943,109 @@ export default function AchievementListPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Add Divorce Modal */}
+        {isAddDivorceOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="relative w-full max-w-[460px] rounded-[24px] bg-white p-8 shadow-2xl">
+              {/* Back button */}
+              <button
+                onClick={handleAddDivorceClose}
+                className="absolute left-6 top-6 flex items-center gap-1 text-sm text-[#111]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Back
+              </button>
+
+              {/* Icon and Title */}
+              <div className="mt-6 flex flex-col items-center">
+                <Image src="/icons/broken.png" alt="Divorce" width={48} height={48} />
+                <h2 className="mt-4 text-center text-[22px] font-medium text-[#000]">Add Divorce</h2>
+              </div>
+
+              {/* Form */}
+              <div className="mt-8 flex flex-col gap-5">
+                {/* Member 1 */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Member 1 *</label>
+                  <select
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
+                    value={newDivorceFormData.member1}
+                    onChange={(e) => setNewDivorceFormData(prev => ({ ...prev, member1: e.target.value }))}
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
+                  >
+                    <option value="">Select member</option>
+                    {availableMembers.map((member) => (
+                      <option key={member.id} value={member.name}>{member.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Member 2 */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Member 2 *</label>
+                  <select
+                    className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] appearance-none cursor-pointer"
+                    value={newDivorceFormData.member2}
+                    onChange={(e) => setNewDivorceFormData(prev => ({ ...prev, member2: e.target.value }))}
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 16px center" }}
+                  >
+                    <option value="">Select member</option>
+                    {availableMembers.map((member) => (
+                      <option key={member.id} value={member.name}>{member.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Date of Divorce */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-[#111]">Date of Divorce *</label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      className="h-[40px] w-full rounded-full border border-[#B6B6B6] bg-[#F6F6F6] px-4 pr-12 text-sm text-[#111] focus:outline-none focus:ring-2 focus:ring-[#0E1A2A] cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-12 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      value={newDivorceFormData.date}
+                      onChange={(e) => setNewDivorceFormData(prev => ({ ...prev, date: e.target.value }))}
+                    />
+                    <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Important Notice */}
+                <div className="mt-2 rounded-xl bg-[#BFDBFE] p-4">
+                  <div className="flex items-start gap-2">
+                    <span className="text-lg">⚠️</span>
+                    <div>
+                      <p className="text-sm font-semibold text-[#111]">Important</p>
+                      <p className="mt-1 text-xs text-[#6B7280]">
+                        The <span className="font-semibold text-[#111]">Family Member selected</span> for this record <span className="font-semibold text-[#111]">cannot be changed</span> once saved. Furthermore, this record is <span className="font-semibold text-[#111]">permanent</span> and <span className="font-semibold text-[#111]">cannot be deleted</span>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="mt-4 flex justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleAddDivorceClose}
+                    className="h-10 w-[100px] rounded-[20px] border border-[#111] text-sm font-semibold text-[#111]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddDivorceSave}
+                    disabled={isSaving}
+                    className="h-10 w-[100px] rounded-[20px] bg-[#111827] text-sm font-semibold text-white disabled:opacity-50"
+                  >
+                    {isSaving ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

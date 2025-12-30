@@ -247,3 +247,65 @@ export async function PUT(request: NextRequest) {
         );
     }
 }
+
+// POST - Add a divorce record
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { treeId, member1, member2, divorceDate } = body;
+
+        if (!treeId || !member1 || !member2 || !divorceDate) {
+            return NextResponse.json(
+                { error: "treeId, member1, member2, and divorceDate are required" },
+                { status: 400 }
+            );
+        }
+
+        const db = getDb();
+
+        // Find member IDs by name
+        const member1Result = db.prepare(`SELECT id FROM FamilyMember WHERE fullName = ? AND familyTreeId = ?`).get(member1, parseInt(treeId)) as { id: number } | undefined;
+        const member2Result = db.prepare(`SELECT id FROM FamilyMember WHERE fullName = ? AND familyTreeId = ?`).get(member2, parseInt(treeId)) as { id: number } | undefined;
+
+        if (!member1Result || !member2Result) {
+            db.close();
+            return NextResponse.json(
+                { error: "One or both members not found" },
+                { status: 404 }
+            );
+        }
+
+        // Check if there's an existing marriage between these two members
+        const existingRelationship = db.prepare(`
+            SELECT id FROM SpouseRelationship 
+            WHERE (familyMember1Id = ? AND familyMember2Id = ?) 
+               OR (familyMember1Id = ? AND familyMember2Id = ?)
+        `).get(member1Result.id, member2Result.id, member2Result.id, member1Result.id) as { id: number } | undefined;
+
+        if (existingRelationship) {
+            // Update existing relationship with divorce date
+            const stmt = db.prepare(`UPDATE SpouseRelationship SET divorceDate = ? WHERE id = ?`);
+            stmt.run(divorceDate, existingRelationship.id);
+        } else {
+            // Create new relationship with just divorce date (no marriage date)
+            const stmt = db.prepare(`
+                INSERT INTO SpouseRelationship (familyMember1Id, familyMember2Id, marriageDate, divorceDate) 
+                VALUES (?, ?, ?, ?)
+            `);
+            stmt.run(member1Result.id, member2Result.id, divorceDate, divorceDate);
+        }
+
+        db.close();
+
+        return NextResponse.json({
+            success: true,
+            message: "Divorce record added successfully",
+        });
+    } catch (error) {
+        console.error("Error adding divorce:", error);
+        return NextResponse.json(
+            { error: "Failed to add divorce record" },
+            { status: 500 }
+        );
+    }
+}
