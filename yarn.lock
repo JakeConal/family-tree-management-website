@@ -1857,6 +1857,7 @@ __metadata:
     dotenv: "npm:^17.2.3"
     eslint: "npm:^9"
     eslint-config-next: "npm:^16.0.6"
+    eslint-config-prettier: "npm:^10.1.8"
     gsap: "npm:^3.13.0"
     jose: "npm:^6.1.2"
     lucide-react: "npm:^0.555.0"
@@ -2812,6 +2813,17 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/3cc10f435857045f40904b099e94e6b81975c3c9aa10d20294d5907ca03df8f5ed721631be3d22cf3cfe904a6395081d877b001e922c5b8ff6d5ea0d8a074f26
+  languageName: node
+  linkType: hard
+
+"eslint-config-prettier@npm:^10.1.8":
+  version: 10.1.8
+  resolution: "eslint-config-prettier@npm:10.1.8"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  bin:
+    eslint-config-prettier: bin/cli.js
+  checksum: 10c0/e1bcfadc9eccd526c240056b1e59c5cd26544fe59feb85f38f4f1f116caed96aea0b3b87868e68b3099e55caaac3f2e5b9f58110f85db893e83a332751192682
   languageName: node
   linkType: hard
 

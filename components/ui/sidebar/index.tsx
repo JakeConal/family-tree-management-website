@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import { LogOut, LayoutDashboard, TreePine, Users, Calendar, BarChart3, Settings } from "lucide-react";
+import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Settings } from "lucide-react";
 import { useFamilyTrees } from "@/lib/useFamilyTrees";
+import { NavigationButton } from "./NavigationButton";
 
 interface NavigationItem {
 	name: string;
@@ -31,26 +32,17 @@ export function Sidebar() {
 	const activeFamilyTreeId = getFamilyTreeIdFromPath();
 
 	const navigationItems = useMemo<NavigationItem[]>(() => {
-		// Base navigation items
-		const baseItems: NavigationItem[] = [{ name: "Home", href: "/dashboard", icon: LayoutDashboard, alwaysShow: true }];
-
 		// Family tree specific items (only show when viewing a family tree)
-		const familyTreeItems: NavigationItem[] = activeFamilyTreeId
+		return activeFamilyTreeId
 			? [
 					{ name: "Overview", href: `/family-trees/${activeFamilyTreeId}`, icon: LayoutDashboard, familyTreeOnly: true },
 					{ name: "Family Tree", href: `/family-trees/${activeFamilyTreeId}/tree`, icon: TreePine, familyTreeOnly: true },
+					{ name: "Members", href: "/members", icon: Users, disabled: true },
+					{ name: "Life Events", href: "/events", icon: Calendar, disabled: true },
+					{ name: "Reports", href: "/reports", icon: BarChart3, disabled: true },
+					{ name: "Settings", href: "/settings", icon: Settings, disabled: true },
 			  ]
 			: [];
-
-		// Future feature items (placeholder)
-		const futureItems: NavigationItem[] = [
-			{ name: "Members", href: "/members", icon: Users, disabled: true },
-			{ name: "Life Events", href: "/events", icon: Calendar, disabled: true },
-			{ name: "Reports", href: "/reports", icon: BarChart3, disabled: true },
-			{ name: "Settings", href: "/settings", icon: Settings, disabled: true },
-		];
-
-		return [...baseItems, ...familyTreeItems, ...futureItems];
 	}, [activeFamilyTreeId]);
 
 	return (
@@ -63,6 +55,10 @@ export function Sidebar() {
 
 			{/* Scrollable Content Area */}
 			<div className="flex-1 overflow-y-auto">
+				<div className="px-[20px] py-2">
+					<NavigationButton name="Dashboard" href="/dashboard" icon={Home} isActive={pathname === "/dashboard"} />
+				</div>
+
 				{/* Family Trees Section */}
 				{status === "authenticated" && (
 					<div className="px-[20px] py-[20px]">
@@ -102,33 +98,22 @@ export function Sidebar() {
 				)}
 
 				{/* Navigation */}
-				<div className="px-[20px] py-2">
-					<h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">Pages</h2>
-					<nav className="space-y-1">
-						{navigationItems.map((item) => {
-							const isActive =
-								pathname === item.href ||
-								(item.name === "Overview" && pathname.startsWith(`/family-trees/${activeFamilyTreeId}`) && !pathname.includes("/tree"));
+				{navigationItems.length > 0 && (
+					<div className="px-[20px] py-2">
+						<h2 className="font-inter font-bold text-[16px] text-black mb-[10px]">Family Tree </h2>
+						<nav className="space-y-1">
+							{navigationItems.map((item) => {
+								const isActive =
+									pathname === item.href ||
+									(item.name === "Overview" && pathname.startsWith(`/family-trees/${activeFamilyTreeId}`) && !pathname.includes("/tree"));
 
-							return (
-								<button
-									key={item.name}
-									onClick={() => !item.disabled && router.push(item.href)}
-									disabled={item.disabled}
-									className={`w-full flex items-center h-[36px] px-[14px] text-[16px] font-inter font-normal rounded-[30px] transition-colors ${
-										isActive ? "bg-[#d4d4d8] text-black" : item.disabled ? "text-gray-400 cursor-not-allowed" : "text-black hover:bg-gray-200"
-									}`}
-									title={item.disabled ? "Coming soon" : undefined}
-								>
-									<item.icon
-										className={`w-[20px] h-[20px] mr-[10px] ${isActive ? "text-black" : item.disabled ? "text-gray-400" : "text-gray-500"}`}
-									/>
-									{item.name}
-								</button>
-							);
-						})}
-					</nav>
-				</div>
+								return (
+									<NavigationButton key={item.name} name={item.name} href={item.href} icon={item.icon} isActive={isActive} disabled={item.disabled} />
+								);
+							})}
+						</nav>
+					</div>
+				)}
 			</div>
 
 			{/* User Profile Section */}
