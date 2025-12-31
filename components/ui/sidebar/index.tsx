@@ -60,12 +60,12 @@ export function Sidebar() {
 						icon: Users,
 						familyTreeOnly: true,
 					},
-					{
-						name: 'Life Events',
-						href: '/events',
-						icon: Calendar,
-						disabled: true,
-					},
+				{
+					name: 'Life Events',
+					href: `/family-trees/${activeFamilyTreeId}/life-events`,
+					icon: Calendar,
+					familyTreeOnly: true,
+				},
 					{
 						name: 'Reports',
 						href: `/family-trees/${activeFamilyTreeId}/reports`,
