@@ -76,7 +76,7 @@ interface SpouseRelationship {
 
 interface LifeEvent {
 	id: string;
-	type: 'Married' | 'Divorce';
+	type: 'Married' | 'Divorce' | 'Birth Event';
 	date: Date;
 	title: string;
 	description: string;

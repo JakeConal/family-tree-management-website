@@ -1,10 +1,33 @@
 'use client';
 
-import { CalendarIcon, PersonIcon } from '@/components/icons/achievement-metadata';
 import classNames from 'classnames';
-import { Briefcase, Trophy, Heart, Palette, Leaf, GraduationCap } from 'lucide-react';
+import {
+	Briefcase,
+	Trophy,
+	Heart,
+	Palette,
+	Leaf,
+	GraduationCap,
+	Users,
+	DollarSign,
+	Lightbulb,
+	Plane,
+} from 'lucide-react';
 
-export type AchievementType = 'Graduation' | 'Career' | 'Sport' | 'Health' | 'Artistic' | 'Environment';
+import { CalendarIcon, PersonIcon } from '@/components/icons/achievement-metadata';
+
+export type AchievementType =
+	| 'Graduation'
+	| 'Career'
+	| 'Sport'
+	| 'Health'
+	| 'Artistic'
+	| 'Environment'
+	| 'Community'
+	| 'Financial'
+	| 'Skill Development'
+	| 'Travel'
+	| 'Academic';
 
 interface EventCardProps {
 	id: number;
@@ -25,15 +48,15 @@ const typeConfig: Record<
 	}
 > = {
 	Graduation: {
-		bgColor: 'bg-[#FEF3C7]',
+		bgColor: 'bg-[#DBEAFE]',
 		icon: GraduationCap,
 	},
 	Academic: {
-		bgColor: 'bg-[#FEF3C7]',
+		bgColor: 'bg-[#DBEAFE]',
 		icon: GraduationCap,
 	},
 	Career: {
-		bgColor: 'bg-[#FEE2E2]',
+		bgColor: 'bg-[#EDE7FF]',
 		icon: Briefcase,
 	},
 	Sport: {
@@ -41,11 +64,11 @@ const typeConfig: Record<
 		icon: Trophy,
 	},
 	Health: {
-		bgColor: 'bg-[#DBEAFE]',
+		bgColor: 'bg-[#FFE4E4]',
 		icon: Heart,
 	},
 	Artistic: {
-		bgColor: 'bg-[#FCE7F3]',
+		bgColor: 'bg-[#D9F9FF]',
 		icon: Palette,
 	},
 	Environment: {
@@ -53,20 +76,20 @@ const typeConfig: Record<
 		icon: Leaf,
 	},
 	Community: {
-		bgColor: 'bg-[#E0E7FF]',
-		icon: Heart,
+		bgColor: 'bg-[#E4E4FF]',
+		icon: Users,
 	},
 	Financial: {
-		bgColor: 'bg-[#FEF3C7]',
-		icon: Briefcase,
+		bgColor: 'bg-[#FFF8D9]',
+		icon: DollarSign,
 	},
 	'Skill Development': {
-		bgColor: 'bg-[#FED7AA]',
-		icon: Trophy,
+		bgColor: 'bg-[#FFE8CC]',
+		icon: Lightbulb,
 	},
 	Travel: {
-		bgColor: 'bg-[#FBCFE8]',
-		icon: Palette,
+		bgColor: 'bg-[#FFE4F3]',
+		icon: Plane,
 	},
 };
 

@@ -1,9 +1,9 @@
 'use client';
 
-import { Heart, HeartCrack } from 'lucide-react';
+import { Heart, HeartCrack, Baby } from 'lucide-react';
 import classNames from 'classnames';
 
-export type LifeEventType = 'Married' | 'Divorce';
+export type LifeEventType = 'Married' | 'Divorce' | 'Birth Event';
 
 interface LifeEventCardProps {
 	id: number;
@@ -25,6 +25,10 @@ const typeConfig: Record<
 	Married: {
 		bgColor: 'bg-[#FFC8C8]',
 		icon: Heart,
+	},
+	'Birth Event': {
+		bgColor: 'bg-[#D9FFE4]',
+		icon: Baby,
 	},
 	Divorce: {
 		bgColor: 'bg-[#FFE8A3]',
@@ -63,28 +67,28 @@ export function LifeEventCard({ id, title, date, description, type, className, o
 				</h3>
 			</div>
 
-			{/* Date */}
-			{type === 'Married' && (
-				<div className="absolute left-[28px] top-[61px]">
-					<span
-						className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
-						style={{ fontFamily: 'Roboto, sans-serif' }}
-					>
-						{date}
-					</span>
-				</div>
-			)}
+		{/* Date */}
+		{type === 'Married' && (
+			<div className="absolute left-[28px] top-[61px]">
+				<span
+					className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
+					style={{ fontFamily: 'Roboto, sans-serif' }}
+				>
+					{date}
+				</span>
+			</div>
+		)}
 
-			{type === 'Divorce' && (
-				<div className="absolute left-[28px] top-[57px]">
-					<span
-						className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
-						style={{ fontFamily: 'Roboto, sans-serif' }}
-					>
-						{date}
-					</span>
-				</div>
-			)}
+		{(type === 'Divorce' || type === 'Birth Event') && (
+			<div className="absolute left-[28px] top-[57px]">
+				<span
+					className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
+					style={{ fontFamily: 'Roboto, sans-serif' }}
+				>
+					{date}
+				</span>
+			</div>
+		)}
 
 			{/* Description */}
 			<div className={classNames(
