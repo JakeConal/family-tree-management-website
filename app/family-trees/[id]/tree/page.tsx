@@ -1,20 +1,21 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
+import classNames from 'classnames';
+import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import relativesTree from 'relatives-tree';
 import type { Node, ExtNode } from 'relatives-tree/lib/types';
-import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
-import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
-import classNames from 'classnames';
+
 import FamilyNode from '@/components/FamilyNode';
+import LoadingScreen from '@/components/LoadingScreen';
 import AddMemberModal from '@/components/modals/AddMemberModal';
-import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
+import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
-import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
-import LoadingScreen from '@/components/LoadingScreen';
+import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
 
 interface ExtendedFamilyMember extends PrismaFamilyMember {

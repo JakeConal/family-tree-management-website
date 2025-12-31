@@ -1,9 +1,10 @@
 'use client';
 
 import classNames from 'classnames';
+import { X, Skull, ArrowLeft, Calendar, Check, Plus, AlertTriangle, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { X, Skull, ArrowLeft, Calendar, Check, Plus, AlertTriangle, Trash2 } from 'lucide-react';
+
 import { FamilyMember } from '@/types';
 
 interface BurialPlace {

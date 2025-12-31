@@ -1,10 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
-import LoadingScreen from '@/components/LoadingScreen';
-import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -18,10 +13,16 @@ import {
 	Legend,
 	Filler,
 } from 'chart.js';
-import { Bar, Line, Doughnut } from 'react-chartjs-2';
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import * as XLSX from 'xlsx';
+
+import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 
 // Extend jsPDF type to include autoTable properties
 interface jsPDFWithAutoTable extends jsPDF {

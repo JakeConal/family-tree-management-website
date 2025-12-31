@@ -1,16 +1,18 @@
 'use client';
 
 import classNames from 'classnames';
-import { useMemo } from 'react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter, usePathname } from 'next/navigation';
-import Image from 'next/image';
 import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Settings, Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useFamilyTrees } from '@/lib/useFamilyTrees';
-import { NavigationButton } from './NavigationButton';
-import { useAppDispatch } from '@/lib/store/hooks';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import { useMemo } from 'react';
+
 import { openCreatePanel } from '@/lib/store/createPanelSlice';
+import { useAppDispatch } from '@/lib/store/hooks';
+import { useFamilyTrees } from '@/lib/useFamilyTrees';
+
+import { NavigationButton } from './NavigationButton';
 
 interface NavigationItem {
 	name: string;

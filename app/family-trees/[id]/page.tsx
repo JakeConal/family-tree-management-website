@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import {
 	Users,
 	Heart,
@@ -17,13 +15,15 @@ import {
 	TrendingUp,
 	Clock,
 } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
+import LoadingScreen from '@/components/LoadingScreen';
 import AddMemberModal from '@/components/modals/AddMemberModal';
-import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
-import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
-import LoadingScreen from '@/components/LoadingScreen';
+import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
+import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 

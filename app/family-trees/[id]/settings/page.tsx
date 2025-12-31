@@ -1,13 +1,14 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
-import ConfirmModal from '@/components/modals/ConfirmModal';
+
 import LoadingScreen from '@/components/LoadingScreen';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 import { FamilyTreeService } from '@/lib/services';
+import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
 
 interface FamilyTree {
 	id: number;

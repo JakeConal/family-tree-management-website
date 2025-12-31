@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { X, Camera, Info, Heart, ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+
 import LoadingScreen from '@/components/LoadingScreen';
 import { PlaceOfOriginForm, OccupationApiResponse, FamilyMember } from '@/types';
 

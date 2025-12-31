@@ -1,8 +1,8 @@
 'use client';
 
 import classNames from 'classnames';
-import { useRouter } from 'next/navigation';
 import { LucideIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface NavigationButtonProps {
 	name: string;

@@ -1,9 +1,10 @@
 'use client';
 
 import classNames from 'classnames';
-import { useState, useEffect, useCallback } from 'react';
 import { X, Trophy, ArrowLeft, Calendar, Check } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+
 import { AchievementType, FamilyMember } from '@/types';
 
 interface RecordAchievementModalProps {

@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { signIn, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 import { ChevronLeft, UserCircle, Mail, Lock, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signIn, useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+
 import { RippleButton } from '@/components/ui/ripple-button';
 
 export default function SignUpPage() {

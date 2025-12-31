@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+
 import { getPrisma } from './prisma';
 
 export function cn(...inputs: ClassValue[]) {

@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { ArrowLeft, User, KeyRound, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+
 import { RippleButton } from '@/components/ui/ripple-button';
 
 export default function WelcomePage() {

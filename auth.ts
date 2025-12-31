@@ -1,9 +1,10 @@
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import bcrypt from 'bcryptjs';
 import NextAuth, { type NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { PrismaAdapter } from '@auth/prisma-adapter';
+
 import { getPrisma } from './lib/prisma';
-import bcrypt from 'bcryptjs';
 
 const authConfig: NextAuthConfig = {
 	adapter: PrismaAdapter(getPrisma()),

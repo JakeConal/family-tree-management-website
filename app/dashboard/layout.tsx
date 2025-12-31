@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useMemo } from 'react';
+
 import { useFamilyTrees } from '@/lib/useFamilyTrees';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

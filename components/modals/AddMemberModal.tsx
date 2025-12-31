@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import toast from 'react-hot-toast';
 import { X, Camera, Plus, Info, ArrowLeft, User, Heart } from 'lucide-react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+
 import { PlaceOfOriginForm, OccupationForm, FamilyMember } from '@/types';
 
 interface AddMemberModalProps {

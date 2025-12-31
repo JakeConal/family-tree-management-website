@@ -1,12 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { Plus } from 'lucide-react';
-import { useAppDispatch } from '@/lib/store/hooks';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+
 import { openCreatePanel } from '@/lib/store/createPanelSlice';
+import { useAppDispatch } from '@/lib/store/hooks';
 
 export default function DashboardPage() {
 	const { data: session, status } = useSession();

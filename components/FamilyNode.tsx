@@ -1,7 +1,7 @@
-import React from 'react';
 import { FamilyMember } from '@prisma/client';
-import type { ExtNode } from 'relatives-tree/lib/types';
 import Image from 'next/image';
+import React from 'react';
+import type { ExtNode } from 'relatives-tree/lib/types';
 
 interface FamilyNodeProps {
 	node: ExtNode;

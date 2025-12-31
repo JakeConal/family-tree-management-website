@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useState } from 'react';
 import { ChevronLeft, Mail, Lock, ChevronRight } from 'lucide-react';
-import { RippleButton } from '@/components/ui/ripple-button';
-import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+
+import { RippleButton } from '@/components/ui/ripple-button';
 
 export default function LoginPage() {
 	const [email, setEmail] = useState('');

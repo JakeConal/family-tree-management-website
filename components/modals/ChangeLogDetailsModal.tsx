@@ -1,8 +1,9 @@
 'use client';
 
 import classNames from 'classnames';
-import { useState, useEffect } from 'react';
 import { X, Clock, User, FileText, Trophy, Briefcase, Heart, Skull } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
 import LoadingScreen from '@/components/LoadingScreen';
 
 interface ChangeLog {

@@ -1,15 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { Eye, Users, Award, BarChart3 } from 'lucide-react';
-import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
-import { RippleButton } from '@/components/ui/ripple-button';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+
 import { GradientText } from '@/components/ui/gradient-text';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
+import { RippleButton } from '@/components/ui/ripple-button';
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 
 export default function Home() {
 	const { status } = useSession();

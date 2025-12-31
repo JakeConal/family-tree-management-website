@@ -2,15 +2,17 @@
 
 import classNames from 'classnames';
 import { Geist, Geist_Mono, Playfair_Display, Inter } from 'next/font/google';
-import { Providers } from './providers';
-import { Sidebar } from '@/components/ui/sidebar';
-import CreateFamilyTreePanel from '@/components/CreateFamilyTreePanel';
-import { useEffect, useState, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
+import { useEffect, useState, useMemo } from 'react';
+
+import CreateFamilyTreePanel from '@/components/CreateFamilyTreePanel';
+import { Sidebar } from '@/components/ui/sidebar';
 import { closeCreatePanel } from '@/lib/store/createPanelSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
 import { useFamilyTrees } from '@/lib/useFamilyTrees';
+
+import { Providers } from './providers';
 import './globals.css';
 
 const geistSans = Geist({

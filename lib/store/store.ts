@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import createPanelReducer from './createPanelSlice';
 
 export const store = configureStore({
