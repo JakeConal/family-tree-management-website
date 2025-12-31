@@ -5,17 +5,28 @@ import classNames from 'classnames';
 import { MapPin, Flower2 } from 'lucide-react';
 
 interface PassingCardProps {
+	id: number;
 	title: string;
 	person: string;
 	date: string;
 	buriedPlace: string;
 	description: string;
 	className?: string;
+	onClick?: (id: number) => void;
 }
 
-export function PassingCard({ title, person, date, buriedPlace, description, className }: PassingCardProps) {
+export function PassingCard({ id, title, person, date, buriedPlace, description, className, onClick }: PassingCardProps) {
 	return (
-		<div className={classNames('relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] bg-[#f5f5f5]', className)}>
+		<div 
+			className={classNames(
+				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] bg-[#f5f5f5] transition-all', 
+				className,
+				{
+					'cursor-pointer hover:scale-[1.02] hover:shadow-lg': onClick,
+				}
+			)}
+			onClick={() => onClick?.(id)}
+		>
 			{/* Flower icon in top right */}
 			<div className="absolute right-[20px] top-[19px]">
 				<Flower2 className="w-[26px] h-[26px] text-black" />

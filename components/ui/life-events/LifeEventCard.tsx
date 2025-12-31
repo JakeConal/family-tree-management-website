@@ -6,11 +6,13 @@ import classNames from 'classnames';
 export type LifeEventType = 'Married' | 'Divorce';
 
 interface LifeEventCardProps {
+	id: number;
 	title: string;
 	date: string;
 	description: string;
 	type: LifeEventType;
 	className?: string;
+	onClick?: (id: number) => void;
 }
 
 const typeConfig: Record<
@@ -30,17 +32,21 @@ const typeConfig: Record<
 	},
 };
 
-export function LifeEventCard({ title, date, description, type, className }: LifeEventCardProps) {
+export function LifeEventCard({ id, title, date, description, type, className, onClick }: LifeEventCardProps) {
 	const config = typeConfig[type];
 	const Icon = config.icon;
 
 	return (
 		<div
 			className={classNames(
-				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]',
+				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all',
 				config.bgColor,
-				className
+				className,
+				{
+					'cursor-pointer hover:scale-[1.02] hover:shadow-lg': onClick,
+				}
 			)}
+			onClick={() => onClick?.(id)}
 		>
 			{/* Icon in top right */}
 			<div className="absolute right-[20px] top-[19px]">

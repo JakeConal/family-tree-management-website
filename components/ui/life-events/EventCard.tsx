@@ -7,12 +7,14 @@ import { Briefcase, Trophy, Heart, Palette, Leaf, GraduationCap } from 'lucide-r
 export type AchievementType = 'Graduation' | 'Career' | 'Sport' | 'Health' | 'Artistic' | 'Environment';
 
 interface EventCardProps {
+	id: number;
 	title: string;
 	person: string;
 	date: string;
 	description: string;
 	type: string;
 	className?: string;
+	onClick?: (id: number) => void;
 }
 
 const typeConfig: Record<
@@ -68,17 +70,21 @@ const typeConfig: Record<
 	},
 };
 
-export function EventCard({ title, person, date, description, type, className }: EventCardProps) {
+export function EventCard({ id, title, person, date, description, type, className, onClick }: EventCardProps) {
 	const config = typeConfig[type] || typeConfig['Career'];
 	const Icon = config.icon;
 
 	return (
 		<div
 			className={classNames(
-				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]',
+				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] transition-all',
 				config.bgColor,
-				className
+				className,
+				{
+					'cursor-pointer hover:scale-[1.02] hover:shadow-lg': onClick,
+				}
 			)}
+			onClick={() => onClick?.(id)}
 		>
 			{/* Icon in top right */}
 			<div className="absolute right-[20px] top-[19px]">
