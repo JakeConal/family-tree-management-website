@@ -90,6 +90,8 @@ export default function FamilyTreePage() {
 		zoomIn: () => void;
 		zoomOut: () => void;
 	} | null>(null);
+	const [selectedGeneration, setSelectedGeneration] = useState<string>('all');
+	const [availableGenerations, setAvailableGenerations] = useState<number[]>([]);
 
 	const fetchFamilyMembers = useCallback(async () => {
 		try {
@@ -248,6 +250,16 @@ export default function FamilyTreePage() {
 				setRootId(members[0].id.toString());
 			}
 
+			// Calculate available generations
+			const generationSet = new Set<number>();
+			members.forEach((member) => {
+				if (member.generation) {
+					generationSet.add(parseInt(member.generation.toString()));
+				}
+			});
+			const generations = Array.from(generationSet).sort((a, b) => a - b);
+			setAvailableGenerations(generations);
+
 			// Calculate positioned nodes
 			const positionedNodes = relativesTree(nodes, {
 				rootId: rootMember?.id.toString() || members[0]?.id.toString() || '',
@@ -266,6 +278,17 @@ export default function FamilyTreePage() {
 
 	const getMemberById = (id: string): ExtendedFamilyMember | undefined => {
 		return members.find((member) => member.id.toString() === id);
+	};
+
+	const getFilteredPositionedNodes = () => {
+		if (selectedGeneration === 'all') {
+			return positionedNodes;
+		}
+		const selectedGen = parseInt(selectedGeneration);
+		return positionedNodes.filter((node) => {
+			const member = getMemberById(node.id);
+			return member && member.generation && parseInt(member.generation.toString()) === selectedGen;
+		});
 	};
 
 	if (loading) {
@@ -293,12 +316,21 @@ export default function FamilyTreePage() {
 			<div className="flex-1 flex flex-col overflow-y-auto p-4">
 				<div className="w-full">
 					{/* Top Control Bar */}
-					<div className="mb-6 flex items-center justify-between bg-white rounded-[20px] px-6 py-4 shadow-sm border border-gray-100">
+					<div className="mb-3 flex items-center justify-between bg-white rounded-[20px] px-4 py-3 shadow-sm border border-gray-100">
 						{/* Left Side */}
 						<div className="flex items-center gap-4">
 							<div className="relative">
-								<select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-inter font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
-									<option>All Generation</option>
+								<select
+									value={selectedGeneration}
+									onChange={(e) => setSelectedGeneration(e.target.value)}
+									className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-inter font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer"
+								>
+									<option value="all">All Generation</option>
+									{availableGenerations.map((gen) => (
+										<option key={gen} value={gen.toString()}>
+											Generation {gen}
+										</option>
+									))}
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
 							</div>
@@ -335,8 +367,8 @@ export default function FamilyTreePage() {
 
 					{/* Tree Container */}
 					<div
-						className="bg-[#f4f4f5] rounded-[30px] p-8 relative overflow-hidden shadow-inner"
-						style={{ height: '75vh', minHeight: '600px' }}
+						className="bg-[#f4f4f5] rounded-[20px] p-4 relative overflow-hidden shadow-inner"
+						style={{ height: '73vh', minHeight: '400px' }}
 					>
 						<TransformWrapper
 							initialScale={0.8}
@@ -379,7 +411,7 @@ export default function FamilyTreePage() {
 									<div className="relative w-auto h-auto">
 										{/* Manual node rendering */}
 										<div className="relative">
-											{positionedNodes.map((node) => {
+											{getFilteredPositionedNodes().map((node) => {
 												const member = getMemberById(node.id);
 												if (!member) return null;
 
@@ -415,7 +447,8 @@ export default function FamilyTreePage() {
 											{/* Spouse connections */}
 											{(() => {
 												const renderedPairs = new Set<string>();
-												return positionedNodes.map((node) => {
+												const filteredNodes = getFilteredPositionedNodes();
+												return filteredNodes.map((node) => {
 													const member = getMemberById(node.id);
 													if (!member) return null;
 
@@ -504,6 +537,8 @@ export default function FamilyTreePage() {
 											{(() => {
 												const renderedConnections = new Set<string>();
 												const parentGroups = new Map<string, string[]>();
+												const filteredNodes = getFilteredPositionedNodes();
+												const filteredNodeIds = new Set(filteredNodes.map((n) => n.id));
 
 												// Group children by their actual parent (from database)
 												members.forEach((m) => {
@@ -515,9 +550,12 @@ export default function FamilyTreePage() {
 												});
 
 												return Array.from(parentGroups.entries()).map(([parentId, childIds]) => {
-													const parentNode = positionedNodes.find((n) => n.id === parentId);
+													// Only show connections if parent is in filtered nodes
+													if (!filteredNodeIds.has(parentId)) return null;
+
+													const parentNode = filteredNodes.find((n) => n.id === parentId);
 													const childNodes = childIds
-														.map((id) => positionedNodes.find((n) => n.id === id))
+														.map((id) => filteredNodes.find((n) => n.id === id))
 														.filter(Boolean) as ExtNode[];
 
 													if (!parentNode || childNodes.length === 0) return null;
@@ -591,26 +629,26 @@ export default function FamilyTreePage() {
 					</div>
 
 					{/* Bottom Legend */}
-					<div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-white rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
-						<div className="flex items-center gap-3">
-							<div className="w-8 h-0.5 bg-gray-600 rounded-full"></div>
-							<span className="text-sm font-inter font-medium text-black">Child - Parent</span>
+					<div className="mt-3 flex flex-wrap items-center justify-center gap-4 bg-white rounded-[20px] py-2 px-4 shadow-sm border border-gray-100 text-xs">
+						<div className="flex items-center gap-2">
+							<div className="w-6 h-0.5 bg-gray-600 rounded-full"></div>
+							<span className="text-xs font-inter font-medium text-black">Child - Parent</span>
 						</div>
-						<div className="flex items-center gap-3">
-							<svg className="w-8 h-0.5" viewBox="0 0 32 2" fill="none">
+						<div className="flex items-center gap-2">
+							<svg className="w-6 h-0.5" viewBox="0 0 32 2" fill="none">
 								<line x1="0" y1="1" x2="32" y2="1" stroke="gray" strokeWidth="2" strokeDasharray="4,4" />
 							</svg>
-							<span className="text-sm font-inter font-medium text-black">Former Spouse</span>
+							<span className="text-xs font-inter font-medium text-black">Former Spouse</span>
 						</div>
-						<div className="flex items-center gap-3">
-							<Plus className="w-4 h-4 text-black" />
-							<span className="text-sm font-inter font-medium text-black">Current Spouse</span>
+						<div className="flex items-center gap-2">
+							<Plus className="w-3 h-3 text-black" />
+							<span className="text-xs font-inter font-medium text-black">Current Spouse</span>
 						</div>
-						<div className="flex items-center gap-3">
-							<div className="bg-white p-1.5 rounded-full shadow-sm border border-gray-200">
-								<Skull className="w-4 h-4 text-black" />
+						<div className="flex items-center gap-2">
+							<div className="bg-white p-1 rounded-full shadow-sm border border-gray-200">
+								<Skull className="w-3 h-3 text-black" />
 							</div>
-							<span className="text-sm font-inter font-medium text-black">Passed away</span>
+							<span className="text-xs font-inter font-medium text-black">Passed away</span>
 						</div>
 					</div>
 				</div>
