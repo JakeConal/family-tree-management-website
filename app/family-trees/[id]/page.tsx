@@ -1,5 +1,8 @@
 'use client';
 
+import { useRouter, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import {
 	Users,
 	Heart,
@@ -15,15 +18,13 @@ import {
 	TrendingUp,
 	Clock,
 } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 import LoadingScreen from '@/components/LoadingScreen';
-import AddMemberModal from '@/components/modals/AddMemberModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
-import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
-import RecordPassingModal from '@/components/modals/RecordPassingModal';
+import AchievementPanel from '@/components/panels/AchievementPanel';
+import AddMemberPanel from '@/components/panels/AddMemberPanel';
+import PassingPanel from '@/components/panels/PassingPanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
@@ -71,13 +72,13 @@ export default function FamilyTreeDashboard() {
 	const [statistics, setStatistics] = useState<FamilyStatistics | null>(null);
 	const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-	const [isRecordAchievementModalOpen, setIsRecordAchievementModalOpen] = useState(false);
-	const [isRecordPassingModalOpen, setIsRecordPassingModalOpen] = useState(false);
 	const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
 	const [selectedChangeLog, setSelectedChangeLog] = useState<ChangeLog | null>(null);
 	const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] = useState(false);
 	const [isEditFamilyTreeModalOpen, setIsEditFamilyTreeModalOpen] = useState(false);
+
+	// Panel state
+	const [activePanelType, setActivePanelType] = useState<'addMember' | 'achievement' | 'passing' | null>(null);
 
 	// Fetch real dashboard data
 	useEffect(() => {
@@ -383,138 +384,141 @@ export default function FamilyTreeDashboard() {
 	};
 
 	return (
-		<div className="flex-1 overflow-y-auto p-4 lg:p-8">
-			<div className="space-y-8">
-				{/* Overview Section */}
-				<div className="flex flex-col xl:flex-row gap-6">
-					{/* Family Information Overview Box */}
-					<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
-						<div className="flex items-center gap-3 mb-6">
-							<div className="bg-white p-2 rounded-[10px] shadow-sm">
-								<Info className="w-5 h-5 text-black" />
-							</div>
-							<h2 className="font-inter font-bold text-[15px] text-black">Family Information Overview</h2>
-							<button
-								onClick={() => setIsEditFamilyTreeModalOpen(true)}
-								className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
-							>
-								<Pencil className="w-4 h-4 text-gray-500" />
-							</button>
-						</div>
-
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 mb-8 ml-2">
-							<div className="flex items-center gap-3">
-								<Users className="w-4 h-4 text-black" />
-								<span className="font-inter font-bold text-[15px] text-black">Family Name:</span>
-								<span className="font-inter font-normal text-[#827f7f] text-[15px]">{familyTree.familyName}</span>
-							</div>
-							<div className="flex items-center gap-3">
-								<MapPin className="w-4 h-4 text-black" />
-								<span className="font-inter font-bold text-[15px] text-black">Origin:</span>
-								<span className="font-inter font-normal text-[#827f7f] text-[15px]">
-									{familyTree.origin || 'Not specified'}
-								</span>
-							</div>
-							<div className="flex items-center gap-3">
-								<Calendar className="w-4 h-4 text-black" />
-								<span className="font-inter font-bold text-[15px] text-black">Established:</span>
-								<span className="font-inter font-normal text-[#827f7f] text-[15px]">
-									{familyTree.establishYear}{' '}
-									{calculateAge(familyTree.establishYear) && `(${calculateAge(familyTree.establishYear)} years)`}
-								</span>
-							</div>
-						</div>
-
-						{/* Stat Boxes */}
-						<div className="grid grid-cols-3 gap-4">
-							<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-								<p className="font-inter font-medium text-[11.6px] text-black mb-1">Total generations</p>
-								<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalGenerations}</p>
-							</div>
-							<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-								<p className="font-inter font-medium text-[11.6px] text-black mb-1">All Members</p>
-								<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalMembers}</p>
-							</div>
-							<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-								<p className="font-inter font-medium text-[11.6px] text-black mb-1">Living Members</p>
-								<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.livingMembers}</p>
-							</div>
-						</div>
-					</div>
-
-					{/* Trends Grid */}
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:w-[468px]">
-						{/* Member Growth */}
-						<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-							<div className="flex justify-between items-start">
-								<p className="font-roboto font-normal text-[12px] text-black">Member growth</p>
-								<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
-									<Users className="w-5 h-5 text-black" />
+		<div className="flex h-full overflow-hidden">
+			{/* Main Content */}
+			<div className="flex-1 overflow-y-auto p-4 lg:p-8">
+				<div className="space-y-8">
+					{/* Overview Section */}
+					<div className="flex flex-col xl:flex-row gap-6">
+						{/* Family Information Overview Box */}
+						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
+							<div className="flex items-center gap-3 mb-6">
+								<div className="bg-white p-2 rounded-[10px] shadow-sm">
+									<Info className="w-5 h-5 text-black" />
 								</div>
+								<h2 className="font-inter font-bold text-[15px] text-black">Family Information Overview</h2>
+								<button
+									onClick={() => setIsEditFamilyTreeModalOpen(true)}
+									className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
+								>
+									<Pencil className="w-4 h-4 text-gray-500" />
+								</button>
 							</div>
-							<div>
-								<p className="font-roboto font-semibold text-[16px] text-black">
-									+{statistics?.memberGrowth.count} Member
-								</p>
-								<div className="flex items-center gap-1">
-									<span className="font-inter font-light text-[12px] text-black">
-										+{statistics?.memberGrowth.percentage}%
+
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 mb-8 ml-2">
+								<div className="flex items-center gap-3">
+									<Users className="w-4 h-4 text-black" />
+									<span className="font-inter font-bold text-[15px] text-black">Family Name:</span>
+									<span className="font-inter font-normal text-[#827f7f] text-[15px]">{familyTree.familyName}</span>
+								</div>
+								<div className="flex items-center gap-3">
+									<MapPin className="w-4 h-4 text-black" />
+									<span className="font-inter font-bold text-[15px] text-black">Origin:</span>
+									<span className="font-inter font-normal text-[#827f7f] text-[15px]">
+										{familyTree.origin || 'Not specified'}
 									</span>
-									<TrendingUp className="w-4 h-4 text-green-600" />
 								</div>
-							</div>
-						</div>
-
-						{/* Death Trend */}
-						<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-							<div className="flex justify-between items-start">
-								<p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
-								<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
-									<Skull className="w-5 h-5 text-black" />
-								</div>
-							</div>
-							<div>
-								<p className="font-roboto font-semibold text-[16px] text-black">
-									+{statistics?.deathTrend.count} Death
-								</p>
-							</div>
-						</div>
-
-						{/* Marriage Trend */}
-						<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-							<div className="flex justify-between items-start">
-								<p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
-								<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
-									<Heart className="w-5 h-5 text-black" />
-								</div>
-							</div>
-							<div>
-								<p className="font-roboto font-semibold text-[16px] text-black">
-									+{statistics?.marriageTrend.marriages} Married
-								</p>
-								<p className="font-roboto font-semibold text-[16px] text-black">
-									+{statistics?.marriageTrend.divorces} Divorced
-								</p>
-							</div>
-						</div>
-
-						{/* Achievement Growth */}
-						<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
-							<div className="flex justify-between items-start">
-								<p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
-								<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
-									<Trophy className="w-5 h-5 text-black" />
-								</div>
-							</div>
-							<div>
-								<p className="font-roboto font-semibold text-[16px] text-black">
-									+{statistics?.achievementGrowth.count} Achievements
-								</p>
-								<div className="flex items-center gap-1">
-									<span className="font-inter font-light text-[12px] text-black">
-										+{statistics?.achievementGrowth.percentage}%
+								<div className="flex items-center gap-3">
+									<Calendar className="w-4 h-4 text-black" />
+									<span className="font-inter font-bold text-[15px] text-black">Established:</span>
+									<span className="font-inter font-normal text-[#827f7f] text-[15px]">
+										{familyTree.establishYear}{' '}
+										{calculateAge(familyTree.establishYear) && `(${calculateAge(familyTree.establishYear)} years)`}
 									</span>
-									<TrendingUp className="w-4 h-4 text-green-600" />
+								</div>
+							</div>
+
+							{/* Stat Boxes */}
+							<div className="grid grid-cols-3 gap-4">
+								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">Total generations</p>
+									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalGenerations}</p>
+								</div>
+								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">All Members</p>
+									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalMembers}</p>
+								</div>
+								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">Living Members</p>
+									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.livingMembers}</p>
+								</div>
+							</div>
+						</div>
+
+						{/* Trends Grid */}
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:w-[468px]">
+							{/* Member Growth */}
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+								<div className="flex justify-between items-start">
+									<p className="font-roboto font-normal text-[12px] text-black">Member growth</p>
+									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+										<Users className="w-5 h-5 text-black" />
+									</div>
+								</div>
+								<div>
+									<p className="font-roboto font-semibold text-[16px] text-black">
+										+{statistics?.memberGrowth.count} Member
+									</p>
+									<div className="flex items-center gap-1">
+										<span className="font-inter font-light text-[12px] text-black">
+											+{statistics?.memberGrowth.percentage}%
+										</span>
+										<TrendingUp className="w-4 h-4 text-green-600" />
+									</div>
+								</div>
+							</div>
+
+							{/* Death Trend */}
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+								<div className="flex justify-between items-start">
+									<p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
+									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+										<Skull className="w-5 h-5 text-black" />
+									</div>
+								</div>
+								<div>
+									<p className="font-roboto font-semibold text-[16px] text-black">
+										+{statistics?.deathTrend.count} Death
+									</p>
+								</div>
+							</div>
+
+							{/* Marriage Trend */}
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+								<div className="flex justify-between items-start">
+									<p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
+									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+										<Heart className="w-5 h-5 text-black" />
+									</div>
+								</div>
+								<div>
+									<p className="font-roboto font-semibold text-[16px] text-black">
+										+{statistics?.marriageTrend.marriages} Married
+									</p>
+									<p className="font-roboto font-semibold text-[16px] text-black">
+										+{statistics?.marriageTrend.divorces} Divorced
+									</p>
+								</div>
+							</div>
+
+							{/* Achievement Growth */}
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+								<div className="flex justify-between items-start">
+									<p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
+									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
+										<Trophy className="w-5 h-5 text-black" />
+									</div>
+								</div>
+								<div>
+									<p className="font-roboto font-semibold text-[16px] text-black">
+										+{statistics?.achievementGrowth.count} Achievements
+									</p>
+									<div className="flex items-center gap-1">
+										<span className="font-inter font-light text-[12px] text-black">
+											+{statistics?.achievementGrowth.percentage}%
+										</span>
+										<TrendingUp className="w-4 h-4 text-green-600" />
+									</div>
 								</div>
 							</div>
 						</div>
@@ -527,7 +531,7 @@ export default function FamilyTreeDashboard() {
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 						<button
 							onClick={() => {
-								setIsAddMemberModalOpen(true);
+								setActivePanelType('addMember');
 								fetchExistingMembers();
 							}}
 							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
@@ -537,7 +541,7 @@ export default function FamilyTreeDashboard() {
 						</button>
 						<button
 							onClick={() => {
-								setIsRecordAchievementModalOpen(true);
+								setActivePanelType('achievement');
 								fetchExistingMembers();
 							}}
 							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
@@ -547,7 +551,7 @@ export default function FamilyTreeDashboard() {
 						</button>
 						<button
 							onClick={() => {
-								setIsRecordPassingModalOpen(true);
+								setActivePanelType('passing');
 								fetchExistingMembers();
 							}}
 							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
@@ -618,57 +622,6 @@ export default function FamilyTreeDashboard() {
 					</div>
 				</div>
 
-				{/* Add Member Modal */}
-				{isAddMemberModalOpen && (
-					<AddMemberModal
-						isOpen={isAddMemberModalOpen}
-						onClose={() => setIsAddMemberModalOpen(false)}
-						familyTreeId={familyTreeId}
-						existingMembers={existingMembers}
-						onMemberAdded={() => {
-							// Refresh data after adding member
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-						}}
-					/>
-				)}
-
-				{/* Record Achievement Modal */}
-				{isRecordAchievementModalOpen && (
-					<RecordAchievementModal
-						isOpen={isRecordAchievementModalOpen}
-						onClose={() => setIsRecordAchievementModalOpen(false)}
-						familyTreeId={familyTreeId}
-						existingMembers={existingMembers}
-						onAchievementRecorded={() => {
-							// Refresh data after recording achievement
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-						}}
-					/>
-				)}
-
-				{/* Record Passing Modal */}
-				{isRecordPassingModalOpen && (
-					<RecordPassingModal
-						isOpen={isRecordPassingModalOpen}
-						onClose={() => setIsRecordPassingModalOpen(false)}
-						familyTreeId={familyTreeId}
-						existingMembers={existingMembers}
-						onPassingRecorded={() => {
-							// Refresh data after recording passing
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-						}}
-					/>
-				)}
-
 				{/* Change Log Details Modal */}
 				{isChangeLogDetailsModalOpen && (
 					<ChangeLogDetailsModal
@@ -691,6 +644,70 @@ export default function FamilyTreeDashboard() {
 					/>
 				)}
 			</div>
+
+			{/* Panel Sidebar */}
+			<aside
+				className={classNames(
+					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+					activePanelType !== null ? 'w-[600px]' : 'w-0'
+				)}
+			>
+				{activePanelType === 'addMember' && (
+					<AddMemberPanel
+						familyTreeId={familyTreeId}
+						existingMembers={existingMembers}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
+							// Refresh data after adding member
+							fetchFamilyTreeData();
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+
+				{activePanelType === 'achievement' && (
+					<AchievementPanel
+						mode="add"
+						familyTreeId={familyTreeId}
+						familyMembers={existingMembers}
+						onModeChange={() => {
+							// Not needed for add mode
+						}}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
+							// Refresh data after recording achievement
+							fetchFamilyTreeData();
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+
+				{activePanelType === 'passing' && (
+					<PassingPanel
+						mode="add"
+						familyTreeId={familyTreeId}
+						familyMembers={existingMembers}
+						onModeChange={() => {
+							// Not needed for add mode
+						}}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
+							// Refresh data after recording passing
+							fetchFamilyTreeData();
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+			</aside>
 		</div>
 	);
 }
