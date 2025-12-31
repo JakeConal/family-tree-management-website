@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import classNames from "classnames";
-import { useRouter } from "next/navigation";
-import { LucideIcon } from "lucide-react";
+import classNames from 'classnames';
+import { useRouter } from 'next/navigation';
+import { LucideIcon } from 'lucide-react';
 
 interface NavigationButtonProps {
 	name: string;
@@ -12,16 +12,11 @@ interface NavigationButtonProps {
 	disabled?: boolean;
 }
 
-export function NavigationButton({
-	name,
-	href,
-	icon: Icon,
-	isActive,
-	disabled = false,
-}: NavigationButtonProps) {
+export function NavigationButton({ name, href, icon: Icon, isActive, disabled = false }: NavigationButtonProps) {
 	const router = useRouter();
 
-	const handleClick = () => {
+	const handleClick = (e) => {
+		e.preventDefault();
 		if (!disabled) {
 			router.push(href);
 		}
@@ -32,23 +27,25 @@ export function NavigationButton({
 			onClick={handleClick}
 			disabled={disabled}
 			className={classNames(
-				"w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors cursor-pointer",
+				'w-full flex items-center h-9 px-3.5 text-[16px] font-inter font-normal rounded-[30px] transition-colors cursor-pointer',
 				{
-					"bg-[#d4d4d8] text-black": isActive,
-					"text-gray-400 cursor-not-allowed": disabled && !isActive,
-					"text-black hover:bg-gray-200": !disabled && !isActive,
+					'bg-[#d4d4d8] text-black': isActive,
+					'text-gray-400 cursor-not-allowed': disabled && !isActive,
+					'text-black hover:bg-gray-200': !disabled && !isActive,
 				}
 			)}
-			title={disabled ? "Coming soon" : undefined}
+			title={disabled ? 'Coming soon' : undefined}
 		>
-			<Icon
-				className={classNames("w-5 h-5 mr-2.5", {
-					"text-black": isActive,
-					"text-gray-400": disabled && !isActive,
-					"text-gray-500": !disabled && !isActive,
-				})}
-			/>
-			{name}
+			<a href={href} className="flex items-center w-full">
+				<Icon
+					className={classNames('w-5 h-5 mr-2.5', {
+						'text-black': isActive,
+						'text-gray-400': disabled && !isActive,
+						'text-gray-500': !disabled && !isActive,
+					})}
+				/>
+				{name}
+			</a>
 		</button>
 	);
 }

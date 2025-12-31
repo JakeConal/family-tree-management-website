@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
 
 interface FamilyTree {
 	id: number;
@@ -8,7 +8,7 @@ interface FamilyTree {
 	createdAt: string;
 }
 
-const FAMILY_TREES_REFRESH_KEY = "family-trees-refresh";
+const FAMILY_TREES_REFRESH_KEY = 'family-trees-refresh';
 
 export function useFamilyTrees(session?: any) {
 	const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
@@ -33,7 +33,7 @@ export function useFamilyTrees(session?: any) {
 			const controller = new AbortController();
 			const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-			const response = await fetch("/api/family-trees", {
+			const response = await fetch('/api/family-trees', {
 				signal: controller.signal,
 			});
 
@@ -43,14 +43,14 @@ export function useFamilyTrees(session?: any) {
 				const trees = await response.json();
 				setFamilyTrees(trees);
 			} else {
-				console.error("Failed to fetch family trees");
+				console.error('Failed to fetch family trees');
 				setFamilyTrees([]);
 			}
 		} catch (error) {
-			if (error instanceof Error && error.name === "AbortError") {
-				console.error("Fetch timeout - API call took too long");
+			if (error instanceof Error && error.name === 'AbortError') {
+				console.error('Fetch timeout - API call took too long');
 			} else {
-				console.error("Error fetching family trees:", error);
+				console.error('Error fetching family trees:', error);
 			}
 			setFamilyTrees([]);
 		} finally {
@@ -76,11 +76,11 @@ export function useFamilyTrees(session?: any) {
 			setRefreshTrigger((prev) => prev + 1);
 		};
 
-		window.addEventListener("storage", handleStorageChange);
+		window.addEventListener('storage', handleStorageChange);
 		window.addEventListener(FAMILY_TREES_REFRESH_KEY, handleCustomEvent);
 
 		return () => {
-			window.removeEventListener("storage", handleStorageChange);
+			window.removeEventListener('storage', handleStorageChange);
 			window.removeEventListener(FAMILY_TREES_REFRESH_KEY, handleCustomEvent);
 		};
 	}, []);

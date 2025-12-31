@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useFamilyTrees } from "@/lib/useFamilyTrees";
+import { useMemo } from 'react';
+import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useFamilyTrees } from '@/lib/useFamilyTrees';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
@@ -15,9 +15,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 		if (match) {
 			const id = parseInt(match[1]);
 			const tree = familyTrees.find((t) => t.id === id);
-			return tree ? `${tree.familyName} Family` : "";
+			return tree ? `${tree.familyName} Family` : '';
 		}
-		return "";
+		return '';
 	}, [pathname, familyTrees]);
 
 	return (
@@ -26,7 +26,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 				{/* Header showing active family tree name */}
 				{activeFamilyTreeName && (
 					<header className="h-[60px] flex items-center justify-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
-						<h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">{activeFamilyTreeName}</h1>
+						<h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">
+							{activeFamilyTreeName}
+						</h1>
 					</header>
 				)}
 				<main className="flex-1 p-4 lg:p-8 overflow-y-auto">{children}</main>

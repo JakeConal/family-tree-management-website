@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { Loader2, Users, HeartHandshake, Trophy, Network } from "lucide-react";
+import { useParams } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
+import { Loader2, Users, HeartHandshake, Trophy, Network } from 'lucide-react';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -15,14 +15,25 @@ import {
 	Tooltip,
 	Legend,
 	Filler,
-} from "chart.js";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+} from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend, Filler);
+ChartJS.register(
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	LineElement,
+	PointElement,
+	ArcElement,
+	Title,
+	Tooltip,
+	Legend,
+	Filler
+);
 
 interface FamilyTree {
 	id: number;
@@ -98,7 +109,7 @@ export default function FamilyTreeReports() {
 					processAchievementCategories(allAchievements);
 				}
 			} catch (error) {
-				console.error("Error fetching data:", error);
+				console.error('Error fetching data:', error);
 			} finally {
 				setLoading(false);
 			}
@@ -162,21 +173,21 @@ export default function FamilyTreeReports() {
 			labels,
 			datasets: [
 				{
-					label: "Married",
+					label: 'Married',
 					data: marriedData,
-					backgroundColor: "rgba(147, 197, 253, 0.8)",
+					backgroundColor: 'rgba(147, 197, 253, 0.8)',
 					borderRadius: 4,
 				},
 				{
-					label: "Deceased",
+					label: 'Deceased',
 					data: deceasedData,
-					backgroundColor: "rgba(252, 165, 165, 0.8)",
+					backgroundColor: 'rgba(252, 165, 165, 0.8)',
 					borderRadius: 4,
 				},
 				{
-					label: "Birth",
+					label: 'Birth',
 					data: birthData,
-					backgroundColor: "rgba(134, 239, 172, 0.8)",
+					backgroundColor: 'rgba(134, 239, 172, 0.8)',
 					borderRadius: 4,
 				},
 			],
@@ -195,9 +206,10 @@ export default function FamilyTreeReports() {
 		for (let year = startYear; year <= endYear; year++) {
 			yearCounts[year] = members.filter((member) => {
 				const birthYear = member.birthday ? new Date(member.birthday).getFullYear() : startYear;
-				const deathYear = member.passingRecords && member.passingRecords.length > 0
-					? new Date(member.passingRecords[0].passingDate).getFullYear()
-					: null;
+				const deathYear =
+					member.passingRecords && member.passingRecords.length > 0
+						? new Date(member.passingRecords[0].passingDate).getFullYear()
+						: null;
 
 				return birthYear <= year && (!deathYear || deathYear > year);
 			}).length;
@@ -210,12 +222,12 @@ export default function FamilyTreeReports() {
 			labels,
 			datasets: [
 				{
-					label: "Total Members",
+					label: 'Total Members',
 					data,
-					borderColor: "#00a6f4",
-					backgroundColor: "rgba(0, 166, 244, 0.1)",
-					pointBackgroundColor: "#00a6f4",
-					pointBorderColor: "#fff",
+					borderColor: '#00a6f4',
+					backgroundColor: 'rgba(0, 166, 244, 0.1)',
+					pointBackgroundColor: '#00a6f4',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 2,
 					pointRadius: 4,
 					pointHoverRadius: 6,
@@ -237,7 +249,9 @@ export default function FamilyTreeReports() {
 		// Count cumulative achievements by year
 		for (let year = startYear; year <= endYear; year++) {
 			yearCounts[year] = achievements.filter((achievement) => {
-				const achievementYear = achievement.achievementDate ? new Date(achievement.achievementDate).getFullYear() : endYear;
+				const achievementYear = achievement.achievementDate
+					? new Date(achievement.achievementDate).getFullYear()
+					: endYear;
 				return achievementYear <= year;
 			}).length;
 		}
@@ -249,12 +263,12 @@ export default function FamilyTreeReports() {
 			labels,
 			datasets: [
 				{
-					label: "Total Achievements",
+					label: 'Total Achievements',
 					data,
-					borderColor: "#00bc7d",
-					backgroundColor: "rgba(0, 188, 125, 0.1)",
-					pointBackgroundColor: "#00bc7d",
-					pointBorderColor: "#fff",
+					borderColor: '#00bc7d',
+					backgroundColor: 'rgba(0, 188, 125, 0.1)',
+					pointBackgroundColor: '#00bc7d',
+					pointBorderColor: '#fff',
 					pointBorderWidth: 2,
 					pointRadius: 4,
 					pointHoverRadius: 6,
@@ -268,34 +282,34 @@ export default function FamilyTreeReports() {
 	const processAchievementCategories = (achievements: any[]) => {
 		const categoryCounts: { [key: string]: number } = {};
 		const categoryColors: { [key: string]: string } = {
-			Graduations: "#e0f2fe",
-			Career: "#f3e8ff",
-			Sport: "#fef9c3",
-			Health: "#ffe4e6",
-			Artistic: "#bae6fd",
-			Environment: "#ecfccb",
-			Community: "#dbeafe",
-			Finance: "#ffedd5",
-			Skills: "#fae8ff",
-			Travel: "#ccfbf1",
+			Graduations: '#e0f2fe',
+			Career: '#f3e8ff',
+			Sport: '#fef9c3',
+			Health: '#ffe4e6',
+			Artistic: '#bae6fd',
+			Environment: '#ecfccb',
+			Community: '#dbeafe',
+			Finance: '#ffedd5',
+			Skills: '#fae8ff',
+			Travel: '#ccfbf1',
 		};
 
 		achievements.forEach((achievement) => {
-			const category = achievement.achievementType?.typeName || "Other";
+			const category = achievement.achievementType?.typeName || 'Other';
 			categoryCounts[category] = (categoryCounts[category] || 0) + 1;
 		});
 
 		const categories: AchievementCategory[] = Object.entries(categoryCounts).map(([name, count]) => ({
 			name,
 			count,
-			color: categoryColors[name] || "#f3f4f6",
+			color: categoryColors[name] || '#f3f4f6',
 		}));
 
 		setAchievementCategoriesData(categories);
 	};
 
-	const exportReport = (format: "excel" | "pdf") => {
-		if (format === "excel") {
+	const exportReport = (format: 'excel' | 'pdf') => {
+		if (format === 'excel') {
 			exportToExcel();
 		} else {
 			exportToPDF();
@@ -307,25 +321,25 @@ export default function FamilyTreeReports() {
 
 		// Statistics Sheet
 		const statsData = [
-			["Family Tree Report"],
-			["Family Name", familyTree?.familyName || ""],
-			["Generated On", new Date().toLocaleDateString()],
-			[""],
-			["Statistics"],
-			["Metric", "Value"],
-			["Total Family Members", totalMembers],
-			["Current Family Members", currentMembers],
-			["Total Achievements", totalAchievements],
-			["Generations", generations],
+			['Family Tree Report'],
+			['Family Name', familyTree?.familyName || ''],
+			['Generated On', new Date().toLocaleDateString()],
+			[''],
+			['Statistics'],
+			['Metric', 'Value'],
+			['Total Family Members', totalMembers],
+			['Current Family Members', currentMembers],
+			['Total Achievements', totalAchievements],
+			['Generations', generations],
 		];
 		const statsSheet = XLSX.utils.aoa_to_sheet(statsData);
-		XLSX.utils.book_append_sheet(wb, statsSheet, "Statistics");
+		XLSX.utils.book_append_sheet(wb, statsSheet, 'Statistics');
 
 		// Member Changes by Year Sheet
 		if (memberChangesData) {
 			const memberChangesSheetData = [
-				["Changes in Family Members by Year"],
-				["Year", "Births", "Marriages", "Deaths"],
+				['Changes in Family Members by Year'],
+				['Year', 'Births', 'Marriages', 'Deaths'],
 				...memberChangesData.labels.map((year: string, idx: number) => [
 					year,
 					memberChangesData.datasets[2].data[idx], // Birth
@@ -334,50 +348,50 @@ export default function FamilyTreeReports() {
 				]),
 			];
 			const memberChangesSheet = XLSX.utils.aoa_to_sheet(memberChangesSheetData);
-			XLSX.utils.book_append_sheet(wb, memberChangesSheet, "Member Changes");
+			XLSX.utils.book_append_sheet(wb, memberChangesSheet, 'Member Changes');
 		}
 
 		// Total Members by Year Sheet
 		if (totalMembersByYearData) {
 			const totalMembersSheetData = [
-				["Total Members by Year"],
-				["Year", "Total Members"],
+				['Total Members by Year'],
+				['Year', 'Total Members'],
 				...totalMembersByYearData.labels.map((year: string, idx: number) => [
 					year,
 					totalMembersByYearData.datasets[0].data[idx],
 				]),
 			];
 			const totalMembersSheet = XLSX.utils.aoa_to_sheet(totalMembersSheetData);
-			XLSX.utils.book_append_sheet(wb, totalMembersSheet, "Total Members");
+			XLSX.utils.book_append_sheet(wb, totalMembersSheet, 'Total Members');
 		}
 
 		// Total Achievements by Year Sheet
 		if (totalAchievementsByYearData) {
 			const achievementsSheetData = [
-				["Total Achievements by Year"],
-				["Year", "Total Achievements"],
+				['Total Achievements by Year'],
+				['Year', 'Total Achievements'],
 				...totalAchievementsByYearData.labels.map((year: string, idx: number) => [
 					year,
 					totalAchievementsByYearData.datasets[0].data[idx],
 				]),
 			];
 			const achievementsSheet = XLSX.utils.aoa_to_sheet(achievementsSheetData);
-			XLSX.utils.book_append_sheet(wb, achievementsSheet, "Total Achievements");
+			XLSX.utils.book_append_sheet(wb, achievementsSheet, 'Total Achievements');
 		}
 
 		// Achievement Categories Sheet
 		if (achievementCategoriesData.length > 0) {
 			const categoriesSheetData = [
-				["Achievement Categories"],
-				["Category", "Count"],
+				['Achievement Categories'],
+				['Category', 'Count'],
 				...achievementCategoriesData.map((cat) => [cat.name, cat.count]),
 			];
 			const categoriesSheet = XLSX.utils.aoa_to_sheet(categoriesSheetData);
-			XLSX.utils.book_append_sheet(wb, categoriesSheet, "Achievement Categories");
+			XLSX.utils.book_append_sheet(wb, categoriesSheet, 'Achievement Categories');
 		}
 
 		// Save the file
-		const fileName = `${familyTree?.familyName || "FamilyTree"}_Report_${new Date().toISOString().split("T")[0]}.xlsx`;
+		const fileName = `${familyTree?.familyName || 'FamilyTree'}_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
 		XLSX.writeFile(wb, fileName);
 	};
 
@@ -388,36 +402,36 @@ export default function FamilyTreeReports() {
 
 		// Title
 		doc.setFontSize(20);
-		doc.setFont("helvetica", "bold");
-		doc.text("Family Tree Report", pageWidth / 2, yPos, { align: "center" });
+		doc.setFont('helvetica', 'bold');
+		doc.text('Family Tree Report', pageWidth / 2, yPos, { align: 'center' });
 		yPos += 10;
 
 		// Family name and date
 		doc.setFontSize(12);
-		doc.setFont("helvetica", "normal");
-		doc.text(`Family: ${familyTree?.familyName || ""}`, 14, yPos);
+		doc.setFont('helvetica', 'normal');
+		doc.text(`Family: ${familyTree?.familyName || ''}`, 14, yPos);
 		yPos += 7;
 		doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, yPos);
 		yPos += 15;
 
 		// Statistics
 		doc.setFontSize(14);
-		doc.setFont("helvetica", "bold");
-		doc.text("Statistics", 14, yPos);
+		doc.setFont('helvetica', 'bold');
+		doc.text('Statistics', 14, yPos);
 		yPos += 7;
 
 		const statsTableData = [
-			["Total Family Members", totalMembers.toString()],
-			["Current Family Members", currentMembers.toString()],
-			["Total Achievements", totalAchievements.toString()],
-			["Generations", generations.toString()],
+			['Total Family Members', totalMembers.toString()],
+			['Current Family Members', currentMembers.toString()],
+			['Total Achievements', totalAchievements.toString()],
+			['Generations', generations.toString()],
 		];
 
 		autoTable(doc, {
 			startY: yPos,
-			head: [["Metric", "Value"]],
+			head: [['Metric', 'Value']],
 			body: statsTableData,
-			theme: "grid",
+			theme: 'grid',
 			headStyles: { fillColor: [41, 128, 185] },
 			margin: { left: 14 },
 		});
@@ -431,8 +445,8 @@ export default function FamilyTreeReports() {
 				yPos = 20;
 			}
 			doc.setFontSize(14);
-			doc.setFont("helvetica", "bold");
-			doc.text("Changes in Family Members by Year", 14, yPos);
+			doc.setFont('helvetica', 'bold');
+			doc.text('Changes in Family Members by Year', 14, yPos);
 			yPos += 7;
 
 			const memberChangesTableData = memberChangesData.labels.map((year: string, idx: number) => [
@@ -444,9 +458,9 @@ export default function FamilyTreeReports() {
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [["Year", "Births", "Marriages", "Deaths"]],
+				head: [['Year', 'Births', 'Marriages', 'Deaths']],
 				body: memberChangesTableData,
-				theme: "grid",
+				theme: 'grid',
 				headStyles: { fillColor: [41, 128, 185] },
 				margin: { left: 14 },
 			});
@@ -461,8 +475,8 @@ export default function FamilyTreeReports() {
 				yPos = 20;
 			}
 			doc.setFontSize(14);
-			doc.setFont("helvetica", "bold");
-			doc.text("Total Members by Year", 14, yPos);
+			doc.setFont('helvetica', 'bold');
+			doc.text('Total Members by Year', 14, yPos);
 			yPos += 7;
 
 			const totalMembersTableData = totalMembersByYearData.labels.map((year: string, idx: number) => [
@@ -472,9 +486,9 @@ export default function FamilyTreeReports() {
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [["Year", "Total Members"]],
+				head: [['Year', 'Total Members']],
 				body: totalMembersTableData,
-				theme: "grid",
+				theme: 'grid',
 				headStyles: { fillColor: [41, 128, 185] },
 				margin: { left: 14 },
 			});
@@ -489,8 +503,8 @@ export default function FamilyTreeReports() {
 				yPos = 20;
 			}
 			doc.setFontSize(14);
-			doc.setFont("helvetica", "bold");
-			doc.text("Total Achievements by Year", 14, yPos);
+			doc.setFont('helvetica', 'bold');
+			doc.text('Total Achievements by Year', 14, yPos);
 			yPos += 7;
 
 			const achievementsTableData = totalAchievementsByYearData.labels.map((year: string, idx: number) => [
@@ -500,9 +514,9 @@ export default function FamilyTreeReports() {
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [["Year", "Total Achievements"]],
+				head: [['Year', 'Total Achievements']],
 				body: achievementsTableData,
-				theme: "grid",
+				theme: 'grid',
 				headStyles: { fillColor: [41, 128, 185] },
 				margin: { left: 14 },
 			});
@@ -517,24 +531,24 @@ export default function FamilyTreeReports() {
 				yPos = 20;
 			}
 			doc.setFontSize(14);
-			doc.setFont("helvetica", "bold");
-			doc.text("Achievement Categories", 14, yPos);
+			doc.setFont('helvetica', 'bold');
+			doc.text('Achievement Categories', 14, yPos);
 			yPos += 7;
 
 			const categoriesTableData = achievementCategoriesData.map((cat) => [cat.name, cat.count.toString()]);
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [["Category", "Count"]],
+				head: [['Category', 'Count']],
 				body: categoriesTableData,
-				theme: "grid",
+				theme: 'grid',
 				headStyles: { fillColor: [41, 128, 185] },
 				margin: { left: 14 },
 			});
 		}
 
 		// Save the file
-		const fileName = `${familyTree?.familyName || "FamilyTree"}_Report_${new Date().toISOString().split("T")[0]}.pdf`;
+		const fileName = `${familyTree?.familyName || 'FamilyTree'}_Report_${new Date().toISOString().split('T')[0]}.pdf`;
 		doc.save(fileName);
 	};
 
@@ -556,14 +570,14 @@ export default function FamilyTreeReports() {
 		plugins: {
 			legend: {
 				display: true,
-				position: "bottom" as const,
+				position: 'bottom' as const,
 				labels: {
 					usePointStyle: true,
 					padding: 15,
 				},
 			},
 			tooltip: {
-				backgroundColor: "rgba(0, 0, 0, 0.8)",
+				backgroundColor: 'rgba(0, 0, 0, 0.8)',
 				padding: 12,
 				titleFont: { size: 13 },
 				bodyFont: { size: 12 },
@@ -576,7 +590,7 @@ export default function FamilyTreeReports() {
 			y: {
 				beginAtZero: true,
 				ticks: { stepSize: 1 },
-				grid: { color: "rgba(0, 0, 0, 0.05)" },
+				grid: { color: 'rgba(0, 0, 0, 0.05)' },
 			},
 		},
 	};
@@ -587,7 +601,7 @@ export default function FamilyTreeReports() {
 		plugins: {
 			legend: { display: false },
 			tooltip: {
-				backgroundColor: "rgba(0, 0, 0, 0.8)",
+				backgroundColor: 'rgba(0, 0, 0, 0.8)',
 				padding: 12,
 			},
 		},
@@ -596,7 +610,7 @@ export default function FamilyTreeReports() {
 			y: {
 				beginAtZero: true,
 				ticks: { stepSize: 3 },
-				grid: { color: "rgba(0, 0, 0, 0.05)" },
+				grid: { color: 'rgba(0, 0, 0, 0.05)' },
 			},
 		},
 	};
@@ -604,11 +618,11 @@ export default function FamilyTreeReports() {
 	const doughnutChartOptions = {
 		responsive: true,
 		maintainAspectRatio: true,
-		cutout: "70%",
+		cutout: '70%',
 		plugins: {
 			legend: { display: false },
 			tooltip: {
-				backgroundColor: "rgba(0, 0, 0, 0.8)",
+				backgroundColor: 'rgba(0, 0, 0, 0.8)',
 				padding: 12,
 			},
 		},
@@ -630,21 +644,21 @@ export default function FamilyTreeReports() {
 			<div className="max-w-[1158px] mx-auto space-y-[74px]">
 				{/* Export Buttons */}
 				<div className="flex justify-end gap-3">
-                    <div className=" border border-[rgba(0,0,0,0.5)] rounded-[25px] flex items-center gap-2 p-1">
-					<button className="px-4 py-2 text-[16px] font-inter text-black">Export Report</button>
-					<button
-						onClick={() => exportReport("excel")}
-						className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
-					>
-						Excel
-					</button>
-					<button
-						onClick={() => exportReport("pdf")}
-						className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
-					>
-						PDF
-					</button>
-                    </div>
+					<div className=" border border-[rgba(0,0,0,0.5)] rounded-[25px] flex items-center gap-2 p-1">
+						<button className="px-4 py-2 text-[16px] font-inter text-black">Export Report</button>
+						<button
+							onClick={() => exportReport('excel')}
+							className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
+						>
+							Excel
+						</button>
+						<button
+							onClick={() => exportReport('pdf')}
+							className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
+						>
+							PDF
+						</button>
+					</div>
 				</div>
 
 				{/* Statistics Cards */}
@@ -760,7 +774,10 @@ export default function FamilyTreeReports() {
 						{/* Category List */}
 						<div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 							{achievementCategoriesData.map((category) => (
-								<div key={category.name} className="bg-[#f9fafb] border border-[rgba(0,0,0,0.3)] rounded-[12px] px-3 py-2 flex items-center justify-between">
+								<div
+									key={category.name}
+									className="bg-[#f9fafb] border border-[rgba(0,0,0,0.3)] rounded-[12px] px-3 py-2 flex items-center justify-between"
+								>
 									<div className="flex items-center gap-2">
 										<div className="w-3 h-3 rounded-full" style={{ backgroundColor: category.color }} />
 										<span className="font-poppins text-[14px] text-[#1a1a2e]">{category.name}</span>

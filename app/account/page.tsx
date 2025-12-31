@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import ConfirmModal from "@/components/modals/ConfirmModal";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 
 export default function AccountSettings() {
 	const { data: session, status } = useSession();
@@ -18,37 +18,37 @@ export default function AccountSettings() {
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 	// Form state
-	const [fullName, setFullName] = useState("");
-	const [email, setEmail] = useState("");
+	const [fullName, setFullName] = useState('');
+	const [email, setEmail] = useState('');
 
 	// Password state
-	const [currentPassword, setCurrentPassword] = useState("");
-	const [newPassword, setNewPassword] = useState("");
-	const [confirmNewPassword, setConfirmNewPassword] = useState("");
+	const [currentPassword, setCurrentPassword] = useState('');
+	const [newPassword, setNewPassword] = useState('');
+	const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
 	// Load user data
 	useEffect(() => {
 		if (session?.user) {
-			setFullName(session.user.name || "");
-			setEmail(session.user.email || "");
+			setFullName(session.user.name || '');
+			setEmail(session.user.email || '');
 		}
 	}, [session]);
 
 	// Redirect if not authenticated
 	useEffect(() => {
-		if (status === "unauthenticated") {
-			router.push("/welcome/login");
+		if (status === 'unauthenticated') {
+			router.push('/welcome/login');
 		}
 	}, [status, router]);
 
 	const handleSaveChanges = async () => {
 		if (!fullName.trim()) {
-			toast.error("Full name is required");
+			toast.error('Full name is required');
 			return;
 		}
 
 		if (!email.trim()) {
-			toast.error("Email is required");
+			toast.error('Email is required');
 			return;
 		}
 
@@ -56,10 +56,10 @@ export default function AccountSettings() {
 		try {
 			// TODO: Implement API endpoint to update user account
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toast.success("Account updated successfully!");
+			toast.success('Account updated successfully!');
 		} catch (error) {
-			console.error("Error updating account:", error);
-			toast.error("Failed to update account. Please try again.");
+			console.error('Error updating account:', error);
+			toast.error('Failed to update account. Please try again.');
 		} finally {
 			setSaving(false);
 		}
@@ -67,22 +67,22 @@ export default function AccountSettings() {
 
 	const handleUpdatePassword = async () => {
 		if (!currentPassword.trim()) {
-			toast.error("Current password is required");
+			toast.error('Current password is required');
 			return;
 		}
 
 		if (!newPassword.trim()) {
-			toast.error("New password is required");
+			toast.error('New password is required');
 			return;
 		}
 
 		if (newPassword.length < 8) {
-			toast.error("New password must be at least 8 characters");
+			toast.error('New password must be at least 8 characters');
 			return;
 		}
 
 		if (newPassword !== confirmNewPassword) {
-			toast.error("New passwords do not match");
+			toast.error('New passwords do not match');
 			return;
 		}
 
@@ -90,13 +90,13 @@ export default function AccountSettings() {
 		try {
 			// TODO: Implement API endpoint to update password
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toast.success("Password updated successfully!");
-			setCurrentPassword("");
-			setNewPassword("");
-			setConfirmNewPassword("");
+			toast.success('Password updated successfully!');
+			setCurrentPassword('');
+			setNewPassword('');
+			setConfirmNewPassword('');
 		} catch (error) {
-			console.error("Error updating password:", error);
-			toast.error("Failed to update password. Please try again.");
+			console.error('Error updating password:', error);
+			toast.error('Failed to update password. Please try again.');
 		} finally {
 			setUpdatingPassword(false);
 		}
@@ -107,17 +107,17 @@ export default function AccountSettings() {
 		try {
 			// TODO: Implement API endpoint to delete account
 			await new Promise((resolve) => setTimeout(resolve, 1000));
-			toast.success("Account deleted successfully");
-			router.push("/welcome");
+			toast.success('Account deleted successfully');
+			router.push('/welcome');
 		} catch (error) {
-			console.error("Error deleting account:", error);
-			toast.error("Failed to delete account. Please try again.");
+			console.error('Error deleting account:', error);
+			toast.error('Failed to delete account. Please try again.');
 			setDeleting(false);
 			setShowDeleteConfirm(false);
 		}
 	};
 
-	if (status === "loading") {
+	if (status === 'loading') {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
 				<div className="text-center">
@@ -172,7 +172,7 @@ export default function AccountSettings() {
 									Saving...
 								</>
 							) : (
-								"Save Changes"
+								'Save Changes'
 							)}
 						</button>
 						<button
@@ -186,7 +186,7 @@ export default function AccountSettings() {
 									Deleting...
 								</>
 							) : (
-								"Delete Account"
+								'Delete Account'
 							)}
 						</button>
 					</div>
@@ -245,7 +245,7 @@ export default function AccountSettings() {
 									Updating...
 								</>
 							) : (
-								"Update Password"
+								'Update Password'
 							)}
 						</button>
 					</div>

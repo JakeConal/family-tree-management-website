@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { triggerFamilyTreesRefresh } from "@/lib/useFamilyTrees";
-import ConfirmModal from "@/components/modals/ConfirmModal";
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
+import ConfirmModal from '@/components/modals/ConfirmModal';
 
 interface FamilyTree {
 	id: number;
@@ -28,9 +28,9 @@ export default function FamilyTreeSettings() {
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 	// Form state
-	const [familyName, setFamilyName] = useState("");
-	const [origin, setOrigin] = useState("");
-	const [establishYear, setEstablishYear] = useState("");
+	const [familyName, setFamilyName] = useState('');
+	const [origin, setOrigin] = useState('');
+	const [establishYear, setEstablishYear] = useState('');
 
 	// Fetch family tree details
 	useEffect(() => {
@@ -38,17 +38,17 @@ export default function FamilyTreeSettings() {
 			try {
 				const response = await fetch(`/api/family-trees/${familyTreeId}`);
 				if (!response.ok) {
-					throw new Error("Failed to fetch family tree");
+					throw new Error('Failed to fetch family tree');
 				}
 				const data = await response.json();
 				setFamilyTree(data);
 
 				// Populate form fields
-				setFamilyName(data.familyName || "");
-				setOrigin(data.origin || "");
-				setEstablishYear(data.establishYear?.toString() || "");
+				setFamilyName(data.familyName || '');
+				setOrigin(data.origin || '');
+				setEstablishYear(data.establishYear?.toString() || '');
 			} catch (error) {
-				console.error("Error fetching family tree:", error);
+				console.error('Error fetching family tree:', error);
 			} finally {
 				setLoading(false);
 			}
@@ -65,9 +65,9 @@ export default function FamilyTreeSettings() {
 		setSaving(true);
 		try {
 			const response = await fetch(`/api/family-trees/${familyTreeId}`, {
-				method: "PUT",
+				method: 'PUT',
 				headers: {
-					"Content-Type": "application/json",
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
 					familyName: familyName.trim(),
@@ -77,7 +77,7 @@ export default function FamilyTreeSettings() {
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to update family tree");
+				throw new Error('Failed to update family tree');
 			}
 
 			const updatedData = await response.json();
@@ -87,10 +87,10 @@ export default function FamilyTreeSettings() {
 			triggerFamilyTreesRefresh();
 
 			// Show success message
-			toast.success("Family tree updated successfully!");
+			toast.success('Family tree updated successfully!');
 		} catch (error) {
-			console.error("Error updating family tree:", error);
-			toast.error("Failed to update family tree. Please try again.");
+			console.error('Error updating family tree:', error);
+			toast.error('Failed to update family tree. Please try again.');
 		} finally {
 			setSaving(false);
 		}
@@ -102,25 +102,25 @@ export default function FamilyTreeSettings() {
 		setDeleting(true);
 		try {
 			const response = await fetch(`/api/family-trees/${familyTreeId}`, {
-				method: "DELETE",
+				method: 'DELETE',
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to delete family tree");
+				throw new Error('Failed to delete family tree');
 			}
 
 			// Trigger sidebar refresh to remove deleted tree
 			triggerFamilyTreesRefresh();
 
-			toast.success("Family tree deleted successfully");
+			toast.success('Family tree deleted successfully');
 
 			// Redirect to dashboard after successful deletion
 			setTimeout(() => {
-				router.push("/dashboard");
+				router.push('/dashboard');
 			}, 500);
 		} catch (error) {
-			console.error("Error deleting family tree:", error);
-			toast.error("Failed to delete family tree. Please try again.");
+			console.error('Error deleting family tree:', error);
+			toast.error('Failed to delete family tree. Please try again.');
 			setDeleting(false);
 			setShowDeleteConfirm(false);
 		}
@@ -142,8 +142,13 @@ export default function FamilyTreeSettings() {
 			<div className="text-center py-12">
 				<div className="bg-red-50 rounded-lg p-6 max-w-md mx-auto">
 					<h2 className="text-lg font-semibold text-red-800 mb-2">Family Tree Not Found</h2>
-					<p className="text-red-600 mb-4">The family tree you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
-					<button onClick={() => router.push("/dashboard")} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+					<p className="text-red-600 mb-4">
+						The family tree you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+					</p>
+					<button
+						onClick={() => router.push('/dashboard')}
+						className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+					>
 						Go to Dashboard
 					</button>
 				</div>
@@ -159,9 +164,7 @@ export default function FamilyTreeSettings() {
 
 				{/* Family Name Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
-						Family Name
-					</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Family Name</label>
 					<input
 						type="text"
 						value={familyName}
@@ -173,9 +176,7 @@ export default function FamilyTreeSettings() {
 
 				{/* Origin Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
-						Origin
-					</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Origin</label>
 					<select
 						value={origin}
 						onChange={(e) => setOrigin(e.target.value)}
@@ -220,15 +221,13 @@ export default function FamilyTreeSettings() {
 
 				{/* Established Year Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
-						Established
-					</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Established</label>
 					<input
 						type="text"
 						value={establishYear}
 						onChange={(e) => {
 							// Only allow numbers
-							const value = e.target.value.replace(/[^0-9]/g, "");
+							const value = e.target.value.replace(/[^0-9]/g, '');
 							setEstablishYear(value);
 						}}
 						className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
@@ -249,7 +248,7 @@ export default function FamilyTreeSettings() {
 								Saving...
 							</>
 						) : (
-							"Save Changes"
+							'Save Changes'
 						)}
 					</button>
 					<button
@@ -263,7 +262,7 @@ export default function FamilyTreeSettings() {
 								Deleting...
 							</>
 						) : (
-							"Delete Family Tree"
+							'Delete Family Tree'
 						)}
 					</button>
 				</div>
