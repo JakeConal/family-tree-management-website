@@ -15,7 +15,7 @@ interface NavigationButtonProps {
 export function NavigationButton({ name, href, icon: Icon, isActive, disabled = false }: NavigationButtonProps) {
 	const router = useRouter();
 
-	const handleClick = (e) => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 		if (!disabled) {
 			router.push(href);
