@@ -1,6 +1,6 @@
 'use client';
 
-import { X, TreePine, Calendar } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -82,47 +82,49 @@ export default function EditFamilyTreeModal({
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-transparent flex items-center justify-center z-50">
-			<div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col">
 				{/* Header */}
-				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<div className="flex items-center">
-						<TreePine className="w-6 h-6 text-green-600 mr-3" />
-						<h2 className="text-xl font-semibold text-gray-900">Edit Family Tree</h2>
-					</div>
-					<button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-						<X className="w-6 h-6" />
+				<div className="px-8 pt-8 pb-4 border-b border-gray-100 flex-shrink-0">
+					<button
+						onClick={onClose}
+						className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
+					>
+						<ChevronLeft className="w-5 h-5 mr-2" />
+						<span className="font-['Inter']">Back</span>
 					</button>
 				</div>
 
 				{/* Form Content */}
-				<form onSubmit={handleSubmit} className="p-6 space-y-6">
-					{/* Family Name */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">Family Name*</label>
-						<div className="relative">
-							<TreePine className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+				<div className="flex-1 overflow-y-auto px-10 py-8">
+					<h2 className="text-[26px] font-normal text-black text-center mb-10">Edit Family Tree</h2>
+
+					<form onSubmit={handleSubmit} className="space-y-6">
+						{/* Family Name */}
+						<div>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1">
+								Family Name <span className="text-black">*</span>
+							</label>
 							<input
 								type="text"
 								value={formData.familyName}
 								onChange={(e) => setFormData({ ...formData, familyName: e.target.value })}
 								placeholder="Enter family name"
-								className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 								required
 							/>
 						</div>
-					</div>
 
-					{/* Origin */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">Origin</label>
-						<div className="relative">
-							<select
-								value={formData.origin}
-								onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-								className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none"
-							>
-								<option value="">Select origin</option>
+						{/* Origin */}
+						<div>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1">Origin</label>
+							<div className="relative">
+								<select
+									value={formData.origin}
+									onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+									className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 pr-10 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none cursor-pointer"
+								>
+									<option value="">Select origin</option>
 								<option value="An Giang">An Giang</option>
 								<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
 								<option value="Bac Giang">Bac Giang</option>
@@ -155,16 +157,15 @@ export default function EditFamilyTreeModal({
 								<option value="Hai Phong">Hai Phong</option>
 								<option value="Da Nang">Da Nang</option>
 								<option value="Can Tho">Can Tho</option>
-								<option value="Hue">Hue</option>
-							</select>
+									<option value="Hue">Hue</option>
+								</select>
+								<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+							</div>
 						</div>
-					</div>
 
-					{/* Establish Year */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">Establish Year</label>
-						<div className="relative">
-							<Calendar className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+						{/* Establish Year */}
+						<div>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1">Establish Year</label>
 							<input
 								type="number"
 								value={formData.establishYear}
@@ -172,30 +173,30 @@ export default function EditFamilyTreeModal({
 								placeholder="Enter establish year"
 								min="1"
 								max={new Date().getFullYear()}
-								className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 							/>
 						</div>
-					</div>
 
-					{/* Action Buttons */}
-					<div className="flex justify-end space-x-3 pt-4">
-						<button
-							type="button"
-							onClick={onClose}
-							className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-							disabled={isSubmitting}
-						>
-							Cancel
-						</button>
-						<button
-							type="submit"
-							className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							disabled={isSubmitting}
-						>
-							{isSubmitting ? 'Updating...' : 'Update Family Tree'}
-						</button>
-					</div>
-				</form>
+						{/* Footer Buttons */}
+						<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
+							<button
+								type="button"
+								onClick={onClose}
+								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								disabled={isSubmitting}
+							>
+								Cancel
+							</button>
+							<button
+								type="submit"
+								className="w-[150px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+								disabled={isSubmitting}
+							>
+								{isSubmitting ? 'Updating...' : 'Update'}
+							</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
 	);
