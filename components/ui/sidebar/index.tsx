@@ -127,7 +127,10 @@ export function Sidebar() {
 			{/* User Profile Section */}
 			<div className="p-5 border-t border-gray-200 shrink-0">
 				<div className="flex items-center justify-between">
-					<div className="flex items-center">
+					<button
+						onClick={() => router.push("/account")}
+						className="flex items-center hover:bg-[#d4d4d8] rounded-[30px] p-2 -ml-2 transition-colors flex-1"
+					>
 						<div className="relative w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-200">
 							{session?.user?.image ? (
 								<Image src={session.user.image} alt="Profile" fill className="object-cover" />
@@ -140,7 +143,7 @@ export function Sidebar() {
 						<div className="ml-3.25">
 							<p className="font-inter font-bold text-[14px] text-black truncate max-w-25">{session?.user?.name || "User"}</p>
 						</div>
-					</div>
+					</button>
 					<button onClick={() => signOut({ callbackUrl: "/welcome" })} className="p-1 text-gray-400 hover:text-red-600 transition-colors">
 						<LogOut className="w-5 h-5" />
 					</button>
