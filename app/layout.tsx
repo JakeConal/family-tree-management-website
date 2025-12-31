@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { Geist, Geist_Mono, Playfair_Display, Inter } from 'next/font/google';
+import { Geist, Geist_Mono, Playfair_Display, Inter, Crimson_Text, Roboto } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
@@ -33,6 +33,18 @@ const playfair = Playfair_Display({
 const inter = Inter({
 	variable: '--font-inter',
 	subsets: ['latin'],
+});
+
+const crimsonText = Crimson_Text({
+	variable: '--font-crimson-text',
+	subsets: ['latin'],
+	weight: ['400', '600', '700'],
+});
+
+const roboto = Roboto({
+	variable: '--font-roboto',
+	subsets: ['latin'],
+	weight: ['300', '400', '500', '700'],
 });
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
@@ -209,7 +221,15 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<title>Family Tree Management</title>
 			<body
-				className={classNames(geistSans.variable, geistMono.variable, playfair.variable, inter.variable, 'antialiased')}
+				className={classNames(
+					geistSans.variable,
+					geistMono.variable,
+					playfair.variable,
+					inter.variable,
+					crimsonText.variable,
+					roboto.variable,
+					'antialiased'
+				)}
 			>
 				<Providers>
 					<RootLayoutContent>{children}</RootLayoutContent>
