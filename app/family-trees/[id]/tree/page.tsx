@@ -11,7 +11,7 @@ import type { Node, ExtNode } from 'relatives-tree/lib/types';
 
 import FamilyNode from '@/components/FamilyNode';
 import LoadingScreen from '@/components/LoadingScreen';
-import AddMemberModal from '@/components/modals/AddMemberModal';
+import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
@@ -77,8 +77,8 @@ export default function FamilyTreePage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string>('');
 
-	// Modal states
-	const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+	// Panel and modal states
+	const [showAddPanel, setShowAddPanel] = useState(false);
 	const [selectedMemberIdForPanel, setSelectedMemberIdForPanel] = useState<number | null>(null);
 	const [panelMode, setPanelMode] = useState<'view' | 'edit'>('view');
 	const [showAchievementModal, setShowAchievementModal] = useState(false);
@@ -302,13 +302,13 @@ export default function FamilyTreePage() {
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
 							</div>
-							<button
-								onClick={() => setShowAddMemberModal(true)}
-								className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
-							>
-								<Plus className="w-4 h-4" />
-								Add Member
-							</button>
+						<button
+							onClick={() => setShowAddPanel(true)}
+							className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
+						>
+							<Plus className="w-4 h-4" />
+							Add Member
+						</button>
 						</div>
 
 						{/* Right Side - Zoom Controls */}
@@ -461,10 +461,10 @@ export default function FamilyTreePage() {
 																	stroke="gray"
 																	strokeWidth="2"
 																	className="cursor-pointer hover:fill-yellow-200"
-																	onClick={() => {
-																		setSelectedMemberId(`${node.id},${spouseId}`);
-																		setShowAddMemberModal(true);
-																	}}
+															onClick={() => {
+																setSelectedMemberId(`${node.id},${spouseId}`);
+																setShowAddPanel(true);
+															}}
 																/>
 																{/* Add icon */}
 																<text
@@ -598,38 +598,46 @@ export default function FamilyTreePage() {
 				</div>
 			</div>
 
-			{/* Member Panel Sidebar - Push Style */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					{
-						'w-[600px]': selectedMemberIdForPanel !== null,
-						'w-0': selectedMemberIdForPanel === null,
-					}
-				)}
-			>
-				{selectedMemberIdForPanel !== null && (
-					<ViewEditMemberPanel
-						memberId={selectedMemberIdForPanel}
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						mode={panelMode}
-						onModeChange={setPanelMode}
-						onClose={() => setSelectedMemberIdForPanel(null)}
-						onSuccess={fetchFamilyMembers}
-					/>
-				)}
-			</aside>
+		{/* Member Panel Sidebar - Push Style */}
+		<aside
+			className={classNames(
+				'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+				{
+					'w-[600px]': selectedMemberIdForPanel !== null || showAddPanel,
+					'w-0': selectedMemberIdForPanel === null && !showAddPanel,
+				}
+			)}
+		>
+			{selectedMemberIdForPanel !== null && (
+				<ViewEditMemberPanel
+					memberId={selectedMemberIdForPanel}
+					familyTreeId={familyTreeId}
+					existingMembers={members}
+					mode={panelMode}
+					onModeChange={setPanelMode}
+					onClose={() => setSelectedMemberIdForPanel(null)}
+					onSuccess={fetchFamilyMembers}
+				/>
+			)}
+			{showAddPanel && (
+				<AddMemberPanel
+					familyTreeId={familyTreeId}
+					existingMembers={members}
+					selectedMemberId={selectedMemberId}
+					onClose={() => {
+						setShowAddPanel(false);
+						setSelectedMemberId('');
+					}}
+					onSuccess={() => {
+						fetchFamilyMembers();
+						setShowAddPanel(false);
+						setSelectedMemberId('');
+					}}
+				/>
+			)}
+		</aside>
 
-			{/* Modals */}
-			<AddMemberModal
-				isOpen={showAddMemberModal}
-				onClose={() => setShowAddMemberModal(false)}
-				familyTreeId={familyTreeId}
-				existingMembers={members}
-				onMemberAdded={fetchFamilyMembers}
-				selectedMemberId={selectedMemberId}
-			/>
+		{/* Modals */}
 
 			<RecordAchievementModal
 				isOpen={showAchievementModal}

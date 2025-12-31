@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
-import AddMemberModal from '@/components/modals/AddMemberModal';
+import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import { FamilyMember } from '@/types';
@@ -202,7 +202,7 @@ export default function MemberListPage() {
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [selectedGeneration, setSelectedGeneration] = useState('All Generation');
-	const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+	const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
 	const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
 	const [panelMode, setPanelMode] = useState<'view' | 'edit'>('view');
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -314,7 +314,7 @@ export default function MemberListPage() {
 						generations={generations}
 						onGenerationChange={setSelectedGeneration}
 						onSearchChange={setSearchQuery}
-						onAddMember={() => setIsAddMemberModalOpen(true)}
+						onAddMember={() => setIsAddPanelOpen(true)}
 					/>
 
 					{/* Table Component */}
@@ -342,40 +342,42 @@ export default function MemberListPage() {
 				</div>
 			</div>
 
-			{/* Member Panel Sidebar - Push Style */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					{
-						'w-[600px]': selectedMemberId !== null,
-						'w-0': selectedMemberId === null,
-					}
-				)}
-			>
-				{selectedMemberId !== null && (
-					<ViewEditMemberPanel
-						memberId={selectedMemberId}
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						mode={panelMode}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={fetchData}
-					/>
-				)}
-			</aside>
+		{/* Member Panel Sidebar - Push Style */}
+		<aside
+			className={classNames(
+				'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+				{
+					'w-[600px]': selectedMemberId !== null || isAddPanelOpen,
+					'w-0': selectedMemberId === null && !isAddPanelOpen,
+				}
+			)}
+		>
+			{selectedMemberId !== null && (
+				<ViewEditMemberPanel
+					memberId={selectedMemberId}
+					familyTreeId={familyTreeId}
+					existingMembers={members}
+					mode={panelMode}
+					onModeChange={handlePanelModeChange}
+					onClose={handleClosePanel}
+					onSuccess={fetchData}
+				/>
+			)}
+			{isAddPanelOpen && (
+				<AddMemberPanel
+					familyTreeId={familyTreeId}
+					existingMembers={members}
+					onClose={() => setIsAddPanelOpen(false)}
+					onSuccess={() => {
+						fetchData();
+						setIsAddPanelOpen(false);
+					}}
+				/>
+			)}
+		</aside>
 
-			{/* Modals */}
-			<AddMemberModal
-				isOpen={isAddMemberModalOpen}
-				onClose={() => setIsAddMemberModalOpen(false)}
-				familyTreeId={familyTreeId}
-				existingMembers={members}
-				onMemberAdded={fetchData}
-			/>
-
-			{/* Delete Confirmation Modal */}
-			<ConfirmModal
+	{/* Delete Confirmation Modal */}
+		<ConfirmModal
 				isOpen={showDeleteConfirm}
 				onClose={() => {
 					setShowDeleteConfirm(false);
