@@ -1,17 +1,18 @@
 'use client';
 
+import type { FamilyMember } from '@prisma/client';
 import classNames from 'classnames';
+import { ChevronDown, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronDown, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 import LoadingScreen from '@/components/LoadingScreen';
 import AchievementPanel from '@/components/panels/AchievementPanel';
-import PassingPanel from '@/components/panels/PassingPanel';
+import BirthPanel from '@/components/panels/BirthPanel';
 import DivorcePanel from '@/components/panels/DivorcePanel';
-import type { FamilyMember } from '@prisma/client';
+import PassingPanel from '@/components/panels/PassingPanel';
+import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 
 interface Achievement {
 	id: number;
@@ -105,7 +106,7 @@ export default function LifeEventsPage() {
 	const [selectedType, setSelectedType] = useState<string>('all');
 
 	// Panel state
-	const [panelType, setPanelType] = useState<'achievement' | 'passing' | 'divorce' | null>(null);
+	const [panelType, setPanelType] = useState<'achievement' | 'passing' | 'divorce' | 'birth' | null>(null);
 	const [panelMode, setPanelMode] = useState<'add' | 'view' | 'edit'>('add');
 	const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
@@ -282,8 +283,30 @@ export default function LifeEventsPage() {
 		return events;
 	});
 
+	// Transform family members with parents into birth events
+	const birthEvents: LifeEvent[] = familyMembers
+		.filter(
+			(member): member is typeof member & { relationshipEstablishedDate: Date } =>
+				!!member.parentId && member.relationshipEstablishedDate !== null
+		)
+		.map((member) => {
+			// Find parent from familyMembers
+			const parentName = familyMembers.find((m) => m.id === member.parentId)?.fullName || 'their parent';
+			return {
+				id: `birth-${member.id}`,
+				type: 'Birth Event' as const,
+				date: member.relationshipEstablishedDate,
+				title: `${member.fullName}'s Birth`,
+				description: `Born to ${parentName}`,
+				relationshipId: member.id,
+			};
+		});
+
+	// Merge life events and birth events
+	const allLifeEvents = [...lifeEvents, ...birthEvents];
+
 	// Filter life events
-	const filteredLifeEvents = lifeEvents.filter((event) => {
+	const filteredLifeEvents = allLifeEvents.filter((event) => {
 		if (selectedYear !== 'all' && event.date) {
 			const year = new Date(event.date).getFullYear();
 			if (year.toString() !== selectedYear) return false;
@@ -321,7 +344,7 @@ export default function LifeEventsPage() {
 							.filter((p) => p.dateOfPassing)
 							.map((p) => new Date(p.dateOfPassing).getFullYear())
 							.sort((a, b) => b - a)
-					: lifeEvents
+					: allLifeEvents
 							.filter((e) => e.date)
 							.map((e) => new Date(e.date).getFullYear())
 							.sort((a, b) => b - a)
@@ -369,6 +392,17 @@ export default function LifeEventsPage() {
 			setPanelMode('add');
 		}
 		setPanelType('divorce');
+	};
+
+	const handleOpenBirthPanel = (id?: number) => {
+		if (id) {
+			setSelectedEventId(id);
+			setPanelMode('view');
+		} else {
+			setSelectedEventId(null);
+			setPanelMode('add');
+		}
+		setPanelType('birth');
 	};
 
 	const handleClosePanel = () => {
@@ -614,7 +648,13 @@ export default function LifeEventsPage() {
 															date={formatDate(event.date)}
 															description={event.description}
 															type={event.type}
-															onClick={event.type === 'Divorce' ? handleOpenDivorcePanel : undefined}
+															onClick={
+																event.type === 'Divorce'
+																	? handleOpenDivorcePanel
+																	: event.type === 'Birth Event'
+																		? handleOpenBirthPanel
+																		: undefined
+															}
 														/>
 													))}
 												</div>
@@ -664,6 +704,17 @@ export default function LifeEventsPage() {
 					<DivorcePanel
 						mode={panelMode}
 						divorceId={selectedEventId || undefined}
+						familyTreeId={familyTreeId}
+						familyMembers={familyMembers}
+						onModeChange={handlePanelModeChange}
+						onClose={handleClosePanel}
+						onSuccess={handlePanelSuccess}
+					/>
+				)}
+				{panelType === 'birth' && (
+					<BirthPanel
+						mode={panelMode === 'add' ? 'view' : panelMode}
+						childMemberId={selectedEventId || undefined}
 						familyTreeId={familyTreeId}
 						familyMembers={familyMembers}
 						onModeChange={handlePanelModeChange}
