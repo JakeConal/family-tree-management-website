@@ -4,6 +4,80 @@ import { auth } from '@/auth';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+	try {
+		const session = await auth();
+
+		if (!session?.user?.id) {
+			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		const { id } = await params;
+		const familyTreeId = parseInt(id);
+		if (isNaN(familyTreeId)) {
+			return NextResponse.json({ error: 'Invalid family tree ID' }, { status: 400 });
+		}
+
+		const prisma = getPrisma();
+
+		// Verify the user has access to this family tree
+		const familyTree = await prisma.familyTree.findFirst({
+			where: {
+				id: familyTreeId,
+				treeOwner: {
+					userId: session.user.id,
+				},
+			},
+		});
+
+		if (!familyTree) {
+			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+		}
+
+		// Fetch all passing records for this family tree
+		const passingRecords = await prisma.passingRecord.findMany({
+			where: {
+				familyMember: {
+					familyTreeId: familyTreeId,
+				},
+			},
+			include: {
+				familyMember: {
+					select: {
+						id: true,
+						fullName: true,
+					},
+				},
+				causeOfDeath: {
+					select: {
+						id: true,
+						causeName: true,
+					},
+				},
+				buriedPlaces: {
+					select: {
+						id: true,
+						location: true,
+						startDate: true,
+						endDate: true,
+					},
+					orderBy: {
+						startDate: 'asc',
+					},
+				},
+			},
+			orderBy: {
+				dateOfPassing: 'desc',
+			},
+		});
+
+		return NextResponse.json(passingRecords);
+	} catch (error) {
+		console.error('Error fetching passing records:', error);
+		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+	}
+}
+
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const session = await auth();
