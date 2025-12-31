@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import relativesTree from 'relatives-tree';
 import type { Node, ExtNode } from 'relatives-tree/lib/types';
-import { FamilyMember } from '@prisma/client';
-import { ChevronDown, Plus, Minus, Skull, Calendar, Users, Crown } from 'lucide-react';
+import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
+import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import classNames from 'classnames';
 import FamilyNode from '@/components/FamilyNode';
 import AddMemberModal from '@/components/modals/AddMemberModal';
@@ -15,8 +15,9 @@ import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import LoadingScreen from '@/components/LoadingScreen';
+import FamilyMemberService from '@/lib/services/FamilyMemberService';
 
-interface ExtendedFamilyMember extends FamilyMember {
+interface ExtendedFamilyMember extends PrismaFamilyMember {
 	parent?: {
 		id: number;
 		fullName: string;
@@ -89,17 +90,9 @@ export default function FamilyTreePage() {
 		zoomOut: () => void;
 	} | null>(null);
 
-	useEffect(() => {
-		fetchFamilyMembers();
-	}, [familyTreeId]);
-
-	const fetchFamilyMembers = async () => {
+	const fetchFamilyMembers = useCallback(async () => {
 		try {
-			const response = await fetch(`/api/family-members?familyTreeId=${familyTreeId}`);
-			if (!response.ok) {
-				throw new Error('Failed to fetch family members');
-			}
-			const data = await response.json();
+			const data = await FamilyMemberService.getAll({ familyTreeId });
 			setMembers(data);
 			transformDataToTreeNodes(data);
 		} catch (err) {
@@ -107,7 +100,11 @@ export default function FamilyTreePage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [familyTreeId]);
+
+	useEffect(() => {
+		fetchFamilyMembers();
+	}, [familyTreeId, fetchFamilyMembers]);
 
 	const transformDataToTreeNodes = (members: ExtendedFamilyMember[]) => {
 		try {
@@ -227,9 +224,9 @@ export default function FamilyTreePage() {
 					});
 				}
 
-				const node: any = {
+				const node = {
 					id: member.id.toString(),
-					gender: gender as any, // cast since Gender enum has same string values
+					gender,
 					spouses,
 					siblings: [],
 					parents,
@@ -260,6 +257,7 @@ export default function FamilyTreePage() {
 			setTreeNodes([...uniqueNodes]);
 			setPositionedNodes([...uniqueNodes]);
 		} catch (err) {
+			console.error('Error processing family tree data:', err);
 			setError('Failed to process family tree data');
 			setLoading(false);
 		}
@@ -359,231 +357,218 @@ export default function FamilyTreePage() {
 								setZoomPercentage(Math.round(state.scale * 100));
 							}}
 						>
-							{({ zoomIn, zoomOut, resetTransform }) => (
-								<>
-									<TransformComponent
-										wrapperStyle={{
-											width: '100%',
-											height: '100%',
-											overflow: 'visible',
-											position: 'relative',
-										}}
-										contentStyle={{
-											width: 'auto',
-											height: 'auto',
-											minWidth: '100%',
-											minHeight: '100%',
-											display: 'flex',
-											justifyContent: 'center',
-											alignItems: 'center',
-										}}
-									>
-										<div className="relative w-auto h-auto">
-											{/* Manual node rendering */}
-											<div className="relative">
-												{positionedNodes.map((node) => {
+							{() => (
+								<TransformComponent
+									wrapperStyle={{
+										width: '100%',
+										height: '100%',
+										overflow: 'visible',
+										position: 'relative',
+									}}
+									contentStyle={{
+										width: 'auto',
+										height: 'auto',
+										minWidth: '100%',
+										minHeight: '100%',
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+									}}
+								>
+									<div className="relative w-auto h-auto">
+										{/* Manual node rendering */}
+										<div className="relative">
+											{positionedNodes.map((node) => {
+												const member = getMemberById(node.id);
+												if (!member) return null;
+
+												return (
+													<FamilyNode
+														key={node.id}
+														node={node as ExtNode}
+														member={member}
+														style={{
+															position: 'absolute',
+															width: 150,
+															height: 200,
+															left: node.left * 120 - 75,
+															top: node.top * 150 - 100,
+														}}
+														onClick={() => {
+															setSelectedMemberIdForPanel(member.id);
+															setPanelMode('view');
+														}}
+													/>
+												);
+											})}
+										</div>
+										<svg
+											className="absolute top-0 left-0 w-full h-full pointer-events-none"
+											style={{
+												zIndex: -1,
+												minWidth: '10000px',
+												minHeight: '10000px',
+												overflow: 'visible',
+											}}
+										>
+											{/* Spouse connections */}
+											{(() => {
+												const renderedPairs = new Set<string>();
+												return positionedNodes.map((node) => {
 													const member = getMemberById(node.id);
 													if (!member) return null;
 
-													return (
-														<FamilyNode
-															key={node.id}
-															node={node as ExtNode}
-															member={member}
-															style={{
-																position: 'absolute',
-																width: 150,
-																height: 200,
-																left: node.left * 120 - 75,
-																top: node.top * 150 - 100,
-															}}
-															onClick={() => {
-																setSelectedMemberIdForPanel(member.id);
-																setPanelMode('view');
-															}}
-														/>
-													);
-												})}
-											</div>
-											<svg
-												className="absolute top-0 left-0 w-full h-full pointer-events-none"
-												style={{
-													zIndex: -1,
-													minWidth: '10000px',
-													minHeight: '10000px',
-													overflow: 'visible',
-												}}
-											>
-												{/* Spouse connections */}
-												{(() => {
-													const renderedPairs = new Set<string>();
-													return positionedNodes.map((node) => {
-														const member = getMemberById(node.id);
-														if (!member) return null;
+													const spouseRelations = [
+														...(member.spouse1 || []).map((spouse) => ({
+															spouseId: spouse.familyMember2.id.toString(),
+															relation: spouse,
+														})),
+														...(member.spouse2 || []).map((spouse) => ({
+															spouseId: spouse.familyMember1.id.toString(),
+															relation: spouse,
+														})),
+													];
 
-														const spouseRelations = [
-															...(member.spouse1 || []).map((spouse) => ({
-																spouseId: spouse.familyMember2.id.toString(),
-																relation: spouse,
-															})),
-															...(member.spouse2 || []).map((spouse) => ({
-																spouseId: spouse.familyMember1.id.toString(),
-																relation: spouse,
-															})),
-														];
+													return spouseRelations.map(({ spouseId }) => {
+														const pairKey = [node.id, spouseId].sort().join('-');
 
-														return spouseRelations.map(({ spouseId }) => {
-															const pairKey = [node.id, spouseId].sort().join('-');
+														if (renderedPairs.has(pairKey)) return null;
+														renderedPairs.add(pairKey);
 
-															if (renderedPairs.has(pairKey)) return null;
-															renderedPairs.add(pairKey);
+														const spouseNode = positionedNodes.find((n) => n.id === spouseId);
+														if (!spouseNode) return null;
 
-															const spouseNode = positionedNodes.find((n) => n.id === spouseId);
-															if (!spouseNode) return null;
+														// Calculate midpoint between spouses
+														const nodeX = node.left * 120;
+														const nodeY = node.top * 150;
+														const spouseX = spouseNode.left * 120;
+														const spouseY = spouseNode.top * 150;
 
-															// Calculate midpoint between spouses
-															const nodeX = node.left * 120;
-															const nodeY = node.top * 150;
-															const spouseX = spouseNode.left * 120;
-															const spouseY = spouseNode.top * 150;
-
-															const midX = (nodeX + spouseX) / 2;
-															const midY = (nodeY + spouseY) / 2;
-
-															return (
-																<g key={`spouse-${pairKey}`}>
-																	{/* Spouse connection line */}
-																	<line
-																		x1={nodeX}
-																		y1={nodeY}
-																		x2={spouseX}
-																		y2={spouseY}
-																		stroke="black"
-																		strokeWidth="2"
-																	/>
-																	{/* Add child circle */}
-																	<circle
-																		cx={midX}
-																		cy={midY}
-																		r="15"
-																		fill="white"
-																		stroke="gray"
-																		strokeWidth="2"
-																		className="cursor-pointer hover:fill-yellow-200"
-																		onClick={() => {
-																			setSelectedMemberId(`${node.id},${spouseId}`);
-																			setShowAddMemberModal(true);
-																		}}
-																	/>
-																	{/* Add icon */}
-																	<text
-																		x={midX}
-																		y={midY + 5}
-																		textAnchor="middle"
-																		fontSize="20"
-																		fill="black"
-																		className="cursor-pointer pointer-events-none"
-																		style={{ userSelect: 'none' }}
-																	>
-																		+
-																	</text>
-																</g>
-															);
-														});
-													});
-												})()}
-
-												{/* Parent-child connections */}
-												{(() => {
-													const renderedConnections = new Set<string>();
-													const parentGroups = new Map<string, string[]>();
-
-													// Group children by their actual parent (from database)
-													members.forEach((m) => {
-														if (m.parentId) {
-															const parentId = m.parentId.toString();
-															if (!parentGroups.has(parentId)) parentGroups.set(parentId, []);
-															parentGroups.get(parentId)!.push(m.id.toString());
-														}
-													});
-
-													return Array.from(parentGroups.entries()).map(([parentId, childIds]) => {
-														const parentNode = positionedNodes.find((n) => n.id === parentId);
-														const childNodes = childIds
-															.map((id) => positionedNodes.find((n) => n.id === id))
-															.filter(Boolean) as ExtNode[];
-
-														if (!parentNode || childNodes.length === 0) return null;
-
-														// Check if this connection has already been rendered
-														const connectionKey = [parentId, ...childIds.sort()].join('-');
-														if (renderedConnections.has(connectionKey)) return null;
-														renderedConnections.add(connectionKey);
-
-														const parentX = parentNode.left * 120;
-														const parentY = parentNode.top * 150 + 100;
-														const childY = childNodes[0].top * 150 - 100;
-														const childXs = childNodes.map((n) => n.left * 120).sort((a, b) => a - b);
-														const minX = childXs[0];
-														const maxX = childXs[childXs.length - 1];
-														const midY = (parentY + childY) / 2;
+														const midX = (nodeX + spouseX) / 2;
+														const midY = (nodeY + spouseY) / 2;
 
 														return (
-															<g key={parentId}>
-																{/* White background paths to cover old connections */}
-																<path
-																	d={`M ${parentX} ${parentY} Q ${parentX} ${
-																		(parentY + midY) / 2
-																	} ${parentX} ${midY} Q ${
-																		(parentX + minX) / 2
-																	} ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
-																	stroke="white"
-																	strokeWidth="20"
-																	fill="none"
-																/>
-																{childNodes.map((childNode) => {
-																	const childX = childNode.left * 120;
-																	return (
-																		<path
-																			key={`bg-${childNode.id}`}
-																			d={`M ${childX} ${midY} Q ${childX} ${(midY + childY) / 2} ${childX} ${childY}`}
-																			stroke="white"
-																			strokeWidth="20"
-																			fill="none"
-																		/>
-																	);
-																})}
-																{/* Black foreground paths */}
-																<path
-																	d={`M ${parentX} ${parentY} Q ${parentX} ${
-																		(parentY + midY) / 2
-																	} ${parentX} ${midY} Q ${
-																		(parentX + minX) / 2
-																	} ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
+															<g key={`spouse-${pairKey}`}>
+																{/* Spouse connection line */}
+																<line x1={nodeX} y1={nodeY} x2={spouseX} y2={spouseY} stroke="black" strokeWidth="2" />
+																{/* Add child circle */}
+																<circle
+																	cx={midX}
+																	cy={midY}
+																	r="15"
+																	fill="white"
 																	stroke="gray"
 																	strokeWidth="2"
-																	fill="none"
+																	className="cursor-pointer hover:fill-yellow-200"
+																	onClick={() => {
+																		setSelectedMemberId(`${node.id},${spouseId}`);
+																		setShowAddMemberModal(true);
+																	}}
 																/>
-																{childNodes.map((childNode) => {
-																	const childX = childNode.left * 120;
-																	return (
-																		<path
-																			key={childNode.id}
-																			d={`M ${childX} ${midY} Q ${childX} ${(midY + childY) / 2} ${childX} ${childY}`}
-																			stroke="gray"
-																			strokeWidth="2"
-																			fill="none"
-																		/>
-																	);
-																})}
+																{/* Add icon */}
+																<text
+																	x={midX}
+																	y={midY + 5}
+																	textAnchor="middle"
+																	fontSize="20"
+																	fill="black"
+																	className="cursor-pointer pointer-events-none"
+																	style={{ userSelect: 'none' }}
+																>
+																	+
+																</text>
 															</g>
 														);
 													});
-												})()}
-											</svg>
-										</div>
-									</TransformComponent>
-								</>
+												});
+											})()}
+
+											{/* Parent-child connections */}
+											{(() => {
+												const renderedConnections = new Set<string>();
+												const parentGroups = new Map<string, string[]>();
+
+												// Group children by their actual parent (from database)
+												members.forEach((m) => {
+													if (m.parentId) {
+														const parentId = m.parentId.toString();
+														if (!parentGroups.has(parentId)) parentGroups.set(parentId, []);
+														parentGroups.get(parentId)!.push(m.id.toString());
+													}
+												});
+
+												return Array.from(parentGroups.entries()).map(([parentId, childIds]) => {
+													const parentNode = positionedNodes.find((n) => n.id === parentId);
+													const childNodes = childIds
+														.map((id) => positionedNodes.find((n) => n.id === id))
+														.filter(Boolean) as ExtNode[];
+
+													if (!parentNode || childNodes.length === 0) return null;
+
+													// Check if this connection has already been rendered
+													const connectionKey = [parentId, ...childIds.sort()].join('-');
+													if (renderedConnections.has(connectionKey)) return null;
+													renderedConnections.add(connectionKey);
+
+													const parentX = parentNode.left * 120;
+													const parentY = parentNode.top * 150 + 100;
+													const childY = childNodes[0].top * 150 - 100;
+													const childXs = childNodes.map((n) => n.left * 120).sort((a, b) => a - b);
+													const minX = childXs[0];
+													const maxX = childXs[childXs.length - 1];
+													const midY = (parentY + childY) / 2;
+
+													return (
+														<g key={parentId}>
+															{/* White background paths to cover old connections */}
+															<path
+																d={`M ${parentX} ${parentY} Q ${parentX} ${(parentY + midY) / 2} ${parentX} ${midY} Q ${
+																	(parentX + minX) / 2
+																} ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
+																stroke="white"
+																strokeWidth="20"
+																fill="none"
+															/>
+															{childNodes.map((childNode) => {
+																const childX = childNode.left * 120;
+																return (
+																	<path
+																		key={`bg-${childNode.id}`}
+																		d={`M ${childX} ${midY} Q ${childX} ${(midY + childY) / 2} ${childX} ${childY}`}
+																		stroke="white"
+																		strokeWidth="20"
+																		fill="none"
+																	/>
+																);
+															})}
+															{/* Black foreground paths */}
+															<path
+																d={`M ${parentX} ${parentY} Q ${parentX} ${(parentY + midY) / 2} ${parentX} ${midY} Q ${
+																	(parentX + minX) / 2
+																} ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
+																stroke="gray"
+																strokeWidth="2"
+																fill="none"
+															/>
+															{childNodes.map((childNode) => {
+																const childX = childNode.left * 120;
+																return (
+																	<path
+																		key={childNode.id}
+																		d={`M ${childX} ${midY} Q ${childX} ${(midY + childY) / 2} ${childX} ${childY}`}
+																		stroke="gray"
+																		strokeWidth="2"
+																		fill="none"
+																	/>
+																);
+															})}
+														</g>
+													);
+												});
+											})()}
+										</svg>
+									</div>
+								</TransformComponent>
 							)}
 						</TransformWrapper>
 					</div>
@@ -626,7 +611,7 @@ export default function FamilyTreePage() {
 					<ViewEditMemberPanel
 						memberId={selectedMemberIdForPanel}
 						familyTreeId={familyTreeId}
-						existingMembers={members as any}
+						existingMembers={members}
 						mode={panelMode}
 						onModeChange={setPanelMode}
 						onClose={() => setSelectedMemberIdForPanel(null)}
@@ -640,7 +625,7 @@ export default function FamilyTreePage() {
 				isOpen={showAddMemberModal}
 				onClose={() => setShowAddMemberModal(false)}
 				familyTreeId={familyTreeId}
-				existingMembers={members as any}
+				existingMembers={members}
 				onMemberAdded={fetchFamilyMembers}
 				selectedMemberId={selectedMemberId}
 			/>
@@ -649,7 +634,7 @@ export default function FamilyTreePage() {
 				isOpen={showAchievementModal}
 				onClose={() => setShowAchievementModal(false)}
 				familyTreeId={familyTreeId}
-				existingMembers={members as any}
+				existingMembers={members}
 				onAchievementRecorded={fetchFamilyMembers}
 			/>
 
@@ -657,7 +642,7 @@ export default function FamilyTreePage() {
 				isOpen={showPassingModal}
 				onClose={() => setShowPassingModal(false)}
 				familyTreeId={familyTreeId}
-				existingMembers={members as any}
+				existingMembers={members}
 				onPassingRecorded={fetchFamilyMembers}
 			/>
 

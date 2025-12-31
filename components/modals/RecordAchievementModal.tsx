@@ -1,21 +1,10 @@
 'use client';
 
 import classNames from 'classnames';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, Trophy, ArrowLeft, Calendar, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
-
-interface FamilyMember {
-	id: number;
-	fullName: string;
-	gender: string;
-	birthday: string;
-}
-
-interface AchievementType {
-	id: number;
-	typeName: string;
-}
+import { AchievementType, FamilyMember } from '@/types';
 
 interface RecordAchievementModalProps {
 	isOpen: boolean;
@@ -52,6 +41,21 @@ export default function RecordAchievementModal({
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+	const fetchAchievementTypes = useCallback(async () => {
+		setIsLoadingTypes(true);
+		try {
+			const response = await fetch(`/api/family-trees/${familyTreeId}/achievement-types`);
+			if (response.ok) {
+				const types = await response.json();
+				setAchievementTypes(types);
+			}
+		} catch (error) {
+			console.error('Error fetching achievement types:', error);
+		} finally {
+			setIsLoadingTypes(false);
+		}
+	}, [familyTreeId]);
+
 	// Reset form when modal opens
 	useEffect(() => {
 		if (isOpen) {
@@ -69,7 +73,7 @@ export default function RecordAchievementModal({
 			setIsSubmitting(false);
 			fetchAchievementTypes();
 		}
-	}, [isOpen]);
+	}, [fetchAchievementTypes, isOpen]);
 
 	// Handle escape key
 	useEffect(() => {
@@ -89,21 +93,6 @@ export default function RecordAchievementModal({
 			document.body.style.overflow = 'unset';
 		};
 	}, [isOpen, onClose]);
-
-	const fetchAchievementTypes = async () => {
-		setIsLoadingTypes(true);
-		try {
-			const response = await fetch(`/api/family-trees/${familyTreeId}/achievement-types`);
-			if (response.ok) {
-				const types = await response.json();
-				setAchievementTypes(types);
-			}
-		} catch (error) {
-			console.error('Error fetching achievement types:', error);
-		} finally {
-			setIsLoadingTypes(false);
-		}
-	};
 
 	const fetchMemberPassingRecord = async (memberId: string) => {
 		try {
@@ -179,7 +168,7 @@ export default function RecordAchievementModal({
 		return !hasDateErrors;
 	};
 
-	const handleFieldChange = (field: string, value: string) => {
+	const handleFieldChange = (field: string) => {
 		// Clear error when user starts typing
 		if (errors[field]) {
 			setErrors((prev) => {
@@ -267,7 +256,11 @@ export default function RecordAchievementModal({
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+			{/* Backdrop */}
+			<div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
+
+			{/* Modal Content */}
+			<div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden relative z-10">
 				{/* Header */}
 				<div className="flex items-center justify-between p-6 border-b border-gray-200">
 					<button onClick={onClose} className="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
@@ -303,7 +296,9 @@ export default function RecordAchievementModal({
 										...achievementFormData,
 										familyMemberId: selectedId,
 									});
-									setSelectedMemberBirthDate(selectedMember?.birthday || '');
+									setSelectedMemberBirthDate(
+										selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
+									);
 
 									// Fetch passing record for the selected member
 									if (selectedId) {
@@ -312,7 +307,7 @@ export default function RecordAchievementModal({
 										setSelectedMemberPassingDate('');
 									}
 
-									handleFieldChange('familyMemberId', selectedId);
+									handleFieldChange('familyMemberId');
 								}}
 								onBlur={() => validateField('familyMemberId', achievementFormData.familyMemberId)}
 								className={classNames(
@@ -348,7 +343,7 @@ export default function RecordAchievementModal({
 										...achievementFormData,
 										achievementTypeId: e.target.value,
 									});
-									handleFieldChange('achievementTypeId', e.target.value);
+									handleFieldChange('achievementTypeId');
 								}}
 								onBlur={() => validateField('achievementTypeId', achievementFormData.achievementTypeId)}
 								className={classNames(
@@ -387,7 +382,7 @@ export default function RecordAchievementModal({
 											...achievementFormData,
 											achieveDate: e.target.value,
 										});
-										handleFieldChange('achieveDate', e.target.value);
+										handleFieldChange('achieveDate');
 									}}
 									onBlur={() => validateField('achieveDate', achievementFormData.achieveDate)}
 									className={classNames(
@@ -420,7 +415,7 @@ export default function RecordAchievementModal({
 										...achievementFormData,
 										title: e.target.value,
 									});
-									handleFieldChange('title', e.target.value);
+									handleFieldChange('title');
 								}}
 								onBlur={() => validateField('title', achievementFormData.title)}
 								placeholder="e.g. Bachelor of Computer Science"

@@ -11,7 +11,6 @@ export default function AccountSettings() {
 	const { data: session, status } = useSession();
 	const router = useRouter();
 
-	const [loading, setLoading] = useState(false);
 	const [saving, setSaving] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 	const [updatingPassword, setUpdatingPassword] = useState(false);

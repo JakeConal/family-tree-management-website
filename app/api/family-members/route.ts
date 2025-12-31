@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 		const gender = formData.get('gender') as string;
 		const birthday = formData.get('birthday') as string;
 		const address = formData.get('address') as string;
-		const generation = formData.get('generation') as string;
+		// const generation = formData.get('generation') as string;
 		const isAdopted = formData.get('isAdopted') === 'true';
 		const familyTreeId = formData.get('familyTreeId') as string;
 		const parentId = formData.get('parentId') as string;

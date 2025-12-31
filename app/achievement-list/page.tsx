@@ -3,49 +3,11 @@
 import classNames from 'classnames';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import { type ChangeEvent, type ComponentType, type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-	ChevronLeft,
-	CalendarDays,
-	LayoutDashboard,
-	LineChart,
-	ListChecks,
-	MapPin,
-	Plus,
-	Settings,
-	Trees,
-	UsersRound,
-} from 'lucide-react';
+import { ChevronLeft, CalendarDays, ListChecks, MapPin, Plus } from 'lucide-react';
 
 import { PersonIcon, CalendarIcon } from '@/components/icons/achievement-metadata';
-
-type AchievementIcon = ComponentType<{ className?: string }>;
-
-// Icon path mapping for each category
-const ACHIEVEMENT_ICON_CONFIG: Record<string, { iconPath: string; background: string }> = {
-	Education: { iconPath: '/icons/cup.png', background: '#E0F2FE' },
-	Graduation: { iconPath: '/icons/cup.png', background: '#E0F2FE' },
-	Career: { iconPath: '/icons/career.png', background: '#E7DDFB' },
-	Business: { iconPath: '/icons/career.png', background: '#E7DDFB' },
-	Sport: { iconPath: '/icons/sport.png', background: '#F8F1C2' },
-	Sports: { iconPath: '/icons/sport.png', background: '#F8F1C2' },
-	Health: { iconPath: '/icons/health.png', background: '#F8D6D6' },
-	Artistic: { iconPath: '/icons/artist.png', background: '#BAE6FD' },
-	Creative: { iconPath: '/icons/artist.png', background: '#BAE6FD' },
-	Community: { iconPath: '/icons/community.png', background: '#DBEAFE' },
-	Environment: { iconPath: '/icons/enviroment.png', background: '#E0F3D3' },
-	Financial: { iconPath: '/icons/finance.png', background: '#FAE5D3' },
-	Finance: { iconPath: '/icons/finance.png', background: '#FAE5D3' },
-	'Skill Development': { iconPath: '/icons/skill.png', background: '#E7DDFB' },
-	Travel: { iconPath: '/icons/travel.png', background: '#D1F2EB' },
-	Passing: { iconPath: '/icons/passing.png', background: '#D9D9D9' },
-	Married: { iconPath: '/icons/ket_hon.png', background: '#F8D6D6' },
-	Marriage: { iconPath: '/icons/ket_hon.png', background: '#F8D6D6' },
-	Divorce: { iconPath: '/icons/broken.png', background: '#E7DDFB' },
-	Birth: { iconPath: '/icons/birth.png', background: '#D6EEFF' },
-};
-
 interface AchievementEntry {
 	id: string;
 	category: string;
@@ -265,22 +227,6 @@ const lifeEventSections: { year: string; entries: LifeEventEntry[] }[] = [
 
 // familyTrees will be loaded from API
 // const familyTrees = [...] - removed, now dynamic
-
-const sidebarNavItems = [
-	{ id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '#' },
-	{ id: 'family-tree', label: 'Family Tree', icon: Trees, href: '#' },
-	{ id: 'members', label: 'Members', icon: UsersRound, href: '#' },
-	{
-		id: 'life-event',
-		label: 'Life Event',
-		icon: ListChecks,
-		href: '/Achievement_list',
-		active: true,
-	},
-	{ id: 'reports', label: 'Reports', icon: LineChart, href: '#' },
-	{ id: 'settings', label: 'Settings', icon: Settings, href: '#' },
-];
-
 const achievementTabs = [
 	{ id: 'Achievement', label: 'Achievement', variant: 'left' },
 	{ id: 'Passing', label: 'Passing', variant: 'middle' },
@@ -363,9 +309,6 @@ export default function AchievementListPage() {
 	const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
 	const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
 
-	// Loading state
-	const [isLoading, setIsLoading] = useState(true);
-
 	// ===== Fetch Family Trees on mount =====
 	useEffect(() => {
 		async function fetchFamilyTrees() {
@@ -423,7 +366,7 @@ export default function AchievementListPage() {
 	// ===== Fetch Achievements when tree, year, or type filter changes =====
 	const fetchAchievements = useCallback(async () => {
 		if (!selectedTreeId) return;
-		setIsLoading(true);
+
 		try {
 			const params = new URLSearchParams({ treeId: selectedTreeId });
 			if (yearFilter !== 'all') params.append('year', yearFilter);
@@ -435,8 +378,6 @@ export default function AchievementListPage() {
 			setAvailableYears(data.availableYears || []);
 		} catch (error) {
 			console.error('Failed to fetch achievements:', error);
-		} finally {
-			setIsLoading(false);
 		}
 	}, [selectedTreeId, yearFilter, typeFilter]);
 

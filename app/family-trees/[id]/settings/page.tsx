@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
 import ConfirmModal from '@/components/modals/ConfirmModal';
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 
 interface FamilyTree {
 	id: number;
@@ -37,11 +38,8 @@ export default function FamilyTreeSettings() {
 	useEffect(() => {
 		const fetchFamilyTree = async () => {
 			try {
-				const response = await fetch(`/api/family-trees/${familyTreeId}`);
-				if (!response.ok) {
-					throw new Error('Failed to fetch family tree');
-				}
-				const data = await response.json();
+				// const response = await fetch(`/api/family-trees/${familyTreeId}`);
+				const data = await FamilyTreeService.getById(familyTreeId);
 				setFamilyTree(data);
 
 				// Populate form fields

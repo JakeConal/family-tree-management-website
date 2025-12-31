@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -22,6 +23,13 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Extend jsPDF type to include autoTable properties
+interface jsPDFWithAutoTable extends jsPDF {
+	lastAutoTable: {
+		finalY: number;
+	};
+}
+
 // Register Chart.js components
 ChartJS.register(
 	CategoryScale,
@@ -39,6 +47,55 @@ ChartJS.register(
 interface FamilyTree {
 	id: number;
 	familyName: string;
+	establishYear?: number;
+}
+
+interface PassingRecord {
+	passingDate: string;
+}
+
+interface SpouseRelationship {
+	relationshipEstablished?: string;
+}
+
+interface AchievementType {
+	typeName: string;
+}
+
+interface Achievement {
+	achieveDate: string;
+	achievementType: AchievementType;
+	achievementDate?: string;
+}
+
+interface FamilyMemberWithDetails {
+	id: number;
+	birthday?: string;
+	generation?: number;
+	passingRecords?: PassingRecord[];
+	spouseRelationships?: SpouseRelationship[];
+	achievements?: Achievement[];
+}
+
+interface ChartDataset {
+	label: string;
+	data: number[];
+	backgroundColor?: string | string[];
+	borderColor?: string;
+	pointBackgroundColor?: string;
+	pointBorderColor?: string;
+	pointBorderWidth?: number;
+	pointRadius?: number;
+	pointHoverRadius?: number;
+	tension?: number;
+	fill?: boolean;
+	borderRadius?: number;
+	borderWidth?: number;
+}
+
+interface ChartData {
+	labels: string[];
+	datasets: ChartDataset[];
 }
 
 interface AchievementCategory {
@@ -59,56 +116,51 @@ export default function FamilyTreeReports() {
 	const [generations, setGenerations] = useState(0);
 
 	// Chart data
-	const [memberChangesData, setMemberChangesData] = useState<any>(null);
-	const [totalMembersByYearData, setTotalMembersByYearData] = useState<any>(null);
-	const [totalAchievementsByYearData, setTotalAchievementsByYearData] = useState<any>(null);
+	const [memberChangesData, setMemberChangesData] = useState<ChartData | null>(null);
+	const [totalMembersByYearData, setTotalMembersByYearData] = useState<ChartData | null>(null);
+	const [totalAchievementsByYearData, setTotalAchievementsByYearData] = useState<ChartData | null>(null);
 	const [achievementCategoriesData, setAchievementCategoriesData] = useState<AchievementCategory[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				// Fetch family tree
-				const treeResponse = await fetch(`/api/family-trees/${familyTreeId}`);
-				let tree = null;
-				if (treeResponse.ok) {
-					tree = await treeResponse.json();
-					setFamilyTree(tree);
-				}
+				const tree = await FamilyTreeService.getById(familyTreeId);
+				setFamilyTree(tree);
 
 				// Fetch family members
-				const membersResponse = await fetch(`/api/family-members?familyTreeId=${familyTreeId}`);
-				if (membersResponse.ok) {
-					const members = await membersResponse.json();
+				const members = await FamilyMemberService.getAll({ familyTreeId });
 
-					const total = members.length;
-					const living = members.filter((m: any) => !m.passingRecords || m.passingRecords.length === 0).length;
-					const maxGen = Math.max(...members.map((m: any) => m.generation || 1), 1);
+				const total = members.length;
+				const living = members.filter(
+					(m: FamilyMemberWithDetails) => !m.passingRecords || m.passingRecords.length === 0
+				).length;
+				const maxGen = Math.max(...members.map((m: FamilyMemberWithDetails) => m.generation || 1), 1);
 
-					setTotalMembers(total);
-					setCurrentMembers(living);
-					setGenerations(maxGen);
+				setTotalMembers(total);
+				setCurrentMembers(living);
+				setGenerations(maxGen);
 
-					// Determine year range
-					const currentYear = new Date().getFullYear();
-					const startYear = tree?.establishYear || currentYear - 5;
+				// Determine year range
+				const currentYear = new Date().getFullYear();
+				const startYear = tree?.establishYear || currentYear - 5;
 
-					// Process member changes by year
-					processMemberChangesByYear(members, startYear, currentYear);
-					processTotalMembersByYear(members, startYear, currentYear);
+				// Process member changes by year
+				processMemberChangesByYear(members, startYear, currentYear);
+				processTotalMembersByYear(members, startYear, currentYear);
 
-					// Extract achievements from members
-					const allAchievements = members.flatMap((member: any) =>
-						(member.achievements || []).map((achievement: any) => ({
-							...achievement,
-							achievementDate: achievement.achieveDate,
-							achievementType: achievement.achievementType,
-						}))
-					);
+				// Extract achievements from members
+				const allAchievements = members.flatMap((member: FamilyMemberWithDetails) =>
+					(member.achievements || []).map((achievement: Achievement) => ({
+						...achievement,
+						achievementDate: achievement.achieveDate,
+						achievementType: achievement.achievementType,
+					}))
+				);
 
-					setTotalAchievements(allAchievements.length);
-					processAchievementsByYear(allAchievements, startYear, currentYear);
-					processAchievementCategories(allAchievements);
-				}
+				setTotalAchievements(allAchievements.length);
+				processAchievementsByYear(allAchievements, startYear, currentYear);
+				processAchievementCategories(allAchievements);
 			} catch (error) {
 				console.error('Error fetching data:', error);
 			} finally {
@@ -121,7 +173,7 @@ export default function FamilyTreeReports() {
 		}
 	}, [familyTreeId]);
 
-	const processMemberChangesByYear = (members: any[], startYear: number, endYear: number) => {
+	const processMemberChangesByYear = (members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
 		const yearData: { [key: string]: { married: number; deceased: number; birth: number } } = {};
 
 		// Initialize years from start to end
@@ -142,7 +194,7 @@ export default function FamilyTreeReports() {
 		// Count marriages (from spouseRelationships)
 		members.forEach((member) => {
 			if (member.spouseRelationships) {
-				member.spouseRelationships.forEach((rel: any) => {
+				member.spouseRelationships.forEach((rel: SpouseRelationship) => {
 					if (rel.relationshipEstablished) {
 						const year = new Date(rel.relationshipEstablished).getFullYear();
 						if (yearData[year]) {
@@ -156,7 +208,7 @@ export default function FamilyTreeReports() {
 		// Count deceased (from passingRecords)
 		members.forEach((member) => {
 			if (member.passingRecords && member.passingRecords.length > 0) {
-				member.passingRecords.forEach((record: any) => {
+				member.passingRecords.forEach((record: PassingRecord) => {
 					const year = new Date(record.passingDate).getFullYear();
 					if (yearData[year]) {
 						yearData[year].deceased++;
@@ -195,7 +247,7 @@ export default function FamilyTreeReports() {
 		});
 	};
 
-	const processTotalMembersByYear = (members: any[], startYear: number, endYear: number) => {
+	const processTotalMembersByYear = (members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
 		const yearCounts: { [key: string]: number } = {};
 
 		// Initialize years
@@ -239,7 +291,7 @@ export default function FamilyTreeReports() {
 		});
 	};
 
-	const processAchievementsByYear = (achievements: any[], startYear: number, endYear: number) => {
+	const processAchievementsByYear = (achievements: Achievement[], startYear: number, endYear: number) => {
 		const yearCounts: { [key: string]: number } = {};
 
 		// Initialize years
@@ -280,7 +332,7 @@ export default function FamilyTreeReports() {
 		});
 	};
 
-	const processAchievementCategories = (achievements: any[]) => {
+	const processAchievementCategories = (achievements: Achievement[]) => {
 		const categoryCounts: { [key: string]: number } = {};
 		const categoryColors: { [key: string]: string } = {
 			Graduations: '#e0f2fe',
@@ -397,7 +449,7 @@ export default function FamilyTreeReports() {
 	};
 
 	const exportToPDF = () => {
-		const doc = new jsPDF();
+		const doc = new jsPDF() as jsPDFWithAutoTable;
 		const pageWidth = doc.internal.pageSize.getWidth();
 		let yPos = 20;
 
@@ -437,7 +489,7 @@ export default function FamilyTreeReports() {
 			margin: { left: 14 },
 		});
 
-		yPos = (doc as any).lastAutoTable.finalY + 15;
+		yPos = doc.lastAutoTable.finalY + 15;
 
 		// Member Changes by Year
 		if (memberChangesData) {
@@ -466,7 +518,7 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = (doc as any).lastAutoTable.finalY + 15;
+			yPos = doc.lastAutoTable.finalY + 15;
 		}
 
 		// Total Members by Year
@@ -494,7 +546,7 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = (doc as any).lastAutoTable.finalY + 15;
+			yPos = doc.lastAutoTable.finalY + 15;
 		}
 
 		// Total Achievements by Year
@@ -522,7 +574,7 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = (doc as any).lastAutoTable.finalY + 15;
+			yPos = doc.lastAutoTable.finalY + 15;
 		}
 
 		// Achievement Categories

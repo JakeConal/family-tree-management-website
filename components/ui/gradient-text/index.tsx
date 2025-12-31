@@ -25,7 +25,7 @@ function GradientText({
 	};
 
 	return (
-		<span data-slot="gradient-text" className={cn('relative inline-block', className)} {...(props as any)}>
+		<span data-slot="gradient-text" className={cn('relative inline-block', className)} {...props}>
 			<motion.span
 				className="m-0 text-transparent bg-clip-text bg-[length:200%_100%]"
 				style={baseStyle}

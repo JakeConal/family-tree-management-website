@@ -102,7 +102,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 					},
 				},
 				buriedPlaces: {
-					create: burialPlaces.map((place: any) => ({
+					create: burialPlaces.map((place: { location: string; startDate: string }) => ({
 						location: place.location,
 						startDate: new Date(place.startDate),
 					})),
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			familyMemberName: passingRecord.familyMember.fullName,
 			dateOfPassing: passingRecord.dateOfPassing,
 			causesOfDeath: causesOfDeath,
-			burialPlaces: burialPlaces.map((place: any) => ({
+			burialPlaces: burialPlaces.map((place: { location: string; startDate?: string }) => ({
 				location: place.location,
 				startDate: place.startDate,
 			})),

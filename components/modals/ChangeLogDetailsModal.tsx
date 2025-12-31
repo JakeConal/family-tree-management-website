@@ -17,6 +17,76 @@ interface ChangeLog {
 	createdAt: string;
 }
 
+interface ChangeDetail {
+	field: string;
+	oldValue: string | null | undefined;
+	newValue: string | null | undefined;
+	type?: string;
+}
+
+interface FamilyMemberData {
+	fullName?: string;
+	birthday?: string;
+	gender?: string;
+	generation?: number;
+	address?: string;
+	isAdopted?: boolean;
+	profilePicture?: string;
+	[key: string]: unknown;
+}
+
+interface AchievementData {
+	familyMemberName?: string;
+	achievementTypeName?: string;
+	achieveDate?: string;
+	title?: string;
+	description?: string;
+	note?: string;
+	[key: string]: unknown;
+}
+
+interface SpouseRelationshipData {
+	familyMember1Id?: number;
+	familyMember2Id?: number;
+	relationshipEstablished?: string;
+	relationshipEnd?: string;
+	relationshipType?: string;
+	marriageDate?: string;
+	[key: string]: unknown;
+}
+
+interface OccupationData {
+	title?: string;
+	jobTitle?: string;
+	startDate?: string;
+	endDate?: string;
+	[key: string]: unknown;
+}
+
+interface BurialPlace {
+	location: string;
+	startDate?: string;
+}
+
+interface PassingRecordData {
+	familyMemberName?: string;
+	passingDate?: string;
+	dateOfPassing?: string;
+	causeOfDeath?: string;
+	placeOfDeath?: string;
+	burialPlaces?: BurialPlace[];
+	[key: string]: unknown;
+}
+
+type ChangeLogData = (
+	| FamilyMemberData
+	| AchievementData
+	| SpouseRelationshipData
+	| OccupationData
+	| PassingRecordData
+) &
+	Record<string, unknown>;
+
 interface ChangeLogDetailsModalProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -96,7 +166,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		action: string,
 		oldValues: string | null,
 		newValues: string | null
-	) => {
+	): ChangeDetail[] => {
 		const parseValues = (values: string | null) => {
 			if (!values) return null;
 			try {
@@ -125,13 +195,12 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		}
 	};
 
-	const formatFamilyMemberChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatFamilyMemberChanges = (
+		action: string,
+		oldData: FamilyMemberData | null,
+		newData: FamilyMemberData | null
+	) => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			changes.push({
@@ -168,7 +237,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				changes.push({
 					field: 'Generation',
 					oldValue: null,
-					newValue: newData.generation,
+					newValue: String(newData.generation),
 					type: 'text',
 				});
 			}
@@ -193,11 +262,11 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 			fields.forEach(({ key, label, type }) => {
 				if (oldData?.[key] !== newData?.[key]) {
-					let oldValue = oldData?.[key];
-					let newValue = newData?.[key];
+					let oldValue: string | null | undefined = oldData?.[key] as string | null | undefined;
+					let newValue: string | null | undefined = newData?.[key] as string | null | undefined;
 
-					if (type === 'date' && oldValue) oldValue = new Date(oldValue).toLocaleDateString();
-					if (type === 'date' && newValue) newValue = new Date(newValue).toLocaleDateString();
+					if (type === 'date' && oldValue) oldValue = new Date(oldValue as string).toLocaleDateString();
+					if (type === 'date' && newValue) newValue = new Date(newValue as string).toLocaleDateString();
 					if (type === 'boolean' && oldValue !== undefined) oldValue = oldValue ? 'Yes' : 'No';
 					if (type === 'boolean' && newValue !== undefined) newValue = newValue ? 'Yes' : 'No';
 
@@ -214,13 +283,12 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		return changes;
 	};
 
-	const formatAchievementChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatAchievementChanges = (
+		action: string,
+		oldData: AchievementData | null,
+		newData: AchievementData | null
+	) => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			// Add member information first - use the name stored directly in the change log
@@ -263,11 +331,11 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 			fields.forEach(({ key, label, type }) => {
 				if (oldData?.[key] !== newData?.[key]) {
-					let oldValue = oldData?.[key];
-					let newValue = newData?.[key];
+					let oldValue: string | null | undefined = oldData?.[key] as string | null | undefined;
+					let newValue: string | null | undefined = newData?.[key] as string | null | undefined;
 
-					if (type === 'date' && oldValue) oldValue = new Date(oldValue).toLocaleDateString();
-					if (type === 'date' && newValue) newValue = new Date(newValue).toLocaleDateString();
+					if (type === 'date' && oldValue) oldValue = new Date(oldValue as string).toLocaleDateString();
+					if (type === 'date' && newValue) newValue = new Date(newValue as string).toLocaleDateString();
 
 					changes.push({
 						field: label,
@@ -282,21 +350,19 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		return changes;
 	};
 
-	const formatSpouseRelationshipChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatSpouseRelationshipChanges = (
+		action: string,
+		oldData: SpouseRelationshipData | null,
+		newData: SpouseRelationshipData | null
+	) => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			// Add member information first
 			const member1Id = newData.familyMember1Id;
 			const member2Id = newData.familyMember2Id;
-			const member1Name = relatedMembers[member1Id]?.fullName || `Member #${member1Id}`;
-			const member2Name = relatedMembers[member2Id]?.fullName || `Member #${member2Id}`;
-
+			const member1Name = member1Id ? relatedMembers[member1Id]?.fullName || `Member #${member1Id}` : 'Unknown';
+			const member2Name = member2Id ? relatedMembers[member2Id]?.fullName || `Member #${member2Id}` : 'Unknown';
 			changes.push({
 				field: 'Partner 1',
 				oldValue: null,
@@ -313,7 +379,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			changes.push({
 				field: 'Marriage Date',
 				oldValue: null,
-				newValue: new Date(newData.marriageDate).toLocaleDateString(),
+				newValue: newData.marriageDate ? new Date(newData.marriageDate).toLocaleDateString() : 'Unknown',
 				type: 'date',
 			});
 		}
@@ -321,13 +387,12 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		return changes;
 	};
 
-	const formatOccupationChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatOccupationChanges = (
+		action: string,
+		oldData: OccupationData | null,
+		newData: OccupationData | null
+	): ChangeDetail[] => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			changes.push({
@@ -361,11 +426,11 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 			fields.forEach(({ key, label, type }) => {
 				if (oldData?.[key] !== newData?.[key]) {
-					let oldValue = oldData?.[key];
-					let newValue = newData?.[key];
+					let oldValue: string | null | undefined = oldData?.[key] as string | null | undefined;
+					let newValue: string | null | undefined = newData?.[key] as string | null | undefined;
 
-					if (type === 'date' && oldValue) oldValue = new Date(oldValue).toLocaleDateString();
-					if (type === 'date' && newValue) newValue = new Date(newValue).toLocaleDateString();
+					if (type === 'date' && oldValue) oldValue = new Date(oldValue as string).toLocaleDateString();
+					if (type === 'date' && newValue) newValue = new Date(newValue as string).toLocaleDateString();
 
 					changes.push({
 						field: label,
@@ -380,13 +445,12 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		return changes;
 	};
 
-	const formatPassingRecordChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatPassingRecordChanges = (
+		action: string,
+		oldData: PassingRecordData | null,
+		newData: PassingRecordData | null
+	) => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			// Add member information first - use the name stored directly in the change log
@@ -398,24 +462,27 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				type: 'text',
 			});
 
-			changes.push({
-				field: 'Date of Passing',
-				oldValue: null,
-				newValue: new Date(newData.dateOfPassing).toLocaleDateString(),
-				type: 'date',
-			});
-
-			if (newData.causesOfDeath && Array.isArray(newData.causesOfDeath)) {
+			if (newData.dateOfPassing || newData.passingDate) {
+				const passingDate = newData.dateOfPassing || newData.passingDate;
 				changes.push({
-					field: 'Causes of Death',
+					field: 'Date of Passing',
 					oldValue: null,
-					newValue: newData.causesOfDeath.join(', '),
+					newValue: passingDate ? new Date(passingDate).toLocaleDateString() : 'Unknown',
+					type: 'date',
+				});
+			}
+
+			if (newData.causeOfDeath && Array.isArray(newData.causeOfDeath)) {
+				changes.push({
+					field: 'Cause of Death',
+					oldValue: null,
+					newValue: Array.isArray(newData.causeOfDeath) ? newData.causeOfDeath.join(', ') : newData.causeOfDeath,
 					type: 'text',
 				});
 			}
 
 			if (newData.burialPlaces && Array.isArray(newData.burialPlaces)) {
-				newData.burialPlaces.forEach((place: any, index: number) => {
+				newData.burialPlaces.forEach((place: BurialPlace, index: number) => {
 					changes.push({
 						field: `Burial Place ${index + 1} - Location`,
 						oldValue: null,
@@ -425,7 +492,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 					changes.push({
 						field: `Burial Place ${index + 1} - Start Date`,
 						oldValue: null,
-						newValue: new Date(place.startDate).toLocaleDateString(),
+						newValue: new Date(place.startDate!).toLocaleDateString(),
 						type: 'date',
 					});
 				});
@@ -435,20 +502,15 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 		return changes;
 	};
 
-	const formatGenericChanges = (action: string, oldData: any, newData: any) => {
-		const changes: Array<{
-			field: string;
-			oldValue: any;
-			newValue: any;
-			type: string;
-		}> = [];
+	const formatGenericChanges = (action: string, oldData: ChangeLogData | null, newData: ChangeLogData | null) => {
+		const changes: ChangeDetail[] = [];
 
 		if (action === 'CREATE' && newData) {
 			Object.keys(newData).forEach((key) => {
 				changes.push({
 					field: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
 					oldValue: null,
-					newValue: newData[key],
+					newValue: String(newData[key] ?? ''),
 					type: 'text',
 				});
 			});
@@ -459,8 +521,8 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				if (oldData?.[key] !== newData?.[key]) {
 					changes.push({
 						field: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
-						oldValue: oldData?.[key],
-						newValue: newData?.[key],
+						oldValue: String(oldData?.[key] ?? ''),
+						newValue: String(newData?.[key] ?? ''),
 						type: 'text',
 					});
 				}

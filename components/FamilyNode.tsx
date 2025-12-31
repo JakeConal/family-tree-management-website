@@ -1,6 +1,7 @@
 import React from 'react';
 import { FamilyMember } from '@prisma/client';
 import type { ExtNode } from 'relatives-tree/lib/types';
+import Image from 'next/image';
 
 interface FamilyNodeProps {
 	node: ExtNode;
@@ -9,7 +10,7 @@ interface FamilyNodeProps {
 	onClick?: () => void;
 }
 
-export default function FamilyNode({ node, member, style, onClick }: FamilyNodeProps) {
+export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) {
 	const formatDate = (date: Date | null) => {
 		if (!date) return '';
 		return new Intl.DateTimeFormat('en-US', {
@@ -42,8 +43,8 @@ export default function FamilyNode({ node, member, style, onClick }: FamilyNodeP
 			{/* Profile Image */}
 			<div className="flex justify-center mb-2">
 				<div className="w-20 h-20 rounded-lg bg-gray-300 flex items-center justify-center overflow-hidden">
-					{(member as any).hasProfilePicture ? (
-						<img
+					{member.profilePicture ? (
+						<Image
 							src={`/api/family-members/${member.id}/profile-picture`}
 							alt={member.fullName}
 							className="w-full h-full object-cover"

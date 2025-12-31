@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, TreePine, MapPin, Calendar } from 'lucide-react';
+import { X, TreePine, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface FamilyTree {

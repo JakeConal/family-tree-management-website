@@ -156,7 +156,7 @@ async function main() {
 		console.log(`✅ Created generation 2 members (3 siblings)`);
 
 		// Create generation 3 members (children)
-		const nephew1 = await prisma.familyMember.create({
+		await prisma.familyMember.create({
 			data: {
 				fullName: 'Huynh Van F',
 				gender: 'MALE',
@@ -168,7 +168,7 @@ async function main() {
 			},
 		});
 
-		const niece = await prisma.familyMember.create({
+		await prisma.familyMember.create({
 			data: {
 				fullName: 'Huynh Thi G',
 				gender: 'FEMALE',
@@ -180,7 +180,7 @@ async function main() {
 			},
 		});
 
-		const nephew2 = await prisma.familyMember.create({
+		await prisma.familyMember.create({
 			data: {
 				fullName: 'Huynh Van H',
 				gender: 'MALE',

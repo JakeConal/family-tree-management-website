@@ -1,11 +1,10 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { RippleButton } from '@/components/ui/ripple-button';
-import { Users, Trophy, Plus, ArrowRight } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useAppDispatch } from '@/lib/store/hooks';
 import { openCreatePanel } from '@/lib/store/createPanelSlice';
 
@@ -19,7 +18,7 @@ export default function DashboardPage() {
 		if (status === 'unauthenticated') {
 			router.push('/welcome/login');
 		}
-	}, [session, status]);
+	}, [router, session, status]);
 
 	useEffect(() => {
 		const checkFamilyTrees = async () => {

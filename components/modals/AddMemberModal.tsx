@@ -3,28 +3,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import { X, MapPin, Briefcase, Home, Camera, Plus, Info, Check, ArrowLeft, User, Heart } from 'lucide-react';
-
-interface PlaceOfOrigin {
-	id: string;
-	location: string;
-	startDate: string;
-	endDate: string;
-}
-
-interface Occupation {
-	id: string;
-	title: string;
-	startDate: string;
-	endDate: string;
-}
-
-interface FamilyMember {
-	id: number;
-	fullName: string;
-	gender: string;
-	birthday: string;
-}
+import { X, Camera, Plus, Info, ArrowLeft, User, Heart } from 'lucide-react';
+import { PlaceOfOriginForm, OccupationForm, FamilyMember } from '@/types';
 
 interface AddMemberModalProps {
 	isOpen: boolean;
@@ -52,10 +32,10 @@ export default function AddMemberModal({
 		relationship: '',
 		relationshipDate: '',
 	});
-	const [placesOfOrigin, setPlacesOfOrigin] = useState<PlaceOfOrigin[]>([
-		{ id: '1', location: '', startDate: '', endDate: '' },
+	const [placesOfOrigin, setPlacesOfOrigin] = useState<PlaceOfOriginForm[]>([
+		{ id: 1, location: '', startDate: '', endDate: '' },
 	]);
-	const [occupations, setOccupations] = useState<Occupation[]>([{ id: '1', title: '', startDate: '', endDate: '' }]);
+	const [occupations, setOccupations] = useState<OccupationForm[]>([{ id: 1, title: '', startDate: '', endDate: '' }]);
 	const [profilePicture, setProfilePicture] = useState<File | null>(null);
 	const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
 	const [confirmAccuracy, setConfirmAccuracy] = useState(false);
@@ -351,7 +331,7 @@ export default function AddMemberModal({
 		}
 	};
 
-	const removePlaceOfOrigin = (id: string) => {
+	const removePlaceOfOrigin = (id: string | number) => {
 		setPlacesOfOrigin(placesOfOrigin.filter((p) => p.id !== id));
 	};
 
@@ -369,7 +349,7 @@ export default function AddMemberModal({
 		}
 	};
 
-	const removeOccupation = (id: string) => {
+	const removeOccupation = (id: string | number) => {
 		setOccupations(occupations.filter((o) => o.id !== id));
 	};
 
@@ -876,7 +856,7 @@ export default function AddMemberModal({
 						{/* Confirmation */}
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<div className="flex items-start">
-								<Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+								<Info className="w-5 h-5 text-blue-600 mt-0.5 mr-3 shrink-0" />
 								<div>
 									<h4 className="text-sm font-semibold text-blue-900 mb-1">Important Notice</h4>
 									<p className="text-sm text-blue-800">

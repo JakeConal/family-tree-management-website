@@ -32,6 +32,7 @@ export default function LoginPage() {
 				router.push('/dashboard');
 			}
 		} catch (err) {
+			console.error(err);
 			setError('An error occurred. Please try again.');
 		} finally {
 			setIsLoading(false);
@@ -45,6 +46,7 @@ export default function LoginPage() {
 		try {
 			await signIn('google', { callbackUrl: '/dashboard' });
 		} catch (err) {
+			console.error(err);
 			setError('An error occurred with Google login. Please try again.');
 			setIsLoading(false);
 		}

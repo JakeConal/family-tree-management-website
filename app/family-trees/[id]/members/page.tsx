@@ -10,18 +10,7 @@ import classNames from 'classnames';
 import AddMemberModal from '@/components/modals/AddMemberModal';
 import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-
-interface FamilyMember {
-	id: number;
-	fullName: string;
-	gender: string;
-	birthday: string;
-	generation: string;
-	hasProfilePicture?: boolean;
-	parent?: {
-		fullName: string;
-	};
-}
+import { FamilyMember } from '@/types';
 
 const MemberAvatar = ({
 	memberId,
@@ -30,7 +19,7 @@ const MemberAvatar = ({
 }: {
 	memberId: number;
 	fullName: string;
-	hasProfilePicture?: boolean;
+	hasProfilePicture?: boolean | null;
 }) => {
 	const [error, setError] = useState(false);
 

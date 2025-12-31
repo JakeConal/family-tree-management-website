@@ -4,13 +4,7 @@ import classNames from 'classnames';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { X, Skull, ArrowLeft, Calendar, Check, Plus, AlertTriangle, Trash2 } from 'lucide-react';
-
-interface FamilyMember {
-	id: number;
-	fullName: string;
-	gender: string;
-	birthday: string;
-}
+import { FamilyMember } from '@/types';
 
 interface BurialPlace {
 	location: string;
@@ -275,7 +269,7 @@ export default function RecordPassingModal({
 		}
 	};
 
-	const handleFieldChange = (field: string, value: string) => {
+	const handleFieldChange = (field: string) => {
 		// Clear error when user starts typing
 		if (errors[field]) {
 			setErrors((prev) => {
@@ -415,8 +409,10 @@ export default function RecordPassingModal({
 										...passingFormData,
 										familyMemberId: selectedId,
 									});
-									setSelectedMemberBirthDate(selectedMember?.birthday || '');
-									handleFieldChange('familyMemberId', selectedId);
+									setSelectedMemberBirthDate(
+										selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
+									);
+									handleFieldChange('familyMemberId');
 								}}
 								onBlur={() => validateField('familyMemberId', passingFormData.familyMemberId)}
 								className={classNames(
@@ -454,7 +450,7 @@ export default function RecordPassingModal({
 											...passingFormData,
 											dateOfPassing: e.target.value,
 										});
-										handleFieldChange('dateOfPassing', e.target.value);
+										handleFieldChange('dateOfPassing');
 									}}
 									onBlur={() => validateField('dateOfPassing', passingFormData.dateOfPassing)}
 									className={classNames(
@@ -492,7 +488,7 @@ export default function RecordPassingModal({
 							</div>
 							{passingFormData.causesOfDeath.length === 0 ? (
 								<div className="text-center py-8 text-gray-500">
-									<p>No causes added yet. Click "Add Cause" to add a cause of passing.</p>
+									<p>No causes added yet. Click &quot;Add Cause&quot; to add a cause of passing.</p>
 								</div>
 							) : (
 								<div className="space-y-3">
@@ -541,7 +537,7 @@ export default function RecordPassingModal({
 							</div>
 							{passingFormData.burialPlaces.length === 0 ? (
 								<div className="text-center py-8 text-gray-500">
-									<p>No burial places added yet. Click "Add Place" to add a burial location.</p>
+									<p>No burial places added yet. Click &quot;Add Place&quot; to add a burial location.</p>
 								</div>
 							) : (
 								<div className="space-y-4">

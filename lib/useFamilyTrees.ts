@@ -1,5 +1,6 @@
 'use client';
 
+import { Session } from 'next-auth';
 import { useState, useEffect, useCallback } from 'react';
 
 interface FamilyTree {
@@ -10,7 +11,7 @@ interface FamilyTree {
 
 const FAMILY_TREES_REFRESH_KEY = 'family-trees-refresh';
 
-export function useFamilyTrees(session?: any) {
+export function useFamilyTrees(session: Session | null) {
 	const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [refreshTrigger, setRefreshTrigger] = useState(0);

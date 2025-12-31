@@ -75,7 +75,7 @@ function RippleButton({
 }: RippleButtonProps) {
 	const [ripples, setRipples] = React.useState<Ripple[]>([]);
 	const buttonRef = React.useRef<HTMLButtonElement>(null);
-	React.useImperativeHandle(ref as any, () => buttonRef.current as HTMLButtonElement);
+	React.useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
 
 	const createRipple = React.useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
 		const button = buttonRef.current;
@@ -116,7 +116,7 @@ function RippleButton({
 			whileTap={{ scale: 0.95 }}
 			whileHover={{ scale: 1.05 }}
 			className={cn(buttonVariants({ variant, size, className }))}
-			{...(props as any)}
+			{...props}
 		>
 			{children}
 			{ripples.map((ripple) => (

@@ -34,7 +34,14 @@ const inter = Inter({
 });
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
-	const [sidebarVisible, setSidebarVisible] = useState(true);
+	const [sidebarVisible, setSidebarVisible] = useState(() => {
+		if (typeof window === 'undefined') return true;
+		const saved = localStorage.getItem('sidebar-visible');
+		if (saved !== null) {
+			return saved === 'true';
+		}
+		return window.innerWidth >= 1024;
+	});
 	const pathname = usePathname();
 	const { data: session, status } = useSession();
 	const dispatch = useAppDispatch();
@@ -56,25 +63,6 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 		status === 'authenticated' && !pathname.startsWith('/welcome') && !pathname.startsWith('/signup');
 
 	useEffect(() => {
-		// Close sidebar on mobile when navigating
-		if (window.innerWidth < 1024) {
-			setSidebarVisible(false);
-		}
-	}, [pathname]);
-
-	useEffect(() => {
-		// Initialize from localStorage
-		const saved = localStorage.getItem('sidebar-visible');
-		if (saved !== null) {
-			const isVisible = saved === 'true';
-			setSidebarVisible(isVisible);
-		} else {
-			// Default to false on mobile
-			if (window.innerWidth < 1024) {
-				setSidebarVisible(false);
-			}
-		}
-
 		// Handle window resize
 		const handleResize = () => {
 			if (window.innerWidth < 1024) {
@@ -92,6 +80,15 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 			setSidebarVisible(event.detail.visible);
 		};
 
+		// Close sidebar on mobile when navigating
+		const handlePathnameChange = () => {
+			if (window.innerWidth < 1024) {
+				setSidebarVisible(false);
+			}
+		};
+
+		handlePathnameChange();
+
 		window.addEventListener('resize', handleResize);
 		window.addEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
 
@@ -99,7 +96,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 			window.removeEventListener('resize', handleResize);
 			window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
 		};
-	}, []);
+	}, [pathname]);
 
 	// If not authenticated or on welcome/signup pages, render children without sidebar
 	if (!shouldShowSidebar) {

@@ -21,14 +21,15 @@ function TextGenerateEffect({
 	...props
 }: TextGenerateEffectProps) {
 	const localRef = React.useRef<HTMLDivElement>(null);
-	React.useImperativeHandle(ref as any, () => localRef.current as HTMLDivElement);
+	React.useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
 
 	const [scope, animate] = useAnimate();
 	const [hasAnimated, setHasAnimated] = React.useState(false);
 	const wordsArray = React.useMemo(() => words.split(' '), [words]);
 
 	React.useEffect(() => {
-		if (!localRef.current) return;
+		const ref = localRef.current;
+		if (!ref) return;
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -52,17 +53,17 @@ function TextGenerateEffect({
 			{ threshold: 0.1 }
 		);
 
-		observer.observe(localRef.current);
+		observer.observe(ref);
 
 		return () => {
-			if (localRef.current) {
-				observer.unobserve(localRef.current);
+			if (ref) {
+				observer.unobserve(ref);
 			}
 		};
 	}, [animate, duration, filter, hasAnimated, scope, staggerDelay]);
 
 	return (
-		<div ref={localRef} className={cn('font-bold', className)} data-slot="text-generate-effect" {...(props as any)}>
+		<div ref={localRef} className={cn('font-bold', className)} data-slot="text-generate-effect" {...props}>
 			<motion.div ref={scope}>
 				{wordsArray.map((word, idx) => (
 					<motion.span

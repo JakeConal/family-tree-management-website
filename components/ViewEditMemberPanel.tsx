@@ -5,27 +5,7 @@ import Image from 'next/image';
 import { X, Camera, Info, Heart, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LoadingScreen from '@/components/LoadingScreen';
-
-interface PlaceOfOrigin {
-	id: string;
-	location: string;
-	startDate: string;
-	endDate: string;
-}
-
-interface Occupation {
-	id: string;
-	jobTitle: string;
-	startDate: string;
-	endDate: string;
-}
-
-interface FamilyMember {
-	id: number;
-	fullName: string;
-	gender: string;
-	birthday: string;
-}
+import { PlaceOfOriginForm, OccupationApiResponse, FamilyMember } from '@/types';
 
 interface ExistingMember {
 	id: number;
@@ -100,10 +80,12 @@ export default function ViewEditMemberPanel({
 		relationship: '',
 		relationshipDate: '',
 	});
-	const [placesOfOrigin, setPlacesOfOrigin] = useState<PlaceOfOrigin[]>([
+	const [placesOfOrigin, setPlacesOfOrigin] = useState<PlaceOfOriginForm[]>([
 		{ id: '1', location: '', startDate: '', endDate: '' },
 	]);
-	const [occupations, setOccupations] = useState<Occupation[]>([{ id: '1', jobTitle: '', startDate: '', endDate: '' }]);
+	const [occupations, setOccupations] = useState<OccupationApiResponse[]>([
+		{ id: '1', jobTitle: '', startDate: '', endDate: '' },
+	]);
 	const [profilePicture, setProfilePicture] = useState<File | null>(null);
 	const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
 	const [confirmAccuracy, setConfirmAccuracy] = useState(false);
@@ -147,12 +129,12 @@ export default function ViewEditMemberPanel({
 					// Load places of origin
 					if (data.birthPlaces && data.birthPlaces.length > 0) {
 						setPlacesOfOrigin(
-							data.birthPlaces.map((place: any, index: number) => ({
-								id: (index + 1).toString(),
-								location: place.placeOfOrigin.location,
-								startDate: place.startDate ? place.startDate.split('T')[0] : '',
-								endDate: place.endDate ? place.endDate.split('T')[0] : '',
-							}))
+							data.birthPlaces.map(
+								(
+									place: { startDate?: string; endDate?: string; placeOfOrigin: { location: string } },
+									index: number
+								) => ({})
+							)
 						);
 					} else {
 						setPlacesOfOrigin([{ id: '1', location: '', startDate: '', endDate: '' }]);
@@ -161,12 +143,11 @@ export default function ViewEditMemberPanel({
 					// Load occupations
 					if (data.occupations && data.occupations.length > 0) {
 						setOccupations(
-							data.occupations.map((occ: any, index: number) => ({
-								id: (index + 1).toString(),
-								jobTitle: occ.jobTitle,
-								startDate: occ.startDate ? occ.startDate.split('T')[0] : '',
-								endDate: occ.endDate ? occ.endDate.split('T')[0] : '',
-							}))
+							data.occupations.map(
+								(occ: { jobTitle: string; startDate?: string; endDate?: string }, index: number) => ({
+									endDate: occ.endDate ? occ.endDate.split('T')[0] : '',
+								})
+							)
 						);
 					} else {
 						setOccupations([{ id: '1', jobTitle: '', startDate: '', endDate: '' }]);
@@ -425,7 +406,7 @@ export default function ViewEditMemberPanel({
 		}
 	};
 
-	const removePlaceOfOrigin = (id: string) => {
+	const removePlaceOfOrigin = (id: string | number) => {
 		setPlacesOfOrigin(placesOfOrigin.filter((p) => p.id !== id));
 	};
 
@@ -443,7 +424,7 @@ export default function ViewEditMemberPanel({
 		}
 	};
 
-	const removeOccupation = (id: string) => {
+	const removeOccupation = (id: string | number) => {
 		setOccupations(occupations.filter((o) => o.id !== id));
 	};
 
@@ -504,7 +485,7 @@ export default function ViewEditMemberPanel({
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
 					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{memberFormData.fullName}'s Information
+						{memberFormData.fullName}&apos;s Information
 					</h2>
 
 					<div className="space-y-8">
@@ -742,7 +723,7 @@ export default function ViewEditMemberPanel({
 				/* Edit Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
 					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						Edit {memberFormData.fullName}'s Information
+						Edit {memberFormData.fullName}&apos;s Information
 					</h2>
 
 					<form onSubmit={handleSubmit} className="space-y-8">

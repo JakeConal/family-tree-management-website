@@ -12,8 +12,8 @@ export async function logChange(
 	action: 'CREATE' | 'UPDATE' | 'DELETE',
 	familyTreeId: number,
 	userId?: string,
-	oldValues?: any,
-	newValues?: any
+	oldValues?: Record<string, unknown> | null,
+	newValues?: Record<string, unknown> | null
 ) {
 	try {
 		const prisma = getPrisma();
