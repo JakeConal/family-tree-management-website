@@ -11,10 +11,10 @@ import type { Node, ExtNode } from 'relatives-tree/lib/types';
 
 import FamilyNode from '@/components/FamilyNode';
 import LoadingScreen from '@/components/LoadingScreen';
-import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
+import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
 
@@ -293,22 +293,22 @@ export default function FamilyTreePage() {
 			<div className="flex-1 flex flex-col overflow-y-auto p-4">
 				<div className="w-full">
 					{/* Top Control Bar */}
-					<div className="mb-6 flex items-center justify-between bg-[#f4f4f5] rounded-[20px] px-6 py-4 shadow-sm">
+					<div className="mb-6 flex items-center justify-between bg-white rounded-[20px] px-6 py-4 shadow-sm border border-gray-100">
 						{/* Left Side */}
 						<div className="flex items-center gap-4">
 							<div className="relative">
-								<select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
+								<select className="appearance-none bg-white border border-gray-200 rounded-full px-6 py-2 pr-10 text-sm font-inter font-medium text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer">
 									<option>All Generation</option>
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
 							</div>
-						<button
-							onClick={() => setShowAddPanel(true)}
-							className="bg-black hover:bg-gray-800 text-white rounded-full px-6 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-sm"
-						>
-							<Plus className="w-4 h-4" />
-							Add Member
-						</button>
+							<button
+								onClick={() => setShowAddPanel(true)}
+								className="bg-white hover:bg-gray-50 border border-gray-200 text-black rounded-full px-6 py-2 text-sm font-inter font-medium flex items-center gap-2 transition-all shadow-sm"
+							>
+								<Plus className="w-4 h-4" />
+								Add Member
+							</button>
 						</div>
 
 						{/* Right Side - Zoom Controls */}
@@ -320,7 +320,7 @@ export default function FamilyTreePage() {
 							>
 								<Minus className="w-4 h-4 text-black" />
 							</button>
-							<span className="px-4 text-sm font-bold text-black min-w-[4rem] text-center border-x border-gray-100">
+							<span className="px-4 text-sm font-inter font-bold text-black min-w-[4rem] text-center border-x border-gray-100">
 								{zoomPercentage}%
 							</span>
 							<button
@@ -390,10 +390,10 @@ export default function FamilyTreePage() {
 														member={member}
 														style={{
 															position: 'absolute',
-															width: 150,
-															height: 200,
-															left: node.left * 120 - 75,
-															top: node.top * 150 - 100,
+															width: 160,
+															height: 256,
+															left: node.left * 120 - 80,
+															top: node.top * 180 - 128,
 														}}
 														onClick={() => {
 															setSelectedMemberIdForPanel(member.id);
@@ -430,7 +430,7 @@ export default function FamilyTreePage() {
 														})),
 													];
 
-													return spouseRelations.map(({ spouseId }) => {
+													return spouseRelations.map(({ spouseId, relation }) => {
 														const pairKey = [node.id, spouseId].sort().join('-');
 
 														if (renderedPairs.has(pairKey)) return null;
@@ -441,43 +441,59 @@ export default function FamilyTreePage() {
 
 														// Calculate midpoint between spouses
 														const nodeX = node.left * 120;
-														const nodeY = node.top * 150;
+														const nodeY = node.top * 180;
 														const spouseX = spouseNode.left * 120;
-														const spouseY = spouseNode.top * 150;
+														const spouseY = spouseNode.top * 180;
 
 														const midX = (nodeX + spouseX) / 2;
 														const midY = (nodeY + spouseY) / 2;
 
+														// Check if this is a divorced relationship
+														const isDivorced = relation.divorceDate !== null;
+														const strokeDasharray = isDivorced ? '4,4' : undefined;
+
 														return (
 															<g key={`spouse-${pairKey}`}>
 																{/* Spouse connection line */}
-																<line x1={nodeX} y1={nodeY} x2={spouseX} y2={spouseY} stroke="black" strokeWidth="2" />
-																{/* Add child circle */}
-																<circle
-																	cx={midX}
-																	cy={midY}
-																	r="15"
-																	fill="white"
+																<line
+																	x1={nodeX}
+																	y1={nodeY}
+																	x2={spouseX}
+																	y2={spouseY}
 																	stroke="gray"
 																	strokeWidth="2"
-																	className="cursor-pointer hover:fill-yellow-200"
-															onClick={() => {
-																setSelectedMemberId(`${node.id},${spouseId}`);
-																setShowAddPanel(true);
-															}}
+																	strokeDasharray={strokeDasharray}
 																/>
-																{/* Add icon */}
-																<text
-																	x={midX}
-																	y={midY + 5}
-																	textAnchor="middle"
-																	fontSize="20"
-																	fill="black"
-																	className="cursor-pointer pointer-events-none"
-																	style={{ userSelect: 'none' }}
-																>
-																	+
-																</text>
+																{/* Add child circle - only for current spouses */}
+																{!isDivorced && (
+																	<>
+																		<circle
+																			cx={midX}
+																			cy={midY}
+																			r="15"
+																			fill="white"
+																			stroke="gray"
+																			strokeWidth="2"
+																			className="cursor-pointer hover:fill-yellow-200"
+																			onClick={() => {
+																				setSelectedMemberId(`${node.id},${spouseId}`);
+																				setShowAddPanel(true);
+																			}}
+																		/>
+																		{/* Add icon */}
+																		<text
+																			x={midX}
+																			y={midY + 5}
+																			textAnchor="middle"
+																			fontSize="20"
+																			fill="black"
+																			className="cursor-pointer pointer-events-none"
+																			style={{ userSelect: 'none' }}
+																		>
+																			+
+																		</text>
+																	</>
+																)}
 															</g>
 														);
 													});
@@ -512,8 +528,8 @@ export default function FamilyTreePage() {
 													renderedConnections.add(connectionKey);
 
 													const parentX = parentNode.left * 120;
-													const parentY = parentNode.top * 150 + 100;
-													const childY = childNodes[0].top * 150 - 100;
+													const parentY = parentNode.top * 180 + 128;
+													const childY = childNodes[0].top * 180 - 128;
 													const childXs = childNodes.map((n) => n.left * 120).sort((a, b) => a - b);
 													const minX = childXs[0];
 													const maxX = childXs[childXs.length - 1];
@@ -575,69 +591,71 @@ export default function FamilyTreePage() {
 					</div>
 
 					{/* Bottom Legend */}
-					<div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-[#f4f4f5] rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
+					<div className="mt-6 flex flex-wrap items-center justify-center gap-8 bg-white rounded-[20px] py-4 px-8 shadow-sm border border-gray-100">
 						<div className="flex items-center gap-3">
-							<div className="w-8 h-0.5 bg-gray-400 rounded-full"></div>
-							<span className="text-sm font-medium text-black">Child - Parent</span>
+							<div className="w-8 h-0.5 bg-gray-600 rounded-full"></div>
+							<span className="text-sm font-inter font-medium text-black">Child - Parent</span>
 						</div>
 						<div className="flex items-center gap-3">
-							<div className="w-8 h-0.5 border-t-2 border-dotted border-gray-400"></div>
-							<span className="text-sm font-medium text-black">Former Spouse</span>
+							<svg className="w-8 h-0.5" viewBox="0 0 32 2" fill="none">
+								<line x1="0" y1="1" x2="32" y2="1" stroke="gray" strokeWidth="2" strokeDasharray="4,4" />
+							</svg>
+							<span className="text-sm font-inter font-medium text-black">Former Spouse</span>
 						</div>
 						<div className="flex items-center gap-3">
 							<Plus className="w-4 h-4 text-black" />
-							<span className="text-sm font-medium text-black">Current Spouse</span>
+							<span className="text-sm font-inter font-medium text-black">Current Spouse</span>
 						</div>
 						<div className="flex items-center gap-3">
-							<div className="bg-white p-1.5 rounded-full shadow-sm">
+							<div className="bg-white p-1.5 rounded-full shadow-sm border border-gray-200">
 								<Skull className="w-4 h-4 text-black" />
 							</div>
-							<span className="text-sm font-medium text-black">Passed away</span>
+							<span className="text-sm font-inter font-medium text-black">Passed away</span>
 						</div>
 					</div>
 				</div>
 			</div>
 
-		{/* Member Panel Sidebar - Push Style */}
-		<aside
-			className={classNames(
-				'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-				{
-					'w-[600px]': selectedMemberIdForPanel !== null || showAddPanel,
-					'w-0': selectedMemberIdForPanel === null && !showAddPanel,
-				}
-			)}
-		>
-			{selectedMemberIdForPanel !== null && (
-				<ViewEditMemberPanel
-					memberId={selectedMemberIdForPanel}
-					familyTreeId={familyTreeId}
-					existingMembers={members}
-					mode={panelMode}
-					onModeChange={setPanelMode}
-					onClose={() => setSelectedMemberIdForPanel(null)}
-					onSuccess={fetchFamilyMembers}
-				/>
-			)}
-			{showAddPanel && (
-				<AddMemberPanel
-					familyTreeId={familyTreeId}
-					existingMembers={members}
-					selectedMemberId={selectedMemberId}
-					onClose={() => {
-						setShowAddPanel(false);
-						setSelectedMemberId('');
-					}}
-					onSuccess={() => {
-						fetchFamilyMembers();
-						setShowAddPanel(false);
-						setSelectedMemberId('');
-					}}
-				/>
-			)}
-		</aside>
+			{/* Member Panel Sidebar - Push Style */}
+			<aside
+				className={classNames(
+					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+					{
+						'w-[600px]': selectedMemberIdForPanel !== null || showAddPanel,
+						'w-0': selectedMemberIdForPanel === null && !showAddPanel,
+					}
+				)}
+			>
+				{selectedMemberIdForPanel !== null && (
+					<ViewEditMemberPanel
+						memberId={selectedMemberIdForPanel}
+						familyTreeId={familyTreeId}
+						existingMembers={members}
+						mode={panelMode}
+						onModeChange={setPanelMode}
+						onClose={() => setSelectedMemberIdForPanel(null)}
+						onSuccess={fetchFamilyMembers}
+					/>
+				)}
+				{showAddPanel && (
+					<AddMemberPanel
+						familyTreeId={familyTreeId}
+						existingMembers={members}
+						selectedMemberId={selectedMemberId}
+						onClose={() => {
+							setShowAddPanel(false);
+							setSelectedMemberId('');
+						}}
+						onSuccess={() => {
+							fetchFamilyMembers();
+							setShowAddPanel(false);
+							setSelectedMemberId('');
+						}}
+					/>
+				)}
+			</aside>
 
-		{/* Modals */}
+			{/* Modals */}
 
 			<RecordAchievementModal
 				isOpen={showAchievementModal}

@@ -2,6 +2,7 @@ import { FamilyMember } from '@prisma/client';
 import Image from 'next/image';
 import React from 'react';
 import type { ExtNode } from 'relatives-tree/lib/types';
+import { Skull } from 'lucide-react';
 
 interface FamilyNodeProps {
 	node: ExtNode;
@@ -26,61 +27,66 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 		return '';
 	};
 
+	// Check if member has passed away
+	const hasPassed = member.passingRecords && member.passingRecords.length > 0;
+
+	// Gender-based background colors matching Figma
+	const bgColor = member.gender === 'FEMALE' ? '#fbebf7' : '#c4d6fa';
+	const borderColor = 'rgba(0,0,0,0.04)';
+
 	return (
 		<div
-			className={`
-        absolute rounded-xl shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105
-        ${member.gender === 'FEMALE' ? 'bg-blue-50 border-blue-200' : 'bg-pink-50 border-pink-200'}
-        border-2 p-3 cursor-pointer
-      `}
+			className="absolute flex flex-col items-center justify-start gap-3 rounded-[32px] border-2 p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
 			style={{
 				...style,
-				width: '150px',
-				height: '200px',
+				width: '160px',
+				height: '256px',
+				backgroundColor: bgColor,
+				borderColor: borderColor,
 			}}
 			onClick={onClick}
 		>
-			{/* Profile Image */}
-			<div className="flex justify-center mb-2">
-				<div className="w-20 h-20 rounded-lg bg-gray-300 flex items-center justify-center overflow-hidden">
+			{/* Profile Image Container */}
+			<div className="relative">
+				<div className="w-24 h-24 rounded-[20px] bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100">
 					{member.profilePicture ? (
 						<Image
 							src={`/api/family-members/${member.id}/profile-picture`}
 							alt={member.fullName}
+							width={96}
+							height={96}
 							className="w-full h-full object-cover"
 						/>
 					) : (
-						<span className="text-gray-600 text-xl font-bold">{member.fullName.charAt(0).toUpperCase()}</span>
+						<span className="text-gray-600 text-2xl font-bold">{member.fullName.charAt(0).toUpperCase()}</span>
 					)}
 				</div>
+				{/* Passed Away Indicator */}
+				{hasPassed && (
+					<div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center border border-gray-200">
+						<Skull className="w-4 h-4 text-black" />
+					</div>
+				)}
 			</div>
 
-			{/* Full Name */}
-			<div className="text-center mb-1">
-				<h3 className="font-bold text-sm text-gray-800 truncate">{member.fullName}</h3>
+			{/* Full Name - Nunito Black 28px */}
+			<div className="text-center w-full px-1">
+				<h3 className="font-nunito font-black text-2xl text-gray-900 leading-tight truncate">{member.fullName}</h3>
 			</div>
 
-			{/* Role Label */}
+			{/* Role Badge or Family Head Label */}
 			{getRoleLabel() && (
-				<div className="text-center mb-2">
-					<span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
-						{getRoleLabel()}
-					</span>
+				<div className="bg-gray-900 text-white px-2 py-1 rounded-full text-center">
+					<span className="font-nunito font-semibold text-xs">{getRoleLabel()}</span>
 				</div>
 			)}
 
-			{/* Date of Birth */}
+			{/* Birthday */}
 			{member.birthday && (
-				<div className="text-center mb-2">
-					<div className="flex items-center justify-center text-gray-500 text-xs">
-						<svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-							<path
-								fillRule="evenodd"
-								d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-								clipRule="evenodd"
-							/>
-						</svg>
-						{formatDate(member.birthday)}
+				<div className="text-center text-xs text-gray-700">
+					<div className="flex items-center justify-center gap-1">
+						<span>🎂</span>
+						<span className="font-nunito font-semibold text-xs">{formatDate(member.birthday)}</span>
 					</div>
 				</div>
 			)}

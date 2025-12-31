@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { Geist, Geist_Mono, Playfair_Display, Inter, Crimson_Text, Roboto } from 'next/font/google';
+import { Geist, Geist_Mono, Playfair_Display, Inter, Crimson_Text, Roboto, Nunito } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
@@ -45,6 +45,12 @@ const roboto = Roboto({
 	variable: '--font-roboto',
 	subsets: ['latin'],
 	weight: ['300', '400', '500', '700'],
+});
+
+const nunito = Nunito({
+	variable: '--font-nunito',
+	subsets: ['latin'],
+	weight: ['400', '600', '700', '900'],
 });
 
 function RootLayoutContent({ children }: { children: React.ReactNode }) {
@@ -228,6 +234,7 @@ export default function RootLayout({
 					inter.variable,
 					crimsonText.variable,
 					roboto.variable,
+					nunito.variable,
 					'antialiased'
 				)}
 			>
