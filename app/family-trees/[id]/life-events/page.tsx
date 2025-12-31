@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ChevronDown, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import { TabNavigation, EventCard, PassingCard, YearSection } from '@/components/ui/life-events';
+import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 import LoadingScreen from '@/components/LoadingScreen';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
@@ -59,6 +59,33 @@ interface GroupedPassingRecords {
 	[year: string]: PassingRecord[];
 }
 
+interface SpouseRelationship {
+	id: number;
+	marriageDate: Date;
+	divorceDate: Date | null;
+	familyMember1: {
+		id: number;
+		fullName: string;
+	};
+	familyMember2: {
+		id: number;
+		fullName: string;
+	};
+}
+
+interface LifeEvent {
+	id: string;
+	type: 'Married' | 'Divorce';
+	date: Date;
+	title: string;
+	description: string;
+	relationshipId: number;
+}
+
+interface GroupedLifeEvents {
+	[year: string]: LifeEvent[];
+}
+
 export default function LifeEventsPage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
@@ -67,6 +94,7 @@ export default function LifeEventsPage() {
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
 	const [achievementTypes, setAchievementTypes] = useState<AchievementType[]>([]);
 	const [passingRecords, setPassingRecords] = useState<PassingRecord[]>([]);
+	const [spouseRelationships, setSpouseRelationships] = useState<SpouseRelationship[]>([]);
 	const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string>('');
@@ -136,6 +164,22 @@ export default function LifeEventsPage() {
 		}
 	}, [familyTreeId]);
 
+	const fetchLifeEvents = useCallback(async () => {
+		try {
+			setLoading(true);
+			const data = await fetch(`/api/family-trees/${familyTreeId}/life-events`).then((res) => {
+				if (!res.ok) throw new Error('Failed to fetch life events');
+				return res.json();
+			});
+			setSpouseRelationships(data);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : 'An error occurred');
+			toast.error('Failed to load life events');
+		} finally {
+			setLoading(false);
+		}
+	}, [familyTreeId]);
+
 	useEffect(() => {
 		// Always fetch family members for the modals
 		fetchFamilyMembers();
@@ -145,8 +189,10 @@ export default function LifeEventsPage() {
 			fetchAchievementTypes();
 		} else if (activeTab === 'passing') {
 			fetchPassingRecords();
+		} else if (activeTab === 'life-event') {
+			fetchLifeEvents();
 		}
-	}, [activeTab, fetchAchievements, fetchAchievementTypes, fetchPassingRecords, fetchFamilyMembers]);
+	}, [activeTab, fetchAchievements, fetchAchievementTypes, fetchPassingRecords, fetchFamilyMembers, fetchLifeEvents]);
 
 	// Filter achievements
 	const filteredAchievements = achievements.filter((achievement) => {
@@ -203,6 +249,63 @@ export default function LifeEventsPage() {
 	// Sort years in descending order for passing records
 	const sortedPassingYears = Object.keys(groupedPassingRecords).sort((a, b) => parseInt(b) - parseInt(a));
 
+	// Transform spouse relationships into life events
+	const lifeEvents: LifeEvent[] = spouseRelationships.flatMap((relationship) => {
+		const events: LifeEvent[] = [];
+
+		// Add marriage event
+		events.push({
+			id: `marriage-${relationship.id}`,
+			type: 'Married',
+			date: relationship.marriageDate,
+			title: `${relationship.familyMember1.fullName} & ${relationship.familyMember2.fullName} Say 'I Do'`,
+			description:
+				'Happiness starts here! The couple held an intimate ceremony, marking the beginning of a new chapter in their lives.',
+			relationshipId: relationship.id,
+		});
+
+		// Add divorce event if exists
+		if (relationship.divorceDate) {
+			events.push({
+				id: `divorce-${relationship.id}`,
+				type: 'Divorce',
+				date: relationship.divorceDate,
+				title: `${relationship.familyMember1.fullName}'s Separation from ${relationship.familyMember2.fullName}`,
+				description:
+					'The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.',
+				relationshipId: relationship.id,
+			});
+		}
+
+		return events;
+	});
+
+	// Filter life events
+	const filteredLifeEvents = lifeEvents.filter((event) => {
+		if (selectedYear !== 'all' && event.date) {
+			const year = new Date(event.date).getFullYear();
+			if (year.toString() !== selectedYear) return false;
+		}
+		if (selectedType !== 'all') {
+			if (event.type !== selectedType) return false;
+		}
+		return true;
+	});
+
+	// Group life events by year
+	const groupedLifeEvents: GroupedLifeEvents = filteredLifeEvents.reduce((acc: GroupedLifeEvents, event) => {
+		if (!event.date) return acc;
+		const year = new Date(event.date).getFullYear().toString();
+		if (!acc[year]) {
+			acc[year] = [];
+		}
+		acc[year].push(event);
+		return acc;
+	}, {});
+
+	// Sort years in descending order for life events
+	const sortedLifeEventYears = Object.keys(groupedLifeEvents).sort((a, b) => parseInt(b) - parseInt(a));
+
 	// Get unique years for filter dropdown based on active tab
 	const availableYears = Array.from(
 		new Set(
@@ -211,10 +314,15 @@ export default function LifeEventsPage() {
 						.filter((a) => a.achieveDate)
 						.map((a) => new Date(a.achieveDate!).getFullYear())
 						.sort((a, b) => b - a)
-				: passingRecords
-						.filter((p) => p.dateOfPassing)
-						.map((p) => new Date(p.dateOfPassing).getFullYear())
-						.sort((a, b) => b - a)
+				: activeTab === 'passing'
+					? passingRecords
+							.filter((p) => p.dateOfPassing)
+							.map((p) => new Date(p.dateOfPassing).getFullYear())
+							.sort((a, b) => b - a)
+					: lifeEvents
+							.filter((e) => e.date)
+							.map((e) => new Date(e.date).getFullYear())
+							.sort((a, b) => b - a)
 		)
 	);
 
@@ -267,7 +375,7 @@ export default function LifeEventsPage() {
 							<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
 						</div>
 
-						{/* Type Filter - Only show for Achievement tab */}
+						{/* Type Filter - Show for Achievement and Life Event tabs */}
 						{activeTab === 'achievement' && (
 							<div className="relative">
 								<select
@@ -281,6 +389,20 @@ export default function LifeEventsPage() {
 											{type.typeName}
 										</option>
 									))}
+								</select>
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
+							</div>
+						)}
+						{activeTab === 'life-event' && (
+							<div className="relative">
+								<select
+									value={selectedType}
+									onChange={(e) => setSelectedType(e.target.value)}
+									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] pr-[48px] text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px]"
+								>
+									<option value="all">All Types</option>
+									<option value="Married">Married</option>
+									<option value="Divorce">Divorce</option>
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
 							</div>
@@ -306,6 +428,15 @@ export default function LifeEventsPage() {
 							>
 								<Plus className="w-[15px] h-[15px] text-black" />
 								Add Passing
+							</button>
+						)}
+						{activeTab === 'life-event' && (
+							<button
+								onClick={() => toast('Add Divorce feature coming soon')}
+								className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
+							>
+								<Plus className="w-[15px] h-[15px] text-black" />
+								Add Divorce
 							</button>
 						)}
 					</div>
@@ -384,9 +515,38 @@ export default function LifeEventsPage() {
 					)}
 
 					{activeTab === 'life-event' && (
-						<div className="text-center py-12">
-							<p className="text-gray-500 text-lg">Life events feature coming soon</p>
-						</div>
+						<>
+							{sortedLifeEventYears.length === 0 ? (
+								<div className="text-center py-12">
+									<p className="text-gray-500 text-lg">No life events recorded yet</p>
+									<button
+										onClick={() => toast('Add Marriage feature coming soon')}
+										className="mt-4 text-black hover:underline"
+									>
+										Add your first life event
+									</button>
+								</div>
+							) : (
+								<div className="space-y-[64px]">
+									{sortedLifeEventYears.map((year) => (
+										<div key={year}>
+											<YearSection year={parseInt(year)} />
+											<div className="grid grid-cols-2 gap-[44px]">
+												{groupedLifeEvents[year].map((event) => (
+													<LifeEventCard
+														key={event.id}
+														title={event.title}
+														date={formatDate(event.date)}
+														description={event.description}
+														type={event.type}
+													/>
+												))}
+											</div>
+										</div>
+									))}
+								</div>
+							)}
+						</>
 					)}
 				</div>
 			</div>
