@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import {
 	Users,
@@ -18,6 +16,8 @@ import {
 	TrendingUp,
 	Clock,
 } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';

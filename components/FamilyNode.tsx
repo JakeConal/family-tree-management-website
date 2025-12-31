@@ -27,6 +27,12 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 		return '';
 	};
 
+	const getFirstName = (fullName: string) => {
+		// Extract the last part of the full name as the first name
+		const parts = fullName.trim().split(' ');
+		return parts[parts.length - 1];
+	};
+
 	// Check if member has passed away
 	const hasPassed = member.passingRecords && member.passingRecords.length > 0;
 
@@ -40,7 +46,7 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 			style={{
 				...style,
 				width: '160px',
-				height: '256px',
+				height: '240px',
 				backgroundColor: bgColor,
 				borderColor: borderColor,
 			}}
@@ -58,7 +64,9 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 							className="w-full h-full object-cover"
 						/>
 					) : (
-						<span className="text-gray-600 text-2xl font-bold">{member.fullName.charAt(0).toUpperCase()}</span>
+						<span className="text-gray-600 text-2xl font-bold">
+							{getFirstName(member.fullName).charAt(0).toUpperCase()}
+						</span>
 					)}
 				</div>
 				{/* Passed Away Indicator */}
@@ -69,9 +77,11 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 				)}
 			</div>
 
-			{/* Full Name - Nunito Black 28px */}
+			{/* First Name - Nunito Black 28px */}
 			<div className="text-center w-full px-1">
-				<h3 className="font-nunito font-black text-2xl text-gray-900 leading-tight truncate">{member.fullName}</h3>
+				<h3 className="font-nunito font-black text-2xl text-gray-900 leading-tight truncate">
+					{getFirstName(member.fullName)}
+				</h3>
 			</div>
 
 			{/* Role Badge or Family Head Label */}

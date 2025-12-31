@@ -4,8 +4,8 @@ import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
 import classNames from 'classnames';
 import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import relativesTree from 'relatives-tree';
 import type { Node, ExtNode } from 'relatives-tree/lib/types';
 
@@ -92,6 +92,9 @@ export default function FamilyTreePage() {
 	} | null>(null);
 	const [selectedGeneration, setSelectedGeneration] = useState<string>('all');
 	const [availableGenerations, setAvailableGenerations] = useState<number[]>([]);
+	const transformRef = useRef<ReactZoomPanPinchRef>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [hasInitialized, setHasInitialized] = useState(false);
 
 	const fetchFamilyMembers = useCallback(async () => {
 		try {
@@ -291,6 +294,57 @@ export default function FamilyTreePage() {
 		});
 	};
 
+	// Calculate bounding box of all nodes for centering
+	const treeBounds = useMemo(() => {
+		if (positionedNodes.length === 0) return null;
+
+		const NODE_WIDTH = 160;
+		const NODE_HEIGHT = 256;
+
+		let minX = Infinity;
+		let maxX = -Infinity;
+		let minY = Infinity;
+		let maxY = -Infinity;
+
+		positionedNodes.forEach((node) => {
+			const left = node.left * 120 - 80;
+			const top = node.top * 180 - 128;
+			const right = left + NODE_WIDTH;
+			const bottom = top + NODE_HEIGHT;
+
+			minX = Math.min(minX, left);
+			maxX = Math.max(maxX, right);
+			minY = Math.min(minY, top);
+			maxY = Math.max(maxY, bottom);
+		});
+
+		const width = maxX - minX;
+		const height = maxY - minY;
+		const centerX = minX + width / 2;
+		const centerY = minY + height / 2;
+
+		return { minX, maxX, minY, maxY, width, height, centerX, centerY };
+	}, [positionedNodes]);
+
+	// Center the tree after it's loaded
+	useEffect(() => {
+		if (!hasInitialized && treeBounds && containerRef.current && transformRef.current) {
+			const containerWidth = containerRef.current.clientWidth;
+			const containerHeight = containerRef.current.clientHeight;
+			const scale = 0.8; // initial scale
+
+			// Calculate the position to center the tree
+			const initialX = containerWidth / 2 - treeBounds.centerX * scale;
+			const initialY = containerHeight / 2 - treeBounds.centerY * scale;
+
+			// Use setTimeout to ensure the transform is applied after render
+			setTimeout(() => {
+				transformRef.current?.setTransform(initialX, initialY, scale);
+				setHasInitialized(true);
+			}, 100);
+		}
+	}, [treeBounds, hasInitialized]);
+
 	if (loading) {
 		return <LoadingScreen message="Loading family tree..." />;
 	}
@@ -367,14 +421,16 @@ export default function FamilyTreePage() {
 
 					{/* Tree Container */}
 					<div
+						ref={containerRef}
 						className="bg-[#f4f4f5] rounded-[20px] p-4 relative overflow-hidden shadow-inner"
 						style={{ height: '73vh', minHeight: '400px' }}
 					>
 						<TransformWrapper
+							ref={transformRef}
 							initialScale={0.8}
 							minScale={0.1}
 							maxScale={3}
-							centerOnInit={true}
+							centerOnInit={false}
 							wheel={{ step: 0.1 }}
 							pinch={{ step: 0.1 }}
 							doubleClick={{ mode: 'zoomIn' }}
@@ -401,8 +457,6 @@ export default function FamilyTreePage() {
 									contentStyle={{
 										width: 'auto',
 										height: 'auto',
-										minWidth: '100%',
-										minHeight: '100%',
 										display: 'flex',
 										justifyContent: 'center',
 										alignItems: 'center',
