@@ -11,6 +11,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import AchievementPanel from '@/components/panels/AchievementPanel';
 import BirthPanel from '@/components/panels/BirthPanel';
 import DivorcePanel from '@/components/panels/DivorcePanel';
+import MarriagePanel from '@/components/panels/MarriagePanel';
 import PassingPanel from '@/components/panels/PassingPanel';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 
@@ -106,7 +107,7 @@ export default function LifeEventsPage() {
 	const [selectedType, setSelectedType] = useState<string>('all');
 
 	// Panel state
-	const [panelType, setPanelType] = useState<'achievement' | 'passing' | 'divorce' | 'birth' | null>(null);
+	const [panelType, setPanelType] = useState<'achievement' | 'passing' | 'divorce' | 'birth' | 'marriage' | null>(null);
 	const [panelMode, setPanelMode] = useState<'add' | 'view' | 'edit'>('add');
 	const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
@@ -405,6 +406,17 @@ export default function LifeEventsPage() {
 		setPanelType('birth');
 	};
 
+	const handleOpenMarriagePanel = (id?: number) => {
+		if (id) {
+			setSelectedEventId(id);
+			setPanelMode('view');
+		} else {
+			setSelectedEventId(null);
+			setPanelMode('add');
+		}
+		setPanelType('marriage');
+	};
+
 	const handleClosePanel = () => {
 		setPanelType(null);
 		setSelectedEventId(null);
@@ -649,11 +661,13 @@ export default function LifeEventsPage() {
 															description={event.description}
 															type={event.type}
 															onClick={
-																event.type === 'Divorce'
-																	? handleOpenDivorcePanel
-																	: event.type === 'Birth Event'
-																		? handleOpenBirthPanel
-																		: undefined
+																event.type === 'Married'
+																	? handleOpenMarriagePanel
+																	: event.type === 'Divorce'
+																		? handleOpenDivorcePanel
+																		: event.type === 'Birth Event'
+																			? handleOpenBirthPanel
+																			: undefined
 															}
 														/>
 													))}
@@ -715,6 +729,17 @@ export default function LifeEventsPage() {
 					<BirthPanel
 						mode={panelMode === 'add' ? 'view' : panelMode}
 						childMemberId={selectedEventId || undefined}
+						familyTreeId={familyTreeId}
+						familyMembers={familyMembers}
+						onModeChange={handlePanelModeChange}
+						onClose={handleClosePanel}
+						onSuccess={handlePanelSuccess}
+					/>
+				)}
+				{panelType === 'marriage' && (
+					<MarriagePanel
+						mode={panelMode === 'add' ? 'view' : panelMode}
+						relationshipId={selectedEventId || undefined}
 						familyTreeId={familyTreeId}
 						familyMembers={familyMembers}
 						onModeChange={handlePanelModeChange}
