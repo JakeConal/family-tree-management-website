@@ -145,7 +145,10 @@ export default function ViewEditMemberPanel({
 					if (data.occupations && data.occupations.length > 0) {
 						setOccupations(
 							data.occupations.map(
-								(occ: { jobTitle: string; startDate?: string; endDate?: string }, index: number) => ({
+								(occ: { id: number; jobTitle: string; startDate?: string; endDate?: string }, index: number) => ({
+									id: occ.id.toString(),
+									jobTitle: occ.jobTitle,
+									startDate: occ.startDate ? occ.startDate.split('T')[0] : '',
 									endDate: occ.endDate ? occ.endDate.split('T')[0] : '',
 								})
 							)
