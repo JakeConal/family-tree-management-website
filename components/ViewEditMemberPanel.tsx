@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, Camera, Info, Heart, ChevronLeft } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface PlaceOfOrigin {
   id: string;
@@ -426,15 +427,16 @@ export default function ViewEditMemberPanel({
       });
 
       if (response.ok) {
+        toast.success("Family member updated successfully!");
         onSuccess();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to update family member");
+        toast.error(error.error || "Failed to update family member");
       }
     } catch (error) {
       console.error("Error updating member:", error);
-      alert("Failed to update family member");
+      toast.error("Failed to update family member");
     } finally {
       setIsSubmitting(false);
     }
@@ -486,14 +488,14 @@ export default function ViewEditMemberPanel({
         "image/webp",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert(
+        toast.error(
           "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed."
         );
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size too large. Maximum size is 5MB.");
+        toast.error("File size too large. Maximum size is 5MB.");
         return;
       }
 

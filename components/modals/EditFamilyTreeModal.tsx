@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, TreePine, MapPin, Calendar } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface FamilyTree {
   id: number;
@@ -65,15 +66,16 @@ export default function EditFamilyTreeModal({
       });
 
       if (response.ok) {
+        toast.success("Family tree updated successfully!");
         onFamilyTreeUpdated();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to update family tree");
+        toast.error(error.error || "Failed to update family tree");
       }
     } catch (error) {
       console.error("Error updating family tree:", error);
-      alert("Failed to update family tree");
+      toast.error("Failed to update family tree");
     } finally {
       setIsSubmitting(false);
     }

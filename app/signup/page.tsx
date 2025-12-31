@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   ChevronLeft,
   UserCircle,
@@ -51,7 +52,7 @@ export default function SignUpPage() {
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -75,13 +76,14 @@ export default function SignUpPage() {
           password,
           redirect: false,
         });
+        toast.success("Account created successfully!");
         router.push("/dashboard");
       } else {
-        alert(data.error || "Registration failed");
+        toast.error(data.error || "Registration failed");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      alert("An error occurred during registration");
+      toast.error("An error occurred during registration");
     } finally {
       setIsLoading(false);
     }

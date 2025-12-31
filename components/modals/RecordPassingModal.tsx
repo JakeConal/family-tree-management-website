@@ -2,6 +2,7 @@
 
 import classNames from "classnames";
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import {
   X,
   Skull,
@@ -164,15 +165,16 @@ export default function RecordPassingModal({
       );
 
       if (response.ok) {
+        toast.success("Passing record created successfully!");
         onPassingRecorded();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to record passing");
+        toast.error(error.error || "Failed to record passing");
       }
     } catch (error) {
       console.error("Error recording passing:", error);
-      alert("Failed to record passing");
+      toast.error("Failed to record passing");
     } finally {
       setIsSubmitting(false);
     }

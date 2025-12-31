@@ -173,3 +173,60 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const familyTreeId = parseInt(id);
+
+    if (isNaN(familyTreeId)) {
+      return NextResponse.json(
+        { error: "Invalid family tree ID" },
+        { status: 400 }
+      );
+    }
+
+    const prisma = getPrisma();
+
+    // Verify the user has access to this family tree
+    const existingFamilyTree = await prisma.familyTree.findFirst({
+      where: {
+        id: familyTreeId,
+        treeOwner: {
+          userId: session.user.id,
+        },
+      },
+    });
+
+    if (!existingFamilyTree) {
+      return NextResponse.json(
+        { error: "Family tree not found or access denied" },
+        { status: 404 }
+      );
+    }
+
+    // Delete the family tree (cascade will handle related records)
+    await prisma.familyTree.delete({
+      where: {
+        id: familyTreeId,
+      },
+    });
+
+    return NextResponse.json({ message: "Family tree deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting family tree:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

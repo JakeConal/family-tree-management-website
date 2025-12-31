@@ -265,15 +265,16 @@ export default function RecordAchievementModal({
       );
 
       if (response.ok) {
+        toast.success("Achievement recorded successfully!");
         onAchievementRecorded();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to record achievement");
+        toast.error(error.error || "Failed to record achievement");
       }
     } catch (error) {
       console.error("Error recording achievement:", error);
-      alert("Failed to record achievement");
+      toast.error("Failed to record achievement");
     } finally {
       setIsSubmitting(false);
     }

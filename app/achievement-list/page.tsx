@@ -2,6 +2,7 @@
 
 import classNames from "classnames";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import { type ChangeEvent, type ComponentType, type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 import {
@@ -710,7 +711,7 @@ export default function AchievementListPage() {
 
     // Validate Date of Passing
     if (!passingFormData.date || passingFormData.date.trim() === "") {
-      alert("Vui lòng nhập Date Of Passing!");
+      toast.error("Vui lòng nhập Date Of Passing!");
       return;
     }
 
@@ -718,7 +719,7 @@ export default function AchievementListPage() {
     const burialPlacesWithLocation = passingFormData.burialPlaces.filter(bp => bp.location.trim() !== "");
     const missingStartDate = burialPlacesWithLocation.find(bp => !bp.startDate || bp.startDate.trim() === "");
     if (missingStartDate) {
-      alert("Vui lòng nhập Start Date cho tất cả Burial Places!");
+      toast.error("Vui lòng nhập Start Date cho tất cả Burial Places!");
       return;
     }
 
@@ -728,7 +729,7 @@ export default function AchievementListPage() {
       if (bp.location.trim() !== "" && bp.startDate) {
         const burialDate = new Date(bp.startDate);
         if (passingDate > burialDate) {
-          alert("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
+          toast.error("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
           return;
         }
       }
@@ -1028,45 +1029,45 @@ export default function AchievementListPage() {
   const handleAddPassingSave = async () => {
     // Validate Family Member
     if (!newPassingFormData.memberId) {
-      alert("Vui lòng chọn Family Member!");
+      toast.error("Vui lòng chọn Family Member!");
       return;
     }
 
     // Validate Date of Passing
     if (!newPassingFormData.date || newPassingFormData.date.trim() === "") {
-      alert("Vui lòng nhập Date Of Passing!");
+      toast.error("Vui lòng nhập Date Of Passing!");
       return;
     }
 
     // Validate at least one Cause is filled
     const filledCauses = newPassingFormData.causes.filter(c => c.trim() !== "");
     if (filledCauses.length === 0) {
-      alert("Vui lòng nhập ít nhất một Cause Of Passing!");
+      toast.error("Vui lòng nhập ít nhất một Cause Of Passing!");
       return;
     }
 
     // Check if any cause field is empty
     const emptyCause = newPassingFormData.causes.find(c => c.trim() === "");
     if (emptyCause !== undefined) {
-      alert("Vui lòng nhập đầy đủ tất cả Cause Of Passing hoặc xóa các trường trống!");
+      toast.error("Vui lòng nhập đầy đủ tất cả Cause Of Passing hoặc xóa các trường trống!");
       return;
     }
 
     // Validate at least one Burial Place
     const filledBurialPlaces = newPassingFormData.burialPlaces.filter(bp => bp.location.trim() !== "");
     if (filledBurialPlaces.length === 0) {
-      alert("Vui lòng nhập ít nhất một Burial Place!");
+      toast.error("Vui lòng nhập ít nhất một Burial Place!");
       return;
     }
 
     // Validate all burial places have both Location and Start Date
     for (const bp of newPassingFormData.burialPlaces) {
       if (bp.location.trim() !== "" && (!bp.startDate || bp.startDate.trim() === "")) {
-        alert("Vui lòng nhập Start Date cho tất cả Burial Places!");
+        toast.error("Vui lòng nhập Start Date cho tất cả Burial Places!");
         return;
       }
       if (bp.location.trim() === "" && bp.startDate && bp.startDate.trim() !== "") {
-        alert("Vui lòng nhập Location cho tất cả Burial Places!");
+        toast.error("Vui lòng nhập Location cho tất cả Burial Places!");
         return;
       }
     }
@@ -1077,7 +1078,7 @@ export default function AchievementListPage() {
       if (bp.location.trim() !== "" && bp.startDate) {
         const burialDate = new Date(bp.startDate);
         if (passingDate > burialDate) {
-          alert("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
+          toast.error("Ngày mất (Date Of Passing) phải sớm hơn hoặc bằng ngày chôn cất (Burial Start Date)!");
           return;
         }
       }

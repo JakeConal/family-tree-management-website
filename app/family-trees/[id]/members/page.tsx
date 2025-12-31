@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo, useCallback } from "react";
+import toast from "react-hot-toast";
 import {
   Search,
   Plus,
@@ -16,6 +17,7 @@ import Image from "next/image";
 import classNames from "classnames";
 import AddMemberModal from "@/components/modals/AddMemberModal";
 import ViewEditMemberPanel from "@/components/ViewEditMemberPanel";
+import ConfirmModal from "@/components/modals/ConfirmModal";
 
 interface FamilyMember {
   id: number;
@@ -264,6 +266,9 @@ export default function MemberListPage() {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
   const [panelMode, setPanelMode] = useState<"view" | "edit">("view");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingMemberId, setDeletingMemberId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -308,19 +313,31 @@ export default function MemberListPage() {
   }, [members]);
 
   const handleDeleteMember = async (id: number) => {
-    if (confirm("Are you sure you want to delete this member?")) {
-      try {
-        const res = await fetch(`/api/family-members/${id}`, {
-          method: "DELETE",
-        });
-        if (res.ok) {
-          setMembers(members.filter((m) => m.id !== id));
-        } else {
-          alert("Failed to delete member");
-        }
-      } catch (error) {
-        console.error("Error deleting member:", error);
+    setDeletingMemberId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteMember = async () => {
+    if (!deletingMemberId) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/family-members/${deletingMemberId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setMembers(members.filter((m) => m.id !== deletingMemberId));
+        toast.success("Member deleted successfully");
+        setShowDeleteConfirm(false);
+        setDeletingMemberId(null);
+      } else {
+        toast.error("Failed to delete member");
       }
+    } catch (error) {
+      console.error("Error deleting member:", error);
+      toast.error("An error occurred while deleting the member");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -426,6 +443,22 @@ export default function MemberListPage() {
         familyTreeId={familyTreeId}
         existingMembers={members}
         onMemberAdded={fetchData}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setDeletingMemberId(null);
+        }}
+        onConfirm={confirmDeleteMember}
+        title="Delete Member"
+        message="Are you sure you want to delete this member? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+        isLoading={isDeleting}
       />
     </div>
   );

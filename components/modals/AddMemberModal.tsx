@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   X,
   MapPin,
@@ -360,15 +361,16 @@ export default function AddMemberModal({
       });
 
       if (response.ok) {
+        toast.success("Family member added successfully!");
         onMemberAdded();
         onClose();
       } else {
         const error = await response.json();
-        alert(error.error || "Failed to add family member");
+        toast.error(error.error || "Failed to add family member");
       }
     } catch (error) {
       console.error("Error adding member:", error);
-      alert("Failed to add family member");
+      toast.error("Failed to add family member");
     } finally {
       setIsSubmitting(false);
     }
@@ -421,7 +423,7 @@ export default function AddMemberModal({
         "image/webp",
       ];
       if (!allowedTypes.includes(file.type)) {
-        alert(
+        toast.error(
           "Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed."
         );
         return;
@@ -429,7 +431,7 @@ export default function AddMemberModal({
 
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size too large. Maximum size is 5MB.");
+        toast.error("File size too large. Maximum size is 5MB.");
         return;
       }
 
