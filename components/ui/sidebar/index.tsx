@@ -44,7 +44,7 @@ export function Sidebar() {
 					{ name: "Family Tree", href: `/family-trees/${activeFamilyTreeId}/tree`, icon: TreePine, familyTreeOnly: true },
 					{ name: "Members", href: `/family-trees/${activeFamilyTreeId}/members`, icon: Users, familyTreeOnly: true },
 					{ name: "Life Events", href: "/events", icon: Calendar, disabled: true },
-					{ name: "Reports", href: "/reports", icon: BarChart3, disabled: true },
+					{ name: "Reports", href: `/family-trees/${activeFamilyTreeId}/reports`, icon: BarChart3, familyTreeOnly: true },
 					{ name: "Settings", href: `/family-trees/${activeFamilyTreeId}/settings`, icon: Settings, familyTreeOnly: true },
 			  ]
 			: [];
