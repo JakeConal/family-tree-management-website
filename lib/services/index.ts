@@ -7,3 +7,4 @@ export { default as ChangeLogService } from './ChangeLogService';
 export { default as AchievementService } from './AchievementService';
 export { default as PassingRecordService } from './PassingRecordService';
 export { default as LifeEventService } from './LifeEventService';
+export { default as DivorceService } from './DivorceService';

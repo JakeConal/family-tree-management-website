@@ -9,6 +9,7 @@ import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } fro
 import LoadingScreen from '@/components/LoadingScreen';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
+import RecordDivorceModal from '@/components/modals/RecordDivorceModal';
 import AchievementService from '@/lib/services/AchievementService';
 import type { FamilyMember } from '@prisma/client';
 
@@ -106,6 +107,7 @@ export default function LifeEventsPage() {
 	// Modals
 	const [showAchievementModal, setShowAchievementModal] = useState(false);
 	const [showPassingModal, setShowPassingModal] = useState(false);
+	const [showDivorceModal, setShowDivorceModal] = useState(false);
 
 	const fetchAchievements = useCallback(async () => {
 		try {
@@ -432,7 +434,7 @@ export default function LifeEventsPage() {
 						)}
 						{activeTab === 'life-event' && (
 							<button
-								onClick={() => toast('Add Divorce feature coming soon')}
+								onClick={() => setShowDivorceModal(true)}
 								className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
 							>
 								<Plus className="w-[15px] h-[15px] text-black" />
@@ -565,6 +567,13 @@ export default function LifeEventsPage() {
 				familyTreeId={familyTreeId}
 				existingMembers={familyMembers}
 				onPassingRecorded={fetchPassingRecords}
+			/>
+			<RecordDivorceModal
+				isOpen={showDivorceModal}
+				onClose={() => setShowDivorceModal(false)}
+				familyTreeId={familyTreeId}
+				existingMembers={familyMembers}
+				onDivorceRecorded={fetchLifeEvents}
 			/>
 		</div>
 	);
