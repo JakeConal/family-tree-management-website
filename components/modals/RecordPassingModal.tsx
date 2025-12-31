@@ -1,7 +1,7 @@
 'use client';
 
-import classNames from 'classnames';
-import { X, Skull, ArrowLeft, Calendar, Check, Plus, AlertTriangle, Trash2 } from 'lucide-react';
+import { ChevronDown, Calendar, Plus, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -10,7 +10,6 @@ import { FamilyMember } from '@/types';
 interface BurialPlace {
 	location: string;
 	startDate: string;
-	endDate: string;
 }
 
 interface RecordPassingModalProps {
@@ -50,7 +49,7 @@ export default function RecordPassingModal({
 				familyMemberId: '',
 				dateOfPassing: '',
 				causesOfDeath: [''], // Start with one empty cause of death
-				burialPlaces: [{ location: '', startDate: '', endDate: '' }], // Start with one empty burial place
+				burialPlaces: [{ location: '', startDate: '' }], // Start with one empty burial place
 			});
 			setSelectedMemberBirthDate('');
 			setErrors({});
@@ -232,27 +231,6 @@ export default function RecordPassingModal({
 			} else {
 				delete newErrors[`burialPlaces_${index}_startDate`];
 			}
-
-			// Validate burial end date is after start date
-			if (place.endDate && place.startDate && place.endDate <= place.startDate) {
-				newErrors[`burialPlaces_${index}_endDate`] = `Burial end date must be after the start date`;
-				hasDateErrors = true;
-			} else {
-				delete newErrors[`burialPlaces_${index}_endDate`];
-			}
-
-			// Validate consecutive burial places: current start date must be after previous end date
-			if (index > 0) {
-				const previousPlace = passingFormData.burialPlaces[index - 1];
-				if (place.startDate && previousPlace.endDate && place.startDate <= previousPlace.endDate) {
-					newErrors[`burialPlaces_${index}_startDate`] =
-						`Start date must be after the end date of the previous burial place`;
-					hasDateErrors = true;
-				} else if (place.startDate && !previousPlace.endDate) {
-					newErrors[`burialPlaces_${index}_startDate`] = `Previous burial place must have an end date`;
-					hasDateErrors = true;
-				}
-			}
 		});
 
 		setErrors(newErrors);
@@ -325,7 +303,7 @@ export default function RecordPassingModal({
 		if (passingFormData.burialPlaces.length < 3) {
 			setPassingFormData({
 				...passingFormData,
-				burialPlaces: [...passingFormData.burialPlaces, { location: '', startDate: '', endDate: '' }],
+				burialPlaces: [...passingFormData.burialPlaces, { location: '', startDate: '' }],
 			});
 		}
 	};
@@ -374,64 +352,68 @@ export default function RecordPassingModal({
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+			{/* Backdrop */}
+			<div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
+
+			{/* Modal Content */}
+			<div className="bg-white rounded-[20px] shadow-2xl w-[600px] max-h-[90vh] overflow-hidden relative z-10">
 				{/* Header */}
-				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<button onClick={onClose} className="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
-						<ArrowLeft className="w-5 h-5 mr-2" />
-						<span className="font-medium">Back</span>
+				<div className="px-8 pt-6 pb-4">
+					{/* Back Button */}
+					<button
+						onClick={onClose}
+						className="flex items-center text-black hover:text-gray-600 transition-colors mb-6"
+					>
+						<span className="font-light mr-1">&lt;</span>
+						<span className="font-normal">Back</span>
 					</button>
-					<div className="flex items-center">
-						<div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-							<Skull className="w-5 h-5 text-gray-600" />
+
+					{/* Passing Icon */}
+					<div className="flex justify-center mb-4">
+						<div className="w-[50px] h-[50px] bg-white border-[1.5px] border-black rounded-[15px] flex items-center justify-center">
+							<Image src="/icons/passing.png" alt="Passing" width={20} height={20} />
 						</div>
-						<h2 className="text-xl font-semibold text-gray-900">Record Passing</h2>
 					</div>
-					<button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-						<X className="w-6 h-6" />
-					</button>
+
+					{/* Title */}
+					<h2 className="text-[26px] font-normal text-black text-center">Edit Passing Information</h2>
 				</div>
 
 				{/* Form Content */}
-				<div className="overflow-y-auto max-h-[calc(90vh-140px)]">
-					<form onSubmit={handleSubmit} className="p-6 space-y-6">
+				<div className="overflow-y-auto max-h-[calc(90vh-220px)]">
+					<form onSubmit={handleSubmit} className="px-[69px] pb-8 space-y-5">
 						{/* Family Member Selection */}
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Family Member <span className="text-red-500">*</span>
-							</label>
-							<select
-								value={passingFormData.familyMemberId}
-								onChange={(e) => {
-									const selectedId = e.target.value;
-									const selectedMember = existingMembers.find((member) => member.id.toString() === selectedId);
+							<label className="block text-[16px] font-normal text-black mb-2">Family Member *</label>
+							<div className="relative">
+								<select
+									value={passingFormData.familyMemberId}
+									onChange={(e) => {
+										const selectedId = e.target.value;
+										const selectedMember = existingMembers.find((member) => member.id.toString() === selectedId);
 
-									setPassingFormData({
-										...passingFormData,
-										familyMemberId: selectedId,
-									});
-									setSelectedMemberBirthDate(
-										selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
-									);
-									handleFieldChange('familyMemberId');
-								}}
-								onBlur={() => validateField('familyMemberId', passingFormData.familyMemberId)}
-								className={classNames(
-									'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-									{
-										'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
-										'border-gray-300': !(errors.familyMemberId && touched.familyMemberId),
-									}
-								)}
-								data-error={errors.familyMemberId && touched.familyMemberId ? 'true' : 'false'}
-							>
-								<option value="">Select member</option>
-								{existingMembers.map((member) => (
-									<option key={member.id} value={member.id}>
-										{member.fullName}
-									</option>
-								))}
-							</select>
+										setPassingFormData({
+											...passingFormData,
+											familyMemberId: selectedId,
+										});
+										setSelectedMemberBirthDate(
+											selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
+										);
+										handleFieldChange('familyMemberId');
+									}}
+									onBlur={() => validateField('familyMemberId', passingFormData.familyMemberId)}
+									className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400"
+									data-error={errors.familyMemberId && touched.familyMemberId ? 'true' : 'false'}
+								>
+									<option value="">Select member</option>
+									{existingMembers.map((member) => (
+										<option key={member.id} value={member.id}>
+											{member.fullName}
+										</option>
+									))}
+								</select>
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+							</div>
 							{errors.familyMemberId && touched.familyMemberId && (
 								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
 							)}
@@ -439,9 +421,7 @@ export default function RecordPassingModal({
 
 						{/* Date of Passing */}
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Date of Passing <span className="text-red-500">*</span>
-							</label>
+							<label className="block text-[16px] font-normal text-black mb-2">Date Of Passing *</label>
 							<div className="relative">
 								<input
 									type="date"
@@ -454,17 +434,10 @@ export default function RecordPassingModal({
 										handleFieldChange('dateOfPassing');
 									}}
 									onBlur={() => validateField('dateOfPassing', passingFormData.dateOfPassing)}
-									className={classNames(
-										'w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-										{
-											'border-red-500 bg-red-50': errors.dateOfPassing && touched.dateOfPassing,
-											'border-gray-300': !(errors.dateOfPassing && touched.dateOfPassing),
-										}
-									)}
-									placeholder="MM/DD/YYYY"
+									className="w-full h-[35px] px-4 pr-10 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
 									data-error={errors.dateOfPassing && touched.dateOfPassing ? 'true' : 'false'}
 								/>
-								<Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+								<Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.dateOfPassing && touched.dateOfPassing && (
 								<p className="mt-1 text-sm text-red-600">{errors.dateOfPassing}</p>
@@ -474,40 +447,35 @@ export default function RecordPassingModal({
 						{/* Cause of Passing */}
 						<div>
 							<div className="flex items-center justify-between mb-2">
-								<label className="block text-sm font-medium text-gray-700">
-									Cause of Passing <span className="text-red-500">*</span>
-								</label>
+								<label className="block text-[16px] font-normal text-black">Cause Of Passing *</label>
 								<button
 									type="button"
 									onClick={addCauseOfDeath}
 									disabled={passingFormData.causesOfDeath.length >= 12}
-									className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+									className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 								>
-									<Plus className="w-4 h-4 mr-1" />
-									Add Cause
+									<Plus className="w-3 h-3 mr-1" />
+									<span>Add Cause</span>
 								</button>
 							</div>
-							{passingFormData.causesOfDeath.length === 0 ? (
-								<div className="text-center py-8 text-gray-500">
-									<p>No causes added yet. Click &quot;Add Cause&quot; to add a cause of passing.</p>
-								</div>
-							) : (
-								<div className="space-y-3">
+							{passingFormData.causesOfDeath.length > 0 && (
+								<div className="space-y-2">
 									{passingFormData.causesOfDeath.map((cause, index) => (
-										<div key={index} className="flex items-center space-x-2">
+										<div key={index} className="relative flex items-center">
 											<input
 												type="text"
 												value={cause}
 												onChange={(e) => updateCauseOfDeath(index, e.target.value)}
 												placeholder="e.g. old age"
-												className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-												required
+												className={`w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
+													passingFormData.causesOfDeath.length > 1 ? 'pr-10' : ''
+												}`}
 											/>
 											{passingFormData.causesOfDeath.length > 1 && (
 												<button
 													type="button"
 													onClick={() => removeCauseOfDeath(index)}
-													className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+													className="absolute right-3 text-red-500 hover:text-red-700 transition-colors"
 												>
 													<Trash2 className="w-4 h-4" />
 												</button>
@@ -516,127 +484,85 @@ export default function RecordPassingModal({
 									))}
 								</div>
 							)}
+							{errors.causesOfDeath && <p className="mt-2 text-sm text-red-600">{errors.causesOfDeath}</p>}
 						</div>
-						{errors.causesOfDeath && <p className="mt-2 text-sm text-red-600">{errors.causesOfDeath}</p>}
-						<p className="text-xs text-gray-500 mt-2">Maximum 12 causes of death per record</p>
 
 						{/* Burial Places */}
 						<div>
 							<div className="flex items-center justify-between mb-2">
-								<label className="block text-sm font-medium text-gray-700">
-									Burial Places <span className="text-red-500">*</span>
-								</label>
+								<label className="block text-[16px] font-normal text-black">Burial Places *</label>
 								<button
 									type="button"
 									onClick={addBurialPlace}
 									disabled={passingFormData.burialPlaces.length >= 3}
-									className="flex items-center text-sm text-blue-600 hover:text-blue-800 disabled:text-gray-400 disabled:cursor-not-allowed"
+									className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 								>
-									<Plus className="w-4 h-4 mr-1" />
-									Add Place
+									<Plus className="w-3 h-3 mr-1" />
+									<span>Add Place</span>
 								</button>
 							</div>
-							{passingFormData.burialPlaces.length === 0 ? (
-								<div className="text-center py-8 text-gray-500">
-									<p>No burial places added yet. Click &quot;Add Place&quot; to add a burial location.</p>
-								</div>
-							) : (
+							{passingFormData.burialPlaces.length > 0 && (
 								<div className="space-y-4">
 									{passingFormData.burialPlaces.map((place, index) => (
-										<div key={index} className="p-4 border border-gray-200 rounded-lg space-y-3">
-											<div className="flex items-center justify-between">
-												<h4 className="text-sm font-medium text-gray-700">Burial Place {index + 1}</h4>
-												{passingFormData.burialPlaces.length > 1 && (
-													<button
-														type="button"
-														onClick={() => removeBurialPlace(index)}
-														className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-													>
-														<Trash2 className="w-4 h-4" />
-													</button>
-												)}
-											</div>
-											<div>
-												<label className="block text-xs font-medium text-gray-600 mb-1">Location*</label>
+										<div key={index} className="relative p-4 bg-[#dbeafe] border border-black/50 rounded-[15px]">
+											{passingFormData.burialPlaces.length > 1 && (
+												<button
+													type="button"
+													onClick={() => removeBurialPlace(index)}
+													className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors"
+												>
+													<Trash2 className="w-4 h-4" />
+												</button>
+											)}
+
+											{/* Location */}
+											<div className="mb-3">
+												<label className="block text-[11.584px] font-normal text-black mb-1.5">Location *</label>
 												<input
 													type="text"
 													value={place.location}
 													onChange={(e) => updateBurialPlace(index, 'location', e.target.value)}
 													placeholder="Enter location"
-													className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-													required
+													className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 												/>
 											</div>
-											<div className="grid grid-cols-2 gap-3">
-												<div>
-													<label className="block text-xs font-medium text-gray-600 mb-1">Start Date*</label>
-													<div className="relative">
-														<input
-															type="date"
-															value={place.startDate}
-															onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
-															className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-															placeholder="MM/DD/YYYY"
-															required
-														/>
-														<Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-													</div>
-													{errors[`burialPlaces_${index}_startDate`] && (
-														<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_startDate`]}</p>
-													)}
+
+											{/* Start Date */}
+											<div>
+												<label className="block text-[11.584px] font-normal text-black mb-1.5">Start Date *</label>
+												<div className="relative">
+													<input
+														type="date"
+														value={place.startDate}
+														onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
+														className="w-full h-[34px] px-4 pr-10 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+													/>
+													<Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 												</div>
-												<div>
-													<label className="block text-xs font-medium text-gray-600 mb-1">End Date</label>
-													<div className="relative">
-														<input
-															type="date"
-															value={place.endDate}
-															onChange={(e) => updateBurialPlace(index, 'endDate', e.target.value)}
-															className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-															placeholder="MM/DD/YYYY"
-														/>
-														<Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-													</div>
-													{errors[`burialPlaces_${index}_endDate`] && (
-														<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_endDate`]}</p>
-													)}
-												</div>
+												{errors[`burialPlaces_${index}_startDate`] && (
+													<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_startDate`]}</p>
+												)}
 											</div>
 										</div>
 									))}
 								</div>
 							)}
-						</div>
-						{errors.burialPlaces && <p className="mt-2 text-sm text-red-600">{errors.burialPlaces}</p>}
-						<p className="text-xs text-gray-500 mt-2">Maximum 3 burial places per record</p>
-
-						{/* Important Notice */}
-						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-							<div className="flex items-start">
-								<AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-								<div>
-									<h3 className="text-sm font-medium text-blue-800 mb-1">Important</h3>
-									<p className="text-sm text-blue-700">
-										The Family Member selected for this record cannot be changed once saved. Furthermore, this record is
-										permanent and cannot be deleted.
-									</p>
-								</div>
-							</div>
+							{errors.burialPlaces && <p className="mt-2 text-sm text-red-600">{errors.burialPlaces}</p>}
 						</div>
 
 						{/* Error Message */}
 						{Object.keys(errors).length > 0 && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-								<p className="text-sm font-medium text-red-800">Please check your information</p>
+							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
+								<p className="text-sm font-medium text-red-800">Please fill in all required fields</p>
 							</div>
 						)}
 
 						{/* Actions */}
-						<div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+						<div className="flex items-center justify-center gap-4 pt-6">
 							<button
 								type="button"
 								onClick={onClose}
-								className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+								className="w-[95px] h-[40px] bg-white border border-black rounded-[10px] text-[14px] text-black hover:bg-gray-50 transition-colors"
 								disabled={isSubmitting}
 							>
 								Cancel
@@ -644,19 +570,9 @@ export default function RecordPassingModal({
 							<button
 								type="submit"
 								disabled={isSubmitting || !isFormValid()}
-								className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
+								className="w-[123px] h-[40px] bg-[#1f2937] rounded-[10px] text-[14px] text-white hover:bg-[#374151] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
 							>
-								{isSubmitting ? (
-									<>
-										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-										Saving...
-									</>
-								) : (
-									<>
-										<Check className="w-4 h-4 mr-2" />
-										Save
-									</>
-								)}
+								{isSubmitting ? 'Saving...' : 'Save'}
 							</button>
 						</div>
 					</form>
