@@ -389,7 +389,7 @@ export default function FamilyTreeDashboard() {
 			<div className="flex-1 overflow-y-auto p-4 lg:p-8">
 				<div className="space-y-8">
 					{/* Overview Section */}
-					<div className="flex flex-col xl:flex-row gap-6">
+					<div className={classNames('flex gap-6', activePanelType !== null ? 'flex-col' : 'flex-col xl:flex-row')}>
 						{/* Family Information Overview Box */}
 						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
 							<div className="flex items-center gap-3 mb-6">
@@ -446,9 +446,14 @@ export default function FamilyTreeDashboard() {
 						</div>
 
 						{/* Trends Grid */}
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full xl:w-[468px]">
+						<div
+							className={classNames(
+								'grid grid-cols-1 sm:grid-cols-2 gap-4 w-full',
+								activePanelType === null ? 'xl:w-[468px]' : ''
+							)}
+						>
 							{/* Member Growth */}
-							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
 									<p className="font-roboto font-normal text-[12px] text-black">Member growth</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -469,7 +474,7 @@ export default function FamilyTreeDashboard() {
 							</div>
 
 							{/* Death Trend */}
-							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
 									<p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -484,7 +489,7 @@ export default function FamilyTreeDashboard() {
 							</div>
 
 							{/* Marriage Trend */}
-							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
 									<p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -502,7 +507,7 @@ export default function FamilyTreeDashboard() {
 							</div>
 
 							{/* Achievement Growth */}
-							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]">
+							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
 									<p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
@@ -527,8 +532,13 @@ export default function FamilyTreeDashboard() {
 
 				{/* Quick Action Section */}
 				<div className="space-y-4">
-					<h2 className="font-inter font-bold text-[18px] text-black">Quick Action</h2>
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+					<h2 className="font-inter font-bold text-[18px] p-4 text-black">Quick Action</h2>
+					<div
+						className={classNames(
+							'grid gap-6',
+							activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+						)}
+					>
 						<button
 							onClick={() => {
 								setActivePanelType('addMember');
