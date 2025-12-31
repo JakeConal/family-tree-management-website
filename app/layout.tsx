@@ -202,6 +202,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<title>Family Tree Management</title>
 			<body className={classNames(geistSans.variable, geistMono.variable, playfair.variable, inter.variable, "antialiased")}>
 				<Providers>
 					<RootLayoutContent>{children}</RootLayoutContent>
