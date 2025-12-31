@@ -1,7 +1,8 @@
 'use client';
 
 import classNames from 'classnames';
-import { X, Trophy, ArrowLeft, Calendar, Check } from 'lucide-react';
+import { ChevronDown, Calendar } from 'lucide-react';
+import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -136,13 +137,6 @@ export default function RecordAchievementModal({
 					delete newErrors.achieveDate;
 				}
 				break;
-			case 'title':
-				if (!value.trim()) {
-					newErrors.title = 'Achievement title is required';
-				} else {
-					delete newErrors.title;
-				}
-				break;
 		}
 
 		setErrors(newErrors);
@@ -187,7 +181,7 @@ export default function RecordAchievementModal({
 		e.preventDefault();
 
 		// Mark all fields as touched to show validation errors
-		const allFields = ['familyMemberId', 'achievementTypeId', 'achieveDate', 'title'];
+		const allFields = ['familyMemberId', 'achievementTypeId', 'achieveDate'];
 		const newTouched = allFields.reduce((acc, field) => ({ ...acc, [field]: true }), {});
 		setTouched(newTouched);
 
@@ -246,11 +240,27 @@ export default function RecordAchievementModal({
 
 	const isFormValid = () => {
 		return (
-			achievementFormData.familyMemberId &&
-			achievementFormData.achievementTypeId &&
-			achievementFormData.achieveDate &&
-			achievementFormData.title
+			achievementFormData.familyMemberId && achievementFormData.achievementTypeId && achievementFormData.achieveDate
 		);
+	};
+
+	// Get selected achievement type name for display
+	const getSelectedTypeName = () => {
+		const type = achievementTypes.find((t) => t.id.toString() === achievementFormData.achievementTypeId);
+		return type?.typeName || '';
+	};
+
+	// Get selected member name for display
+	const getSelectedMemberName = () => {
+		const member = existingMembers.find((m) => m.id.toString() === achievementFormData.familyMemberId);
+		return member?.fullName || '';
+	};
+
+	// Format date for display
+	const formatDateDisplay = (dateString: string) => {
+		if (!dateString) return '';
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	};
 
 	if (!isOpen) return null;
@@ -261,152 +271,156 @@ export default function RecordAchievementModal({
 			<div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
 
 			{/* Modal Content */}
-			<div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden relative z-10">
+			<div className="bg-white rounded-[20px] shadow-2xl w-[600px] max-h-[90vh] overflow-hidden relative z-10">
 				{/* Header */}
-				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<button onClick={onClose} className="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
-						<ArrowLeft className="w-5 h-5 mr-2" />
-						<span className="font-medium">Back</span>
+				<div className="px-8 pt-6 pb-4">
+					{/* Back Button */}
+					<button
+						onClick={onClose}
+						className="flex items-center text-black hover:text-gray-600 transition-colors mb-6"
+					>
+						<span className="font-light mr-1">&lt;</span>
+						<span className="font-normal">Back</span>
 					</button>
-					<div className="flex items-center">
-						<div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-							<Trophy className="w-5 h-5 text-yellow-600" />
+
+					{/* Trophy Icon */}
+					<div className="flex justify-center mb-4">
+						<div className="w-[50px] h-[50px] bg-white border-[1.5px] border-black rounded-[15px] flex items-center justify-center">
+							<Image src="/icons/cup.png" alt="Achievement" width={20} height={20} />
 						</div>
-						<h2 className="text-xl font-semibold text-gray-900">Record Achievement</h2>
 					</div>
-					<button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-						<X className="w-6 h-6" />
-					</button>
+
+					{/* Title */}
+					<h2 className="text-[26px] font-normal text-black text-center">Achievement Editing</h2>
 				</div>
 
 				{/* Form Content */}
-				<div className="overflow-y-auto max-h-[calc(90vh-140px)]">
-					<form onSubmit={handleSubmit} className="p-6 space-y-6">
+				<div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+					<form onSubmit={handleSubmit} className="px-[69px] pb-8 space-y-5">
 						{/* Family Member Selection */}
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Family Member <span className="text-red-500">*</span>
-							</label>
-							<select
-								value={achievementFormData.familyMemberId}
-								onChange={(e) => {
-									const selectedId = e.target.value;
-									const selectedMember = existingMembers.find((member) => member.id.toString() === selectedId);
+							<label className="block text-[16px] font-normal text-black mb-2">Family Member *</label>
+							<div className="relative">
+								<select
+									value={achievementFormData.familyMemberId}
+									onChange={(e) => {
+										const selectedId = e.target.value;
+										const selectedMember = existingMembers.find((member) => member.id.toString() === selectedId);
 
-									setAchievementFormData({
-										...achievementFormData,
-										familyMemberId: selectedId,
-									});
-									setSelectedMemberBirthDate(
-										selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
-									);
+										setAchievementFormData({
+											...achievementFormData,
+											familyMemberId: selectedId,
+										});
+										setSelectedMemberBirthDate(
+											selectedMember?.birthday ? selectedMember.birthday.toISOString().split('T')[0] : ''
+										);
 
-									// Fetch passing record for the selected member
-									if (selectedId) {
-										fetchMemberPassingRecord(selectedId);
-									} else {
-										setSelectedMemberPassingDate('');
-									}
+										// Fetch passing record for the selected member
+										if (selectedId) {
+											fetchMemberPassingRecord(selectedId);
+										} else {
+											setSelectedMemberPassingDate('');
+										}
 
-									handleFieldChange('familyMemberId');
-								}}
-								onBlur={() => validateField('familyMemberId', achievementFormData.familyMemberId)}
-								className={classNames(
-									'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-									{
-										'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
-										'border-gray-300': !(errors.familyMemberId && touched.familyMemberId),
-									}
-								)}
-								data-error={errors.familyMemberId && touched.familyMemberId ? 'true' : 'false'}
-							>
-								<option value="">Select member</option>
-								{existingMembers.map((member) => (
-									<option key={member.id} value={member.id}>
-										{member.fullName}
-									</option>
-								))}
-							</select>
+										handleFieldChange('familyMemberId');
+									}}
+									onBlur={() => validateField('familyMemberId', achievementFormData.familyMemberId)}
+									className={classNames(
+										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
+										{
+											'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
+										}
+									)}
+									data-error={errors.familyMemberId && touched.familyMemberId ? 'true' : 'false'}
+								>
+									<option value="">Select member</option>
+									{existingMembers.map((member) => (
+										<option key={member.id} value={member.id}>
+											{member.fullName}
+										</option>
+									))}
+								</select>
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+							</div>
 							{errors.familyMemberId && touched.familyMemberId && (
 								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
 							)}
 						</div>
 
-						{/* Achievement Type Selection */}
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Achievement Type <span className="text-red-500">*</span>
-							</label>
-							<select
-								value={achievementFormData.achievementTypeId}
-								onChange={(e) => {
-									setAchievementFormData({
-										...achievementFormData,
-										achievementTypeId: e.target.value,
-									});
-									handleFieldChange('achievementTypeId');
-								}}
-								onBlur={() => validateField('achievementTypeId', achievementFormData.achievementTypeId)}
-								className={classNames(
-									'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-									{
-										'border-red-500 bg-red-50': errors.achievementTypeId && touched.achievementTypeId,
-										'border-gray-300': !(errors.achievementTypeId && touched.achievementTypeId),
-									}
+						{/* Achievement Type and Date Row */}
+						<div className="grid grid-cols-2 gap-4">
+							{/* Achievement Type Selection */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2">Achievement Type *</label>
+								<div className="relative">
+									<select
+										value={achievementFormData.achievementTypeId}
+										onChange={(e) => {
+											setAchievementFormData({
+												...achievementFormData,
+												achievementTypeId: e.target.value,
+											});
+											handleFieldChange('achievementTypeId');
+										}}
+										onBlur={() => validateField('achievementTypeId', achievementFormData.achievementTypeId)}
+										className={classNames(
+											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
+											{
+												'border-red-500 bg-red-50': errors.achievementTypeId && touched.achievementTypeId,
+											}
+										)}
+										data-error={errors.achievementTypeId && touched.achievementTypeId ? 'true' : 'false'}
+										disabled={isLoadingTypes}
+									>
+										<option value="">{isLoadingTypes ? 'Loading...' : 'Select type'}</option>
+										{achievementTypes.map((type) => (
+											<option key={type.id} value={type.id}>
+												{type.typeName}
+											</option>
+										))}
+									</select>
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								</div>
+								{errors.achievementTypeId && touched.achievementTypeId && (
+									<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
 								)}
-								data-error={errors.achievementTypeId && touched.achievementTypeId ? 'true' : 'false'}
-								disabled={isLoadingTypes}
-							>
-								<option value="">{isLoadingTypes ? 'Loading types...' : 'Select type'}</option>
-								{achievementTypes.map((type) => (
-									<option key={type.id} value={type.id}>
-										{type.typeName}
-									</option>
-								))}
-							</select>
-							{errors.achievementTypeId && touched.achievementTypeId && (
-								<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
-							)}
-						</div>
-
-						{/* Date Achieved */}
-						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Date Achieved <span className="text-red-500">*</span>
-							</label>
-							<div className="relative">
-								<input
-									type="date"
-									value={achievementFormData.achieveDate}
-									onChange={(e) => {
-										setAchievementFormData({
-											...achievementFormData,
-											achieveDate: e.target.value,
-										});
-										handleFieldChange('achieveDate');
-									}}
-									onBlur={() => validateField('achieveDate', achievementFormData.achieveDate)}
-									className={classNames(
-										'w-full px-3 py-2 pl-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-										{
-											'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
-											'border-gray-300': !(errors.achieveDate && touched.achieveDate),
-										}
-									)}
-									placeholder="MM/DD/YYYY"
-									data-error={errors.achieveDate && touched.achieveDate ? 'true' : 'false'}
-								/>
-								<Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
 							</div>
-							{errors.achieveDate && touched.achieveDate && (
-								<p className="mt-1 text-sm text-red-600">{errors.achieveDate}</p>
-							)}
+
+							{/* Date Achieved */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2">Date Achieved *</label>
+								<div className="relative">
+									<input
+										type="date"
+										value={achievementFormData.achieveDate}
+										onChange={(e) => {
+											setAchievementFormData({
+												...achievementFormData,
+												achieveDate: e.target.value,
+											});
+											handleFieldChange('achieveDate');
+										}}
+										onBlur={() => validateField('achieveDate', achievementFormData.achieveDate)}
+										className={classNames(
+											'w-full h-[35px] px-4 pr-10 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+											{
+												'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
+											}
+										)}
+										data-error={errors.achieveDate && touched.achieveDate ? 'true' : 'false'}
+									/>
+									<Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								</div>
+								{errors.achieveDate && touched.achieveDate && (
+									<p className="mt-1 text-sm text-red-600">{errors.achieveDate}</p>
+								)}
+							</div>
 						</div>
 
 						{/* Achievement Title */}
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Achievement Title <span className="text-red-500">*</span>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								Achievement Title <span className="text-[11.5px] text-black/50">(optional)</span>
 							</label>
 							<input
 								type="text"
@@ -418,19 +432,16 @@ export default function RecordAchievementModal({
 									});
 									handleFieldChange('title');
 								}}
-								onBlur={() => validateField('title', achievementFormData.title)}
-								placeholder="e.g. Bachelor of Computer Science"
-								className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-									errors.title && touched.title ? 'border-red-500 bg-red-50' : 'border-gray-300'
-								}`}
-								data-error={errors.title && touched.title ? 'true' : 'false'}
+								placeholder="e.g. Master's Degree in Computer Science"
+								className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 							/>
-							{errors.title && touched.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
 						</div>
 
 						{/* Description */}
 						<div>
-							<label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								Description <span className="text-[11.5px] text-black/50">(optional)</span>
+							</label>
 							<textarea
 								value={achievementFormData.description}
 								onChange={(e) =>
@@ -439,25 +450,25 @@ export default function RecordAchievementModal({
 										description: e.target.value,
 									})
 								}
-								placeholder="Describe the achievement"
+								placeholder="Describe the achievement..."
 								rows={4}
-								className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+								className="w-full px-4 py-3 bg-[#f3f2f2] border border-black/50 rounded-[20px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
 							/>
 						</div>
 
 						{/* Error Message */}
 						{Object.keys(errors).length > 0 && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-								<p className="text-sm font-medium text-red-800">Please check your information</p>
+							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
+								<p className="text-sm font-medium text-red-800">Please fill in all required fields</p>
 							</div>
 						)}
 
 						{/* Actions */}
-						<div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+						<div className="flex items-center justify-center gap-4 pt-6">
 							<button
 								type="button"
 								onClick={onClose}
-								className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+								className="w-[95px] h-[40px] bg-white border border-black rounded-[10px] text-[14px] text-black hover:bg-gray-50 transition-colors"
 								disabled={isSubmitting}
 							>
 								Cancel
@@ -465,19 +476,9 @@ export default function RecordAchievementModal({
 							<button
 								type="submit"
 								disabled={isSubmitting || !isFormValid()}
-								className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center"
+								className="w-[123px] h-[40px] bg-[#1f2937] rounded-[10px] text-[14px] text-white hover:bg-[#374151] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
 							>
-								{isSubmitting ? (
-									<>
-										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-										Recording...
-									</>
-								) : (
-									<>
-										<Check className="w-4 h-4 mr-2" />
-										Record Achievement
-									</>
-								)}
+								{isSubmitting ? 'Saving...' : 'Save'}
 							</button>
 						</div>
 					</form>
