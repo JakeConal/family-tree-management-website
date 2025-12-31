@@ -3,6 +3,7 @@
 import classNames from 'classnames';
 import { useState, useEffect } from 'react';
 import { X, Clock, User, FileText, Trophy, Briefcase, Heart, Skull } from 'lucide-react';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface ChangeLog {
 	id: number;
@@ -569,9 +570,8 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 							(changeLog?.entityType === 'Achievement' || changeLog?.entityType === 'SpouseRelationship')
 						) {
 							return (
-								<div className="text-center py-8">
-									<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-									<p className="text-gray-500">Loading member information...</p>
+								<div className="py-8">
+									<LoadingScreen message="Loading member information..." />
 								</div>
 							);
 						}

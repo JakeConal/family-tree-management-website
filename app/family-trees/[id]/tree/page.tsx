@@ -14,6 +14,7 @@ import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface ExtendedFamilyMember extends FamilyMember {
 	parent?: {
@@ -269,11 +270,7 @@ export default function FamilyTreePage() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-lg">Loading family tree...</div>
-			</div>
-		);
+		return <LoadingScreen message="Loading family tree..." />;
 	}
 
 	if (error) {

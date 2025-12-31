@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Camera, Info, Heart, ChevronLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface PlaceOfOrigin {
 	id: string;
@@ -472,8 +473,8 @@ export default function ViewEditMemberPanel({
 
 	if (loading) {
 		return (
-			<div className="w-full h-full flex items-center justify-center bg-white">
-				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+			<div className="w-full h-full">
+				<LoadingScreen message="Loading member information..." />
 			</div>
 		);
 	}

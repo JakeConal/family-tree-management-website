@@ -26,6 +26,7 @@ import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
+import LoadingScreen from '@/components/LoadingScreen';
 
 // Mock data types (representing API responses)
 interface FamilyTree {
@@ -369,14 +370,7 @@ export default function FamilyTreeDashboard() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-					<p className="text-gray-600">Loading family tree data...</p>
-				</div>
-			</div>
-		);
+		return <LoadingScreen message="Loading family tree data..." />;
 	}
 
 	if (!familyTree) {

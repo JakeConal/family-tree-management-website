@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
-import { Loader2, Users, HeartHandshake, Trophy, Network } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
+import LoadingScreen from '@/components/LoadingScreen';
 import {
 	Chart as ChartJS,
 	CategoryScale,
@@ -553,14 +554,7 @@ export default function FamilyTreeReports() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-center">
-					<Loader2 className="animate-spin h-12 w-12 text-gray-600 mx-auto mb-4" />
-					<p className="text-gray-600">Loading reports...</p>
-				</div>
-			</div>
-		);
+		return <LoadingScreen message="Loading reports..." />;
 	}
 
 	// Chart options

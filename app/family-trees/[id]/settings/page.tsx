@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
 import ConfirmModal from '@/components/modals/ConfirmModal';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface FamilyTree {
 	id: number;
@@ -127,14 +128,7 @@ export default function FamilyTreeSettings() {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-center">
-					<Loader2 className="animate-spin h-12 w-12 text-gray-600 mx-auto mb-4" />
-					<p className="text-gray-600">Loading settings...</p>
-				</div>
-			</div>
-		);
+		return <LoadingScreen message="Loading settings..." />;
 	}
 
 	if (!familyTree) {
