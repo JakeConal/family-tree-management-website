@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import LoadingScreen from '@/components/LoadingScreen';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
+import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import AchievementPanel from '@/components/panels/AchievementPanel';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import PassingPanel from '@/components/panels/PassingPanel';
@@ -78,6 +79,7 @@ export default function FamilyTreeDashboard() {
 	const [selectedChangeLog, setSelectedChangeLog] = useState<ChangeLog | null>(null);
 	const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] = useState(false);
 	const [isEditFamilyTreeModalOpen, setIsEditFamilyTreeModalOpen] = useState(false);
+	const [isAllChangeLogsModalOpen, setIsAllChangeLogsModalOpen] = useState(false);
 
 	// Panel state
 	const [activePanelType, setActivePanelType] = useState<'addMember' | 'achievement' | 'passing' | null>(null);
@@ -602,17 +604,15 @@ export default function FamilyTreeDashboard() {
 
 				{/* Recent Changes Section - Hidden for guests */}
 				{!isGuest && (
-					<div className="space-y-4">
+					<div className="space-y-4 p-4">
 						<div className="flex items-center justify-between">
 							<h2 className="font-inter font-bold text-[18px] text-black">Recent Changes</h2>
-							<div className="flex gap-2">
-								<button className="w-[50px] h-[50px] bg-[#f4f4f5] rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-									<ChevronRight className="w-5 h-5 text-black rotate-180" />
-								</button>
-								<button className="w-[50px] h-[50px] bg-[#f4f4f5] rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-									<ChevronRight className="w-5 h-5 text-black" />
-								</button>
-							</div>
+							<button
+								onClick={() => setIsAllChangeLogsModalOpen(true)}
+								className="px-4 py-2 bg-[#1f2937] text-white rounded-[10px] font-normal text-sm hover:bg-[#111827] transition-colors"
+							>
+								See All
+							</button>
 						</div>
 
 						<div className="space-y-4">
@@ -622,7 +622,11 @@ export default function FamilyTreeDashboard() {
 								</div>
 							) : (
 								changeLogs
-									.slice(0, 4)
+									.filter((log) => {
+										const message = formatChangeLogMessage(log);
+										return message !== null;
+									})
+									.slice(0, 3)
 									.map((log) => {
 										const message = formatChangeLogMessage(log);
 										return message ? (
@@ -676,6 +680,18 @@ export default function FamilyTreeDashboard() {
 						}}
 					/>
 				)}
+
+				{/* All Change Logs Modal */}
+				<AllChangeLogsModal
+					isOpen={isAllChangeLogsModalOpen}
+					onClose={() => setIsAllChangeLogsModalOpen(false)}
+					familyTreeId={familyTreeId}
+					onLogClick={(log) => {
+						setSelectedChangeLog(log);
+						setIsAllChangeLogsModalOpen(false);
+						setIsChangeLogDetailsModalOpen(true);
+					}}
+				/>
 			</div>
 
 			{/* Panel Sidebar */}
