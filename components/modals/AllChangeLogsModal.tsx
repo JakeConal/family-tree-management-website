@@ -24,12 +24,7 @@ interface AllChangeLogsModalProps {
 	onLogClick?: (log: ChangeLog) => void;
 }
 
-export default function AllChangeLogsModal({
-	isOpen,
-	onClose,
-	familyTreeId,
-	onLogClick,
-}: AllChangeLogsModalProps) {
+export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLogClick }: AllChangeLogsModalProps) {
 	const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [selectedMonth, setSelectedMonth] = useState<string>('');
@@ -172,17 +167,14 @@ export default function AllChangeLogsModal({
 
 			{/* Modal Content */}
 			<div
-				className="bg-white rounded-[30px] border-[3px] border-black/20 shadow-2xl w-full max-w-[1208px] h-[856px] relative z-10 flex flex-col overflow-hidden"
+				className="bg-white rounded-[30px] border-[3px] border-black/20 shadow-2xl w-full max-w-[1208px] h-[856px] pt-6 px-6 pb-6 relative z-10 flex flex-col overflow-hidden"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Header */}
 				<div className="px-8 pt-6 pb-4 flex-shrink-0 border-b border-gray-200">
 					<div className="flex items-center justify-between mb-6">
 						<h2 className="text-[26px] font-normal text-black text-center flex-1">All Changes</h2>
-						<button
-							onClick={onClose}
-							className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-						>
+						<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
 							<X className="w-6 h-6 text-black" />
 						</button>
 					</div>
@@ -257,9 +249,7 @@ export default function AllChangeLogsModal({
 
 											{/* User Info */}
 											<div className="flex-1">
-												<p className="font-inter font-medium text-[18px] text-black mb-1">
-													{getUserName(log)}
-												</p>
+												<p className="font-inter font-medium text-[18px] text-black mb-1">{getUserName(log)}</p>
 												<p className="font-inter font-light text-[18px] text-black">{message}</p>
 											</div>
 										</div>
@@ -281,4 +271,3 @@ export default function AllChangeLogsModal({
 		</div>
 	);
 }
-

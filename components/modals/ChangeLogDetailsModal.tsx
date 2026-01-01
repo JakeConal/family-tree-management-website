@@ -566,53 +566,68 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+		<div className="fixed inset-0 flex items-center justify-center z-[100] p-4">
+			{/* Backdrop */}
+			<div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose}></div>
+
+			{/* Modal Content */}
+			<div
+				className="bg-white rounded-[30px] border-[3px] border-black/20 shadow-2xl w-full max-w-[800px] max-h-[90vh] relative z-10 flex flex-col overflow-hidden"
+				onClick={(e) => e.stopPropagation()}
+			>
 				{/* Header */}
-				<div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
-					<div className="flex items-center space-x-3">
-						<div className={classNames('p-2 rounded-full', getActionColor(changeLog?.action || ''))}>
-							{getEntityIcon(changeLog?.entityType || '')}
+				<div className="px-8 pt-6 pb-4 flex-shrink-0 border-b border-gray-200">
+					<div className="flex items-center justify-between mb-4">
+						<div className="flex items-center gap-3">
+							<div className={classNames('p-2 rounded-full', getActionColor(changeLog?.action || ''))}>
+								{getEntityIcon(changeLog?.entityType || '')}
+							</div>
+							<div>
+								<h2 className="text-[26px] font-normal text-black">Change Log Details</h2>
+								<p className="text-[16px] font-light text-black/70 mt-1">
+									{changeLog?.entityType} {changeLog?.action.toLowerCase()}d
+								</p>
+							</div>
 						</div>
-						<div>
-							<h2 className="text-xl font-semibold text-gray-900">Change Log Details</h2>
-							<p className="text-sm text-gray-600">
-								{changeLog?.entityType} {changeLog?.action.toLowerCase()}d
-							</p>
-						</div>
+						<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+							<X className="w-6 h-6 text-black" />
+						</button>
 					</div>
-					<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-						<X className="w-5 h-5 text-gray-500" />
-					</button>
 				</div>
 
 				{/* Content - Scrollable */}
-				<div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
+				<div className="flex-1 overflow-y-auto px-8 py-6 space-y-6 min-h-0">
 					{/* Basic Information */}
-					<div className="grid grid-cols-2 gap-4">
+					<div className="grid grid-cols-2 gap-6">
 						<div>
-							<label className="text-sm font-medium text-gray-500">Entity Type</label>
-							<p className="text-sm font-medium text-gray-900">{changeLog?.entityType}</p>
+							<label className="block text-[16px] font-normal text-black mb-2">Entity Type</label>
+							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 text-[14px] text-black">
+								{changeLog?.entityType}
+							</div>
 						</div>
 						<div>
-							<label className="text-sm font-medium text-gray-500">Entity ID</label>
-							<p className="text-sm font-medium text-gray-900">{changeLog?.entityId}</p>
+							<label className="block text-[16px] font-normal text-black mb-2">Entity ID</label>
+							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 text-[14px] text-black">
+								{changeLog?.entityId}
+							</div>
 						</div>
 						<div>
-							<label className="text-sm font-medium text-gray-500">Action</label>
-							<span
-								className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getActionColor(
-									changeLog?.action || ''
-								)}`}
-							>
-								{changeLog?.action}
-							</span>
+							<label className="block text-[16px] font-normal text-black mb-2">Action</label>
+							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2">
+								<span
+									className={`inline-flex px-3 py-1 text-[12px] font-medium rounded-full ${getActionColor(
+										changeLog?.action || ''
+									)}`}
+								>
+									{changeLog?.action}
+								</span>
+							</div>
 						</div>
 						<div>
-							<label className="text-sm font-medium text-gray-500">Timestamp</label>
-							<div className="flex items-center space-x-1">
-								<Clock className="w-4 h-4 text-gray-400" />
-								<p className="text-sm text-gray-900">
+							<label className="block text-[16px] font-normal text-black mb-2">Timestamp</label>
+							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 flex items-center gap-2">
+								<Clock className="w-4 h-4 text-black/50" />
+								<p className="text-[14px] text-black">
 									{changeLog?.createdAt ? new Date(changeLog.createdAt).toLocaleString() : ''}
 								</p>
 							</div>
@@ -642,15 +657,15 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 						if (changes.length === 0) {
 							return (
 								<div className="text-center py-8">
-									<FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-									<p className="text-gray-500">No detailed change data available</p>
+									<FileText className="w-12 h-12 text-black/30 mx-auto mb-4" />
+									<p className="text-[16px] font-normal text-black/70">No detailed change data available</p>
 								</div>
 							);
 						}
 
 						return (
 							<div>
-								<label className="text-sm font-medium text-gray-500 mb-4 block">
+								<label className="block text-[18px] font-normal text-black mb-4">
 									{changeLog?.action === 'CREATE'
 										? 'Added Information'
 										: changeLog?.action === 'UPDATE'
@@ -659,38 +674,38 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 												? 'Removed Information'
 												: 'Details'}
 								</label>
-								<div className="space-y-3">
+								<div className="space-y-4">
 									{changes.map((change, index) => (
-										<div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-											<div className="flex items-center justify-between mb-2">
-												<span className="text-sm font-medium text-gray-700">{change.field}</span>
+										<div key={index} className="bg-[#f4f4f5] rounded-[20px] p-4 border border-black/20">
+											<div className="flex items-center justify-between mb-3">
+												<span className="text-[16px] font-medium text-black">{change.field}</span>
 												{change.oldValue !== null && change.newValue !== null && (
-													<span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Updated</span>
+													<span className="text-[12px] text-blue-600 bg-blue-100 px-3 py-1 rounded-full font-medium">Updated</span>
 												)}
 												{change.oldValue === null && change.newValue !== null && (
-													<span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Added</span>
+													<span className="text-[12px] text-green-600 bg-green-100 px-3 py-1 rounded-full font-medium">Added</span>
 												)}
 												{change.oldValue !== null && change.newValue === null && (
-													<span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">Removed</span>
+													<span className="text-[12px] text-red-600 bg-red-100 px-3 py-1 rounded-full font-medium">Removed</span>
 												)}
 											</div>
 
 											<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 												{change.oldValue !== null && (
-													<div className="bg-red-50 border border-red-200 rounded p-3">
-														<p className="text-xs text-red-600 font-medium mb-1">Before</p>
-														<p className="text-sm text-red-800">
+													<div className="bg-red-50 border border-red-200 rounded-[15px] p-3">
+														<p className="text-[12px] text-red-600 font-medium mb-1">Before</p>
+														<p className="text-[14px] text-red-800">
 															{change.oldValue || <span className="italic text-gray-500">Empty</span>}
 														</p>
 													</div>
 												)}
 
 												{change.newValue !== null && (
-													<div className="bg-green-50 border border-green-200 rounded p-3">
-														<p className="text-xs text-green-600 font-medium mb-1">
+													<div className="bg-green-50 border border-green-200 rounded-[15px] p-3">
+														<p className="text-[12px] text-green-600 font-medium mb-1">
 															{change.oldValue !== null ? 'After' : 'Value'}
 														</p>
-														<p className="text-sm text-green-800">
+														<p className="text-[14px] text-green-800">
 															{change.newValue || <span className="italic text-gray-500">Empty</span>}
 														</p>
 													</div>
@@ -706,15 +721,15 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 					{/* Raw JSON (for debugging - can be removed later) */}
 					{(changeLog?.oldValues || changeLog?.newValues) && (
 						<details className="mt-6">
-							<summary className="text-sm font-medium text-gray-500 cursor-pointer hover:text-gray-700">
+							<summary className="text-[14px] font-normal text-black/70 cursor-pointer hover:text-black">
 								Raw JSON Data (Technical Details)
 							</summary>
 							<div className="mt-3 space-y-3">
 								{changeLog?.oldValues && (
 									<div>
-										<label className="text-xs font-medium text-gray-500 mb-1 block">Previous Values (JSON)</label>
-										<div className="bg-gray-100 border border-gray-300 rounded p-3">
-											<pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono overflow-x-auto">
+										<label className="text-[12px] font-medium text-black/50 mb-1 block">Previous Values (JSON)</label>
+										<div className="bg-[#f3f2f2] border border-black/30 rounded-[15px] p-3">
+											<pre className="text-[12px] text-black whitespace-pre-wrap font-mono overflow-x-auto">
 												{formatJSON(changeLog.oldValues)}
 											</pre>
 										</div>
@@ -722,9 +737,9 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 								)}
 								{changeLog?.newValues && (
 									<div>
-										<label className="text-xs font-medium text-gray-500 mb-1 block">New Values (JSON)</label>
-										<div className="bg-gray-100 border border-gray-300 rounded p-3">
-											<pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono overflow-x-auto">
+										<label className="text-[12px] font-medium text-black/50 mb-1 block">New Values (JSON)</label>
+										<div className="bg-[#f3f2f2] border border-black/30 rounded-[15px] p-3">
+											<pre className="text-[12px] text-black whitespace-pre-wrap font-mono overflow-x-auto">
 												{formatJSON(changeLog.newValues)}
 											</pre>
 										</div>
@@ -736,10 +751,10 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				</div>
 
 				{/* Footer */}
-				<div className="flex justify-end p-6 border-t border-gray-200 flex-shrink-0">
+				<div className="flex justify-end px-8 py-6 border-t border-gray-200 flex-shrink-0">
 					<button
 						onClick={onClose}
-						className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+						className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 					>
 						Close
 					</button>

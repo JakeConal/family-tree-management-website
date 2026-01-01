@@ -6,7 +6,6 @@ import {
 	Heart,
 	TreePine,
 	Calendar,
-	ChevronRight,
 	UserPlus,
 	Trophy,
 	Skull,
@@ -20,9 +19,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
-import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import AchievementPanel from '@/components/panels/AchievementPanel';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import PassingPanel from '@/components/panels/PassingPanel';
@@ -182,7 +181,6 @@ export default function FamilyTreeDashboard() {
 		if (familyTreeId) {
 			fetchDashboardData();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [familyTreeId, isGuest]);
 
 	const calculateAge = (establishYear: number | null) => {
@@ -397,11 +395,6 @@ export default function FamilyTreeDashboard() {
 		return date.toLocaleDateString();
 	};
 
-	const handleChangeLogClick = (log: ChangeLog) => {
-		setSelectedChangeLog(log);
-		setIsChangeLogDetailsModalOpen(true);
-	};
-
 	return (
 		<div className="flex h-full overflow-hidden">
 			{/* Main Content */}
@@ -554,7 +547,7 @@ export default function FamilyTreeDashboard() {
 				{/* Quick Action Section - Hide for guests */}
 				{!isGuest && (
 					<div className="space-y-4">
-						<h2 className="font-inter font-bold text-[18px] p-4 text-black">Quick Action</h2>
+						<h2 className="font-inter font-bold text-[18px] pt-4 text-black">Quick Action</h2>
 						<div
 							className={classNames(
 								'grid gap-6',
@@ -604,7 +597,7 @@ export default function FamilyTreeDashboard() {
 
 				{/* Recent Changes Section - Hidden for guests */}
 				{!isGuest && (
-					<div className="space-y-4 p-4">
+					<div className="space-y-4 pt-4">
 						<div className="flex items-center justify-between">
 							<h2 className="font-inter font-bold text-[18px] text-black">Recent Changes</h2>
 							<button
@@ -630,11 +623,7 @@ export default function FamilyTreeDashboard() {
 									.map((log) => {
 										const message = formatChangeLogMessage(log);
 										return message ? (
-											<div
-												key={log.id}
-												className="flex items-center justify-between p-6 bg-[#f4f4f5] rounded-[20px] cursor-pointer hover:bg-gray-200 transition-colors"
-												onClick={() => handleChangeLogClick(log)}
-											>
+											<div key={log.id} className="flex items-center justify-between p-6 bg-[#f4f4f5] rounded-[20px]">
 												<div className="flex items-center gap-4">
 													<div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center">
 														<Users className="w-6 h-6 text-gray-500" />
@@ -687,8 +676,8 @@ export default function FamilyTreeDashboard() {
 					onClose={() => setIsAllChangeLogsModalOpen(false)}
 					familyTreeId={familyTreeId}
 					onLogClick={(log) => {
+						// Keep All Change Logs modal open and show details modal on top
 						setSelectedChangeLog(log);
-						setIsAllChangeLogsModalOpen(false);
 						setIsChangeLogDetailsModalOpen(true);
 					}}
 				/>
