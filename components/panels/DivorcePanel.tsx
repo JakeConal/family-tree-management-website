@@ -220,6 +220,22 @@ export default function DivorcePanel({
 		setIsSubmitting(true);
 
 		try {
+			// Find the relationship to get the actual member2 ID
+			const relationshipId = parseInt(formData.member2Id);
+			const relationship = marriages.find((m) => m.id === relationshipId);
+			
+			if (!relationship) {
+				toast.error('Selected relationship not found');
+				setIsSubmitting(false);
+				return;
+			}
+
+			// Get the actual member2 ID from the relationship
+			const member1Id = parseInt(formData.member1Id);
+			const actualMember2Id = relationship.familyMember1.id === member1Id 
+				? relationship.familyMember2.id 
+				: relationship.familyMember1.id;
+
 			const url = `/api/family-trees/${familyTreeId}/divorces`;
 			const method = mode === 'add' ? 'PATCH' : 'PATCH'; // Both use PATCH for updating divorce date
 
@@ -229,8 +245,8 @@ export default function DivorcePanel({
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
-					member1Id: parseInt(formData.member1Id),
-					member2Id: parseInt(formData.member2Id),
+					member1Id: member1Id,
+					member2Id: actualMember2Id,
 					divorceDate: formData.divorceDate,
 				}),
 			});
