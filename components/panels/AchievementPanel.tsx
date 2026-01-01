@@ -62,6 +62,8 @@ export default function AchievementPanel({
 	// Validation state
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const fetchAchievementTypes = useCallback(async () => {
 		try {
@@ -268,6 +270,32 @@ export default function AchievementPanel({
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	};
 
+	const handleDelete = async () => {
+		if (!achievementId) return;
+
+		setIsDeleting(true);
+		try {
+			const response = await fetch(`/api/family-trees/${familyTreeId}/achievements/${achievementId}`, {
+				method: 'DELETE',
+			});
+
+			if (response.ok) {
+				toast.success('Achievement deleted successfully!');
+				onSuccess();
+				onClose();
+			} else {
+				const error = await response.json();
+				toast.error(error.error || 'Failed to delete achievement');
+			}
+		} catch (error) {
+			console.error('Error deleting achievement:', error);
+			toast.error('Failed to delete achievement');
+		} finally {
+			setIsDeleting(false);
+			setShowDeleteModal(false);
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className="w-full h-full">
@@ -341,10 +369,10 @@ export default function AchievementPanel({
 						{/* Footer Buttons */}
 						<div className="flex justify-center items-center space-x-4 pt-10">
 							<button
-								onClick={onClose}
+								onClick={() => setShowDeleteModal(true)}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								Back
+								Delete
 							</button>
 							<button
 								onClick={() => onModeChange('edit')}
@@ -544,6 +572,66 @@ export default function AchievementPanel({
 							</button>
 						</div>
 					</form>
+				</div>
+			)}
+
+			{/* Delete Confirmation Modal */}
+			{showDeleteModal && (
+				<div className="fixed inset-0 flex items-center justify-center z-[9999] p-4" onClick={() => setShowDeleteModal(false)}>
+					{/* Backdrop with blur effect */}
+					<div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998]"></div>
+					
+					{/* Modal Content */}
+					<div 
+						className="bg-white rounded-[20px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-gray-200 w-[600px] h-[319px] relative z-[9999] flex flex-col"
+						onClick={(e) => e.stopPropagation()}
+					>
+						{/* Header with Back Button */}
+						<div className="px-8 pt-6 pb-4">
+							<button
+								onClick={() => setShowDeleteModal(false)}
+								className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
+							>
+								<span className="font-light">&lt;</span>
+								<span className="ml-1">Back</span>
+							</button>
+						</div>
+
+						{/* Content */}
+						<div className="flex-1 px-8 flex flex-col">
+							{/* Title */}
+							<h2 className="text-[20px] font-semibold text-black mb-6">
+								Delete Achievement
+							</h2>
+
+							{/* Warning Message */}
+							<div className="text-[16px] font-normal text-black leading-6 mb-auto">
+								<p>This action cannot be undone.</p>
+								<p>
+									Are you sure you want to delete the achievement of{' '}
+									<span className="font-bold">{achievement?.familyMember.fullName || ''}</span> ?
+								</p>
+							</div>
+
+							{/* Footer Buttons */}
+							<div className="flex justify-end items-center space-x-4 pb-6 pt-4">
+								<button
+									onClick={() => setShowDeleteModal(false)}
+									disabled={isDeleting}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									Cancel
+								</button>
+								<button
+									onClick={handleDelete}
+									disabled={isDeleting}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-normal text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									{isDeleting ? 'Deleting...' : 'Delete'}
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>
