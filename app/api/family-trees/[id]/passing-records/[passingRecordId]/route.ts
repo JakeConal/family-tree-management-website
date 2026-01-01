@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
@@ -9,9 +9,9 @@ export async function GET(
 	{ params }: { params: Promise<{ id: string; passingRecordId: string }> }
 ) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -25,18 +25,26 @@ export async function GET(
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
-		const familyTree = await prisma.familyTree.findFirst({
-			where: {
-				id: familyTreeId,
-				treeOwner: {
-					userId: session.user.id,
+		// Verify access based on role
+		if (sessionData.isGuest) {
+			// Guest can only access their assigned family tree
+			if (sessionData.guestFamilyTreeId !== familyTreeId) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
+		} else if (sessionData.isOwner) {
+			// Verify the owner has access to this family tree
+			const familyTree = await prisma.familyTree.findFirst({
+				where: {
+					id: familyTreeId,
+					treeOwner: {
+						userId: sessionData.user.id,
+					},
 				},
-			},
-		});
+			});
 
-		if (!familyTree) {
-			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			if (!familyTree) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
 		}
 
 		// Fetch the passing record
@@ -90,10 +98,15 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string; passingRecordId: string }> }
 ) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can update passing records
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id, passingRecordId } = await params;
@@ -122,12 +135,12 @@ export async function PUT(
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const familyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: familyTreeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});
@@ -226,7 +239,7 @@ export async function PUT(
 		});
 
 		// Log the update
-		await logChange('PassingRecord', updatedRecord.id, 'UPDATE', familyTreeId, session.user.id, oldData, {
+		await logChange('PassingRecord', updatedRecord.id, 'UPDATE', familyTreeId, sessionData.user.id, oldData, {
 			dateOfPassing: updatedRecord.dateOfPassing,
 			causeOfDeathId: updatedRecord.causeOfDeathId,
 		});
@@ -275,10 +288,15 @@ export async function DELETE(
 	{ params }: { params: Promise<{ id: string; passingRecordId: string }> }
 ) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can delete passing records
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id, passingRecordId } = await params;
@@ -291,12 +309,12 @@ export async function DELETE(
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const familyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: familyTreeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});
@@ -342,7 +360,7 @@ export async function DELETE(
 		});
 
 		// Log the deletion
-		await logChange('PassingRecord', recordId, 'DELETE', familyTreeId, session.user.id, oldData, null);
+		await logChange('PassingRecord', recordId, 'DELETE', familyTreeId, sessionData.user.id, oldData, null);
 
 		return NextResponse.json({ message: 'Passing record deleted successfully' });
 	} catch (error) {

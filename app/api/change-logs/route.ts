@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Guest editors cannot view change logs
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền xem lịch sử thay đổi' }, { status: 403 });
 		}
 
 		const { searchParams } = new URL(request.url);
@@ -25,12 +30,12 @@ export async function GET(request: NextRequest) {
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const familyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: treeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});

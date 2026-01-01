@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 
 export async function GET(
@@ -8,9 +8,9 @@ export async function GET(
 	{ params }: { params: Promise<{ id: string; familyMemberId: string }> }
 ) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -24,18 +24,26 @@ export async function GET(
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
-		const familyTree = await prisma.familyTree.findFirst({
-			where: {
-				id: familyTreeId,
-				treeOwner: {
-					userId: session.user.id,
+		// Verify access based on role
+		if (sessionData.isGuest) {
+			// Guest can only access their assigned family tree
+			if (sessionData.guestFamilyTreeId !== familyTreeId) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
+		} else if (sessionData.isOwner) {
+			// Verify the owner has access to this family tree
+			const familyTree = await prisma.familyTree.findFirst({
+				where: {
+					id: familyTreeId,
+					treeOwner: {
+						userId: sessionData.user.id,
+					},
 				},
-			},
-		});
+			});
 
-		if (!familyTree) {
-			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			if (!familyTree) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
 		}
 
 		// Check if the family member already has a passing record

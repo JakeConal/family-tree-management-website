@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -20,18 +20,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 		const prisma = getPrisma();
 
-		// Verify the family tree exists and belongs to the user
-		const familyTree = await prisma.familyTree.findFirst({
-			where: {
-				id: familyTreeId,
-				treeOwner: {
-					userId: session.user.id,
+		// Verify access based on role
+		if (sessionData.isGuest) {
+			// Guest can only access their assigned family tree
+			if (sessionData.guestFamilyTreeId !== familyTreeId) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
+		} else if (sessionData.isOwner) {
+			// Verify the owner has access to this family tree
+			const familyTree = await prisma.familyTree.findFirst({
+				where: {
+					id: familyTreeId,
+					treeOwner: {
+						userId: sessionData.user.id,
+					},
 				},
-			},
-		});
+			});
 
-		if (!familyTree) {
-			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			if (!familyTree) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
 		}
 
 		// Get all undivored spouse relationships
@@ -70,10 +78,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can record divorces
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id } = await params;
@@ -96,12 +109,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
 		const prisma = getPrisma();
 
-		// Verify the family tree exists and belongs to the user
+		// Verify the owner has access to this family tree
 		const familyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: familyTreeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});
@@ -174,7 +187,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		});
 
 		// Log the change
-		await logChange('SpouseRelationship', spouseRelationship.id, 'UPDATE', familyTreeId, session.user.id, {
+		await logChange('SpouseRelationship', spouseRelationship.id, 'UPDATE', familyTreeId, sessionData.user.id, {
 			divorceDate: null,
 		}, {
 			divorceDate: updatedRelationship.divorceDate,

@@ -32,7 +32,7 @@ declare module 'next-auth' {
 	}
 }
 
-declare module 'next-auth/jwt' {
+declare module 'next-auth' {
 	interface JWT {
 		id: string;
 		role?: 'owner' | 'guest';
@@ -176,10 +176,12 @@ const authConfig: NextAuthConfig = {
 		async session({ session, token }) {
 			if (token) {
 				session.user.id = token.id as string;
-				session.role = token.role || 'owner';
-				session.guestMemberId = token.guestMemberId;
-				session.guestFamilyTreeId = token.guestFamilyTreeId;
-				session.guestEditorId = token.guestEditorId;
+				session.role =
+					typeof token.role === 'string' && (token.role === 'owner' || token.role === 'guest') ? token.role : 'owner';
+
+				session.guestMemberId = typeof token.guestMemberId === 'number' ? token.guestMemberId : undefined;
+				session.guestFamilyTreeId = typeof token.guestFamilyTreeId === 'number' ? token.guestFamilyTreeId : undefined;
+				session.guestEditorId = typeof token.guestEditorId === 'number' ? token.guestEditorId : undefined;
 			}
 			return session;
 		},
