@@ -103,8 +103,16 @@ export default function FamilyTreeDashboard() {
 					1
 				);
 
-				// Fetch change logs to calculate trends
-				const changeLogs: ChangeLog[] = await ChangeLogService.getByFamilyTreeId(familyTreeId);
+				// Fetch change logs to calculate trends (skip for guests)
+				let changeLogs: ChangeLog[] = [];
+				if (!isGuest) {
+					try {
+						changeLogs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
+					} catch (error) {
+						console.error('Error fetching change logs:', error);
+						changeLogs = [];
+					}
+				}
 
 				// Calculate trends from change logs (last 30 days)
 				const thirtyDaysAgo = new Date();
@@ -172,7 +180,8 @@ export default function FamilyTreeDashboard() {
 		if (familyTreeId) {
 			fetchDashboardData();
 		}
-	}, [familyTreeId]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [familyTreeId, isGuest]);
 
 	const calculateAge = (establishYear: number | null) => {
 		if (!establishYear) return null;
