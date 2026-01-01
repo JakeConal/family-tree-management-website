@@ -1,14 +1,16 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserPlus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import ConfirmModal from '@/components/modals/ConfirmModal';
-import { FamilyTreeService } from '@/lib/services';
+import InviteGuestModal from '@/components/modals/InviteGuestModal';
+import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
+import { FamilyMember } from '@/types';
 
 interface FamilyTree {
 	id: number;
@@ -29,17 +31,19 @@ export default function FamilyTreeSettings() {
 	const [saving, setSaving] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+	const [showInviteModal, setShowInviteModal] = useState(false);
+	const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
 
 	// Form state
 	const [familyName, setFamilyName] = useState('');
 	const [origin, setOrigin] = useState('');
 	const [establishYear, setEstablishYear] = useState('');
 
-	// Fetch family tree details
+	// Fetch family tree details and members
 	useEffect(() => {
-		const fetchFamilyTree = async () => {
+		const fetchData = async () => {
 			try {
-				// const response = await fetch(`/api/family-trees/${familyTreeId}`);
+				// Fetch family tree
 				const data = await FamilyTreeService.getById(familyTreeId);
 				setFamilyTree(data);
 
@@ -47,15 +51,19 @@ export default function FamilyTreeSettings() {
 				setFamilyName(data.familyName || '');
 				setOrigin(data.origin || '');
 				setEstablishYear(data.establishYear?.toString() || '');
+
+				// Fetch family members for invite modal
+				const members = await FamilyMemberService.getAll({ familyTreeId });
+				setFamilyMembers(members);
 			} catch (error) {
-				console.error('Error fetching family tree:', error);
+				console.error('Error fetching data:', error);
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		if (familyTreeId) {
-			fetchFamilyTree();
+			fetchData();
 		}
 	}, [familyTreeId]);
 
@@ -228,8 +236,23 @@ export default function FamilyTreeSettings() {
 					/>
 				</div>
 
+				{/* Guest Invitations Section */}
+				<div className="mt-12 pt-8 border-t border-gray-300">
+					<h3 className="font-roboto font-normal text-[21.252px] text-black mb-4">Guest Access</h3>
+					<p className="text-gray-600 mb-4 text-sm">
+						Invite family members to view the tree and edit their own profile by generating access codes.
+					</p>
+					<button
+						onClick={() => setShowInviteModal(true)}
+						className="h-10 px-6 bg-blue-600 text-white rounded-[10px] font-roboto font-bold text-[14px] hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+					>
+						<UserPlus className="w-4 h-4" />
+						Invite Guest Editor
+					</button>
+				</div>
+
 				{/* Action Buttons */}
-				<div className="flex gap-4 mt-8">
+				<div className="flex gap-4 mt-12 pt-8 border-t border-gray-300">
 					<button
 						onClick={handleSaveChanges}
 						disabled={saving || deleting}
@@ -272,6 +295,14 @@ export default function FamilyTreeSettings() {
 				cancelText="Cancel"
 				confirmButtonClass="bg-red-600 hover:bg-red-700"
 				isLoading={deleting}
+			/>
+
+			{/* Invite Guest Modal */}
+			<InviteGuestModal
+				isOpen={showInviteModal}
+				onClose={() => setShowInviteModal(false)}
+				familyTreeId={familyTreeId}
+				familyMembers={familyMembers}
 			/>
 		</div>
 	);

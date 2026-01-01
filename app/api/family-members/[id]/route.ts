@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -21,15 +22,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 		const prisma = getPrisma();
 
-		const familyMember = await prisma.familyMember.findFirst({
-			where: {
-				id: memberId,
-				familyTree: {
-					treeOwner: {
-						userId: session.user.id,
-					},
+		// Build query based on role
+		let whereClause: any = { id: memberId };
+
+		if (sessionData.isGuest) {
+			// Guest can only view members in their assigned family tree
+			whereClause.familyTreeId = sessionData.guestFamilyTreeId;
+		} else if (sessionData.isOwner) {
+			// Owner can only view members in their own trees
+			whereClause.familyTree = {
+				treeOwner: {
+					userId: sessionData.user.id,
 				},
-			},
+			};
+		}
+
+		const familyMember = await prisma.familyMember.findFirst({
+			where: whereClause,
 			select: {
 				id: true,
 				fullName: true,
@@ -125,9 +134,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -140,16 +149,27 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 		const prisma = getPrisma();
 
+		// Build query based on role
+		let whereClause: any = { id: memberId };
+
+		if (sessionData.isGuest) {
+			// Guest can only edit their own profile
+			if (sessionData.guestMemberId !== memberId) {
+				return NextResponse.json({ error: 'Bạn chỉ có thể sửa hồ sơ của mình' }, { status: 403 });
+			}
+			whereClause.familyTreeId = sessionData.guestFamilyTreeId;
+		} else if (sessionData.isOwner) {
+			// Owner can edit any member in their trees
+			whereClause.familyTree = {
+				treeOwner: {
+					userId: sessionData.user.id,
+				},
+			};
+		}
+
 		// Verify the user has access to this family member
 		const existingMember = await prisma.familyMember.findFirst({
-			where: {
-				id: memberId,
-				familyTree: {
-					treeOwner: {
-						userId: session.user.id,
-					},
-				},
-			},
+			where: whereClause,
 		});
 
 		if (!existingMember) {
@@ -258,7 +278,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		});
 
 		// Log the change
-		await logChange('FamilyMember', memberId, 'UPDATE', existingMember.familyTreeId, session.user.id, oldValues, {
+		await logChange(
+			'FamilyMember',
+			memberId,
+			'UPDATE',
+			existingMember.familyTreeId,
+			sessionData.isGuest ? null : sessionData.user.id,
+			oldValues,
+			{
 			fullName: updatedMember.fullName,
 			gender: updatedMember.gender,
 			birthday: updatedMember.birthday,
@@ -276,10 +303,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can delete members
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id } = await params;
@@ -291,13 +323,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family member
+		// Verify the owner has access to this family member
 		const existingMember = await prisma.familyMember.findFirst({
 			where: {
 				id: memberId,
 				familyTree: {
 					treeOwner: {
-						userId: session.user.id,
+						userId: sessionData.user.id,
 					},
 				},
 			},
@@ -318,7 +350,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 			existingMember.id,
 			'DELETE',
 			existingMember.familyTreeId,
-			session.user.id,
+			sessionData.user.id,
 			{
 				fullName: existingMember.fullName,
 				gender: existingMember.gender,

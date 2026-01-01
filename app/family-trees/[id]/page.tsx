@@ -25,6 +25,7 @@ import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
 import AchievementPanel from '@/components/panels/AchievementPanel';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import PassingPanel from '@/components/panels/PassingPanel';
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
@@ -66,6 +67,7 @@ export default function FamilyTreeDashboard() {
 	const router = useRouter();
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const { isGuest } = useGuestSession();
 
 	// State for API data
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
@@ -397,12 +399,14 @@ export default function FamilyTreeDashboard() {
 									<Info className="w-5 h-5 text-black" />
 								</div>
 								<h2 className="font-inter font-bold text-[15px] text-black">Family Information Overview</h2>
-								<button
-									onClick={() => setIsEditFamilyTreeModalOpen(true)}
-									className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
-								>
-									<Pencil className="w-4 h-4 text-gray-500" />
-								</button>
+								{!isGuest && (
+									<button
+										onClick={() => setIsEditFamilyTreeModalOpen(true)}
+										className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
+									>
+										<Pencil className="w-4 h-4 text-gray-500" />
+									</button>
+								)}
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 mb-8 ml-2">
@@ -530,54 +534,56 @@ export default function FamilyTreeDashboard() {
 					</div>
 				</div>
 
-				{/* Quick Action Section */}
-				<div className="space-y-4">
-					<h2 className="font-inter font-bold text-[18px] p-4 text-black">Quick Action</h2>
-					<div
-						className={classNames(
-							'grid gap-6',
-							activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-						)}
-					>
-						<button
-							onClick={() => {
-								setActivePanelType('addMember');
-								fetchExistingMembers();
-							}}
-							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+				{/* Quick Action Section - Hide for guests */}
+				{!isGuest && (
+					<div className="space-y-4">
+						<h2 className="font-inter font-bold text-[18px] p-4 text-black">Quick Action</h2>
+						<div
+							className={classNames(
+								'grid gap-6',
+								activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+							)}
 						>
-							<UserPlus className="w-5 h-5 text-black" />
-							<span className="font-roboto font-semibold text-[16px] text-black">Add Member</span>
-						</button>
-						<button
-							onClick={() => {
-								setActivePanelType('achievement');
-								fetchExistingMembers();
-							}}
-							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
-						>
-							<Trophy className="w-5 h-5 text-black" />
-							<span className="font-roboto font-semibold text-[16px] text-black">Record Achievement</span>
-						</button>
-						<button
-							onClick={() => {
-								setActivePanelType('passing');
-								fetchExistingMembers();
-							}}
-							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
-						>
-							<Skull className="w-5 h-5 text-black" />
-							<span className="font-roboto font-semibold text-[16px] text-black">Record Passing</span>
-						</button>
-						<button
-							onClick={() => router.push(`/family-trees/${familyTreeId}/tree`)}
-							className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
-						>
-							<TreePine className="w-5 h-5 text-black" />
-							<span className="font-roboto font-semibold text-[16px] text-black">View Family Tree</span>
-						</button>
+							<button
+								onClick={() => {
+									setActivePanelType('addMember');
+									fetchExistingMembers();
+								}}
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+							>
+								<UserPlus className="w-5 h-5 text-black" />
+								<span className="font-roboto font-semibold text-[16px] text-black">Add Member</span>
+							</button>
+							<button
+								onClick={() => {
+									setActivePanelType('achievement');
+									fetchExistingMembers();
+								}}
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+							>
+								<Trophy className="w-5 h-5 text-black" />
+								<span className="font-roboto font-semibold text-[16px] text-black">Record Achievement</span>
+							</button>
+							<button
+								onClick={() => {
+									setActivePanelType('passing');
+									fetchExistingMembers();
+								}}
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+							>
+								<Skull className="w-5 h-5 text-black" />
+								<span className="font-roboto font-semibold text-[16px] text-black">Record Passing</span>
+							</button>
+							<button
+								onClick={() => router.push(`/family-trees/${familyTreeId}/tree`)}
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+							>
+								<TreePine className="w-5 h-5 text-black" />
+								<span className="font-roboto font-semibold text-[16px] text-black">View Family Tree</span>
+							</button>
+						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Recent Changes Section */}
 				<div className="space-y-4">

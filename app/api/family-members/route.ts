@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -21,18 +22,26 @@ export async function GET(request: NextRequest) {
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
-		const familyTree = await prisma.familyTree.findFirst({
-			where: {
-				id: parseInt(familyTreeId),
-				treeOwner: {
-					userId: session.user.id,
+		// Verify access based on role
+		if (sessionData.isGuest) {
+			// Guest can only access their assigned family tree
+			if (sessionData.guestFamilyTreeId !== parseInt(familyTreeId)) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
+		} else if (sessionData.isOwner) {
+			// Verify the owner has access to this family tree
+			const familyTree = await prisma.familyTree.findFirst({
+				where: {
+					id: parseInt(familyTreeId),
+					treeOwner: {
+						userId: sessionData.user.id,
+					},
 				},
-			},
-		});
+			});
 
-		if (!familyTree) {
-			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			if (!familyTree) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
 		}
 
 		const familyMembers = await prisma.familyMember.findMany({
@@ -134,10 +143,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can create new family members
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		// Handle multipart form data
@@ -165,12 +179,12 @@ export async function POST(request: NextRequest) {
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const familyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: parseInt(familyTreeId),
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});
@@ -354,7 +368,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Log the creation
-		await logChange('FamilyMember', familyMember.id, 'CREATE', parseInt(familyTreeId), session.user.id, null, {
+		await logChange('FamilyMember', familyMember.id, 'CREATE', parseInt(familyTreeId), sessionData.user.id, null, {
 			fullName: familyMember.fullName,
 			gender: familyMember.gender,
 			birthday: familyMember.birthday,
@@ -382,10 +396,15 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Guests cannot use this endpoint - they use the specific [id] route
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		// Get member ID from URL
@@ -420,14 +439,14 @@ export async function PUT(request: NextRequest) {
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree and member exists
+		// Verify the owner has access to this family tree and member exists
 		const existingMember = await prisma.familyMember.findFirst({
 			where: {
 				id: parseInt(memberId),
 				familyTreeId: parseInt(familyTreeId),
 				familyTree: {
 					treeOwner: {
-						userId: session.user.id,
+						userId: sessionData.user.id,
 					},
 				},
 			},
@@ -641,7 +660,7 @@ export async function PUT(request: NextRequest) {
 		}
 
 		// Log the update
-		await logChange('FamilyMember', updatedMember.id, 'UPDATE', parseInt(familyTreeId), session.user.id, null, {
+		await logChange('FamilyMember', updatedMember.id, 'UPDATE', parseInt(familyTreeId), sessionData.user.id, null, {
 			fullName: updatedMember.fullName,
 			gender: updatedMember.gender,
 			birthday: updatedMember.birthday,

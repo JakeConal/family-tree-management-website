@@ -118,7 +118,11 @@ export default function GenerateAccessCodePanel({
 				</button>
 
 				{/* Title */}
-				<h2 className="font-roboto font-semibold text-[20px] leading-[28px] text-black mb-[23px]">Share Access</h2>
+				<h2 className="font-roboto font-semibold text-[20px] leading-[28px] text-black mb-2">Share Access</h2>
+				{/* Member Name */}
+				<p className="font-roboto font-normal text-sm text-black/70 mb-[23px]">
+					Access code for <span className="font-medium text-black">{memberName}</span>
+				</p>
 			</div>
 
 			{/* Content Section */}

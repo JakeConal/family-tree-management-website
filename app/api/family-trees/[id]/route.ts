@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
+import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -20,13 +20,23 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 		const prisma = getPrisma();
 
+		// Build query based on role
+		let whereClause: any = { id: familyTreeId };
+
+		if (sessionData.isGuest) {
+			// Guest can only access their assigned family tree
+			if (sessionData.guestFamilyTreeId !== familyTreeId) {
+				return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
+			}
+		} else if (sessionData.isOwner) {
+			// Owner can only access their own trees
+			whereClause.treeOwner = {
+				userId: sessionData.user.id,
+			};
+		}
+
 		const familyTree = await prisma.familyTree.findFirst({
-			where: {
-				id: familyTreeId,
-				treeOwner: {
-					userId: session.user.id,
-				},
-			},
+			where: whereClause,
 			select: {
 				id: true,
 				familyName: true,
@@ -54,10 +64,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can update family tree
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id } = await params;
@@ -76,12 +91,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const existingFamilyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: familyTreeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});
@@ -123,7 +138,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 		// Log the change
 		const { logChange } = await import('../../../../lib/utils');
-		await logChange('FamilyTree', familyTreeId, 'UPDATE', familyTreeId, session.user.id, oldValues, {
+		await logChange('FamilyTree', familyTreeId, 'UPDATE', familyTreeId, sessionData.user.id, oldValues, {
 			familyName: updatedFamilyTree.familyName,
 			origin: updatedFamilyTree.origin,
 			establishYear: updatedFamilyTree.establishYear,
@@ -138,10 +153,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await auth();
+		const sessionData = await getSessionWithRole();
 
-		if (!session?.user?.id) {
+		if (!sessionData.user) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+		}
+
+		// Only owners can delete family tree
+		if (sessionData.isGuest) {
+			return NextResponse.json({ error: 'Bạn không có quyền thực hiện thao tác này' }, { status: 403 });
 		}
 
 		const { id } = await params;
@@ -153,12 +173,12 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
 		const prisma = getPrisma();
 
-		// Verify the user has access to this family tree
+		// Verify the owner has access to this family tree
 		const existingFamilyTree = await prisma.familyTree.findFirst({
 			where: {
 				id: familyTreeId,
 				treeOwner: {
-					userId: session.user.id,
+					userId: sessionData.user.id,
 				},
 			},
 		});

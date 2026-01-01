@@ -179,7 +179,7 @@ model SpouseRelationship {
 
 model GuestEditor {
   id             Int          @id @default(autoincrement())
-  accessCode     String       @db.VarChar(45)
+  accessCode     String       @unique @db.VarChar(45)
   createDate     DateTime     @default(now())
   familyMemberId Int
   familyTreeId   Int

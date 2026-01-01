@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { PlaceOfOriginForm, OccupationApiResponse, FamilyMember } from '@/types';
 
 interface ExistingMember {
@@ -70,6 +71,7 @@ export default function ViewEditMemberPanel({
 	onClose,
 	onSuccess,
 }: ViewEditMemberPanelProps) {
+	const { isGuest, guestMemberId } = useGuestSession();
 	const [member, setMember] = useState<ExistingMember | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [memberFormData, setMemberFormData] = useState({
@@ -471,6 +473,8 @@ export default function ViewEditMemberPanel({
 	}
 
 	const isViewMode = mode === 'view';
+	// Determine if user can edit this member
+	const canEdit = isGuest ? guestMemberId === memberId : true;
 
 	return (
 		<div className="w-full h-full flex flex-col bg-white">
@@ -714,12 +718,14 @@ export default function ViewEditMemberPanel({
 							>
 								Back
 							</button>
-							<button
-								onClick={() => onModeChange('edit')}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-							>
-								Edit
-							</button>
+							{canEdit && (
+								<button
+									onClick={() => onModeChange('edit')}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+								>
+									Edit
+								</button>
+							)}
 						</div>
 					</div>
 				</div>

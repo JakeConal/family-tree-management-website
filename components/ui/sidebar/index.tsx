@@ -8,6 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useMemo } from 'react';
 
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { openCreatePanel } from '@/lib/store/createPanelSlice';
 import { useAppDispatch } from '@/lib/store/hooks';
 import { useFamilyTrees } from '@/lib/useFamilyTrees';
@@ -25,6 +26,7 @@ interface NavigationItem {
 
 export function Sidebar() {
 	const { data: session, status } = useSession();
+	const { isGuest, guestFamilyTreeId } = useGuestSession();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { familyTrees, loading } = useFamilyTrees(session);
@@ -101,12 +103,15 @@ export function Sidebar() {
 
 				{/* Scrollable Content Area */}
 				<div className="flex-1 overflow-y-auto">
-					<div className="px-5 py-2">
-						<NavigationButton name="Dashboard" href="/dashboard" icon={Home} isActive={pathname === '/dashboard'} />
-					</div>
+					{/* Show Dashboard only for owners */}
+					{!isGuest && (
+						<div className="px-5 py-2">
+							<NavigationButton name="Dashboard" href="/dashboard" icon={Home} isActive={pathname === '/dashboard'} />
+						</div>
+					)}
 
 					{/* Family Trees Section */}
-					{status === 'authenticated' && (
+					{status === 'authenticated' && !isGuest && (
 						<div className="px-5 py-5">
 							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">My Family Trees</h2>
 							<div className="space-y-1 mb-4">
@@ -150,10 +155,16 @@ export function Sidebar() {
 					{/* Navigation */}
 					{navigationItems.length > 0 && (
 						<div className="px-5 py-2">
-							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">Family Tree </h2>
+							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">
+								{isGuest ? 'Family Tree (Guest View)' : 'Family Tree'}
+							</h2>
 							<nav className="space-y-1">
 								{navigationItems.map((item) => {
 									const isActive = pathname === item.href;
+									// Hide Settings for guests
+									if (isGuest && item.name === 'Settings') {
+										return null;
+									}
 
 									return (
 										<NavigationButton

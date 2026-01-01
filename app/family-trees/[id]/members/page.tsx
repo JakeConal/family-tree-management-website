@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { Search, Plus, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Eye, Pencil, KeyRound, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -9,7 +9,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
-import ConfirmModal from '@/components/modals/ConfirmModal';
+import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
 import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
 import { FamilyMember } from '@/types';
 
@@ -112,10 +112,10 @@ interface MemberTableProps {
 	members: FamilyMember[];
 	onViewMember: (id: number) => void;
 	onEditMember: (id: number) => void;
-	onDeleteMember: (id: number) => void;
+	onGenerateAccessCode: (id: number, name: string) => void;
 }
 
-const MemberTable = ({ members, onViewMember, onEditMember, onDeleteMember }: MemberTableProps) => {
+const MemberTable = ({ members, onViewMember, onEditMember, onGenerateAccessCode }: MemberTableProps) => {
 	return (
 		<div className="rounded-xl border border-gray-100 shadow-sm">
 			<table className="w-full border-collapse text-left">
@@ -174,11 +174,11 @@ const MemberTable = ({ members, onViewMember, onEditMember, onDeleteMember }: Me
 										<Pencil className="w-5 h-5" />
 									</button>
 									<button
-										onClick={() => onDeleteMember(member.id)}
-										className="p-1.5 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
-										title="Delete Member"
+										onClick={() => onGenerateAccessCode(member.id, member.fullName)}
+										className="p-1.5 hover:bg-purple-50 text-purple-600 rounded-lg transition-colors"
+										title="Generate Guest Access Code"
 									>
-										<Trash2 className="w-5 h-5" />
+										<KeyRound className="w-5 h-5" />
 									</button>
 								</div>
 							</td>
@@ -202,12 +202,13 @@ export default function MemberListPage() {
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [selectedGeneration, setSelectedGeneration] = useState('All Generation');
-	const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
-	const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
-	const [panelMode, setPanelMode] = useState<'view' | 'edit'>('view');
-	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-	const [deletingMemberId, setDeletingMemberId] = useState<number | null>(null);
-	const [isDeleting, setIsDeleting] = useState(false);
+	const [panelState, setPanelState] = useState<
+		| { type: 'add' }
+		| { type: 'view'; memberId: number }
+		| { type: 'edit'; memberId: number }
+		| { type: 'accessCode'; memberId: number; memberName: string }
+		| null
+	>(null);
 
 	const fetchData = useCallback(async () => {
 		setLoading(true);
@@ -247,51 +248,26 @@ export default function MemberListPage() {
 		return ['All Generation', ...gens.map((g) => `F${g}`)];
 	}, [members]);
 
-	const handleDeleteMember = async (id: number) => {
-		setDeletingMemberId(id);
-		setShowDeleteConfirm(true);
-	};
-
-	const confirmDeleteMember = async () => {
-		if (!deletingMemberId) return;
-
-		setIsDeleting(true);
-		try {
-			const res = await fetch(`/api/family-members/${deletingMemberId}`, {
-				method: 'DELETE',
-			});
-			if (res.ok) {
-				setMembers(members.filter((m) => m.id !== deletingMemberId));
-				toast.success('Member deleted successfully');
-				setShowDeleteConfirm(false);
-				setDeletingMemberId(null);
-			} else {
-				toast.error('Failed to delete member');
-			}
-		} catch (error) {
-			console.error('Error deleting member:', error);
-			toast.error('An error occurred while deleting the member');
-		} finally {
-			setIsDeleting(false);
-		}
+	const handleGenerateAccessCode = (id: number, name: string) => {
+		setPanelState({ type: 'accessCode', memberId: id, memberName: name });
 	};
 
 	const handleViewMember = (id: number) => {
-		setSelectedMemberId(id);
-		setPanelMode('view');
+		setPanelState({ type: 'view', memberId: id });
 	};
 
 	const handleEditMember = (id: number) => {
-		setSelectedMemberId(id);
-		setPanelMode('edit');
+		setPanelState({ type: 'edit', memberId: id });
 	};
 
 	const handleClosePanel = () => {
-		setSelectedMemberId(null);
+		setPanelState(null);
 	};
 
 	const handlePanelModeChange = (mode: 'view' | 'edit') => {
-		setPanelMode(mode);
+		if (panelState && (panelState.type === 'view' || panelState.type === 'edit')) {
+			setPanelState({ type: mode, memberId: panelState.memberId });
+		}
 	};
 
 	if (loading) {
@@ -314,7 +290,7 @@ export default function MemberListPage() {
 						generations={generations}
 						onGenerationChange={setSelectedGeneration}
 						onSearchChange={setSearchQuery}
-						onAddMember={() => setIsAddPanelOpen(true)}
+						onAddMember={() => setPanelState({ type: 'add' })}
 					/>
 
 					{/* Table Component */}
@@ -322,7 +298,7 @@ export default function MemberListPage() {
 						members={filteredMembers}
 						onViewMember={handleViewMember}
 						onEditMember={handleEditMember}
-						onDeleteMember={handleDeleteMember}
+						onGenerateAccessCode={handleGenerateAccessCode}
 					/>
 
 					{/* Pagination */}
@@ -342,55 +318,47 @@ export default function MemberListPage() {
 				</div>
 			</div>
 
-		{/* Member Panel Sidebar - Push Style */}
-		<aside
-			className={classNames(
-				'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-				{
-					'w-[600px]': selectedMemberId !== null || isAddPanelOpen,
-					'w-0': selectedMemberId === null && !isAddPanelOpen,
-				}
-			)}
-		>
-			{selectedMemberId !== null && (
-				<ViewEditMemberPanel
-					memberId={selectedMemberId}
-					familyTreeId={familyTreeId}
-					existingMembers={members}
-					mode={panelMode}
-					onModeChange={handlePanelModeChange}
-					onClose={handleClosePanel}
-					onSuccess={fetchData}
-				/>
-			)}
-			{isAddPanelOpen && (
-				<AddMemberPanel
-					familyTreeId={familyTreeId}
-					existingMembers={members}
-					onClose={() => setIsAddPanelOpen(false)}
-					onSuccess={() => {
-						fetchData();
-						setIsAddPanelOpen(false);
-					}}
-				/>
-			)}
-		</aside>
-
-	{/* Delete Confirmation Modal */}
-		<ConfirmModal
-				isOpen={showDeleteConfirm}
-				onClose={() => {
-					setShowDeleteConfirm(false);
-					setDeletingMemberId(null);
-				}}
-				onConfirm={confirmDeleteMember}
-				title="Delete Member"
-				message="Are you sure you want to delete this member? This action cannot be undone."
-				confirmText="Delete"
-				cancelText="Cancel"
-				confirmButtonClass="bg-red-600 hover:bg-red-700"
-				isLoading={isDeleting}
-			/>
+			{/* Member Panel Sidebar - Push Style */}
+			<aside
+				className={classNames(
+					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+					{
+						'w-[600px]': panelState !== null,
+						'w-0': panelState === null,
+					}
+				)}
+			>
+				{panelState?.type === 'add' && (
+					<AddMemberPanel
+						familyTreeId={familyTreeId}
+						existingMembers={members}
+						onClose={handleClosePanel}
+						onSuccess={() => {
+							fetchData();
+							handleClosePanel();
+						}}
+					/>
+				)}
+				{(panelState?.type === 'view' || panelState?.type === 'edit') && (
+					<ViewEditMemberPanel
+						memberId={panelState.memberId}
+						familyTreeId={familyTreeId}
+						existingMembers={members}
+						mode={panelState.type}
+						onModeChange={handlePanelModeChange}
+						onClose={handleClosePanel}
+						onSuccess={fetchData}
+					/>
+				)}
+				{panelState?.type === 'accessCode' && (
+					<GenerateAccessCodePanel
+						familyTreeId={familyTreeId}
+						memberId={panelState.memberId}
+						memberName={panelState.memberName}
+						onClose={handleClosePanel}
+					/>
+				)}
+			</aside>
 		</div>
 	);
 }
