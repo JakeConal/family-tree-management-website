@@ -103,12 +103,6 @@ export function Sidebar() {
 
 				{/* Scrollable Content Area */}
 				<div className="flex-1 overflow-y-auto">
-					{/* Show Dashboard only for owners */}
-					{!isGuest && (
-						<div className="px-5 py-2">
-							<NavigationButton name="Dashboard" href="/dashboard" icon={Home} isActive={pathname === '/dashboard'} />
-						</div>
-					)}
 
 					{/* Family Trees Section */}
 					{status === 'authenticated' && !isGuest && (
