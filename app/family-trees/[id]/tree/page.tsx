@@ -15,7 +15,7 @@ import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
-import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
+import ViewEditMemberPanel from '@/components/panels/ViewEditMemberPanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
 
 interface ExtendedFamilyMember extends PrismaFamilyMember {

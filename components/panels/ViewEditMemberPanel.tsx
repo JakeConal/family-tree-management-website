@@ -18,6 +18,7 @@ interface ExistingMember {
 	generation: string | null;
 	isRootPerson: boolean | null;
 	isAdopted: boolean | null;
+	relationshipEstablishedDate?: string | null;
 	hasProfilePicture?: boolean;
 	birthPlaces?: {
 		startDate: string;
@@ -37,6 +38,7 @@ interface ExistingMember {
 		fullName: string;
 	} | null;
 	spouse1?: Array<{
+		marriageDate?: string | null;
 		divorceDate: Date | null;
 		familyMember2: {
 			id: number;
@@ -44,6 +46,7 @@ interface ExistingMember {
 		};
 	}>;
 	spouse2?: Array<{
+		marriageDate?: string | null;
 		divorceDate: Date | null;
 		familyMember1: {
 			id: number;
@@ -118,15 +121,41 @@ export default function ViewEditMemberPanel({
 					const data = await res.json();
 					setMember(data);
 
+					// Determine relationship and related member
+					let relationshipType = '';
+					let relatedMemberId = '';
+					let relationshipDateValue = '';
+
+					// Check for parent relationship (prioritized)
+					// Uses relationshipEstablishedDate from FamilyMember table
+					if (data.parent) {
+						relationshipType = 'parent';
+						relatedMemberId = data.parent.id.toString();
+						relationshipDateValue = data.relationshipEstablishedDate
+							? data.relationshipEstablishedDate.split('T')[0]
+							: '';
+					}
+					// Check for spouse relationships (only if no parent relationship)
+					// Uses marriageDate from SpouseRelationship table
+					else if (data.spouse1 && data.spouse1.length > 0) {
+						relationshipType = 'spouse';
+						relatedMemberId = data.spouse1[0].familyMember2.id.toString();
+						relationshipDateValue = data.spouse1[0].marriageDate ? data.spouse1[0].marriageDate.split('T')[0] : '';
+					} else if (data.spouse2 && data.spouse2.length > 0) {
+						relationshipType = 'spouse';
+						relatedMemberId = data.spouse2[0].familyMember1.id.toString();
+						relationshipDateValue = data.spouse2[0].marriageDate ? data.spouse2[0].marriageDate.split('T')[0] : '';
+					}
+
 					// Load member data
 					setMemberFormData({
 						fullName: data.fullName || '',
 						gender: data.gender || '',
 						birthDate: data.birthday ? data.birthday.split('T')[0] : '',
 						address: data.address || '',
-						relatedMemberId: data.parent?.id.toString() || '',
-						relationship: data.parent ? 'parent' : '',
-						relationshipDate: '',
+						relatedMemberId: relatedMemberId,
+						relationship: relationshipType,
+						relationshipDate: relationshipDateValue,
 					});
 
 					// Load places of origin
@@ -136,7 +165,12 @@ export default function ViewEditMemberPanel({
 								(
 									place: { startDate?: string; endDate?: string; placeOfOrigin: { location: string } },
 									index: number
-								) => ({})
+								) => ({
+									id: index.toString(),
+									location: place.placeOfOrigin?.location || '',
+									startDate: place.startDate ? place.startDate.split('T')[0] : '',
+									endDate: place.endDate ? place.endDate.split('T')[0] : '',
+								})
 							)
 						);
 					} else {

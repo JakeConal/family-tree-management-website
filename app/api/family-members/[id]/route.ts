@@ -48,6 +48,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 				generation: true,
 				isRootPerson: true,
 				isAdopted: true,
+				relationshipEstablishedDate: true,
 				familyTreeId: true,
 				parentId: true,
 				parent: {
@@ -64,6 +65,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 				},
 				spouse1: {
 					select: {
+						marriageDate: true,
+						divorceDate: true,
 						familyMember2: {
 							select: {
 								id: true,
@@ -74,6 +77,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 				},
 				spouse2: {
 					select: {
+						marriageDate: true,
+						divorceDate: true,
 						familyMember1: {
 							select: {
 								id: true,
@@ -184,6 +189,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		const address = formData.get('address') as string;
 		const generation = formData.get('generation') as string;
 		const isAdopted = formData.get('isAdopted') === 'true';
+		const parentId = formData.get('parentId') as string | null;
+		const relationshipEstablishedDate = formData.get('relationshipEstablishedDate') as string | null;
+		const spouseId = formData.get('spouseId') as string | null;
+		const marriageDate = formData.get('marriageDate') as string | null;
 		const profilePictureFile = formData.get('profilePicture') as File | null;
 
 		if (!fullName || typeof fullName !== 'string' || fullName.trim().length === 0) {
@@ -250,6 +259,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				profilePictureType: profilePictureType,
 				generation: generation?.trim() || null,
 				isAdopted: isAdopted || false,
+				parentId: parentId ? parseInt(parentId) : null,
+				relationshipEstablishedDate: relationshipEstablishedDate ? new Date(relationshipEstablishedDate) : null,
 			},
 			select: {
 				id: true,
@@ -260,6 +271,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				generation: true,
 				isRootPerson: true,
 				isAdopted: true,
+				relationshipEstablishedDate: true,
 				familyTreeId: true,
 				parentId: true,
 				parent: {
@@ -274,8 +286,67 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 						fullName: true,
 					},
 				},
+				spouse1: {
+					select: {
+						marriageDate: true,
+						divorceDate: true,
+						familyMember2: {
+							select: {
+								id: true,
+								fullName: true,
+							},
+						},
+					},
+				},
+				spouse2: {
+					select: {
+						marriageDate: true,
+						divorceDate: true,
+						familyMember1: {
+							select: {
+								id: true,
+								fullName: true,
+							},
+						},
+					},
+				},
 			},
 		});
+
+		// Handle spouse relationship updates
+		if (spouseId) {
+			const spouseIdNum = parseInt(spouseId);
+			const marriageDateObj = marriageDate ? new Date(marriageDate) : new Date();
+
+			// Check if there's an existing spouse relationship
+			const existingSpouseRelationship = await prisma.spouseRelationship.findFirst({
+				where: {
+					OR: [
+						{ familyMember1Id: memberId, familyMember2Id: spouseIdNum },
+						{ familyMember1Id: spouseIdNum, familyMember2Id: memberId },
+					],
+				},
+			});
+
+			if (existingSpouseRelationship) {
+				// Update existing relationship
+				await prisma.spouseRelationship.update({
+					where: { id: existingSpouseRelationship.id },
+					data: {
+						marriageDate: marriageDateObj,
+					},
+				});
+			} else {
+				// Create new relationship
+				await prisma.spouseRelationship.create({
+					data: {
+						familyMember1Id: memberId,
+						familyMember2Id: spouseIdNum,
+						marriageDate: marriageDateObj,
+					},
+				});
+			}
+		}
 
 		// Log the change
 		await logChange(

@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
 
-import CreateFamilyTreePanel from '@/components/CreateFamilyTreePanel';
+import CreateFamilyTreePanel from '@/components/panels/CreateFamilyTreePanel';
 import { Sidebar } from '@/components/ui/sidebar';
 import { closeCreatePanel } from '@/lib/store/createPanelSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';

@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
-import ViewEditMemberPanel from '@/components/ViewEditMemberPanel';
+import ViewEditMemberPanel from '@/components/panels/ViewEditMemberPanel';
 import { FamilyMember } from '@/types';
 
 const MemberAvatar = ({
