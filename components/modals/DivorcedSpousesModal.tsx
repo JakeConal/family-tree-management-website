@@ -5,7 +5,7 @@ import React from 'react';
 
 interface ExtendedFamilyMember extends FamilyMember {
 	hasProfilePicture?: boolean;
-	divorceDate?: Date;
+	divorceDate?: Date | null;
 }
 
 interface DivorcedSpousesModalProps {
