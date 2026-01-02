@@ -141,10 +141,10 @@ export default function AddMemberPanel({
 				}
 			} else if (memberFormData.relationship === 'spouse') {
 				const minSpouseDate = new Date(birthDate);
-				minSpouseDate.setFullYear(minSpouseDate.getFullYear() + 7);
+				minSpouseDate.setFullYear(minSpouseDate.getFullYear() + 18);
 
 				if (relationshipDate < minSpouseDate) {
-					errors.relationshipDate = 'Relationship date must be at least 7 years after birth date';
+					errors.relationshipDate = 'Relationship date must be at least 18 years after birth date';
 				}
 			}
 		}
@@ -251,11 +251,11 @@ export default function AddMemberPanel({
 			formData.append('familyTreeId', familyTreeId);
 
 			// Add places of origin
-			const validPlaces = placesOfOrigin.filter(p => p.location.trim() && p.startDate);
+			const validPlaces = placesOfOrigin.filter((p) => p.location.trim() && p.startDate);
 			formData.append('placesOfOrigin', JSON.stringify(validPlaces));
 
 			// Add occupations
-			const validOccupations = occupations.filter(o => o.title.trim() && o.startDate);
+			const validOccupations = occupations.filter((o) => o.title.trim() && o.startDate);
 			formData.append('occupations', JSON.stringify(validOccupations));
 
 			if (memberFormData.relatedMemberId) {
@@ -541,9 +541,7 @@ export default function AddMemberPanel({
 											</div>
 											<div className="grid grid-cols-2 gap-4">
 												<div>
-													<label className="block text-[11.5px] font-normal text-black mb-1 ml-0.5">
-														Start Date *
-													</label>
+													<label className="block text-[11.5px] font-normal text-black mb-1 ml-0.5">Start Date *</label>
 													<input
 														type="date"
 														value={place.startDate}
@@ -628,9 +626,7 @@ export default function AddMemberPanel({
 											</div>
 											<div className="grid grid-cols-2 gap-4">
 												<div>
-													<label className="block text-[11.5px] font-normal text-black mb-1 ml-0.5">
-														Start Date *
-													</label>
+													<label className="block text-[11.5px] font-normal text-black mb-1 ml-0.5">Start Date *</label>
 													<input
 														type="date"
 														value={occ.startDate}
@@ -845,9 +841,8 @@ export default function AddMemberPanel({
 							<div>
 								<p className="text-sm font-semibold text-gray-900 mb-1">Note</p>
 								<p className="text-sm text-gray-700">
-									When adding a <strong>Child - Parent</strong> relationship, the system will automatically
-									create <strong>Birth</strong> events. You can view details in the <strong>Life Events</strong>{' '}
-									section.
+									When adding a <strong>Child - Parent</strong> relationship, the system will automatically create{' '}
+									<strong>Birth</strong> events. You can view details in the <strong>Life Events</strong> section.
 								</p>
 							</div>
 						</div>
@@ -895,4 +890,3 @@ export default function AddMemberPanel({
 		</div>
 	);
 }
-
