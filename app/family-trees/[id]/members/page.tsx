@@ -37,6 +37,7 @@ const MemberAvatar = ({
 				height={40}
 				className="object-cover w-full h-full"
 				onError={() => setError(true)}
+				unoptimized
 			/>
 		</div>
 	);

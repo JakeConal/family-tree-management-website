@@ -40,6 +40,7 @@ export default function ExSpouseCard({ member, style, onClick }: ExSpouseCardPro
 						width={40}
 						height={40}
 						className="w-full h-full object-cover"
+						unoptimized
 					/>
 				) : (
 					<span className="text-gray-600 text-sm font-bold">{member.fullName.charAt(0).toUpperCase()}</span>
@@ -68,4 +69,3 @@ export default function ExSpouseCard({ member, style, onClick }: ExSpouseCardPro
 		</div>
 	);
 }
-

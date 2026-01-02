@@ -9,6 +9,7 @@ interface ExtendedFamilyMember extends FamilyMember {
 		id: number;
 		dateOfPassing: Date;
 	}[];
+	hasProfilePicture?: boolean;
 }
 
 interface FamilyNodeProps {
@@ -62,13 +63,14 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 			{/* Profile Image Container */}
 			<div className="relative">
 				<div className="w-24 h-24 rounded-[20px] bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100">
-					{member.profilePicture ? (
+					{member.hasProfilePicture ? (
 						<Image
 							src={`/api/family-members/${member.id}/profile-picture`}
 							alt={member.fullName}
 							width={96}
 							height={96}
 							className="w-full h-full object-cover"
+							unoptimized
 						/>
 					) : (
 						<span className="text-gray-600 text-2xl font-bold">

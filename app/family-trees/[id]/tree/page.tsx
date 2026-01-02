@@ -307,7 +307,7 @@ export default function FamilyTreePage() {
 		let maxY = -Infinity;
 
 		positionedNodes.forEach((node) => {
-			const left = node.left * 120 - 80;
+			const left = node.left * 100 - 80;
 			const top = node.top * 180 - 128;
 			const right = left + NODE_WIDTH;
 			const bottom = top + NODE_HEIGHT;
@@ -478,7 +478,7 @@ export default function FamilyTreePage() {
 															position: 'absolute',
 															width: 160,
 															height: 256,
-															left: node.left * 120 - 80,
+															left: node.left * 100 - 80,
 															top: node.top * 180 - 128,
 														}}
 														onClick={() => {
@@ -527,13 +527,17 @@ export default function FamilyTreePage() {
 														if (!spouseNode) return null;
 
 														// Calculate midpoint between spouses
-														const nodeX = node.left * 120;
+														const nodeX = node.left * 100;
 														const nodeY = node.top * 180;
-														const spouseX = spouseNode.left * 120;
+														const spouseX = spouseNode.left * 100;
 														const spouseY = spouseNode.top * 180;
 
 														const midX = (nodeX + spouseX) / 2;
 														const midY = (nodeY + spouseY) / 2;
+
+														// Calculate offsets to bring circle closer to both nodes
+														const distX = Math.abs(spouseX - nodeX);
+														const offsetMultiplier = Math.max(0.35, Math.min(0.45, 80 / distX)); // Adjust based on distance
 
 														// Check if this is a divorced relationship
 														const isDivorced = relation.divorceDate !== null;
@@ -541,23 +545,13 @@ export default function FamilyTreePage() {
 
 														return (
 															<g key={`spouse-${pairKey}`}>
-																{/* Spouse connection line */}
-																<line
-																	x1={nodeX}
-																	y1={nodeY}
-																	x2={spouseX}
-																	y2={spouseY}
-																	stroke="gray"
-																	strokeWidth="2"
-																	strokeDasharray={strokeDasharray}
-																/>
 																{/* Add child circle - only for current spouses */}
 																{!isDivorced && (
 																	<>
 																		<circle
 																			cx={midX}
 																			cy={midY}
-																			r="15"
+																			r="20"
 																			fill="white"
 																			stroke="gray"
 																			strokeWidth="2"
@@ -619,38 +613,17 @@ export default function FamilyTreePage() {
 													if (renderedConnections.has(connectionKey)) return null;
 													renderedConnections.add(connectionKey);
 
-													const parentX = parentNode.left * 120;
-													const parentY = parentNode.top * 180 + 128;
+													const parentX = parentNode.left * 100;
+													const parentY = parentNode.top * 180 + 115;
 													const childY = childNodes[0].top * 180 - 128;
-													const childXs = childNodes.map((n) => n.left * 120).sort((a, b) => a - b);
+													const childXs = childNodes.map((n) => n.left * 100).sort((a, b) => a - b);
 													const minX = childXs[0];
 													const maxX = childXs[childXs.length - 1];
 													const midY = (parentY + childY) / 2;
 
 													return (
 														<g key={parentId}>
-															{/* White background paths to cover old connections */}
-															<path
-																d={`M ${parentX} ${parentY} Q ${parentX} ${(parentY + midY) / 2} ${parentX} ${midY} Q ${
-																	(parentX + minX) / 2
-																} ${midY} ${minX} ${midY} L ${maxX} ${midY}`}
-																stroke="white"
-																strokeWidth="20"
-																fill="none"
-															/>
-															{childNodes.map((childNode) => {
-																const childX = childNode.left * 120;
-																return (
-																	<path
-																		key={`bg-${childNode.id}`}
-																		d={`M ${childX} ${midY} Q ${childX} ${(midY + childY) / 2} ${childX} ${childY}`}
-																		stroke="white"
-																		strokeWidth="20"
-																		fill="none"
-																	/>
-																);
-															})}
-															{/* Black foreground paths */}
+															{/* Connection from parent middle-bottom to horizontal line */}
 															<path
 																d={`M ${parentX} ${parentY} Q ${parentX} ${(parentY + midY) / 2} ${parentX} ${midY} Q ${
 																	(parentX + minX) / 2
@@ -660,7 +633,7 @@ export default function FamilyTreePage() {
 																fill="none"
 															/>
 															{childNodes.map((childNode) => {
-																const childX = childNode.left * 120;
+																const childX = childNode.left * 100;
 																return (
 																	<path
 																		key={childNode.id}
