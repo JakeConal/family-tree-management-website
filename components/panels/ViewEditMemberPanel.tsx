@@ -393,6 +393,14 @@ export default function ViewEditMemberPanel({
 			formData.append('isAdopted', 'false');
 			formData.append('familyTreeId', familyTreeId);
 
+			// Add places of origin
+			const validPlaces = placesOfOrigin.filter(p => p.location.trim() && p.startDate);
+			formData.append('placesOfOrigin', JSON.stringify(validPlaces));
+
+			// Add occupations
+			const validOccupations = occupations.filter(o => o.jobTitle.trim() && o.startDate);
+			formData.append('occupations', JSON.stringify(validOccupations));
+
 			if (memberFormData.relatedMemberId) {
 				if (memberFormData.relationship === 'parent') {
 					formData.append('parentId', memberFormData.relatedMemberId);
@@ -890,17 +898,50 @@ export default function ViewEditMemberPanel({
 													<label className="block text-[11.5px] font-normal text-black mb-1 ml-0.5">
 														{index === 0 ? 'Current Origin *' : 'Origin *'}
 													</label>
-													<input
-														type="text"
+													<select
 														value={place.location}
 														onChange={(e) => {
 															const updatedPlaces = [...placesOfOrigin];
 															updatedPlaces[index].location = e.target.value;
 															setPlacesOfOrigin(updatedPlaces);
 														}}
-														placeholder="Enter location"
 														className="w-full bg-[#eff6ff] border-[0.965px] border-black/50 rounded-[28.9px] px-4 py-2 text-[11.5px] text-black focus:ring-1 focus:ring-black/20 outline-none"
-													/>
+													>
+														<option value="">Select place of origin</option>
+														<option value="An Giang">An Giang</option>
+														<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
+														<option value="Bac Giang">Bac Giang</option>
+														<option value="Bac Ninh">Bac Ninh</option>
+														<option value="Binh Duong">Binh Duong</option>
+														<option value="Binh Dinh">Binh Dinh</option>
+														<option value="Binh Phuoc">Binh Phuoc</option>
+														<option value="Binh Thuan">Binh Thuan</option>
+														<option value="Ca Mau">Ca Mau</option>
+														<option value="Dak Lak">Dak Lak</option>
+														<option value="Dak Nong">Dak Nong</option>
+														<option value="Dong Nai">Dong Nai</option>
+														<option value="Dong Thap">Dong Thap</option>
+														<option value="Gia Lai">Gia Lai</option>
+														<option value="Ha Giang">Ha Giang</option>
+														<option value="Ha Nam">Ha Nam</option>
+														<option value="Ha Tinh">Ha Tinh</option>
+														<option value="Khanh Hoa">Khanh Hoa</option>
+														<option value="Kien Giang">Kien Giang</option>
+														<option value="Lam Dong">Lam Dong</option>
+														<option value="Lao Cai">Lao Cai</option>
+														<option value="Long An">Long An</option>
+														<option value="Nam Dinh">Nam Dinh</option>
+														<option value="Nghe An">Nghe An</option>
+														<option value="Ninh Binh">Ninh Binh</option>
+														<option value="Phu Tho">Phu Tho</option>
+														<option value="Quang Nam">Quang Nam</option>
+														<option value="Hanoi">Hanoi</option>
+														<option value="Ho Chi Minh City">Ho Chi Minh City</option>
+														<option value="Hai Phong">Hai Phong</option>
+														<option value="Da Nang">Da Nang</option>
+														<option value="Can Tho">Can Tho</option>
+														<option value="Hue">Hue</option>
+													</select>
 												</div>
 												<div className="grid grid-cols-2 gap-4">
 													<div>

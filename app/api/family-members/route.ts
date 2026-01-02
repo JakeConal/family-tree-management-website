@@ -367,6 +367,62 @@ export async function POST(request: NextRequest) {
 			});
 		}
 
+		// Handle places of origin
+		const placesOfOriginData = formData.get('placesOfOrigin') as string;
+		if (placesOfOriginData) {
+			try {
+				const placesOfOrigin = JSON.parse(placesOfOriginData);
+				for (const place of placesOfOrigin) {
+					if (place.location && place.startDate) {
+						// Find or create PlaceOfOrigin
+						let placeOfOrigin = await prisma.placeOfOrigin.findFirst({
+							where: { location: place.location },
+						});
+
+						if (!placeOfOrigin) {
+							placeOfOrigin = await prisma.placeOfOrigin.create({
+								data: { location: place.location },
+							});
+						}
+
+						// Create FamilyMember_has_PlaceOfOrigin
+						await prisma.familyMember_has_PlaceOfOrigin.create({
+							data: {
+								familyMemberId: familyMember.id,
+								placeOfOriginId: placeOfOrigin.id,
+								startDate: new Date(place.startDate),
+								endDate: place.endDate ? new Date(place.endDate) : null,
+							},
+						});
+					}
+				}
+			} catch (error) {
+				console.error('Error parsing placesOfOrigin:', error);
+			}
+		}
+
+		// Handle occupations
+		const occupationsData = formData.get('occupations') as string;
+		if (occupationsData) {
+			try {
+				const occupations = JSON.parse(occupationsData);
+				for (const occ of occupations) {
+					if (occ.title && occ.startDate) {
+						await prisma.occupation.create({
+							data: {
+								jobTitle: occ.title,
+								startDate: new Date(occ.startDate),
+								endDate: occ.endDate ? new Date(occ.endDate) : null,
+								familyMemberId: familyMember.id,
+							},
+						});
+					}
+				}
+			} catch (error) {
+				console.error('Error parsing occupations:', error);
+			}
+		}
+
 		// Log the creation
 		await logChange('FamilyMember', familyMember.id, 'CREATE', parseInt(familyTreeId), sessionData.user.id, null, {
 			fullName: familyMember.fullName,
@@ -657,6 +713,74 @@ export async function PUT(request: NextRequest) {
 					OR: [{ familyMember1Id: parseInt(memberId) }, { familyMember2Id: parseInt(memberId) }],
 				},
 			});
+		}
+
+		// Handle places of origin updates
+		const placesOfOriginData = formData.get('placesOfOrigin') as string;
+		if (placesOfOriginData) {
+			try {
+				// Remove existing places of origin
+				await prisma.familyMember_has_PlaceOfOrigin.deleteMany({
+					where: { familyMemberId: parseInt(memberId) },
+				});
+
+				// Add new places of origin
+				const placesOfOrigin = JSON.parse(placesOfOriginData);
+				for (const place of placesOfOrigin) {
+					if (place.location && place.startDate) {
+						// Find or create PlaceOfOrigin
+						let placeOfOrigin = await prisma.placeOfOrigin.findFirst({
+							where: { location: place.location },
+						});
+
+						if (!placeOfOrigin) {
+							placeOfOrigin = await prisma.placeOfOrigin.create({
+								data: { location: place.location },
+							});
+						}
+
+						// Create FamilyMember_has_PlaceOfOrigin
+						await prisma.familyMember_has_PlaceOfOrigin.create({
+							data: {
+								familyMemberId: parseInt(memberId),
+								placeOfOriginId: placeOfOrigin.id,
+								startDate: new Date(place.startDate),
+								endDate: place.endDate ? new Date(place.endDate) : null,
+							},
+						});
+					}
+				}
+			} catch (error) {
+				console.error('Error updating placesOfOrigin:', error);
+			}
+		}
+
+		// Handle occupations updates
+		const occupationsData = formData.get('occupations') as string;
+		if (occupationsData) {
+			try {
+				// Remove existing occupations
+				await prisma.occupation.deleteMany({
+					where: { familyMemberId: parseInt(memberId) },
+				});
+
+				// Add new occupations
+				const occupations = JSON.parse(occupationsData);
+				for (const occ of occupations) {
+					if (occ.title && occ.startDate) {
+						await prisma.occupation.create({
+							data: {
+								jobTitle: occ.title || occ.jobTitle,
+								startDate: new Date(occ.startDate),
+								endDate: occ.endDate ? new Date(occ.endDate) : null,
+								familyMemberId: parseInt(memberId),
+							},
+						});
+					}
+				}
+			} catch (error) {
+				console.error('Error updating occupations:', error);
+			}
 		}
 
 		// Log the update
