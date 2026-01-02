@@ -3,6 +3,7 @@
 import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
 import classNames from 'classnames';
 import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
@@ -12,6 +13,7 @@ import type { Node, ExtNode } from 'relatives-tree/lib/types';
 import FamilyNode from '@/components/FamilyNode';
 import LoadingScreen from '@/components/LoadingScreen';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
+import DivorcedSpousesModal from '@/components/modals/DivorcedSpousesModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
@@ -27,6 +29,8 @@ interface ExtendedFamilyMember extends PrismaFamilyMember {
 		id: number;
 		fullName: string;
 	}[];
+	divorceDate?: Date | null;
+	hasProfilePicture?: boolean;
 	spouse1?: {
 		divorceDate: Date | null;
 		familyMember2: {
@@ -84,6 +88,9 @@ export default function FamilyTreePage() {
 	const [showAchievementModal, setShowAchievementModal] = useState(false);
 	const [showPassingModal, setShowPassingModal] = useState(false);
 	const [showChangeLogModal, setShowChangeLogModal] = useState(false);
+	const [showDivorcedSpousesModal, setShowDivorcedSpousesModal] = useState(false);
+	const [selectedDivorcedSpouses, setSelectedDivorcedSpouses] = useState<ExtendedFamilyMember[]>([]);
+	const [selectedDivorcedMemberName, setSelectedDivorcedMemberName] = useState<string>('');
 	const [selectedMemberId, setSelectedMemberId] = useState<string>('');
 	const [zoomPercentage, setZoomPercentage] = useState(80);
 	const [zoomFunctions, setZoomFunctions] = useState<{
@@ -283,6 +290,60 @@ export default function FamilyTreePage() {
 		return members.find((member) => member.id.toString() === id);
 	};
 
+	// Get divorced spouses for a member
+	const getDivorcedSpouses = (memberId: string): ExtendedFamilyMember[] => {
+		const member = getMemberById(memberId);
+		if (!member) return [];
+
+		const divorcedSpouses: ExtendedFamilyMember[] = [];
+
+		// Check spouse1 relationships
+		if (member.spouse1) {
+			member.spouse1.forEach((spouseRelation) => {
+				if (spouseRelation.divorceDate) {
+					const spouse = getMemberById(spouseRelation.familyMember2.id.toString());
+					if (spouse && !spouse.isRootPerson) {
+						divorcedSpouses.push({
+							...spouse,
+							divorceDate: spouseRelation.divorceDate,
+						});
+					}
+				}
+			});
+		}
+
+		// Check spouse2 relationships
+		if (member.spouse2) {
+			member.spouse2.forEach((spouseRelation) => {
+				if (spouseRelation.divorceDate) {
+					const spouse = getMemberById(spouseRelation.familyMember1.id.toString());
+					if (spouse && !spouse.isRootPerson) {
+						divorcedSpouses.push({
+							...spouse,
+							divorceDate: spouseRelation.divorceDate,
+						});
+					}
+				}
+			});
+		}
+
+		return divorcedSpouses;
+	};
+
+	// Get all divorced spouse IDs that should be hidden from main tree
+	const getAllDivorcedSpouseIds = (): Set<string> => {
+		const divorcedSpouseIds = new Set<string>();
+
+		members.forEach((member) => {
+			const divorcedSpouses = getDivorcedSpouses(member.id.toString());
+			divorcedSpouses.forEach((spouse) => {
+				divorcedSpouseIds.add(spouse.id.toString());
+			});
+		});
+
+		return divorcedSpouseIds;
+	};
+
 	const getFilteredPositionedNodes = () => {
 		if (selectedGeneration === 'all') {
 			return positionedNodes;
@@ -465,28 +526,204 @@ export default function FamilyTreePage() {
 									<div className="relative w-auto h-auto">
 										{/* Manual node rendering */}
 										<div className="relative">
+											{(() => {
+												const divorcedSpouseIds = getAllDivorcedSpouseIds();
+												return getFilteredPositionedNodes().map((node) => {
+													const member = getMemberById(node.id);
+													if (!member) return null;
+
+													// Hide nodes that are divorced spouses (shown separately)
+													if (divorcedSpouseIds.has(node.id)) return null;
+
+													return (
+														<FamilyNode
+															key={node.id}
+															node={node as ExtNode}
+															member={member}
+															style={{
+																position: 'absolute',
+																width: 160,
+																height: 256,
+																left: node.left * 100 - 80,
+																top: node.top * 180 - 128,
+															}}
+															onClick={() => {
+																setSelectedMemberIdForPanel(member.id);
+																setPanelMode('view');
+															}}
+														/>
+													);
+												});
+											})()}
+
+											{/* Divorced spouse nodes - positioned to the left */}
 											{getFilteredPositionedNodes().map((node) => {
 												const member = getMemberById(node.id);
 												if (!member) return null;
 
-												return (
-													<FamilyNode
-														key={node.id}
-														node={node as ExtNode}
-														member={member}
-														style={{
-															position: 'absolute',
-															width: 160,
-															height: 256,
-															left: node.left * 100 - 80,
-															top: node.top * 180 - 128,
-														}}
-														onClick={() => {
-															setSelectedMemberIdForPanel(member.id);
-															setPanelMode('view');
-														}}
-													/>
-												);
+												const divorcedSpouses = getDivorcedSpouses(node.id);
+												if (divorcedSpouses.length === 0) return null;
+
+												// Position divorced spouses to the left of the member
+												const baseX = node.left * 100 - 80 - 200; // 200px to the left
+												const baseY = node.top * 180 - 128;
+
+												if (divorcedSpouses.length === 1) {
+													// Single divorced spouse - render as regular node with orange background
+													const spouse = divorcedSpouses[0];
+													return (
+														<div
+															key={`ex-spouse-${node.id}-${spouse.id}`}
+															className="absolute flex flex-col items-center justify-start gap-3 rounded-[32px] border-2 p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
+															style={{
+																position: 'absolute',
+																width: '160px',
+																height: '240px',
+																left: baseX,
+																top: baseY,
+																backgroundColor: '#fbcbb0', // Orange color for divorced spouses
+																borderColor: 'rgba(0,0,0,0.04)',
+															}}
+															onClick={() => {
+																setSelectedMemberIdForPanel(spouse.id);
+																setPanelMode('view');
+															}}
+														>
+															{/* Profile Image Container */}
+															<div className="relative">
+																<div className="w-24 h-24 rounded-[20px] bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100">
+																	{spouse.hasProfilePicture ? (
+																		<Image
+																			src={`/api/family-members/${spouse.id}/profile-picture`}
+																			alt={spouse.fullName}
+																			width={96}
+																			height={96}
+																			className="w-full h-full object-cover"
+																			unoptimized
+																		/>
+																	) : (
+																		<span className="text-gray-600 text-2xl font-bold">
+																			{spouse.fullName.split(' ').pop()?.charAt(0).toUpperCase()}
+																		</span>
+																	)}
+																</div>
+															</div>
+
+															{/* First Name */}
+															<div className="text-center w-full px-1">
+																<h3 className="font-nunito font-black text-2xl text-gray-900 leading-tight truncate">
+																	{spouse.fullName.split(' ').pop()}
+																</h3>
+															</div>
+
+															{/* Ex-Spouse Badge */}
+															<div className="bg-gray-900 text-white px-2 py-1 rounded-full text-center">
+																<span className="font-nunito font-semibold text-xs">
+																	{spouse.gender === 'MALE' ? 'Ex-Husband' : 'Ex-Wife'}
+																</span>
+															</div>
+														</div>
+													);
+												} else {
+													// Multiple divorced spouses - render as stacked cards
+													return (
+														<div
+															key={`ex-spouse-stack-${node.id}`}
+															className="absolute cursor-pointer"
+															style={{
+																position: 'absolute',
+																left: baseX,
+																top: baseY,
+															}}
+															onClick={() => {
+																setSelectedDivorcedSpouses(divorcedSpouses);
+																setSelectedDivorcedMemberName(member.fullName);
+																setShowDivorcedSpousesModal(true);
+															}}
+														>
+															{/* Stack effect - background cards */}
+															<div
+																className="absolute rounded-[32px] border-2"
+																style={{
+																	width: '160px',
+																	height: '240px',
+																	backgroundColor: '#fbcbb0',
+																	borderColor: 'rgba(0,0,0,0.04)',
+																	left: '8px',
+																	top: '8px',
+																	opacity: 0.6,
+																}}
+															/>
+															<div
+																className="absolute rounded-[32px] border-2"
+																style={{
+																	width: '160px',
+																	height: '240px',
+																	backgroundColor: '#fbcbb0',
+																	borderColor: 'rgba(0,0,0,0.04)',
+																	left: '4px',
+																	top: '4px',
+																	opacity: 0.8,
+																}}
+															/>
+
+															{/* Top card with count */}
+															<div
+																className="relative flex flex-col items-center justify-center gap-3 rounded-[32px] border-2 p-4 transition-all duration-200 hover:shadow-lg hover:scale-105"
+																style={{
+																	width: '160px',
+																	height: '240px',
+																	backgroundColor: '#fbcbb0',
+																	borderColor: 'rgba(0,0,0,0.04)',
+																}}
+															>
+																{/* Multiple profile pictures stacked or count indicator */}
+																<div className="relative w-24 h-24">
+																	{divorcedSpouses.slice(0, 3).map((spouse, index) => (
+																		<div
+																			key={spouse.id}
+																			className="absolute w-16 h-16 rounded-[16px] bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100"
+																			style={{
+																				left: `${index * 12}px`,
+																				top: `${index * 12}px`,
+																				zIndex: 3 - index,
+																			}}
+																		>
+																			{spouse.profilePicture ? (
+																				<Image
+																					src={`/api/family-members/${spouse.id}/profile-picture`}
+																					alt={spouse.fullName}
+																					width={64}
+																					height={64}
+																					className="w-full h-full object-cover"
+																					unoptimized
+																				/>
+																			) : (
+																				<span className="text-gray-600 text-lg font-bold">
+																					{spouse.fullName.split(' ').pop()?.charAt(0).toUpperCase()}
+																				</span>
+																			)}
+																		</div>
+																	))}
+																</div>
+
+																{/* Count badge */}
+																<div className="text-center">
+																	<div className="bg-gray-900 text-white px-3 py-2 rounded-full">
+																		<span className="font-nunito font-bold text-lg">
+																			{divorcedSpouses.length} Ex-Spouses
+																		</span>
+																	</div>
+																</div>
+
+																{/* Click to view text */}
+																<div className="text-center text-xs text-gray-700">
+																	<span className="font-nunito font-semibold">Click to view</span>
+																</div>
+															</div>
+														</div>
+													);
+												}
 											})}
 										</div>
 										<svg
@@ -535,13 +772,8 @@ export default function FamilyTreePage() {
 														const midX = (nodeX + spouseX) / 2;
 														const midY = (nodeY + spouseY) / 2;
 
-														// Calculate offsets to bring circle closer to both nodes
-														const distX = Math.abs(spouseX - nodeX);
-														const offsetMultiplier = Math.max(0.35, Math.min(0.45, 80 / distX)); // Adjust based on distance
-
 														// Check if this is a divorced relationship
 														const isDivorced = relation.divorceDate !== null;
-														const strokeDasharray = isDivorced ? '4,4' : undefined;
 
 														return (
 															<g key={`spouse-${pairKey}`}>
@@ -648,6 +880,37 @@ export default function FamilyTreePage() {
 													);
 												});
 											})()}
+
+											{/* Divorced spouse connections - dashed lines */}
+											{(() => {
+												const filteredNodes = getFilteredPositionedNodes();
+												return filteredNodes.map((node) => {
+													const member = getMemberById(node.id);
+													if (!member) return null;
+
+													const divorcedSpouses = getDivorcedSpouses(node.id);
+													if (divorcedSpouses.length === 0) return null;
+
+													// Calculate positions
+													const memberX = node.left * 100; // Center of member node
+													const memberY = node.top * 180; // Center of member node
+													const exSpouseX = memberX - 200 + 80; // Center of divorced spouse node (200px left + 80px offset)
+													const exSpouseY = memberY; // Same Y position
+
+													return (
+														<g key={`divorced-line-${node.id}`}>
+															{/* Dashed line from divorced spouse to member */}
+															<path
+																d={`M ${exSpouseX} ${exSpouseY} L ${memberX - 80} ${memberY}`}
+																stroke="#fb923c"
+																strokeWidth="2"
+																strokeDasharray="8,4"
+																fill="none"
+															/>
+														</g>
+													);
+												});
+											})()}
 										</svg>
 									</div>
 								</TransformComponent>
@@ -742,6 +1005,21 @@ export default function FamilyTreePage() {
 				isOpen={showChangeLogModal}
 				onClose={() => setShowChangeLogModal(false)}
 				changeLog={null}
+			/>
+
+			<DivorcedSpousesModal
+				isOpen={showDivorcedSpousesModal}
+				onClose={() => {
+					setShowDivorcedSpousesModal(false);
+					setSelectedDivorcedSpouses([]);
+					setSelectedDivorcedMemberName('');
+				}}
+				spouses={selectedDivorcedSpouses}
+				memberName={selectedDivorcedMemberName}
+				onSpouseClick={(spouseId) => {
+					setSelectedMemberIdForPanel(spouseId);
+					setPanelMode('view');
+				}}
 			/>
 		</div>
 	);
