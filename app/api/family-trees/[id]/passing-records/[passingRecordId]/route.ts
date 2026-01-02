@@ -177,30 +177,6 @@ export async function PUT(
 
 		// Update passing record in a transaction
 		const updatedRecord = await prisma.$transaction(async (tx) => {
-			// Handle cause of death
-			let causeOfDeathId = existingRecord.causeOfDeathId;
-
-			if (causesOfDeath && causesOfDeath.length > 0) {
-				const primaryCause = causesOfDeath[0];
-				
-				// Find or create cause of death
-				let cause = await tx.causeOfDeath.findFirst({
-					where: {
-						causeName: primaryCause,
-					},
-				});
-
-				if (!cause) {
-					cause = await tx.causeOfDeath.create({
-						data: {
-							causeName: primaryCause,
-						},
-					});
-				}
-
-				causeOfDeathId = cause.id;
-			}
-
 			// Update the passing record
 			const updated = await tx.passingRecord.update({
 				where: {
@@ -208,9 +184,38 @@ export async function PUT(
 				},
 				data: {
 					dateOfPassing: new Date(dateOfPassing),
-					causeOfDeathId: causeOfDeathId,
 				},
 			});
+
+			// Handle cause of death
+			if (causesOfDeath && causesOfDeath.length > 0) {
+				const primaryCause = causesOfDeath[0];
+
+				// Delete existing cause of death if it exists
+				if (existingRecord.causeOfDeath) {
+					await tx.causeOfDeath.delete({
+						where: {
+							id: existingRecord.causeOfDeath.id,
+						},
+					});
+				}
+
+				// Create new cause of death
+				await tx.causeOfDeath.create({
+					data: {
+						causeName: primaryCause,
+						familyMemberId: existingRecord.familyMemberId,
+						passingRecordId: recordId,
+					},
+				});
+			} else if (existingRecord.causeOfDeath) {
+				// If no cause of death provided, delete the existing one
+				await tx.causeOfDeath.delete({
+					where: {
+						id: existingRecord.causeOfDeath.id,
+					},
+				});
+			}
 
 			// Delete existing burial places
 			await tx.buriedPlace.deleteMany({
@@ -241,7 +246,7 @@ export async function PUT(
 		// Log the update
 		await logChange('PassingRecord', updatedRecord.id, 'UPDATE', familyTreeId, sessionData.user.id, oldData, {
 			dateOfPassing: updatedRecord.dateOfPassing,
-			causeOfDeathId: updatedRecord.causeOfDeathId,
+			causeOfDeath: causesOfDeath && causesOfDeath.length > 0 ? causesOfDeath[0] : null,
 		});
 
 		// Fetch the complete updated record
@@ -368,4 +373,3 @@ export async function DELETE(
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 	}
 }
-

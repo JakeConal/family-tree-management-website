@@ -283,16 +283,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			memberId,
 			'UPDATE',
 			existingMember.familyTreeId,
-			sessionData.isGuest ? null : sessionData.user.id,
+			sessionData.isGuest ? undefined : sessionData.user.id,
 			oldValues,
 			{
-			fullName: updatedMember.fullName,
-			gender: updatedMember.gender,
-			birthday: updatedMember.birthday,
-			address: updatedMember.address,
-			generation: updatedMember.generation,
-			isAdopted: updatedMember.isAdopted,
-		});
+				fullName: updatedMember.fullName,
+				gender: updatedMember.gender,
+				birthday: updatedMember.birthday,
+				address: updatedMember.address,
+				generation: updatedMember.generation,
+				isAdopted: updatedMember.isAdopted,
+			}
+		);
 
 		return NextResponse.json(updatedMember);
 	} catch (error) {

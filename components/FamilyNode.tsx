@@ -4,9 +4,16 @@ import React from 'react';
 import type { ExtNode } from 'relatives-tree/lib/types';
 import { Skull } from 'lucide-react';
 
+interface ExtendedFamilyMember extends FamilyMember {
+	passingRecords?: {
+		id: number;
+		dateOfPassing: Date;
+	}[];
+}
+
 interface FamilyNodeProps {
 	node: ExtNode;
-	member: FamilyMember;
+	member: ExtendedFamilyMember;
 	style: React.CSSProperties;
 	onClick?: () => void;
 }
