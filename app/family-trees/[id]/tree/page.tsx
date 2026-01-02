@@ -103,6 +103,199 @@ export default function FamilyTreePage() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [hasInitialized, setHasInitialized] = useState(false);
 
+	// Helper function to check if a member is a "spouse-type" node (should be shown as divorced spouse)
+	const isSpouseTypeNode = (member: ExtendedFamilyMember): boolean => {
+		return member.parentId === null && !member.isRootPerson;
+	};
+
+	// Helper function to check if a member has divorced spouses that will be displayed
+	const hasDivorcedSpousesToDisplay = (memberId: string, memberMap: Map<number, ExtendedFamilyMember>): boolean => {
+		const member = memberMap.get(parseInt(memberId));
+		if (!member) return false;
+
+		// Only parent-child nodes should display divorced spouses
+		if (isSpouseTypeNode(member)) return false;
+
+		// Check spouse1 relationships
+		if (member.spouse1) {
+			for (const spouseRelation of member.spouse1) {
+				if (spouseRelation.divorceDate) {
+					const spouse = memberMap.get(spouseRelation.familyMember2.id);
+					if (spouse && isSpouseTypeNode(spouse)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		// Check spouse2 relationships
+		if (member.spouse2) {
+			for (const spouseRelation of member.spouse2) {
+				if (spouseRelation.divorceDate) {
+					const spouse = memberMap.get(spouseRelation.familyMember1.id);
+					if (spouse && isSpouseTypeNode(spouse)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	};
+
+	// Ensure current spouses are always positioned to the right of parent-child nodes
+	const ensureSpousesOnRight = (nodes: ExtNode[], memberMap: Map<number, ExtendedFamilyMember>): ExtNode[] => {
+		const adjustedNodes = nodes.map((node) => ({ ...node }));
+		const nodeMap = new Map(adjustedNodes.map((node) => [node.id, node]));
+
+		// Process each node to check if it has a current (non-divorced) spouse
+		adjustedNodes.forEach((node) => {
+			const member = memberMap.get(parseInt(node.id));
+			if (!member) return;
+
+			// Only adjust parent-child nodes (not spouse-type nodes)
+			if (isSpouseTypeNode(member)) return;
+
+			// Find current spouse (not divorced)
+			const spouseRelations = [
+				...(member.spouse1 || []).map((s) => ({
+					spouseId: s.familyMember2.id.toString(),
+					divorceDate: s.divorceDate,
+				})),
+				...(member.spouse2 || []).map((s) => ({
+					spouseId: s.familyMember1.id.toString(),
+					divorceDate: s.divorceDate,
+				})),
+			];
+
+			for (const relation of spouseRelations) {
+				if (!relation.divorceDate) {
+					// This is a current spouse
+					const spouseNode = nodeMap.get(relation.spouseId);
+					if (!spouseNode) continue;
+
+					// Check if they are on the same row (they should be)
+					if (Math.abs(node.top - spouseNode.top) < 0.1) {
+						// Ensure spouse is on the right
+						if (spouseNode.left < node.left) {
+							// Spouse is on the left - swap positions
+							const tempLeft = node.left;
+							Object.assign(node, { left: spouseNode.left });
+							Object.assign(spouseNode, { left: tempLeft });
+						}
+					}
+				}
+			}
+		});
+
+		return adjustedNodes;
+	};
+
+	// Adjust node positions to make room for divorced spouse nodes on the left
+	const adjustNodesForDivorcedSpouses = (
+		nodes: ExtNode[],
+		treeNodes: Node[],
+		memberMap: Map<number, ExtendedFamilyMember>
+	): ExtNode[] => {
+		// Create a map of node positions by row (top value)
+		const rowMap = new Map<number, ExtNode[]>();
+		nodes.forEach((node) => {
+			const row = node.top;
+			if (!rowMap.has(row)) rowMap.set(row, []);
+			rowMap.get(row)!.push(node);
+		});
+
+		// For each row, check if any node has divorced spouses and adjust positions
+		const adjustedNodes = nodes.map((node) => ({ ...node }));
+
+		// Find nodes that have divorced spouses to display
+		const nodesWithDivorcedSpouses = new Set<string>();
+		adjustedNodes.forEach((node) => {
+			if (hasDivorcedSpousesToDisplay(node.id, memberMap)) {
+				nodesWithDivorcedSpouses.add(node.id);
+			}
+		});
+
+		if (nodesWithDivorcedSpouses.size === 0) return adjustedNodes;
+
+		// For each row, sort by left position and add offset where needed
+		rowMap.forEach((rowNodes, row) => {
+			// Sort nodes in this row by left position
+			const sortedRowNodes = rowNodes.sort((a, b) => a.left - b.left);
+
+			// Check each node - if a node has divorced spouses, ensure space to its left
+			for (let i = 0; i < sortedRowNodes.length; i++) {
+				const currentNode = sortedRowNodes[i];
+				if (!nodesWithDivorcedSpouses.has(currentNode.id)) continue;
+
+				// This node has divorced spouses - check if there's a node to its left that's too close
+				// Divorced spouse is positioned 2 units to the left
+				const divorcedSpouseLeft = currentNode.left - 2;
+
+				// Find if any node would overlap with the divorced spouse position
+				for (let j = 0; j < i; j++) {
+					const leftNode = sortedRowNodes[j];
+					// If the left node is at or past the divorced spouse position, we need to shift
+					if (leftNode.left >= divorcedSpouseLeft - 0.5) {
+						// Need to shift the current node (and nodes to its right) to the right
+						const shiftAmount = 2; // Shift by 2 units to make room
+
+						// Find the adjusted node and all nodes to its right in this row
+						for (let k = i; k < sortedRowNodes.length; k++) {
+							const nodeToShift = adjustedNodes.find((n) => n.id === sortedRowNodes[k].id);
+							if (nodeToShift) {
+								nodeToShift.left += shiftAmount;
+							}
+						}
+						break;
+					}
+				}
+
+				// Also check if there's no space on the left edge (node is too close to left boundary)
+				if (divorcedSpouseLeft < 0) {
+					// Shift all nodes right to make room at the left edge
+					const shiftAmount = Math.abs(divorcedSpouseLeft) + 0.5;
+					adjustedNodes.forEach((n) => {
+						if (n.top === row || n.top > row) {
+							// Shift this row and below (to maintain parent-child alignment)
+							// Actually, just shift all nodes to be safe
+						}
+					});
+				}
+			}
+		});
+
+		// Second pass: ensure divorced spouse positions don't overlap with any other nodes
+		// by adding a global offset if needed
+		let globalLeftOffset = 0;
+		adjustedNodes.forEach((node) => {
+			if (nodesWithDivorcedSpouses.has(node.id)) {
+				const divorcedSpouseLeft = node.left - 2;
+				// Check if any node is at this position
+				const overlappingNode = adjustedNodes.find(
+					(n) => n.id !== node.id && Math.abs(n.left - divorcedSpouseLeft) < 1 && n.top === node.top
+				);
+				if (overlappingNode) {
+					// Need more offset
+					globalLeftOffset = Math.max(globalLeftOffset, 2);
+				}
+				// Also check if divorced spouse would be at negative position
+				if (divorcedSpouseLeft < 0) {
+					globalLeftOffset = Math.max(globalLeftOffset, Math.abs(divorcedSpouseLeft) + 0.5);
+				}
+			}
+		});
+
+		// Apply global offset if needed
+		if (globalLeftOffset > 0) {
+			adjustedNodes.forEach((node) => {
+				node.left += globalLeftOffset;
+			});
+		}
+
+		return adjustedNodes;
+	};
+
 	const fetchFamilyMembers = useCallback(async () => {
 		try {
 			const data = await FamilyMemberService.getAll({ familyTreeId });
@@ -276,9 +469,18 @@ export default function FamilyTreePage() {
 			});
 			// Deduplicate nodes by ID to avoid React key warnings
 			const uniqueNodes = Array.from(new Map(positionedNodes.nodes.map((node) => [node.id, node])).values());
+
+			// Ensure current spouses are always on the right of parent-child nodes
+			const nodesWithSpousesAdjusted = ensureSpousesOnRight(uniqueNodes, memberMap);
+
+			// Adjust node positions to account for divorced spouse nodes
+			// Divorced spouses are positioned 2 units (200px) to the left of their ex-partner
+			// We need to ensure no other nodes occupy that space
+			const adjustedNodes = adjustNodesForDivorcedSpouses(nodesWithSpousesAdjusted, nodes, memberMap);
+
 			// Update treeNodes with positioned nodes
-			setTreeNodes([...uniqueNodes]);
-			setPositionedNodes([...uniqueNodes]);
+			setTreeNodes([...adjustedNodes]);
+			setPositionedNodes([...adjustedNodes]);
 		} catch (err) {
 			console.error('Error processing family tree data:', err);
 			setError('Failed to process family tree data');
@@ -291,9 +493,20 @@ export default function FamilyTreePage() {
 	};
 
 	// Get divorced spouses for a member
+	// A divorced spouse is one that:
+	// 1. Has a divorce record with the current member
+	// 2. Is a "spouse" type node (parentId is null) and is not the root person
+	// The parent-child node remains in place, only the spouse moves to the left
 	const getDivorcedSpouses = (memberId: string): ExtendedFamilyMember[] => {
 		const member = getMemberById(memberId);
 		if (!member) return [];
+
+		// Only parent-child nodes (those with a parentId OR root person) should have divorced spouses displayed
+		// If the current member is a pure spouse (parentId is null and not root), they shouldn't show divorced spouses
+		// as they will be shown as the divorced spouse of their partner
+		if (member.parentId === null && !member.isRootPerson) {
+			return [];
+		}
 
 		const divorcedSpouses: ExtendedFamilyMember[] = [];
 
@@ -302,7 +515,8 @@ export default function FamilyTreePage() {
 			member.spouse1.forEach((spouseRelation) => {
 				if (spouseRelation.divorceDate) {
 					const spouse = getMemberById(spouseRelation.familyMember2.id.toString());
-					if (spouse && !spouse.isRootPerson) {
+					// Only add as divorced spouse if they are a "spouse" type node (parentId is null and not root)
+					if (spouse && spouse.parentId === null && !spouse.isRootPerson) {
 						divorcedSpouses.push({
 							...spouse,
 							divorceDate: spouseRelation.divorceDate,
@@ -317,7 +531,8 @@ export default function FamilyTreePage() {
 			member.spouse2.forEach((spouseRelation) => {
 				if (spouseRelation.divorceDate) {
 					const spouse = getMemberById(spouseRelation.familyMember1.id.toString());
-					if (spouse && !spouse.isRootPerson) {
+					// Only add as divorced spouse if they are a "spouse" type node (parentId is null and not root)
+					if (spouse && spouse.parentId === null && !spouse.isRootPerson) {
 						divorcedSpouses.push({
 							...spouse,
 							divorceDate: spouseRelation.divorceDate,
