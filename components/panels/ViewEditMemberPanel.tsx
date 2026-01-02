@@ -268,6 +268,25 @@ export default function ViewEditMemberPanel({
 		}
 		if (!memberFormData.relationship) {
 			errors.relationship = 'Relationship is required';
+		} else if (memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId) {
+			// In edit mode, we're updating an existing relationship, so we only validate
+			// if adding a NEW spouse (i.e., the selected member doesn't already have this person as a spouse)
+			const selectedMember = existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId) as any;
+			const currentMember = member as any;
+
+			if (selectedMember && currentMember) {
+				// Check if the selected member already has an active spouse (excluding the current member being edited)
+				const hasOtherActiveSpouse =
+					(selectedMember.spouse1 &&
+						selectedMember.spouse1.some((s: any) => !s.divorceDate && s.familyMember2.id !== currentMember.id)) ||
+					(selectedMember.spouse2 &&
+						selectedMember.spouse2.some((s: any) => !s.divorceDate && s.familyMember1.id !== currentMember.id));
+
+				if (hasOtherActiveSpouse) {
+					errors.relatedMemberId =
+						'This person already has an active spouse relationship. They must be divorced first before adding a new spouse.';
+				}
+			}
 		}
 		if (!memberFormData.relationshipDate) {
 			errors.relationshipDate = 'Relationship date is required';
@@ -394,11 +413,11 @@ export default function ViewEditMemberPanel({
 			formData.append('familyTreeId', familyTreeId);
 
 			// Add places of origin
-			const validPlaces = placesOfOrigin.filter(p => p.location.trim() && p.startDate);
+			const validPlaces = placesOfOrigin.filter((p) => p.location.trim() && p.startDate);
 			formData.append('placesOfOrigin', JSON.stringify(validPlaces));
 
 			// Add occupations
-			const validOccupations = occupations.filter(o => o.jobTitle.trim() && o.startDate);
+			const validOccupations = occupations.filter((o) => o.jobTitle.trim() && o.startDate);
 			formData.append('occupations', JSON.stringify(validOccupations));
 
 			if (memberFormData.relatedMemberId) {

@@ -128,6 +128,20 @@ export default function AddMemberPanel({
 		}
 		if (!memberFormData.relationship) {
 			errors.relationship = 'Relationship is required';
+		} else if (memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId) {
+			// Validate that the selected member doesn't already have an active spouse relationship
+			const selectedMember = existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId) as any;
+			if (selectedMember) {
+				// Check spouse1 relationships for active (non-divorced) spouses
+				const hasActiveSpouse =
+					(selectedMember.spouse1 && selectedMember.spouse1.some((s: any) => !s.divorceDate)) ||
+					(selectedMember.spouse2 && selectedMember.spouse2.some((s: any) => !s.divorceDate));
+
+				if (hasActiveSpouse) {
+					errors.relatedMemberId =
+						'This person already has an active spouse relationship. They must be divorced first before adding a new spouse.';
+				}
+			}
 		}
 		if (!memberFormData.relationshipDate) {
 			errors.relationshipDate = 'Relationship date is required';
