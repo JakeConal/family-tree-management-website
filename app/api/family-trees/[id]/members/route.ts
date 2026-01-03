@@ -71,7 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 		}
 
 		// Calculate generation based on relationship
-		let generation = '2'; // Default generation
+		let generation = '0'; // Default generation for root person
 		let parentId = null;
 
 		if (relatedMemberId && relationship) {
@@ -89,15 +89,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			// Determine generation and parent relationship
 			switch (relationship.toLowerCase()) {
 				case 'parent':
-					generation = (parseInt(relatedMember.generation || '1') + 1).toString();
+					generation = (parseInt(relatedMember.generation || '0') + 1).toString();
 					parentId = relatedMember.id;
 					break;
 				case 'spouse':
-					generation = relatedMember.generation || '1';
+					generation = relatedMember.generation || '0';
 					// Spouse relationship - no parent-child relationship
 					break;
 				default:
-					generation = '2';
+					generation = '0';
 			}
 		}
 
