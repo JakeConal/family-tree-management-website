@@ -13,6 +13,7 @@ import BirthPanel from '@/components/panels/BirthPanel';
 import DivorcePanel from '@/components/panels/DivorcePanel';
 import MarriagePanel from '@/components/panels/MarriagePanel';
 import PassingPanel from '@/components/panels/PassingPanel';
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 
 interface Achievement {
@@ -92,6 +93,7 @@ interface GroupedLifeEvents {
 export default function LifeEventsPage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const { isGuest } = useGuestSession();
 
 	const [activeTab, setActiveTab] = useState<'achievement' | 'passing' | 'life-event'>('achievement');
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -516,7 +518,8 @@ export default function LifeEventsPage() {
 							<div className="flex-1" />
 
 							{/* Add Button - Changes based on active tab */}
-							{activeTab === 'achievement' && (
+							{/* Hide Add Achievement and Add Divorce buttons for guests */}
+							{activeTab === 'achievement' && !isGuest && (
 								<button
 									onClick={() => handleOpenAchievementPanel()}
 									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
@@ -525,7 +528,7 @@ export default function LifeEventsPage() {
 									Add Achievement
 								</button>
 							)}
-							{activeTab === 'passing' && (
+							{activeTab === 'passing' && !isGuest && (
 								<button
 									onClick={() => handleOpenPassingPanel()}
 									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
@@ -534,7 +537,7 @@ export default function LifeEventsPage() {
 									Add Passing
 								</button>
 							)}
-							{activeTab === 'life-event' && (
+							{activeTab === 'life-event' && !isGuest && (
 								<button
 									onClick={() => handleOpenDivorcePanel()}
 									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"

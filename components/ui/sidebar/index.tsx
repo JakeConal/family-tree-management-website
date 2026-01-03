@@ -62,12 +62,12 @@ export function Sidebar() {
 						icon: Users,
 						familyTreeOnly: true,
 					},
-				{
-					name: 'Life Events',
-					href: `/family-trees/${activeFamilyTreeId}/life-events`,
-					icon: Calendar,
-					familyTreeOnly: true,
-				},
+					{
+						name: 'Life Events',
+						href: `/family-trees/${activeFamilyTreeId}/life-events`,
+						icon: Calendar,
+						familyTreeOnly: true,
+					},
 					{
 						name: 'Reports',
 						href: `/family-trees/${activeFamilyTreeId}/reports`,
@@ -103,7 +103,6 @@ export function Sidebar() {
 
 				{/* Scrollable Content Area */}
 				<div className="flex-1 overflow-y-auto">
-
 					{/* Family Trees Section */}
 					{status === 'authenticated' && !isGuest && (
 						<div className="px-5 py-5">
@@ -180,8 +179,13 @@ export function Sidebar() {
 				<div className="p-5 border-t border-gray-200 shrink-0">
 					<div className="flex items-center justify-between">
 						<button
-							onClick={() => router.push('/account')}
-							className="flex items-center hover:bg-[#d4d4d8] rounded-[30px] p-2 -ml-2 transition-colors flex-1"
+							onClick={() => !isGuest && router.push('/account')}
+							disabled={isGuest}
+							className={classNames('flex items-center rounded-[30px] p-2 -ml-2 transition-colors flex-1', {
+								'hover:bg-[#d4d4d8] cursor-pointer': !isGuest,
+								'opacity-50 cursor-not-allowed': isGuest,
+							})}
+							title={isGuest ? 'Account settings not available for guests' : 'Account settings'}
 						>
 							<div className="relative w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-200">
 								{session?.user?.image ? (

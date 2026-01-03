@@ -10,6 +10,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
 import ViewEditMemberPanel from '@/components/panels/ViewEditMemberPanel';
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { FamilyMember } from '@/types';
 
 const MemberAvatar = ({
@@ -159,9 +160,18 @@ interface MemberTableProps {
 	onViewMember: (id: number) => void;
 	onEditMember: (id: number) => void;
 	onGenerateAccessCode: (id: number, name: string) => void;
+	isGuest: boolean;
+	guestMemberId: number | null;
 }
 
-const MemberTable = ({ members, onViewMember, onEditMember, onGenerateAccessCode }: MemberTableProps) => {
+const MemberTable = ({
+	members,
+	onViewMember,
+	onEditMember,
+	onGenerateAccessCode,
+	isGuest,
+	guestMemberId,
+}: MemberTableProps) => {
 	return (
 		<div className="rounded-xl border border-gray-100 shadow-sm">
 			<table className="w-full border-collapse text-left">
@@ -212,13 +222,16 @@ const MemberTable = ({ members, onViewMember, onEditMember, onGenerateAccessCode
 									>
 										<Eye className="w-5 h-5" />
 									</button>
-									<button
-										onClick={() => onEditMember(member.id)}
-										className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg transition-colors"
-										title="Edit Member"
-									>
-										<Pencil className="w-5 h-5" />
-									</button>
+									{/* Only show edit button if not guest, or if guest and it's their own member */}
+									{(!isGuest || (isGuest && guestMemberId === member.id)) && (
+										<button
+											onClick={() => onEditMember(member.id)}
+											className="p-1.5 hover:bg-green-50 text-green-600 rounded-lg transition-colors"
+											title="Edit Member"
+										>
+											<Pencil className="w-5 h-5" />
+										</button>
+									)}
 									<button
 										onClick={() => onGenerateAccessCode(member.id, member.fullName)}
 										className="p-1.5 hover:bg-purple-50 text-purple-600 rounded-lg transition-colors"
@@ -241,6 +254,7 @@ const MemberTable = ({ members, onViewMember, onEditMember, onGenerateAccessCode
 
 export default function MemberListPage() {
 	const { data: session } = useSession();
+	const { isGuest, guestMemberId } = useGuestSession();
 	const params = useParams();
 	const familyTreeId = params.id as string;
 
@@ -387,6 +401,8 @@ export default function MemberListPage() {
 						onViewMember={handleViewMember}
 						onEditMember={handleEditMember}
 						onGenerateAccessCode={handleGenerateAccessCode}
+						isGuest={isGuest}
+						guestMemberId={guestMemberId}
 					/>
 
 					{/* Pagination */}
