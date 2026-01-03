@@ -623,19 +623,22 @@ export default function FamilyTreeDashboard() {
 									.map((log) => {
 										const message = formatChangeLogMessage(log);
 										return message ? (
-											<div key={log.id} className="flex items-center justify-between p-6 bg-[#f4f4f5] rounded-[20px]">
-												<div className="flex items-center gap-4">
-													<div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center">
+											<div
+												key={log.id}
+												className="h-[100px] flex items-center justify-between px-6 bg-[#f4f4f5] rounded-[20px]"
+											>
+												<div className="flex items-center gap-4 flex-1">
+													<div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center flex-shrink-0">
 														<Users className="w-6 h-6 text-gray-500" />
 													</div>
-													<div>
-														<p className="font-inter font-medium text-[18px] text-black">System</p>
+													<div className="flex-1">
+														<p className="font-inter font-medium text-[18px] text-black mb-1">System</p>
 														<p className="font-inter font-light text-[18px] text-black">{message}</p>
 													</div>
 												</div>
-												<div className="flex items-center gap-2">
+												<div className="flex items-center gap-2 flex-shrink-0">
 													<Clock className="w-5 h-5 text-black" />
-													<span className="font-inter font-light text-[18px] text-black">
+													<span className="font-inter font-light text-[18px] text-black whitespace-nowrap">
 														{formatChangeLogTimestamp(log.createdAt)}
 													</span>
 												</div>

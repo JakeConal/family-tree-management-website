@@ -43,7 +43,7 @@ export function PassingCard({ id, title, person, date, buriedPlace, description,
 			</div>
 
 			{/* Person, Date, and Buried Place */}
-			<div className="absolute left-[28px] top-[57px] flex items-center gap-[126px]">
+			<div className="absolute left-[28px] top-[57px] flex items-center justify-start gap-4 sm:gap-8 md:gap-12 lg:gap-[126px]">
 				<div className="flex items-center gap-[4px]">
 					<PersonIcon className="w-[11px] h-[11px] text-[rgba(47,47,47,0.5)]" />
 					<span

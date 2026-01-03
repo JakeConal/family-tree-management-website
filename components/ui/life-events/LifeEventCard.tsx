@@ -1,7 +1,7 @@
 'use client';
 
-import { Heart, HeartCrack, Baby } from 'lucide-react';
 import classNames from 'classnames';
+import { Heart, HeartCrack, Baby } from 'lucide-react';
 
 export type LifeEventType = 'Married' | 'Divorce' | 'Birth Event';
 
@@ -67,34 +67,31 @@ export function LifeEventCard({ id, title, date, description, type, className, o
 				</h3>
 			</div>
 
-		{/* Date */}
-		{type === 'Married' && (
-			<div className="absolute left-[28px] top-[61px]">
-				<span
-					className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
-					style={{ fontFamily: 'Roboto, sans-serif' }}
-				>
-					{date}
-				</span>
-			</div>
-		)}
+			{/* Date */}
+			{type === 'Married' && (
+				<div className="absolute left-[28px] top-[61px]">
+					<span
+						className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
+						style={{ fontFamily: 'Roboto, sans-serif' }}
+					>
+						{date}
+					</span>
+				</div>
+			)}
 
-		{(type === 'Divorce' || type === 'Birth Event') && (
-			<div className="absolute left-[28px] top-[57px]">
-				<span
-					className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
-					style={{ fontFamily: 'Roboto, sans-serif' }}
-				>
-					{date}
-				</span>
-			</div>
-		)}
+			{(type === 'Divorce' || type === 'Birth Event') && (
+				<div className="absolute left-[28px] top-[61px]">
+					<span
+						className="text-[14px] leading-[15.445px] text-[rgba(47,47,47,0.5)]"
+						style={{ fontFamily: 'Roboto, sans-serif' }}
+					>
+						{date}
+					</span>
+				</div>
+			)}
 
 			{/* Description */}
-			<div className={classNames(
-				'absolute left-[28px] right-[28px]',
-				type === 'Married' ? 'top-[109px] bottom-[25px]' : 'top-[85px] bottom-[25px]'
-			)}>
+			<div className="absolute left-[28px] right-[28px] top-[85px] bottom-[25px]">
 				<p
 					className="text-[15px] leading-[20px] text-[rgba(0,0,0,0.8)] overflow-hidden"
 					style={{
@@ -108,4 +105,3 @@ export function LifeEventCard({ id, title, date, description, type, className, o
 		</div>
 	);
 }
-

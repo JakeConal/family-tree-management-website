@@ -566,7 +566,7 @@ export default function LifeEventsPage() {
 												<div
 													className={classNames('grid gap-[44px]', {
 														'grid-cols-1': panelType !== null,
-														'grid-cols-2': panelType === null,
+														'grid-cols-1 md:grid-cols-2': panelType === null,
 													})}
 												>
 													{groupedAchievements[year].map((achievement) => (
@@ -606,7 +606,7 @@ export default function LifeEventsPage() {
 												<div
 													className={classNames('grid gap-[44px]', {
 														'grid-cols-1': panelType !== null,
-														'grid-cols-2': panelType === null,
+														'grid-cols-1 md:grid-cols-2': panelType === null,
 													})}
 												>
 													{groupedPassingRecords[year].map((record) => (
@@ -652,7 +652,7 @@ export default function LifeEventsPage() {
 												<div
 													className={classNames('grid gap-[44px]', {
 														'grid-cols-1': panelType !== null,
-														'grid-cols-2': panelType === null,
+														'grid-cols-1 md:grid-cols-2': panelType === null,
 													})}
 												>
 													{groupedLifeEvents[year].map((event) => (
