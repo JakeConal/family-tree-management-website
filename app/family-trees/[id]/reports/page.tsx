@@ -687,21 +687,21 @@ export default function FamilyTreeReports() {
 	};
 
 	return (
-		<div className="flex-1 overflow-y-auto p-4 lg:p-8">
-			<div className="max-w-[1158px] mx-auto space-y-[74px]">
+		<div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+			<div className="max-w-[1158px] mx-auto space-y-8 sm:space-y-12 lg:space-y-[74px]">
 				{/* Export Buttons */}
 				<div className="flex justify-end gap-3">
-					<div className=" border border-[rgba(0,0,0,0.5)] rounded-[25px] flex items-center gap-2 p-1">
-						<button className="px-4 py-2 text-[16px] font-inter text-black">Export Report</button>
+					<div className="border border-[rgba(0,0,0,0.5)] rounded-[25px] flex flex-wrap items-center gap-2 p-1">
+						<button className="px-3 sm:px-4 py-2 text-sm sm:text-[16px] font-inter text-black whitespace-nowrap">Export Report</button>
 						<button
 							onClick={() => exportReport('excel')}
-							className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
+							className="px-4 sm:px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-sm sm:text-[16px] font-inter text-black hover:bg-gray-200 transition-colors whitespace-nowrap"
 						>
 							Excel
 						</button>
 						<button
 							onClick={() => exportReport('pdf')}
-							className="px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-[16px] font-inter text-black hover:bg-gray-200 transition-colors"
+							className="px-4 sm:px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-sm sm:text-[16px] font-inter text-black hover:bg-gray-200 transition-colors whitespace-nowrap"
 						>
 							PDF
 						</button>
@@ -709,33 +709,33 @@ export default function FamilyTreeReports() {
 				</div>
 
 				{/* Statistics Cards */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[52px]">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-[52px]">
 					{/* Total Family Members */}
-					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-6">
-						<Users className="w-9 h-6 text-black mb-4" />
-						<h3 className="font-inter font-bold text-[16px] text-black mb-2">Total family members</h3>
-						<p className="font-inter text-[40px] text-black">{totalMembers}</p>
+					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+						<Users className="w-7 h-5 sm:w-9 sm:h-6 text-black mb-3 sm:mb-4" />
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Total family members</h3>
+						<p className="font-inter text-3xl sm:text-[40px] text-black">{totalMembers}</p>
 					</div>
 
 					{/* Current Family Members */}
-					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-6">
-						<HeartHandshake className="w-9 h-8 text-black mb-4" />
-						<h3 className="font-inter font-bold text-[16px] text-black mb-2">Current family members</h3>
-						<p className="font-inter text-[40px] text-black">{currentMembers}</p>
+					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+						<HeartHandshake className="w-7 h-6 sm:w-9 sm:h-8 text-black mb-3 sm:mb-4" />
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Current family members</h3>
+						<p className="font-inter text-3xl sm:text-[40px] text-black">{currentMembers}</p>
 					</div>
 
 					{/* Achievements */}
-					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-6">
-						<Trophy className="w-8 h-8 text-black mb-4" />
-						<h3 className="font-inter font-bold text-[16px] text-black mb-2">Achievements</h3>
-						<p className="font-inter text-[40px] text-black">{totalAchievements}</p>
+					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+						<Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-black mb-3 sm:mb-4" />
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Achievements</h3>
+						<p className="font-inter text-3xl sm:text-[40px] text-black">{totalAchievements}</p>
 					</div>
 
 					{/* Generations */}
-					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-6">
-						<Network className="w-9 h-8 text-black mb-4" />
-						<h3 className="font-inter font-bold text-[16px] text-black mb-2">Generations</h3>
-						<p className="font-inter text-[40px] text-black">{generations}</p>
+					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
+						<Network className="w-7 h-6 sm:w-9 sm:h-8 text-black mb-3 sm:mb-4" />
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Generations</h3>
+						<p className="font-inter text-3xl sm:text-[40px] text-black">{generations}</p>
 					</div>
 				</div>
 

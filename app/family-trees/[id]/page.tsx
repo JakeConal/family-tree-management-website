@@ -401,9 +401,14 @@ export default function FamilyTreeDashboard() {
 			<div className="flex-1 overflow-y-auto p-4 lg:p-8">
 				<div className="space-y-8">
 					{/* Overview Section */}
-					<div className={classNames('flex gap-6', activePanelType !== null ? 'flex-col' : 'flex-col xl:flex-row')}>
+					<div
+						className={classNames(
+							'flex gap-4 sm:gap-6',
+							activePanelType !== null ? 'flex-col' : 'flex-col xl:flex-row'
+						)}
+					>
 						{/* Family Information Overview Box */}
-						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-6 relative min-h-[248px]">
+						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-4 sm:p-6 relative min-h-[248px]">
 							<div className="flex items-center gap-3 mb-6">
 								<div className="bg-white p-2 rounded-[10px] shadow-sm">
 									<Info className="w-5 h-5 text-black" />
@@ -443,7 +448,7 @@ export default function FamilyTreeDashboard() {
 							</div>
 
 							{/* Stat Boxes */}
-							<div className="grid grid-cols-3 gap-4">
+							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
 								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
 									<p className="font-inter font-medium text-[11.6px] text-black mb-1">Total generations</p>
 									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalGenerations}</p>
@@ -462,7 +467,7 @@ export default function FamilyTreeDashboard() {
 						{/* Trends Grid */}
 						<div
 							className={classNames(
-								'grid grid-cols-1 sm:grid-cols-2 gap-4 w-full',
+								'grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full',
 								activePanelType === null ? 'xl:w-[468px]' : ''
 							)}
 						>
@@ -547,10 +552,10 @@ export default function FamilyTreeDashboard() {
 				{/* Quick Action Section - Hide for guests */}
 				{!isGuest && (
 					<div className="space-y-4">
-						<h2 className="font-inter font-bold text-[18px] pt-4 text-black">Quick Action</h2>
+						<h2 className="font-inter font-bold text-base sm:text-[18px] pt-4 text-black">Quick Action</h2>
 						<div
 							className={classNames(
-								'grid gap-6',
+								'grid gap-3 sm:gap-4 lg:gap-6',
 								activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
 							)}
 						>
@@ -686,11 +691,21 @@ export default function FamilyTreeDashboard() {
 				/>
 			</div>
 
+			{/* Backdrop for mobile */}
+			{activePanelType !== null && (
+				<div
+					className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+					onClick={() => setActivePanelType(null)}
+				/>
+			)}
+
 			{/* Panel Sidebar */}
 			<aside
 				className={classNames(
 					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					activePanelType !== null ? 'w-[600px]' : 'w-0'
+					activePanelType !== null
+						? 'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]'
+						: 'w-0'
 				)}
 			>
 				{activePanelType === 'addMember' && (

@@ -364,20 +364,20 @@ export default function PassingPanel({
 	return (
 		<div className="w-full h-full flex flex-col bg-white">
 			{/* Header */}
-			<div className="px-8 pt-8 pb-4 border-b border-gray-100 flex-shrink-0">
+			<div className="px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-4 border-b border-gray-100 flex-shrink-0">
 				<button
 					onClick={onClose}
-					className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
+					className="flex items-center text-black font-normal text-sm sm:text-base hover:opacity-70 transition-opacity"
 				>
-					<ChevronLeft className="w-5 h-5 mr-2" />
+					<ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
 					<span className="font-['Inter']">Back</span>
 				</button>
 			</div>
 
 			{isViewMode ? (
 				/* View Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">Passing Record Details</h2>
+				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">Passing Record Details</h2>
 
 					<div className="space-y-6">
 						<div>
@@ -442,8 +442,8 @@ export default function PassingPanel({
 				</div>
 			) : (
 				/* Add/Edit Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">
+				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
 						{isAddMode ? 'Add Passing Record' : 'Edit Passing Record'}
 					</h2>
 

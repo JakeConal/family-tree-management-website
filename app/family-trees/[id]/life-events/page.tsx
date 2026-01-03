@@ -455,21 +455,21 @@ export default function LifeEventsPage() {
 		<div className="flex h-full overflow-hidden bg-white">
 			{/* Main Content */}
 			<div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-				<div className="p-8">
+				<div className="p-4 sm:p-6 lg:p-8">
 					<div className="max-w-[1440px] mx-auto">
 						{/* Tab Navigation */}
-						<div className="mb-[52px]">
+						<div className="mb-6 sm:mb-8 lg:mb-[52px]">
 							<TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 						</div>
 
 						{/* Filters and Add Button */}
-						<div className="flex items-center gap-[24px] mb-[32px]">
+						<div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-[24px] mb-6 sm:mb-8 lg:mb-[32px]">
 							{/* Year Filter */}
-							<div className="relative">
+							<div className="relative w-full sm:w-auto">
 								<select
 									value={selectedYear}
 									onChange={(e) => setSelectedYear(e.target.value)}
-									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] pr-[48px] text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px]"
+									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
 								>
 									<option value="all">All Years</option>
 									{availableYears.map((year) => (
@@ -483,11 +483,11 @@ export default function LifeEventsPage() {
 
 							{/* Type Filter - Show for Achievement and Life Event tabs */}
 							{activeTab === 'achievement' && (
-								<div className="relative">
+								<div className="relative w-full sm:w-auto">
 									<select
 										value={selectedType}
 										onChange={(e) => setSelectedType(e.target.value)}
-										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] pr-[48px] text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px]"
+										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
 									>
 										<option value="all">All Types</option>
 										{achievementTypes.map((type) => (
@@ -500,11 +500,11 @@ export default function LifeEventsPage() {
 								</div>
 							)}
 							{activeTab === 'life-event' && (
-								<div className="relative">
+								<div className="relative w-full sm:w-auto">
 									<select
 										value={selectedType}
 										onChange={(e) => setSelectedType(e.target.value)}
-										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] pr-[48px] text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px]"
+										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
 									>
 										<option value="all">All Types</option>
 										<option value="Married">Married</option>
@@ -522,28 +522,28 @@ export default function LifeEventsPage() {
 							{activeTab === 'achievement' && !isGuest && (
 								<button
 									onClick={() => handleOpenAchievementPanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
+									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
 								>
 									<Plus className="w-[15px] h-[15px] text-black" />
-									Add Achievement
+									<span className="whitespace-nowrap">Add Achievement</span>
 								</button>
 							)}
 							{activeTab === 'passing' && !isGuest && (
 								<button
 									onClick={() => handleOpenPassingPanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
+									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
 								>
 									<Plus className="w-[15px] h-[15px] text-black" />
-									Add Passing
+									<span className="whitespace-nowrap">Add Passing</span>
 								</button>
 							)}
 							{activeTab === 'life-event' && !isGuest && (
 								<button
 									onClick={() => handleOpenDivorcePanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-[20px] py-[10px] text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px]"
+									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
 								>
 									<Plus className="w-[15px] h-[15px] text-black" />
-									Add Divorce
+									<span className="whitespace-nowrap">Add Divorce</span>
 								</button>
 							)}
 						</div>
@@ -559,7 +559,7 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
 										{sortedYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
@@ -599,7 +599,7 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
 										{sortedPassingYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
@@ -645,7 +645,7 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
 										{sortedLifeEventYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
@@ -690,7 +690,7 @@ export default function LifeEventsPage() {
 				className={classNames(
 					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
 					{
-						'w-[600px]': panelType !== null,
+						'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]': panelType !== null,
 						'w-0': panelType === null,
 					}
 				)}

@@ -72,19 +72,19 @@ export default function DashboardPage() {
 					<Image src="/images/logo.png" alt="Background Logo" fill className="object-contain" />
 				</div>
 
-				<div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+				<div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 					{/* Main Heading */}
-					<h1 className="font-inter font-bold text-[42px] text-black mb-4 leading-tight">Welcome to Family Tree</h1>
+					<h1 className="font-inter font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] text-black mb-4 leading-tight">Welcome to Family Tree</h1>
 
 					{/* Subtitle */}
-					<p className="font-inter font-normal text-[22px] text-gray-600 mb-10 leading-relaxed">
+					<p className="font-inter font-normal text-base sm:text-lg md:text-xl lg:text-[22px] text-gray-600 mb-6 sm:mb-8 lg:mb-10 leading-relaxed">
 						Start building your family legacy by creating your first family tree
 					</p>
 
 					{/* CTA Button */}
 					<button
 						onClick={() => dispatch(openCreatePanel())}
-						className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[72px] text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
+						className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[56px] sm:h-[64px] lg:h-[72px] text-base sm:text-lg lg:text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
 					>
 						<Plus className="w-6 h-6" />
 						Create your first family tree
@@ -95,13 +95,13 @@ export default function DashboardPage() {
 	}
 
 	return (
-		<div className="p-8">
-			<div className="bg-white rounded-3xl border-2 border-gray-200 p-8">
-				<div className="mb-8">
-					<h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-					<p className="text-gray-600 mt-2">Welcome back, {session.user?.name || session.user?.email}!</p>
+		<div className="p-4 sm:p-6 lg:p-8">
+			<div className="bg-white rounded-3xl border-2 border-gray-200 p-4 sm:p-6 lg:p-8">
+				<div className="mb-6 sm:mb-8">
+					<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+					<p className="text-gray-600 mt-2 text-sm sm:text-base">Welcome back, {session.user?.name || session.user?.email}!</p>
 				</div>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 					<div className="bg-gray-50 rounded-xl p-6">
 						<h3 className="text-lg font-semibold text-gray-900 mb-2">Family Trees</h3>
 						<p className="text-gray-600">Create and manage your family trees</p>

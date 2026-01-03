@@ -70,15 +70,15 @@ const MemberControls = ({
 	onBirthDateRangeChange,
 }: MemberControlsProps) => {
 	return (
-		<div className="mb-6 bg-[#f4f4f5] p-4 rounded-xl">
+		<div className="mb-4 sm:mb-6 bg-[#f4f4f5] p-3 sm:p-4 rounded-xl">
 			{/* All Filters in One Row */}
-			<div className="flex flex-wrap gap-4 items-center">
+			<div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4 items-center">
 				{/* Generation Filter */}
-				<div className="relative flex-shrink-0">
+				<div className="relative flex-shrink-0 w-full sm:w-auto">
 					<select
 						value={selectedGeneration}
 						onChange={(e) => onGenerationChange(e.target.value)}
-						className="appearance-none bg-white h-[43px] px-6 pr-10 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none"
+						className="appearance-none bg-white h-[43px] w-full sm:w-auto px-4 sm:px-6 pr-10 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none"
 					>
 						{generations.map((gen) => (
 							<option key={gen} value={gen}>
@@ -94,47 +94,47 @@ const MemberControls = ({
 				</div>
 
 				{/* Search by Name */}
-				<div className="relative flex-1 min-w-[200px]">
-					<Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+				<div className="relative flex-1 w-full sm:min-w-[200px]">
+					<Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
 					<input
 						type="text"
 						placeholder="Search by name"
 						value={searchQuery}
 						onChange={(e) => onSearchChange(e.target.value)}
-						className="w-full bg-white h-[43px] pl-12 pr-6 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+						className="w-full bg-white h-[43px] pl-10 sm:pl-12 pr-4 sm:pr-6 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
 					/>
 				</div>
 
 				{/* Search by Birth Date From */}
-				<div className="relative flex-shrink-0 flex items-center gap-2">
-					<span className="text-[16px] font-inter text-black">From</span>
+				<div className="relative flex-shrink-0 flex items-center gap-2 w-full sm:w-auto">
+					<span className="text-sm sm:text-[16px] font-inter text-black">From</span>
 					<input
 						type="date"
 						placeholder="Birth Date From"
 						value={birthDateRange.from}
 						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, from: e.target.value })}
-						className="bg-white h-[43px] px-4 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+						className="flex-1 sm:flex-none bg-white h-[43px] px-3 sm:px-4 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
 					/>
 				</div>
 
 				{/* Search by Birth Date To */}
-				<div className="relative flex-shrink-0 flex items-center gap-2">
-					<span className="text-[16px] font-inter text-black">To</span>
+				<div className="relative flex-shrink-0 flex items-center gap-2 w-full sm:w-auto">
+					<span className="text-sm sm:text-[16px] font-inter text-black">To</span>
 					<input
 						type="date"
 						placeholder="Birth Date To"
 						value={birthDateRange.to}
 						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, to: e.target.value })}
-						className="bg-white h-[43px] px-4 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+						className="flex-1 sm:flex-none bg-white h-[43px] px-3 sm:px-4 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
 					/>
 				</div>
 
 				{/* Search by Parent */}
-				<div className="relative flex-shrink-0">
+				<div className="relative flex-shrink-0 w-full sm:w-auto">
 					<select
 						value={selectedParent}
 						onChange={(e) => onParentChange(e.target.value)}
-						className="appearance-none bg-white h-[43px] px-6 pr-10 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none min-w-[180px]"
+						className="appearance-none bg-white h-[43px] w-full sm:w-auto px-4 sm:px-6 pr-10 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none sm:min-w-[180px]"
 					>
 						<option value=""> All Parents </option>
 						{parents.map((parent) => (
@@ -173,16 +173,16 @@ const MemberTable = ({
 	guestMemberId,
 }: MemberTableProps) => {
 	return (
-		<div className="rounded-xl border border-gray-100 shadow-sm">
-			<table className="w-full border-collapse text-left">
+		<div className="rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
+			<table className="w-full border-collapse text-left min-w-[640px]">
 				<thead className="sticky top-0 bg-white z-10">
 					<tr className="border-b border-gray-100">
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black text-center w-20">No.</th>
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black">Full Name</th>
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black text-center">Birth Date</th>
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black text-center">Gen. No.</th>
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black">Parent</th>
-						<th className="px-6 py-4 font-inter font-semibold text-[16px] text-black text-center">Action</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center w-16 sm:w-20">No.</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black">Full Name</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Birth Date</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Gen. No.</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black hidden md:table-cell">Parent</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Action</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -427,7 +427,7 @@ export default function MemberListPage() {
 				className={classNames(
 					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
 					{
-						'w-[600px]': panelState !== null,
+						'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]': panelState !== null,
 						'w-0': panelState === null,
 					}
 				)}
