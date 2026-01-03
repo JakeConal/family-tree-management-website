@@ -131,13 +131,13 @@ export default function Home() {
 										<div className="w-3 h-3 rounded-full bg-green-500"></div>
 									</div>
 								</div>
-								<div className="aspect-video bg-white">
-									<Image
-										src="/images/Family Tree.png"
-										alt="Family Tree Dashboard"
-										width={1200}
-										height={675}
-										className="w-full h-full object-cover"
+							<div className="bg-white flex items-center justify-center p-4 min-h-[500px]">
+								<Image
+									src="/images/Family-Tree-Overview.png"
+									alt="Family Tree Dashboard"
+									width={1200}
+									height={675}
+									className="w-auto h-auto max-w-full max-h-[600px] object-contain"
 										priority
 									/>
 								</div>
