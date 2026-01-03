@@ -145,9 +145,9 @@ export async function POST(request: NextRequest) {
 			data: {
 				fullName: rootPerson.fullName.trim(),
 				gender: rootPerson.gender
-					? rootPerson.gender === 'male'
-						? 'MALE'
-						: rootPerson.gender === 'female'
+				? rootPerson.gender.toUpperCase() === 'MALE'
+					? 'MALE'
+					: rootPerson.gender.toUpperCase() === 'FEMALE'
 							? 'FEMALE'
 							: null
 					: null,

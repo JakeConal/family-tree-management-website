@@ -720,6 +720,9 @@ export default function ViewEditMemberPanel({
 							</div>
 						</section>
 
+				{/* Only show Family Connection section if not root person */}
+				{!member?.isRootPerson && (
+					<>
 						<div className="w-full h-px bg-black/20 my-10"></div>
 
 						{/* Family Connection Section */}
@@ -770,26 +773,28 @@ export default function ViewEditMemberPanel({
 								</div>
 							</div>
 						</section>
+					</>
+				)}
 
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
-							<button
-								onClick={onClose}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								Back
-							</button>
-							{canEdit && (
-								<button
-									onClick={() => onModeChange('edit')}
-									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-								>
-									Edit
-								</button>
-							)}
-						</div>
-					</div>
+				{/* Footer Buttons */}
+				<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
+					<button
+						onClick={onClose}
+						className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+					>
+						Back
+					</button>
+					{canEdit && (
+						<button
+							onClick={() => onModeChange('edit')}
+							className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+						>
+							Edit
+						</button>
+					)}
 				</div>
+			</div>
+		</div>
 			) : (
 				/* Edit Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
@@ -1145,10 +1150,13 @@ export default function ViewEditMemberPanel({
 							</div>
 						</section>
 
-						<div className="w-full h-px bg-black/20 my-10"></div>
+						{/* Only show Family Connection section if not root person */}
+						{!member?.isRootPerson && (
+							<>
+								<div className="w-full h-px bg-black/20 my-10"></div>
 
-						{/* Family Connection Section */}
-						<section>
+								{/* Family Connection Section */}
+								<section>
 							<div className="flex items-center mb-6">
 								<div className="w-5 h-5 mr-3">
 									<Heart className="w-full h-full text-black" strokeWidth={1.5} />
@@ -1235,9 +1243,11 @@ export default function ViewEditMemberPanel({
 								</div>
 							</div>
 						</section>
+					</>
+				)}
 
-						{/* Confirmation Checkbox */}
-						<div className="flex items-start space-x-3 pt-6">
+				{/* Confirmation Checkbox */}
+				<div className="flex items-start space-x-3 pt-6">
 							<input
 								type="checkbox"
 								id="confirm-accuracy-edit"
