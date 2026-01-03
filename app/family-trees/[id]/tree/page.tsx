@@ -700,7 +700,7 @@ export default function FamilyTreePage() {
 					<div
 						ref={containerRef}
 						className="bg-[#f4f4f5] rounded-[20px] p-2 sm:p-4 relative overflow-hidden shadow-inner"
-						style={{ height: 'calc(100vh - 280px)', minHeight: '300px' }}
+						style={{ height: 'calc(107vh - 280px)', minHeight: '300px' }}
 					>
 						<TransformWrapper
 							ref={transformRef}
