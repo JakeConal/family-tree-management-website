@@ -157,16 +157,10 @@ export default function DivorcePanel({
 		const newErrors = { ...errors };
 		let hasDateErrors = false;
 
-		// Find the marriage record
+		// Find the marriage record using the relationship ID stored in member2Id
 		if (formData.member1Id && formData.member2Id && formData.divorceDate) {
-			const marriage = marriages.find((m) => {
-				const isMember1Marriage =
-					(m.familyMember1.id === parseInt(formData.member1Id) &&
-						m.familyMember2.id === parseInt(formData.member2Id)) ||
-					(m.familyMember1.id === parseInt(formData.member2Id) &&
-						m.familyMember2.id === parseInt(formData.member1Id));
-				return isMember1Marriage && !m.divorceDate;
-			});
+			const relationshipId = parseInt(formData.member2Id);
+			const marriage = marriages.find((m) => m.id === relationshipId);
 
 			if (marriage) {
 				const marriageDate = new Date(marriage.marriageDate);
