@@ -163,19 +163,41 @@ const authConfig: NextAuthConfig = {
 		signIn: '/welcome/login',
 	},
 	callbacks: {
-		async jwt({ token, user }) {
+		async jwt({ token, user, trigger }) {
 			if (user) {
 				token.id = user.id;
+				token.name = user.name;
+				token.email = user.email;
+				token.picture = user.image;
 				token.role = user.role || 'owner';
 				token.guestMemberId = user.guestMemberId;
 				token.guestFamilyTreeId = user.guestFamilyTreeId;
 				token.guestEditorId = user.guestEditorId;
 			}
+
+			// Fetch fresh user data when session is updated
+			if (trigger === 'update' && token.id) {
+				const prisma = getPrisma();
+				const freshUser = await prisma.user.findUnique({
+					where: { id: token.id as string },
+					select: { name: true, email: true, image: true },
+				});
+
+				if (freshUser) {
+					token.name = freshUser.name;
+					token.email = freshUser.email;
+					token.picture = freshUser.image;
+				}
+			}
+
 			return token;
 		},
 		async session({ session, token }) {
 			if (token) {
 				session.user.id = token.id as string;
+				session.user.name = token.name as string;
+				session.user.email = token.email as string;
+				session.user.image = token.picture as string;
 				session.role =
 					typeof token.role === 'string' && (token.role === 'owner' || token.role === 'guest') ? token.role : 'owner';
 

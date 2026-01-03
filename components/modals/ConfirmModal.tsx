@@ -12,6 +12,9 @@ interface ConfirmModalProps {
 	cancelText?: string;
 	confirmButtonClass?: string;
 	isLoading?: boolean;
+	requirePassword?: boolean;
+	password?: string;
+	onPasswordChange?: (password: string) => void;
 }
 
 export default function ConfirmModal({
@@ -24,6 +27,9 @@ export default function ConfirmModal({
 	cancelText = 'Cancel',
 	confirmButtonClass = 'bg-red-600 hover:bg-red-700',
 	isLoading = false,
+	requirePassword = false,
+	password = '',
+	onPasswordChange,
 }: ConfirmModalProps) {
 	if (!isOpen) return null;
 
@@ -54,6 +60,24 @@ export default function ConfirmModal({
 				{/* Message */}
 				<p className="text-gray-700 mb-6 whitespace-pre-line">{message}</p>
 
+				{/* Password Input (if required) */}
+				{requirePassword && (
+					<div className="mb-6">
+						<label htmlFor="delete-password" className="block text-sm font-medium text-gray-700 mb-2">
+							Enter your password to confirm
+						</label>
+						<input
+							id="delete-password"
+							type="password"
+							value={password}
+							onChange={(e) => onPasswordChange?.(e.target.value)}
+							className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+							placeholder="Your password"
+							disabled={isLoading}
+						/>
+					</div>
+				)}
+
 				{/* Actions */}
 				<div className="flex gap-3 justify-end">
 					<button
@@ -65,7 +89,7 @@ export default function ConfirmModal({
 					</button>
 					<button
 						onClick={handleConfirm}
-						disabled={isLoading}
+						disabled={isLoading || (requirePassword && !password.trim())}
 						className={`px-6 py-2 text-white rounded-[10px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${confirmButtonClass}`}
 					>
 						{isLoading ? 'Processing...' : confirmText}

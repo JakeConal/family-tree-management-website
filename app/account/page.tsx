@@ -2,37 +2,58 @@
 
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import ConfirmModal from '@/components/modals/ConfirmModal';
 
 export default function AccountSettings() {
-	const { data: session, status } = useSession();
+	const { data: session, status, update } = useSession();
 	const router = useRouter();
 
 	const [saving, setSaving] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 	const [updatingPassword, setUpdatingPassword] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+	const [hasPassword, setHasPassword] = useState(true); // Track if user has password (credentials vs OAuth)
 
 	// Form state
 	const [fullName, setFullName] = useState('');
-	const [email, setEmail] = useState('');
 
 	// Password state
 	const [currentPassword, setCurrentPassword] = useState('');
 	const [newPassword, setNewPassword] = useState('');
 	const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-	// Load user data
+	// Delete account state
+	const [deletePassword, setDeletePassword] = useState('');
+
+	// Load user data from session
 	useEffect(() => {
-		if (session?.user) {
-			setFullName(session.user.name || '');
-			setEmail(session.user.email || '');
+		if (session?.user?.name) {
+			setFullName(session.user.name);
 		}
-	}, [session]);
+	}, [session?.user?.name]);
+
+	// Check if user has password (credentials vs OAuth)
+	useEffect(() => {
+		const checkPassword = async () => {
+			try {
+				const response = await fetch('/api/user/account');
+				if (response.ok) {
+					const data = await response.json();
+					setHasPassword(data.hasPassword || false);
+				}
+			} catch (error) {
+				console.error('Error checking password:', error);
+			}
+		};
+
+		if (status === 'authenticated') {
+			checkPassword();
+		}
+	}, [status]);
 
 	// Redirect if not authenticated
 	useEffect(() => {
@@ -47,19 +68,41 @@ export default function AccountSettings() {
 			return;
 		}
 
-		if (!email.trim()) {
-			toast.error('Email is required');
-			return;
-		}
-
 		setSaving(true);
 		try {
-			// TODO: Implement API endpoint to update user account
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await fetch('/api/user/account', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					name: fullName,
+				}),
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Failed to update account');
+			}
+
+			// Update hasPassword state
+			if (data.hasPassword !== undefined) {
+				setHasPassword(data.hasPassword);
+			}
+
+			// Force update the fullName state immediately
+			setFullName(data.name);
+
+			// Trigger session update with new name data to refresh session
+			await update({
+				name: data.name,
+			});
+
 			toast.success('Account updated successfully!');
 		} catch (error) {
 			console.error('Error updating account:', error);
-			toast.error('Failed to update account. Please try again.');
+			toast.error(error instanceof Error ? error.message : 'Failed to update account. Please try again.');
 		} finally {
 			setSaving(false);
 		}
@@ -88,15 +131,30 @@ export default function AccountSettings() {
 
 		setUpdatingPassword(true);
 		try {
-			// TODO: Implement API endpoint to update password
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await fetch('/api/user/password', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					currentPassword,
+					newPassword,
+				}),
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Failed to update password');
+			}
+
 			toast.success('Password updated successfully!');
 			setCurrentPassword('');
 			setNewPassword('');
 			setConfirmNewPassword('');
 		} catch (error) {
 			console.error('Error updating password:', error);
-			toast.error('Failed to update password. Please try again.');
+			toast.error(error instanceof Error ? error.message : 'Failed to update password. Please try again.');
 		} finally {
 			setUpdatingPassword(false);
 		}
@@ -105,13 +163,29 @@ export default function AccountSettings() {
 	const handleDeleteAccount = async () => {
 		setDeleting(true);
 		try {
-			// TODO: Implement API endpoint to delete account
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const response = await fetch('/api/user/delete', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					password: deletePassword,
+				}),
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.error || 'Failed to delete account');
+			}
+
 			toast.success('Account deleted successfully');
+			// Sign out the user
+			await signOut({ redirect: false });
 			router.push('/welcome');
 		} catch (error) {
 			console.error('Error deleting account:', error);
-			toast.error('Failed to delete account. Please try again.');
+			toast.error(error instanceof Error ? error.message : 'Failed to delete account. Please try again.');
 			setDeleting(false);
 			setShowDeleteConfirm(false);
 		}
@@ -147,15 +221,15 @@ export default function AccountSettings() {
 						/>
 					</div>
 
-					{/* Email Field */}
+					{/* Email Field (Read-only) */}
 					<div className="mb-8">
 						<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Email</label>
 						<input
 							type="email"
-							value={email}
-							onChange={(e) => setEmail(e.target.value)}
-							className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-							placeholder="Enter your email"
+							value={session?.user?.email || ''}
+							disabled
+							className="w-full h-[51.02px] bg-gray-100 border-[1.458px] border-gray-300 rounded-[43.731px] px-10 font-roboto text-[17.492px] text-gray-600 cursor-not-allowed"
+							placeholder="Email cannot be changed"
 						/>
 					</div>
 
@@ -192,70 +266,77 @@ export default function AccountSettings() {
 					</div>
 				</div>
 
-				{/* Change Password Section */}
-				<div className="border-2 border-[rgba(0,0,0,0.30)] rounded-lg p-6">
-					<h2 className="font-roboto font-normal text-[23.788px] text-black mb-8">Change Password</h2>
+				{/* Change Password Section - Only show for credentials users */}
+				{hasPassword && (
+					<div className="border-2 border-[rgba(0,0,0,0.30)] rounded-lg p-6">
+						<h2 className="font-roboto font-normal text-[23.788px] text-black mb-8">Change Password</h2>
 
-					{/* Current Password Field */}
-					<div className="mb-8">
-						<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Current Password</label>
-						<input
-							type="password"
-							value={currentPassword}
-							onChange={(e) => setCurrentPassword(e.target.value)}
-							className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-							placeholder="Enter current password"
-						/>
-					</div>
+						{/* Current Password Field */}
+						<div className="mb-8">
+							<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Current Password</label>
+							<input
+								type="password"
+								value={currentPassword}
+								onChange={(e) => setCurrentPassword(e.target.value)}
+								className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
+								placeholder="Enter current password"
+							/>
+						</div>
 
-					{/* New Password Field */}
-					<div className="mb-8">
-						<label className="block font-inter font-normal text-[21.252px] text-black mb-3">New Password</label>
-						<input
-							type="password"
-							value={newPassword}
-							onChange={(e) => setNewPassword(e.target.value)}
-							className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-							placeholder="Enter new password"
-						/>
-					</div>
+						{/* New Password Field */}
+						<div className="mb-8">
+							<label className="block font-inter font-normal text-[21.252px] text-black mb-3">New Password</label>
+							<input
+								type="password"
+								value={newPassword}
+								onChange={(e) => setNewPassword(e.target.value)}
+								className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
+								placeholder="Enter new password"
+							/>
+						</div>
 
-					{/* Confirm New Password Field */}
-					<div className="mb-8">
-						<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Confirm New Password</label>
-						<input
-							type="password"
-							value={confirmNewPassword}
-							onChange={(e) => setConfirmNewPassword(e.target.value)}
-							className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-							placeholder="Confirm new password"
-						/>
-					</div>
+						{/* Confirm New Password Field */}
+						<div className="mb-8">
+							<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
+								Confirm New Password
+							</label>
+							<input
+								type="password"
+								value={confirmNewPassword}
+								onChange={(e) => setConfirmNewPassword(e.target.value)}
+								className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
+								placeholder="Confirm new password"
+							/>
+						</div>
 
-					{/* Update Password Button */}
-					<div className="mt-8">
-						<button
-							onClick={handleUpdatePassword}
-							disabled={updatingPassword}
-							className="h-10 px-6 bg-[#1f2937] text-white rounded-[10px] font-roboto font-bold text-[14px] hover:bg-[#374151] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-						>
-							{updatingPassword ? (
-								<>
-									<Loader2 className="w-4 h-4 animate-spin" />
-									Updating...
-								</>
-							) : (
-								'Update Password'
-							)}
-						</button>
+						{/* Update Password Button */}
+						<div className="mt-8">
+							<button
+								onClick={handleUpdatePassword}
+								disabled={updatingPassword}
+								className="h-10 px-6 bg-[#1f2937] text-white rounded-[10px] font-roboto font-bold text-[14px] hover:bg-[#374151] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+							>
+								{updatingPassword ? (
+									<>
+										<Loader2 className="w-4 h-4 animate-spin" />
+										Updating...
+									</>
+								) : (
+									'Update Password'
+								)}
+							</button>
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 
 			{/* Delete Confirmation Modal */}
 			<ConfirmModal
 				isOpen={showDeleteConfirm}
-				onClose={() => setShowDeleteConfirm(false)}
+				onClose={() => {
+					setShowDeleteConfirm(false);
+					setDeletePassword('');
+				}}
 				onConfirm={handleDeleteAccount}
 				title="Delete Account"
 				message={`Are you sure you want to delete your account?\n\nThis action cannot be undone and will delete all your family trees, members, and records.`}
@@ -263,6 +344,9 @@ export default function AccountSettings() {
 				cancelText="Cancel"
 				confirmButtonClass="bg-red-600 hover:bg-red-700"
 				isLoading={deleting}
+				requirePassword={hasPassword}
+				password={deletePassword}
+				onPasswordChange={setDeletePassword}
 			/>
 		</div>
 	);
