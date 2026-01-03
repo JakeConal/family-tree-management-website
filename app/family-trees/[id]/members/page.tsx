@@ -1,12 +1,11 @@
 'use client';
 
 import classNames from 'classnames';
-import { Search, Plus, Eye, Pencil, KeyRound, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Eye, Pencil, KeyRound, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import toast from 'react-hot-toast';
 
 import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
@@ -48,24 +47,33 @@ interface MemberControlsProps {
 	selectedGeneration: string;
 	searchQuery: string;
 	generations: string[];
+	parents: { id: number; fullName: string }[];
+	selectedParent: string;
+	birthDateRange: { from: string; to: string };
 	onGenerationChange: (gen: string) => void;
 	onSearchChange: (query: string) => void;
-	onAddMember: () => void;
+	onParentChange: (parentId: string) => void;
+	onBirthDateRangeChange: (range: { from: string; to: string }) => void;
 }
 
 const MemberControls = ({
 	selectedGeneration,
 	searchQuery,
 	generations,
+	parents,
+	selectedParent,
+	birthDateRange,
 	onGenerationChange,
 	onSearchChange,
-	onAddMember,
+	onParentChange,
+	onBirthDateRangeChange,
 }: MemberControlsProps) => {
 	return (
-		<div className="flex items-center justify-between mb-6 bg-[#f4f4f5] p-4 rounded-xl">
-			<div className="flex items-center gap-4">
+		<div className="mb-6 bg-[#f4f4f5] p-4 rounded-xl">
+			{/* All Filters in One Row */}
+			<div className="flex flex-wrap gap-4 items-center">
 				{/* Generation Filter */}
-				<div className="relative">
+				<div className="relative flex-shrink-0">
 					<select
 						value={selectedGeneration}
 						onChange={(e) => onGenerationChange(e.target.value)}
@@ -84,26 +92,63 @@ const MemberControls = ({
 					</div>
 				</div>
 
-				{/* Search Bar */}
-				<div className="relative">
+				{/* Search by Name */}
+				<div className="relative flex-1 min-w-[200px]">
 					<Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
 					<input
 						type="text"
-						placeholder="Search members by name"
+						placeholder="Search by name"
 						value={searchQuery}
 						onChange={(e) => onSearchChange(e.target.value)}
-						className="bg-white h-[43px] pl-12 pr-6 rounded-[20px] w-[300px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+						className="w-full bg-white h-[43px] pl-12 pr-6 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
 					/>
 				</div>
-			</div>
 
-			<button
-				onClick={onAddMember}
-				className="bg-white h-[43px] px-6 rounded-[20px] flex items-center gap-2 text-[16px] font-inter text-black hover:bg-gray-50 transition-colors shadow-sm"
-			>
-				<Plus className="w-5 h-5" />
-				Add Member
-			</button>
+				{/* Search by Birth Date From */}
+				<div className="relative flex-shrink-0 flex items-center gap-2">
+					<span className="text-[16px] font-inter text-black">From</span>
+					<input
+						type="date"
+						placeholder="Birth Date From"
+						value={birthDateRange.from}
+						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, from: e.target.value })}
+						className="bg-white h-[43px] px-4 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+					/>
+				</div>
+
+				{/* Search by Birth Date To */}
+				<div className="relative flex-shrink-0 flex items-center gap-2">
+					<span className="text-[16px] font-inter text-black">To</span>
+					<input
+						type="date"
+						placeholder="Birth Date To"
+						value={birthDateRange.to}
+						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, to: e.target.value })}
+						className="bg-white h-[43px] px-4 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
+					/>
+				</div>
+
+				{/* Search by Parent */}
+				<div className="relative flex-shrink-0">
+					<select
+						value={selectedParent}
+						onChange={(e) => onParentChange(e.target.value)}
+						className="appearance-none bg-white h-[43px] px-6 pr-10 rounded-[20px] text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none min-w-[180px]"
+					>
+						<option value=""> All Parents </option>
+						{parents.map((parent) => (
+							<option key={parent.id} value={parent.id.toString()}>
+								{parent.fullName}
+							</option>
+						))}
+					</select>
+					<div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+						<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M1 1L6 6L11 1" stroke="black" strokeWidth="2" strokeLinecap="round" />
+						</svg>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 };
@@ -203,6 +248,8 @@ export default function MemberListPage() {
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [selectedGeneration, setSelectedGeneration] = useState('All Generation');
+	const [selectedParent, setSelectedParent] = useState('');
+	const [birthDateRange, setBirthDateRange] = useState({ from: '', to: '' });
 	const [panelState, setPanelState] = useState<
 		| { type: 'add' }
 		| { type: 'view'; memberId: number }
@@ -235,18 +282,54 @@ export default function MemberListPage() {
 
 	const filteredMembers = useMemo(() => {
 		return members.filter((member) => {
-			const matchesSearch = member.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+			// Generation filter
 			const matchesGen =
 				selectedGeneration === 'All Generation' ||
 				`Gen. ${member.generation}` === selectedGeneration ||
 				`F${member.generation}` === selectedGeneration;
-			return matchesSearch && matchesGen;
+
+			if (!matchesGen) return false;
+
+			// Name filter (if provided)
+			if (searchQuery && !member.fullName.toLowerCase().includes(searchQuery.toLowerCase())) {
+				return false;
+			}
+
+			// Birth date filter (if provided)
+			if (birthDateRange.from || birthDateRange.to) {
+				if (!member.birthday) return false;
+				const birthDate = new Date(member.birthday);
+				const fromDate = birthDateRange.from ? new Date(birthDateRange.from) : null;
+				const toDate = birthDateRange.to ? new Date(birthDateRange.to) : null;
+
+				if (fromDate && birthDate < fromDate) return false;
+				if (toDate && birthDate > toDate) return false;
+			}
+
+			// Parent filter (if provided)
+			if (selectedParent && member.parent?.id !== parseInt(selectedParent)) {
+				return false;
+			}
+
+			return true;
 		});
-	}, [members, searchQuery, selectedGeneration]);
+	}, [members, searchQuery, selectedGeneration, selectedParent, birthDateRange]);
 
 	const generations = useMemo(() => {
 		const gens = Array.from(new Set(members.map((m) => m.generation))).sort();
 		return ['All Generation', ...gens.map((g) => `F${g}`)];
+	}, [members]);
+
+	const parents = useMemo(() => {
+		const uniqueParents = new Map<number, string>();
+		members.forEach((member) => {
+			if (member.parent && !uniqueParents.has(member.parent.id)) {
+				uniqueParents.set(member.parent.id, member.parent.fullName);
+			}
+		});
+		return Array.from(uniqueParents, ([id, fullName]) => ({ id, fullName })).sort((a, b) =>
+			a.fullName.localeCompare(b.fullName)
+		);
 	}, [members]);
 
 	const handleGenerateAccessCode = (id: number, name: string) => {
@@ -289,9 +372,13 @@ export default function MemberListPage() {
 						selectedGeneration={selectedGeneration}
 						searchQuery={searchQuery}
 						generations={generations}
+						parents={parents}
+						selectedParent={selectedParent}
+						birthDateRange={birthDateRange}
 						onGenerationChange={setSelectedGeneration}
 						onSearchChange={setSearchQuery}
-						onAddMember={() => setPanelState({ type: 'add' })}
+						onParentChange={setSelectedParent}
+						onBirthDateRangeChange={setBirthDateRange}
 					/>
 
 					{/* Table Component */}

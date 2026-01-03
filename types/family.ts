@@ -11,6 +11,7 @@ export interface FamilyMember {
 	hasProfilePicture?: boolean | null;
 	passingRecords?: unknown[];
 	parent?: {
+		id: number;
 		fullName: string;
 	} | null;
 }

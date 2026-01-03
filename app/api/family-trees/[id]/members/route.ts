@@ -245,6 +245,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 				profilePicture: true,
 				parent: {
 					select: {
+						id: true,
 						fullName: true,
 					},
 				},
