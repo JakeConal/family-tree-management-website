@@ -1,6 +1,7 @@
 'use client';
 
 import { Info } from 'lucide-react';
+import { FormattedMessage } from 'react-intl';
 
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 
@@ -17,8 +18,14 @@ export default function GuestBanner() {
 				</div>
 				<div className="flex-1">
 					<p className="text-sm text-blue-800">
-						<strong>Chế độ khách mời:</strong> Bạn đang xem với tư cách khách mời. Bạn chỉ có thể chỉnh sửa hồ sơ của
-						mình ({session?.user?.name}).
+						<strong>
+							<FormattedMessage id="guest.banner.title" defaultMessage="Guest Mode:" />
+						</strong>{' '}
+						<FormattedMessage
+							id="guest.banner.description"
+							defaultMessage="You are viewing as a guest. You can only edit your own profile ({name})."
+							values={{ name: session?.user?.name }}
+						/>
 					</p>
 				</div>
 			</div>

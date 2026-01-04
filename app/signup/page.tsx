@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { RippleButton } from '@/components/ui/ripple-button';
 
 export default function SignUpPage() {
 	const { status } = useSession();
 	const router = useRouter();
+	const intl = useIntl();
 
 	const [fullName, setFullName] = useState('');
 	const [email, setEmail] = useState('');
@@ -31,7 +33,9 @@ export default function SignUpPage() {
 			<div className="min-h-screen flex items-center justify-center bg-gray-50">
 				<div className="text-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading...</p>
+					<p className="mt-4 text-gray-600">
+						<FormattedMessage id="common.loading" defaultMessage="Loading..." />
+					</p>
 				</div>
 			</div>
 		);
@@ -47,7 +51,9 @@ export default function SignUpPage() {
 
 		// Validate passwords match
 		if (password !== confirmPassword) {
-			toast.error('Passwords do not match!');
+			toast.error(
+				intl.formatMessage({ id: 'signup.error.passwordMismatch', defaultMessage: 'Passwords do not match!' })
+			);
 			return;
 		}
 
@@ -71,14 +77,18 @@ export default function SignUpPage() {
 					password,
 					redirect: false,
 				});
-				toast.success('Account created successfully!');
+				toast.success(intl.formatMessage({ id: 'signup.success', defaultMessage: 'Account created successfully!' }));
 				router.push('/dashboard');
 			} else {
-				toast.error(data.error || 'Registration failed');
+				toast.error(
+					data.error || intl.formatMessage({ id: 'signup.error.failed', defaultMessage: 'Registration failed' })
+				);
 			}
 		} catch (error) {
 			console.error('Registration error:', error);
-			toast.error('An error occurred during registration');
+			toast.error(
+				intl.formatMessage({ id: 'signup.error.generic', defaultMessage: 'An error occurred during registration' })
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -99,13 +109,19 @@ export default function SignUpPage() {
 						className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
 					>
 						<ChevronLeft className="w-5 h-5" />
-						<span className="text-sm font-medium">Back</span>
+						<span className="text-sm font-medium">
+							<FormattedMessage id="common.back" defaultMessage="Back" />
+						</span>
 					</Link>
 
 					{/* Header */}
 					<div className="text-center mb-8">
-						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
-						<p className="text-base text-gray-600">Start building your Family Tree</p>
+						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+							<FormattedMessage id="signup.title" defaultMessage="Create Account" />
+						</h1>
+						<p className="text-base text-gray-600">
+							<FormattedMessage id="signup.subtitle" defaultMessage="Start building your Family Tree" />
+						</p>
 					</div>
 
 					{/* Form */}
@@ -113,7 +129,7 @@ export default function SignUpPage() {
 						{/* Full Name Field */}
 						<div>
 							<label htmlFor="fullName" className="block text-sm font-medium text-gray-900 mb-2">
-								Full Name
+								<FormattedMessage id="signup.fullName.label" defaultMessage="Full Name" />
 							</label>
 							<div className="relative">
 								<UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -122,7 +138,7 @@ export default function SignUpPage() {
 									type="text"
 									value={fullName}
 									onChange={(e) => setFullName(e.target.value)}
-									placeholder="yourname"
+									placeholder={intl.formatMessage({ id: 'signup.fullName.placeholder', defaultMessage: 'yourname' })}
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 								/>
@@ -132,7 +148,7 @@ export default function SignUpPage() {
 						{/* Email Field */}
 						<div>
 							<label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-								Email
+								<FormattedMessage id="signup.email.label" defaultMessage="Email" />
 							</label>
 							<div className="relative">
 								<Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -141,7 +157,10 @@ export default function SignUpPage() {
 									type="email"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
-									placeholder="youremail@email.com"
+									placeholder={intl.formatMessage({
+										id: 'signup.email.placeholder',
+										defaultMessage: 'youremail@email.com',
+									})}
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 								/>
@@ -151,7 +170,7 @@ export default function SignUpPage() {
 						{/* Password Field */}
 						<div>
 							<label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
-								Password
+								<FormattedMessage id="signup.password.label" defaultMessage="Password" />
 							</label>
 							<div className="relative">
 								<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -160,7 +179,7 @@ export default function SignUpPage() {
 									type="password"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
-									placeholder="yourpassword"
+									placeholder="********"
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 									minLength={6}
@@ -171,7 +190,7 @@ export default function SignUpPage() {
 						{/* Confirm Password Field */}
 						<div>
 							<label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 mb-2">
-								Confirm Password
+								<FormattedMessage id="signup.confirmPassword.label" defaultMessage="Confirm Password" />
 							</label>
 							<div className="relative">
 								<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -180,7 +199,7 @@ export default function SignUpPage() {
 									type="password"
 									value={confirmPassword}
 									onChange={(e) => setConfirmPassword(e.target.value)}
-									placeholder="yourpassword"
+									placeholder="********"
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 									minLength={6}
@@ -196,7 +215,11 @@ export default function SignUpPage() {
 								className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full disabled:opacity-50"
 								variant="default"
 							>
-								{isLoading ? 'Creating Account...' : 'Create Account'}
+								{isLoading ? (
+									<FormattedMessage id="signup.creatingAccount" defaultMessage="Creating Account..." />
+								) : (
+									<FormattedMessage id="signup.createAccount" defaultMessage="Create Account" />
+								)}
 								<ChevronRight className="w-5 h-5 ml-2" />
 							</RippleButton>
 						</div>
@@ -208,7 +231,9 @@ export default function SignUpPage() {
 							<div className="w-full border-t border-gray-200"></div>
 						</div>
 						<div className="relative flex justify-center text-sm">
-							<span className="px-4 bg-white text-gray-500">Or continue with</span>
+							<span className="px-4 bg-white text-gray-500">
+								<FormattedMessage id="signup.orContinueWith" defaultMessage="Or continue with" />
+							</span>
 						</div>
 					</div>
 
@@ -236,14 +261,14 @@ export default function SignUpPage() {
 								d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
 							/>
 						</svg>
-						Continue with Google
+						<FormattedMessage id="signup.continueWithGoogle" defaultMessage="Continue with Google" />
 					</button>
 
 					{/* Sign In Link */}
 					<p className="text-center mt-6 text-gray-600">
-						Already have an account?{' '}
+						<FormattedMessage id="signup.haveAccount" defaultMessage="Already have an account?" />{' '}
 						<Link href="/welcome/login" className="font-semibold text-gray-900 hover:underline">
-							Sign in
+							<FormattedMessage id="signup.signIn" defaultMessage="Sign in" />
 						</Link>
 					</p>
 				</div>

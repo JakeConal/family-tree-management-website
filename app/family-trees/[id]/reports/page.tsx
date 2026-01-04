@@ -19,6 +19,7 @@ import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { FormattedMessage, useIntl } from 'react-intl';
 import * as XLSX from 'xlsx';
 
 import LoadingScreen from '@/components/LoadingScreen';
@@ -45,6 +46,7 @@ ChartJS.register(
 export default function FamilyTreeReports() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const intl = useIntl();
 
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -481,7 +483,7 @@ export default function FamilyTreeReports() {
 	};
 
 	if (loading) {
-		return <LoadingScreen message="Loading reports..." />;
+		return <LoadingScreen message={intl.formatMessage({ id: 'reports.loading' })} />;
 	}
 
 	// Chart options
@@ -567,7 +569,7 @@ export default function FamilyTreeReports() {
 				<div className="flex justify-end gap-3">
 					<div className="border border-[rgba(0,0,0,0.5)] rounded-[25px] flex flex-wrap items-center gap-2 p-1">
 						<button className="px-3 sm:px-4 py-2 text-sm sm:text-[16px] font-inter text-black whitespace-nowrap">
-							Export Report
+							<FormattedMessage id="reports.export.title" />
 						</button>
 						<button
 							onClick={() => exportReport('excel')}
@@ -589,29 +591,36 @@ export default function FamilyTreeReports() {
 					{/* Total Family Members */}
 					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
 						<Users className="w-7 h-5 sm:w-9 sm:h-6 text-black mb-3 sm:mb-4" />
-						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Total family members</h3>
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">
+							<FormattedMessage id="reports.cards.totalMembers" />
+						</h3>
 						<p className="font-inter text-3xl sm:text-[40px] text-black">{totalMembers}</p>
 					</div>
 
 					{/* Current Family Members */}
 					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
 						<HeartHandshake className="w-7 h-6 sm:w-9 sm:h-8 text-black mb-3 sm:mb-4" />
-						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Current family members</h3>
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">
+							<FormattedMessage id="reports.cards.currentMembers" />
+						</h3>
 						<p className="font-inter text-3xl sm:text-[40px] text-black">{currentMembers}</p>
 					</div>
 
 					{/* Achievements */}
 					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
 						<Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-black mb-3 sm:mb-4" />
-						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Achievements</h3>
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">
+							<FormattedMessage id="reports.cards.achievements" />
+						</h3>
 						<p className="font-inter text-3xl sm:text-[40px] text-black">{totalAchievements}</p>
 					</div>
 
 					{/* Generations */}
 					<div className="border-2 border-[rgba(0,0,0,0.25)] rounded-[15px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-4 sm:p-6">
 						<Network className="w-7 h-6 sm:w-9 sm:h-8 text-black mb-3 sm:mb-4" />
-						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">Generations</h3>
-						<p className="font-inter text-3xl sm:text-[40px] text-black">{generations}</p>
+						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">
+							<FormattedMessage id="reports.cards.generations" />
+						</h3>
 					</div>
 				</div>
 
@@ -623,7 +632,9 @@ export default function FamilyTreeReports() {
 								<circle cx="10" cy="10" r="10" />
 							</svg>
 						</div>
-						<h3 className="font-poppins text-[16px] text-[#1a1a2e]">Changes in family members</h3>
+						<h3 className="font-poppins text-[16px] text-[#1a1a2e]">
+							<FormattedMessage id="reports.charts.memberChanges" />
+						</h3>
 					</div>
 					<div className="h-[300px]">
 						{memberChangesData ? (
@@ -644,13 +655,17 @@ export default function FamilyTreeReports() {
 									<path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
 								</svg>
 							</div>
-							<h3 className="font-poppins font-medium text-[14px] text-[#364153]">Total members by year</h3>
+							<h3 className="font-poppins font-medium text-[14px] text-[#364153]">
+								<FormattedMessage id="reports.charts.totalMembersByYear" />
+							</h3>
 						</div>
 						<div className="h-[200px]">
 							{totalMembersByYearData ? (
 								<Line data={totalMembersByYearData} options={lineChartOptions} />
 							) : (
-								<div className="flex items-center justify-center h-full text-gray-400 text-sm">No data available</div>
+								<div className="flex items-center justify-center h-full text-gray-400 text-sm">
+									<FormattedMessage id="reports.charts.noData" />
+								</div>
 							)}
 						</div>
 					</div>
@@ -661,7 +676,9 @@ export default function FamilyTreeReports() {
 							<div className="w-5 h-5 rounded-full bg-[#00bc7d] flex items-center justify-center">
 								<Trophy className="w-3 h-3 text-white" />
 							</div>
-							<h3 className="font-poppins font-medium text-[14px] text-[#364153]">Total achievements by year</h3>
+							<h3 className="font-poppins font-medium text-[14px] text-[#364153]">
+								<FormattedMessage id="reports.charts.totalAchievementsByYear" />
+							</h3>
 						</div>
 						<div className="h-[200px]">
 							{totalAchievementsByYearData ? (
@@ -681,7 +698,9 @@ export default function FamilyTreeReports() {
 								<circle cx="10" cy="10" r="10" />
 							</svg>
 						</div>
-						<h3 className="font-poppins text-[16px] text-[#1a1a2e]">Achievement Categories</h3>
+						<h3 className="font-poppins text-[16px] text-[#1a1a2e]">
+							<FormattedMessage id="reports.charts.achievementCategories" />
+						</h3>
 					</div>
 
 					<div className="flex items-start gap-8">
@@ -690,7 +709,9 @@ export default function FamilyTreeReports() {
 							{achievementCategoriesData.length > 0 ? (
 								<Doughnut data={doughnutData} options={doughnutChartOptions} />
 							) : (
-								<div className="flex items-center justify-center h-full w-full text-gray-400">No data</div>
+								<div className="flex items-center justify-center h-full w-full text-gray-400">
+									<FormattedMessage id="reports.charts.noData" />
+								</div>
 							)}
 						</div>
 

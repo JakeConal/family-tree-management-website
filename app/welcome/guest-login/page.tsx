@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { RippleButton } from '@/components/ui/ripple-button';
 
@@ -14,6 +15,7 @@ export default function GuestLoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
 	const router = useRouter();
+	const intl = useIntl();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -33,7 +35,10 @@ export default function GuestLoginPage() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				setError(data.error || 'Mã truy cập không hợp lệ');
+				setError(
+					data.error ||
+						intl.formatMessage({ id: 'guestLogin.error.invalidCode', defaultMessage: 'Invalid access code' })
+				);
 				setIsLoading(false);
 				return;
 			}
@@ -45,17 +50,24 @@ export default function GuestLoginPage() {
 			});
 
 			if (result?.error) {
-				setError('Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.');
+				setError(
+					intl.formatMessage({ id: 'guestLogin.error.loginFailed', defaultMessage: 'Login failed. Please try again.' })
+				);
 				setIsLoading(false);
 				return;
 			}
 
 			// Success - redirect to family tree
-			toast.success(`Chào mừng ${data.guestInfo.memberName}!`);
+			toast.success(
+				intl.formatMessage(
+					{ id: 'guestLogin.welcomeMessage', defaultMessage: 'Welcome {name}!' },
+					{ name: data.guestInfo.memberName }
+				)
+			);
 			router.push(data.redirectUrl);
 		} catch (error) {
 			console.error('Error during guest login:', error);
-			setError('Đã xảy ra lỗi. Vui lòng thử lại.');
+			setError(intl.formatMessage({ id: 'error.generic', defaultMessage: 'An error occurred. Please try again.' }));
 			setIsLoading(false);
 		}
 	};
@@ -71,13 +83,22 @@ export default function GuestLoginPage() {
 						className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
 					>
 						<ChevronLeft className="w-5 h-5" />
-						<span className="text-sm font-medium">Back</span>
+						<span className="text-sm font-medium">
+							<FormattedMessage id="common.back" defaultMessage="Back" />
+						</span>
 					</Link>
 
 					{/* Header */}
 					<div className="text-center mb-8">
-						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Access Code</h1>
-						<p className="text-base text-gray-600 leading-relaxed">Enter the code provided by your family tree owner</p>
+						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+							<FormattedMessage id="guestLogin.title" defaultMessage="Access Code" />
+						</h1>
+						<p className="text-base text-gray-600 leading-relaxed">
+							<FormattedMessage
+								id="guestLogin.subtitle"
+								defaultMessage="Enter the code provided by your family tree owner"
+							/>
+						</p>
 						{error && (
 							<div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
 								<p className="text-sm text-red-600">{error}</p>
@@ -90,7 +111,7 @@ export default function GuestLoginPage() {
 						{/* Access Code Field */}
 						<div>
 							<label htmlFor="accessCode" className="block text-sm font-medium text-gray-900 mb-2">
-								Access Code
+								<FormattedMessage id="guestLogin.accessCode.label" defaultMessage="Access Code" />
 							</label>
 							<div className="relative">
 								<KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -99,14 +120,22 @@ export default function GuestLoginPage() {
 									type="text"
 									value={accessCode}
 									onChange={(e) => setAccessCode(e.target.value)}
-									placeholder="Enter your 45-character access code"
+									placeholder={intl.formatMessage({
+										id: 'guestLogin.accessCode.placeholder',
+										defaultMessage: 'Enter your 45-character access code',
+									})}
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 									maxLength={45}
 									disabled={isLoading}
 								/>
 							</div>
-							<p className="text-sm text-gray-500 mt-2 text-center">The code is exactly 45 characters long</p>
+							<p className="text-sm text-gray-500 mt-2 text-center">
+								<FormattedMessage
+									id="guestLogin.accessCode.hint"
+									defaultMessage="The code is exactly 45 characters long"
+								/>
+							</p>
 						</div>
 
 						{/* Submit Button */}
@@ -117,7 +146,11 @@ export default function GuestLoginPage() {
 								variant="default"
 								disabled={isLoading}
 							>
-								{isLoading ? 'Verifying...' : 'Access Family Tree'}
+								{isLoading ? (
+									<FormattedMessage id="guestLogin.verifying" defaultMessage="Verifying..." />
+								) : (
+									<FormattedMessage id="guestLogin.submit" defaultMessage="Access Family Tree" />
+								)}
 								{!isLoading && <ChevronRight className="w-5 h-5 ml-2" />}
 							</RippleButton>
 						</div>
@@ -126,9 +159,11 @@ export default function GuestLoginPage() {
 					{/* Help Text */}
 					<div className="mt-8 pt-6 border-t border-gray-200">
 						<p className="text-center text-sm text-gray-600 leading-relaxed">
-							Don&apos;t have an access code?
-							<br />
-							Contact your family tree owner to get one.
+							<FormattedMessage
+								id="guestLogin.helpText"
+								defaultMessage="Don't have an access code?{br}Contact your family tree owner to get one."
+								values={{ br: <br /> }}
+							/>
 						</p>
 					</div>
 				</div>
