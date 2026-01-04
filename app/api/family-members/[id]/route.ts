@@ -337,13 +337,33 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				});
 			} else {
 				// Create new relationship
-				await prisma.spouseRelationship.create({
+				const spouseRelationship = await prisma.spouseRelationship.create({
 					data: {
 						familyMember1Id: memberId,
 						familyMember2Id: spouseIdNum,
 						marriageDate: marriageDateObj,
 					},
 				});
+
+				// Log the spouse relationship creation (marriage event)
+				try {
+					await logChange(
+						'SpouseRelationship',
+						spouseRelationship.id,
+						'CREATE',
+						familyMember.familyTreeId,
+						sessionData.user.id,
+						null,
+						{
+							marriageDate: spouseRelationship.marriageDate,
+							familyMember1Id: spouseRelationship.familyMember1Id,
+							familyMember2Id: spouseRelationship.familyMember2Id,
+						}
+					);
+					console.log(`[CHANGELOG] Marriage log created - SpouseRelationship ID: ${spouseRelationship.id}`);
+				} catch (logError) {
+					console.error('Failed to log marriage event:', logError);
+				}
 			}
 		}
 

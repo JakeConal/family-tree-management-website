@@ -357,13 +357,33 @@ export async function POST(request: NextRequest) {
 
 		// If spouseId is provided, create the spouse relationship
 		if (spouseId && marriageDate) {
-			await prisma.spouseRelationship.create({
+			const spouseRelationship = await prisma.spouseRelationship.create({
 				data: {
 					familyMember1Id: parseInt(spouseId),
 					familyMember2Id: familyMember.id,
 					marriageDate: new Date(marriageDate),
 				},
 			});
+
+			// Log the spouse relationship creation (marriage event)
+			try {
+				await logChange(
+					'SpouseRelationship',
+					spouseRelationship.id,
+					'CREATE',
+					parseInt(familyTreeId),
+					sessionData.user.id,
+					null,
+					{
+						marriageDate: spouseRelationship.marriageDate,
+						familyMember1Id: spouseRelationship.familyMember1Id,
+						familyMember2Id: spouseRelationship.familyMember2Id,
+					}
+				);
+				console.log(`[CHANGELOG] Marriage log created - SpouseRelationship ID: ${spouseRelationship.id}`);
+			} catch (logError) {
+				console.error('Failed to log marriage event:', logError);
+			}
 		}
 
 		// Handle places of origin
@@ -698,13 +718,33 @@ export async function PUT(request: NextRequest) {
 			});
 
 			// Create new spouse relationship
-			await prisma.spouseRelationship.create({
+			const spouseRelationship = await prisma.spouseRelationship.create({
 				data: {
 					familyMember1Id: parseInt(spouseId),
 					familyMember2Id: updatedMember.id,
 					marriageDate: new Date(marriageDate),
 				},
 			});
+
+			// Log the spouse relationship creation (marriage event)
+			try {
+				await logChange(
+					'SpouseRelationship',
+					spouseRelationship.id,
+					'CREATE',
+					parseInt(familyTreeId),
+					sessionData.user.id,
+					null,
+					{
+						marriageDate: spouseRelationship.marriageDate,
+						familyMember1Id: spouseRelationship.familyMember1Id,
+						familyMember2Id: spouseRelationship.familyMember2Id,
+					}
+				);
+				console.log(`[CHANGELOG] Marriage log created - SpouseRelationship ID: ${spouseRelationship.id}`);
+			} catch (logError) {
+				console.error('Failed to log marriage event:', logError);
+			}
 		} else if (!spouseId) {
 			// Remove existing spouse relationships if no spouse specified
 			await prisma.spouseRelationship.deleteMany({
