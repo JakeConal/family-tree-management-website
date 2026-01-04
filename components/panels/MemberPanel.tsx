@@ -605,23 +605,25 @@ export default function MemberPanel({
 									<label className="block text-base font-normal text-black mb-1.5 ml-1">Place of Origin *</label>
 									<div className="space-y-4">
 										{placesOfOrigin.map((place, index) => (
-											<div key={place.id} className="grid grid-cols-3 gap-4">
-												<div className="col-span-3">
+											<div key={place.id} className="space-y-3">
+												<div>
 													<label className="block text-xs text-black/70 mb-1.5 ml-1">Location {index + 1}</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 														{place.location || '-'}
 													</div>
 												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.startDate ? new Date(place.startDate).toLocaleDateString() : '-'}
+												<div className="flex gap-4">
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{place.startDate ? new Date(place.startDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
-												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.endDate ? new Date(place.endDate).toLocaleDateString() : '-'}
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{place.endDate ? new Date(place.endDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
 												</div>
 											</div>
@@ -635,23 +637,25 @@ export default function MemberPanel({
 									<label className="block text-base font-normal text-black mb-1.5 ml-1">Occupation *</label>
 									<div className="space-y-4">
 										{occupations.map((occ, index) => (
-											<div key={occ.id} className="grid grid-cols-3 gap-4">
-												<div className="col-span-3">
+											<div key={occ.id} className="space-y-3">
+												<div>
 													<label className="block text-xs text-black/70 mb-1.5 ml-1">Job Title {index + 1}</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 														{occ.jobTitle || '-'}
 													</div>
 												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.startDate ? new Date(occ.startDate).toLocaleDateString() : '-'}
+												<div className="flex gap-4">
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{occ.startDate ? new Date(occ.startDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
-												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.endDate ? new Date(occ.endDate).toLocaleDateString() : '-'}
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{occ.endDate ? new Date(occ.endDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
 												</div>
 											</div>
@@ -894,8 +898,8 @@ export default function MemberPanel({
 															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 														/>
 													</div>
-													<div className="grid grid-cols-2 gap-4">
-														<div>
+													<div className="flex gap-4">
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
 															<input
 																type="date"
@@ -908,7 +912,7 @@ export default function MemberPanel({
 																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 															/>
 														</div>
-														<div>
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
 															<input
 																type="date"
@@ -972,8 +976,8 @@ export default function MemberPanel({
 															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 														/>
 													</div>
-													<div className="grid grid-cols-2 gap-4">
-														<div>
+													<div className="flex gap-4">
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
 															<input
 																type="date"
@@ -986,7 +990,7 @@ export default function MemberPanel({
 																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 															/>
 														</div>
-														<div>
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
 															<input
 																type="date"
@@ -1253,3 +1257,4 @@ export default function MemberPanel({
 		</div>
 	);
 }
+
