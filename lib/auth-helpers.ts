@@ -141,4 +141,3 @@ export function getUserDisplayInfo(session: Session | null): {
 		isGuest,
 	};
 }
-

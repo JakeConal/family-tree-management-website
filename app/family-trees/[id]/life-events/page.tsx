@@ -1,20 +1,16 @@
 'use client';
 
 import type { FamilyMember } from '@prisma/client';
-import classNames from 'classnames';
 import { ChevronDown, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import LoadingScreen from '@/components/LoadingScreen';
-import AchievementPanel from '@/components/panels/AchievementPanel';
-import BirthPanel from '@/components/panels/BirthPanel';
-import DivorcePanel from '@/components/panels/DivorcePanel';
-import MarriagePanel from '@/components/panels/MarriagePanel';
-import PassingPanel from '@/components/panels/PassingPanel';
-import { useGuestSession } from '@/lib/hooks/useGuestSession';
+import PanelRenderer from '@/components/PanelRenderer';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
+import { useGuestSession } from '@/lib/hooks/useGuestSession';
+import { usePanel } from '@/lib/hooks/usePanel';
 
 interface Achievement {
 	id: number;
@@ -94,6 +90,7 @@ export default function LifeEventsPage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
 	const { isGuest } = useGuestSession();
+	const { openPanel } = usePanel();
 
 	const [activeTab, setActiveTab] = useState<'achievement' | 'passing' | 'life-event'>('achievement');
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -107,11 +104,6 @@ export default function LifeEventsPage() {
 	// Filters
 	const [selectedYear, setSelectedYear] = useState<string>('all');
 	const [selectedType, setSelectedType] = useState<string>('all');
-
-	// Panel state
-	const [panelType, setPanelType] = useState<'achievement' | 'passing' | 'divorce' | 'birth' | 'marriage' | null>(null);
-	const [panelMode, setPanelMode] = useState<'add' | 'view' | 'edit'>('add');
-	const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
 	const fetchAchievements = useCallback(async () => {
 		try {
@@ -365,78 +357,46 @@ export default function LifeEventsPage() {
 
 	// Panel handlers
 	const handleOpenAchievementPanel = (id?: number) => {
-		if (id) {
-			setSelectedEventId(id);
-			setPanelMode('view');
-		} else {
-			setSelectedEventId(null);
-			setPanelMode('add');
-		}
-		setPanelType('achievement');
+		openPanel('achievement', {
+			mode: id ? 'view' : 'add',
+			familyTreeId,
+			familyMembers,
+		});
 	};
 
 	const handleOpenPassingPanel = (id?: number) => {
-		if (id) {
-			setSelectedEventId(id);
-			setPanelMode('view');
-		} else {
-			setSelectedEventId(null);
-			setPanelMode('add');
-		}
-		setPanelType('passing');
+		openPanel('passing', {
+			mode: id ? 'view' : 'add',
+			familyTreeId,
+			familyMembers,
+		});
 	};
 
 	const handleOpenDivorcePanel = (id?: number) => {
-		if (id) {
-			setSelectedEventId(id);
-			setPanelMode('view');
-		} else {
-			setSelectedEventId(null);
-			setPanelMode('add');
-		}
-		setPanelType('divorce');
+		openPanel('divorce', {
+			mode: id ? 'view' : 'add',
+			divorceId: id,
+			familyTreeId,
+			familyMembers,
+		});
 	};
 
 	const handleOpenBirthPanel = (id?: number) => {
-		if (id) {
-			setSelectedEventId(id);
-			setPanelMode('view');
-		} else {
-			setSelectedEventId(null);
-			setPanelMode('add');
-		}
-		setPanelType('birth');
+		openPanel('birth', {
+			mode: id ? 'view' : 'add',
+			childMemberId: id,
+			familyTreeId,
+			familyMembers,
+		});
 	};
 
 	const handleOpenMarriagePanel = (id?: number) => {
-		if (id) {
-			setSelectedEventId(id);
-			setPanelMode('view');
-		} else {
-			setSelectedEventId(null);
-			setPanelMode('add');
-		}
-		setPanelType('marriage');
-	};
-
-	const handleClosePanel = () => {
-		setPanelType(null);
-		setSelectedEventId(null);
-		setPanelMode('add');
-	};
-
-	const handlePanelModeChange = (mode: 'view' | 'edit') => {
-		setPanelMode(mode);
-	};
-
-	const handlePanelSuccess = () => {
-		if (activeTab === 'achievement') {
-			fetchAchievements();
-		} else if (activeTab === 'passing') {
-			fetchPassingRecords();
-		} else if (activeTab === 'life-event') {
-			fetchLifeEvents();
-		}
+		openPanel('marriage', {
+			mode: id ? 'view' : 'add',
+			relationshipId: id,
+			familyTreeId,
+			familyMembers,
+		});
 	};
 
 	if (loading) {
@@ -685,72 +645,8 @@ export default function LifeEventsPage() {
 				</div>
 			</div>
 
-			{/* Side Panel */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					{
-						'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]': panelType !== null,
-						'w-0': panelType === null,
-					}
-				)}
-			>
-				{panelType === 'achievement' && (
-					<AchievementPanel
-						mode={panelMode}
-						achievementId={selectedEventId || undefined}
-						familyTreeId={familyTreeId}
-						familyMembers={familyMembers}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={handlePanelSuccess}
-					/>
-				)}
-				{panelType === 'passing' && (
-					<PassingPanel
-						mode={panelMode}
-						passingRecordId={selectedEventId || undefined}
-						familyTreeId={familyTreeId}
-						familyMembers={familyMembers}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={handlePanelSuccess}
-					/>
-				)}
-				{panelType === 'divorce' && (
-					<DivorcePanel
-						mode={panelMode}
-						divorceId={selectedEventId || undefined}
-						familyTreeId={familyTreeId}
-						familyMembers={familyMembers}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={handlePanelSuccess}
-					/>
-				)}
-				{panelType === 'birth' && (
-					<BirthPanel
-						mode={panelMode === 'add' ? 'view' : panelMode}
-						childMemberId={selectedEventId || undefined}
-						familyTreeId={familyTreeId}
-						familyMembers={familyMembers}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={handlePanelSuccess}
-					/>
-				)}
-				{panelType === 'marriage' && (
-					<MarriagePanel
-						mode={panelMode === 'add' ? 'view' : panelMode}
-						relationshipId={selectedEventId || undefined}
-						familyTreeId={familyTreeId}
-						familyMembers={familyMembers}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={handlePanelSuccess}
-					/>
-				)}
-			</aside>
+			{/* Panel Renderer */}
+			<PanelRenderer />
 		</div>
 	);
 }

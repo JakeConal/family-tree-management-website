@@ -146,9 +146,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 							<p className="text-sm text-yellow-800">
 								<strong>Lưu ý:</strong> Mã này sẽ hết hạn sau 48 giờ
 							</p>
-							{expiresAt && (
-								<p className="text-xs text-yellow-700 mt-1">Hết hạn vào: {formatExpiryDate(expiresAt)}</p>
-							)}
+							{expiresAt && <p className="text-xs text-yellow-700 mt-1">Hết hạn vào: {formatExpiryDate(expiresAt)}</p>}
 						</div>
 
 						<button
@@ -182,8 +180,8 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<p className="text-sm text-blue-800">
-								<strong>Thông tin:</strong> Thành viên được chọn sẽ có thể xem toàn bộ cây gia phả nhưng chỉ có
-								thể chỉnh sửa hồ sơ của chính họ.
+								<strong>Thông tin:</strong> Thành viên được chọn sẽ có thể xem toàn bộ cây gia phả nhưng chỉ có thể
+								chỉnh sửa hồ sơ của chính họ.
 							</p>
 						</div>
 
@@ -208,4 +206,3 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 		</div>
 	);
 }
-

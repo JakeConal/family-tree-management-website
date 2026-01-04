@@ -6,10 +6,9 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
 
-import CreateFamilyTreePanel from '@/components/panels/CreateFamilyTreePanel';
+import PanelRenderer from '@/components/PanelRenderer';
 import { Sidebar } from '@/components/ui/sidebar';
-import { closeCreatePanel } from '@/lib/store/createPanelSlice';
-import { useAppDispatch, useAppSelector } from '@/lib/store/hooks';
+import { usePanel } from '@/lib/hooks/usePanel';
 import { useFamilyTrees } from '@/lib/useFamilyTrees';
 
 import { Providers } from './providers';
@@ -62,11 +61,14 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 		}
 		return window.innerWidth >= 1024;
 	});
+	const [isMobile, setIsMobile] = useState(() => {
+		if (typeof window === 'undefined') return false;
+		return window.innerWidth < 768;
+	});
 	const pathname = usePathname();
 	const { data: session, status } = useSession();
-	const dispatch = useAppDispatch();
-	const isCreatePanelOpen = useAppSelector((state) => state.createPanel.isOpen);
 	const { familyTrees } = useFamilyTrees(session);
+	const { closePanel } = usePanel();
 
 	const activeFamilyTreeName = useMemo(() => {
 		const match = pathname.match(/\/family-trees\/(\d+)/);
@@ -83,8 +85,13 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 		status === 'authenticated' && !pathname.startsWith('/welcome') && !pathname.startsWith('/signup');
 
 	useEffect(() => {
+		closePanel();
+
 		// Handle window resize
 		const handleResize = () => {
+			const mobile = window.innerWidth < 768;
+			setIsMobile(mobile);
+
 			if (window.innerWidth < 1024) {
 				setSidebarVisible(false);
 			} else {
@@ -116,7 +123,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 			window.removeEventListener('resize', handleResize);
 			window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
 		};
-	}, [pathname]);
+	}, [closePanel, pathname]);
 
 	// If not authenticated or on welcome/signup pages, render children without sidebar
 	if (!shouldShowSidebar) {
@@ -190,30 +197,8 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 				<div className="flex-1 overflow-y-auto">{children}</div>
 			</div>
 
-			{/* Create Family Tree Panel - Desktop (Push) */}
-			<aside
-				className={classNames(
-					'hidden md:block transition-all duration-300 ease-in-out border-l border-[#e4e4e7] bg-white overflow-hidden shrink-0 h-full',
-					{
-						'w-[600px]': isCreatePanelOpen,
-						'w-0': !isCreatePanelOpen,
-					}
-				)}
-			>
-				<div className="w-[600px] h-full">
-					<CreateFamilyTreePanel onClose={() => dispatch(closeCreatePanel())} />
-				</div>
-			</aside>
-
-			{/* Create Family Tree Panel - Mobile (Overlay) */}
-			<aside
-				className={classNames('md:hidden fixed inset-0 bg-white z-50 transition-transform duration-300 ease-in-out', {
-					'translate-x-0': isCreatePanelOpen,
-					'translate-x-full': !isCreatePanelOpen,
-				})}
-			>
-				<CreateFamilyTreePanel onClose={() => dispatch(closeCreatePanel())} />
-			</aside>
+			{/* Panel Renderer - Conditional based on screen size */}
+			{isMobile ? <PanelRenderer className="md:hidden" /> : <PanelRenderer pushMode className="hidden md:block" />}
 		</div>
 	);
 }

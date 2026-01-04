@@ -1,8 +1,8 @@
 import { FamilyMember } from '@prisma/client';
+import { Skull } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import type { ExtNode } from 'relatives-tree/lib/types';
-import { Skull } from 'lucide-react';
 
 interface ExtendedFamilyMember extends FamilyMember {
 	passingRecords?: {

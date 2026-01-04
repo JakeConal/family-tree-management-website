@@ -275,10 +275,7 @@ export default function RecordAchievementModal({
 				{/* Header */}
 				<div className="px-8 pt-6 pb-4">
 					{/* Back Button */}
-					<button
-						onClick={onClose}
-						className="flex items-center text-black hover:text-gray-600 transition-colors mb-6"
-					>
+					<button onClick={onClose} className="flex items-center text-black hover:text-gray-600 transition-colors mb-6">
 						<span className="font-light mr-1">&lt;</span>
 						<span className="font-normal">Back</span>
 					</button>

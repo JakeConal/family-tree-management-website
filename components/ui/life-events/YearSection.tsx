@@ -20,4 +20,3 @@ export function YearSection({ year }: YearSectionProps) {
 		</div>
 	);
 }
-

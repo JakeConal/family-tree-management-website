@@ -1,16 +1,15 @@
 'use client';
 
-import classNames from 'classnames';
 import { Search, Eye, Pencil, KeyRound, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 
-import AddMemberPanel from '@/components/panels/AddMemberPanel';
 import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
-import ViewEditMemberPanel from '@/components/panels/ViewEditMemberPanel';
+import PanelRenderer from '@/components/PanelRenderer';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
+import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyMember } from '@/types';
 
 const MemberAvatar = ({
@@ -177,12 +176,24 @@ const MemberTable = ({
 			<table className="w-full border-collapse text-left min-w-[640px]">
 				<thead className="sticky top-0 bg-white z-10">
 					<tr className="border-b border-gray-100">
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center w-16 sm:w-20">No.</th>
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black">Full Name</th>
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Birth Date</th>
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Gen. No.</th>
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black hidden md:table-cell">Parent</th>
-						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">Action</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center w-16 sm:w-20">
+							No.
+						</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black">
+							Full Name
+						</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">
+							Birth Date
+						</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">
+							Gen. No.
+						</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black hidden md:table-cell">
+							Parent
+						</th>
+						<th className="px-3 sm:px-6 py-3 sm:py-4 font-inter font-semibold text-sm sm:text-[16px] text-black text-center">
+							Action
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -257,6 +268,7 @@ export default function MemberListPage() {
 	const { isGuest, guestMemberId } = useGuestSession();
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const { openPanel } = usePanel();
 
 	const [members, setMembers] = useState<FamilyMember[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -264,13 +276,9 @@ export default function MemberListPage() {
 	const [selectedGeneration, setSelectedGeneration] = useState('All Generation');
 	const [selectedParent, setSelectedParent] = useState('');
 	const [birthDateRange, setBirthDateRange] = useState({ from: '', to: '' });
-	const [panelState, setPanelState] = useState<
-		| { type: 'add' }
-		| { type: 'view'; memberId: number }
-		| { type: 'edit'; memberId: number }
-		| { type: 'accessCode'; memberId: number; memberName: string }
-		| null
-	>(null);
+	const [panelState, setPanelState] = useState<{ type: 'accessCode'; memberId: number; memberName: string } | null>(
+		null
+	);
 
 	const fetchData = useCallback(async () => {
 		setLoading(true);
@@ -351,21 +359,25 @@ export default function MemberListPage() {
 	};
 
 	const handleViewMember = (id: number) => {
-		setPanelState({ type: 'view', memberId: id });
+		openPanel('member', {
+			mode: 'view',
+			memberId: id,
+			familyTreeId,
+			existingMembers: members,
+		});
 	};
 
 	const handleEditMember = (id: number) => {
-		setPanelState({ type: 'edit', memberId: id });
+		openPanel('member', {
+			mode: 'edit',
+			memberId: id,
+			familyTreeId,
+			existingMembers: members,
+		});
 	};
 
 	const handleClosePanel = () => {
 		setPanelState(null);
-	};
-
-	const handlePanelModeChange = (mode: 'view' | 'edit') => {
-		if (panelState && (panelState.type === 'view' || panelState.type === 'edit')) {
-			setPanelState({ type: mode, memberId: panelState.memberId });
-		}
 	};
 
 	if (loading) {
@@ -422,47 +434,18 @@ export default function MemberListPage() {
 				</div>
 			</div>
 
-			{/* Member Panel Sidebar - Push Style */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					{
-						'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]': panelState !== null,
-						'w-0': panelState === null,
-					}
-				)}
-			>
-				{panelState?.type === 'add' && (
-					<AddMemberPanel
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						onClose={handleClosePanel}
-						onSuccess={() => {
-							fetchData();
-							handleClosePanel();
-						}}
-					/>
-				)}
-				{(panelState?.type === 'view' || panelState?.type === 'edit') && (
-					<ViewEditMemberPanel
-						memberId={panelState.memberId}
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						mode={panelState.type}
-						onModeChange={handlePanelModeChange}
-						onClose={handleClosePanel}
-						onSuccess={fetchData}
-					/>
-				)}
-				{panelState?.type === 'accessCode' && (
-					<GenerateAccessCodePanel
-						familyTreeId={familyTreeId}
-						memberId={panelState.memberId}
-						memberName={panelState.memberName}
-						onClose={handleClosePanel}
-					/>
-				)}
-			</aside>
+			{/* Panel Renderer */}
+			<PanelRenderer />
+
+			{/* Access Code Modal */}
+			{panelState?.type === 'accessCode' && (
+				<GenerateAccessCodePanel
+					familyTreeId={familyTreeId}
+					memberId={panelState.memberId}
+					memberName={panelState.memberName}
+					onClose={handleClosePanel}
+				/>
+			)}
 		</div>
 	);
 }

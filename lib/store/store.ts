@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import createPanelReducer from './createPanelSlice';
+import panelReducer from './panelSlice';
 
 export const store = configureStore({
 	reducer: {
-		createPanel: createPanelReducer,
+		panel: panelReducer,
 	},
 });
 

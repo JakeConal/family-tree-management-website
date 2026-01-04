@@ -48,4 +48,3 @@ class DivorceService {
 }
 
 export default new DivorceService();
-

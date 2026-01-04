@@ -1,7 +1,6 @@
 'use client';
 
 import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
-import classNames from 'classnames';
 import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -16,8 +15,8 @@ import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import DivorcedSpousesModal from '@/components/modals/DivorcedSpousesModal';
 import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
 import RecordPassingModal from '@/components/modals/RecordPassingModal';
-import AddMemberPanel from '@/components/panels/AddMemberPanel';
-import ViewEditMemberPanel from '@/components/panels/ViewEditMemberPanel';
+import PanelRenderer from '@/components/PanelRenderer';
+import { usePanel } from '@/lib/hooks/usePanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
 
 interface ExtendedFamilyMember extends PrismaFamilyMember {
@@ -73,6 +72,7 @@ interface ExtendedFamilyMember extends PrismaFamilyMember {
 export default function FamilyTreePage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const { openPanel } = usePanel();
 
 	const [members, setMembers] = useState<ExtendedFamilyMember[]>([]);
 	const [treeNodes, setTreeNodes] = useState<Node[]>([]);
@@ -81,17 +81,13 @@ export default function FamilyTreePage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string>('');
 
-	// Panel and modal states
-	const [showAddPanel, setShowAddPanel] = useState(false);
-	const [selectedMemberIdForPanel, setSelectedMemberIdForPanel] = useState<number | null>(null);
-	const [panelMode, setPanelMode] = useState<'view' | 'edit'>('view');
+	// Modal states
 	const [showAchievementModal, setShowAchievementModal] = useState(false);
 	const [showPassingModal, setShowPassingModal] = useState(false);
 	const [showChangeLogModal, setShowChangeLogModal] = useState(false);
 	const [showDivorcedSpousesModal, setShowDivorcedSpousesModal] = useState(false);
 	const [selectedDivorcedSpouses, setSelectedDivorcedSpouses] = useState<ExtendedFamilyMember[]>([]);
 	const [selectedDivorcedMemberName, setSelectedDivorcedMemberName] = useState<string>('');
-	const [selectedMemberId, setSelectedMemberId] = useState<string>('');
 	const [zoomPercentage, setZoomPercentage] = useState(80);
 	const [zoomFunctions, setZoomFunctions] = useState<{
 		zoomIn: () => void;
@@ -109,192 +105,376 @@ export default function FamilyTreePage() {
 	};
 
 	// Helper function to check if a member has divorced spouses that will be displayed
-	const hasDivorcedSpousesToDisplay = (memberId: string, memberMap: Map<number, ExtendedFamilyMember>): boolean => {
-		const member = memberMap.get(parseInt(memberId));
-		if (!member) return false;
+	const hasDivorcedSpousesToDisplay = useCallback(
+		(memberId: string, memberMap: Map<number, ExtendedFamilyMember>): boolean => {
+			const member = memberMap.get(parseInt(memberId));
+			if (!member) return false;
 
-		// Only parent-child nodes should display divorced spouses
-		if (isSpouseTypeNode(member)) return false;
+			// Only parent-child nodes should display divorced spouses
+			if (isSpouseTypeNode(member)) return false;
 
-		// Check spouse1 relationships
-		if (member.spouse1) {
-			for (const spouseRelation of member.spouse1) {
-				if (spouseRelation.divorceDate) {
-					const spouse = memberMap.get(spouseRelation.familyMember2.id);
-					if (spouse && isSpouseTypeNode(spouse)) {
-						return true;
+			// Check spouse1 relationships
+			if (member.spouse1) {
+				for (const spouseRelation of member.spouse1) {
+					if (spouseRelation.divorceDate) {
+						const spouse = memberMap.get(spouseRelation.familyMember2.id);
+						if (spouse && isSpouseTypeNode(spouse)) {
+							return true;
+						}
 					}
 				}
 			}
-		}
 
-		// Check spouse2 relationships
-		if (member.spouse2) {
-			for (const spouseRelation of member.spouse2) {
-				if (spouseRelation.divorceDate) {
-					const spouse = memberMap.get(spouseRelation.familyMember1.id);
-					if (spouse && isSpouseTypeNode(spouse)) {
-						return true;
+			// Check spouse2 relationships
+			if (member.spouse2) {
+				for (const spouseRelation of member.spouse2) {
+					if (spouseRelation.divorceDate) {
+						const spouse = memberMap.get(spouseRelation.familyMember1.id);
+						if (spouse && isSpouseTypeNode(spouse)) {
+							return true;
+						}
 					}
 				}
 			}
-		}
 
-		return false;
-	};
+			return false;
+		},
+		[]
+	);
 
 	// Ensure current spouses are always positioned to the right of parent-child nodes
-	const ensureSpousesOnRight = (nodes: ExtNode[], memberMap: Map<number, ExtendedFamilyMember>): ExtNode[] => {
-		const adjustedNodes = nodes.map((node) => ({ ...node }));
-		const nodeMap = new Map(adjustedNodes.map((node) => [node.id, node]));
+	const ensureSpousesOnRight = useCallback(
+		(nodes: ExtNode[], memberMap: Map<number, ExtendedFamilyMember>): ExtNode[] => {
+			const adjustedNodes = nodes.map((node) => ({ ...node }));
+			const nodeMap = new Map(adjustedNodes.map((node) => [node.id, node]));
 
-		// Process each node to check if it has a current (non-divorced) spouse
-		adjustedNodes.forEach((node) => {
-			const member = memberMap.get(parseInt(node.id));
-			if (!member) return;
+			// Process each node to check if it has a current (non-divorced) spouse
+			adjustedNodes.forEach((node) => {
+				const member = memberMap.get(parseInt(node.id));
+				if (!member) return;
 
-			// Only adjust parent-child nodes (not spouse-type nodes)
-			if (isSpouseTypeNode(member)) return;
+				// Only adjust parent-child nodes (not spouse-type nodes)
+				if (isSpouseTypeNode(member)) return;
 
-			// Find current spouse (not divorced)
-			const spouseRelations = [
-				...(member.spouse1 || []).map((s) => ({
-					spouseId: s.familyMember2.id.toString(),
-					divorceDate: s.divorceDate,
-				})),
-				...(member.spouse2 || []).map((s) => ({
-					spouseId: s.familyMember1.id.toString(),
-					divorceDate: s.divorceDate,
-				})),
-			];
+				// Find current spouse (not divorced)
+				const spouseRelations = [
+					...(member.spouse1 || []).map((s) => ({
+						spouseId: s.familyMember2.id.toString(),
+						divorceDate: s.divorceDate,
+					})),
+					...(member.spouse2 || []).map((s) => ({
+						spouseId: s.familyMember1.id.toString(),
+						divorceDate: s.divorceDate,
+					})),
+				];
 
-			for (const relation of spouseRelations) {
-				if (!relation.divorceDate) {
-					// This is a current spouse
-					const spouseNode = nodeMap.get(relation.spouseId);
-					if (!spouseNode) continue;
+				for (const relation of spouseRelations) {
+					if (!relation.divorceDate) {
+						// This is a current spouse
+						const spouseNode = nodeMap.get(relation.spouseId);
+						if (!spouseNode) continue;
 
-					// Check if they are on the same row (they should be)
-					if (Math.abs(node.top - spouseNode.top) < 0.1) {
-						// Ensure spouse is on the right
-						if (spouseNode.left < node.left) {
-							// Spouse is on the left - swap positions
-							const tempLeft = node.left;
-							Object.assign(node, { left: spouseNode.left });
-							Object.assign(spouseNode, { left: tempLeft });
-						}
-					}
-				}
-			}
-		});
-
-		return adjustedNodes;
-	};
-
-	// Adjust node positions to make room for divorced spouse nodes on the left
-	const adjustNodesForDivorcedSpouses = (
-		nodes: ExtNode[],
-		treeNodes: Node[],
-		memberMap: Map<number, ExtendedFamilyMember>
-	): ExtNode[] => {
-		// Create a map of node positions by row (top value)
-		const rowMap = new Map<number, ExtNode[]>();
-		nodes.forEach((node) => {
-			const row = node.top;
-			if (!rowMap.has(row)) rowMap.set(row, []);
-			rowMap.get(row)!.push(node);
-		});
-
-		// For each row, check if any node has divorced spouses and adjust positions
-		const adjustedNodes = nodes.map((node) => ({ ...node }));
-
-		// Find nodes that have divorced spouses to display
-		const nodesWithDivorcedSpouses = new Set<string>();
-		adjustedNodes.forEach((node) => {
-			if (hasDivorcedSpousesToDisplay(node.id, memberMap)) {
-				nodesWithDivorcedSpouses.add(node.id);
-			}
-		});
-
-		if (nodesWithDivorcedSpouses.size === 0) return adjustedNodes;
-
-		// For each row, sort by left position and add offset where needed
-		rowMap.forEach((rowNodes, row) => {
-			// Sort nodes in this row by left position
-			const sortedRowNodes = rowNodes.sort((a, b) => a.left - b.left);
-
-			// Check each node - if a node has divorced spouses, ensure space to its left
-			for (let i = 0; i < sortedRowNodes.length; i++) {
-				const currentNode = sortedRowNodes[i];
-				if (!nodesWithDivorcedSpouses.has(currentNode.id)) continue;
-
-				// This node has divorced spouses - check if there's a node to its left that's too close
-				// Divorced spouse is positioned 2 units to the left
-				const divorcedSpouseLeft = currentNode.left - 2;
-
-				// Find if any node would overlap with the divorced spouse position
-				for (let j = 0; j < i; j++) {
-					const leftNode = sortedRowNodes[j];
-					// If the left node is at or past the divorced spouse position, we need to shift
-					if (leftNode.left >= divorcedSpouseLeft - 0.5) {
-						// Need to shift the current node (and nodes to its right) to the right
-						const shiftAmount = 2; // Shift by 2 units to make room
-
-						// Find the adjusted node and all nodes to its right in this row
-						for (let k = i; k < sortedRowNodes.length; k++) {
-							const nodeToShift = adjustedNodes.find((n) => n.id === sortedRowNodes[k].id);
-							if (nodeToShift) {
-								nodeToShift.left += shiftAmount;
+						// Check if they are on the same row (they should be)
+						if (Math.abs(node.top - spouseNode.top) < 0.1) {
+							// Ensure spouse is on the right
+							if (spouseNode.left < node.left) {
+								// Spouse is on the left - swap positions
+								const tempLeft = node.left;
+								Object.assign(node, { left: spouseNode.left });
+								Object.assign(spouseNode, { left: tempLeft });
 							}
 						}
-						break;
 					}
 				}
-
-				// Also check if there's no space on the left edge (node is too close to left boundary)
-				if (divorcedSpouseLeft < 0) {
-					// Shift all nodes right to make room at the left edge
-					const shiftAmount = Math.abs(divorcedSpouseLeft) + 0.5;
-					adjustedNodes.forEach((n) => {
-						if (n.top === row || n.top > row) {
-							// Shift this row and below (to maintain parent-child alignment)
-							// Actually, just shift all nodes to be safe
-						}
-					});
-				}
-			}
-		});
-
-		// Second pass: ensure divorced spouse positions don't overlap with any other nodes
-		// by adding a global offset if needed
-		let globalLeftOffset = 0;
-		adjustedNodes.forEach((node) => {
-			if (nodesWithDivorcedSpouses.has(node.id)) {
-				const divorcedSpouseLeft = node.left - 2;
-				// Check if any node is at this position
-				const overlappingNode = adjustedNodes.find(
-					(n) => n.id !== node.id && Math.abs(n.left - divorcedSpouseLeft) < 1 && n.top === node.top
-				);
-				if (overlappingNode) {
-					// Need more offset
-					globalLeftOffset = Math.max(globalLeftOffset, 2);
-				}
-				// Also check if divorced spouse would be at negative position
-				if (divorcedSpouseLeft < 0) {
-					globalLeftOffset = Math.max(globalLeftOffset, Math.abs(divorcedSpouseLeft) + 0.5);
-				}
-			}
-		});
-
-		// Apply global offset if needed
-		if (globalLeftOffset > 0) {
-			adjustedNodes.forEach((node) => {
-				node.left += globalLeftOffset;
 			});
-		}
 
-		return adjustedNodes;
-	};
+			return adjustedNodes;
+		},
+		[]
+	);
+
+	// Adjust node positions to make room for divorced spouse nodes on the left
+	const adjustNodesForDivorcedSpouses = useCallback(
+		(nodes: ExtNode[], treeNodes: Node[], memberMap: Map<number, ExtendedFamilyMember>): ExtNode[] => {
+			// Create a map of node positions by row (top value)
+			const rowMap = new Map<number, ExtNode[]>();
+			nodes.forEach((node) => {
+				const row = node.top;
+				if (!rowMap.has(row)) rowMap.set(row, []);
+				rowMap.get(row)!.push(node);
+			});
+
+			// For each row, check if any node has divorced spouses and adjust positions
+			const adjustedNodes = nodes.map((node) => ({ ...node }));
+
+			// Find nodes that have divorced spouses to display
+			const nodesWithDivorcedSpouses = new Set<string>();
+			adjustedNodes.forEach((node) => {
+				if (hasDivorcedSpousesToDisplay(node.id, memberMap)) {
+					nodesWithDivorcedSpouses.add(node.id);
+				}
+			});
+
+			if (nodesWithDivorcedSpouses.size === 0) return adjustedNodes;
+
+			// For each row, sort by left position and add offset where needed
+			rowMap.forEach((rowNodes, row) => {
+				// Sort nodes in this row by left position
+				const sortedRowNodes = rowNodes.sort((a, b) => a.left - b.left);
+
+				// Check each node - if a node has divorced spouses, ensure space to its left
+				for (let i = 0; i < sortedRowNodes.length; i++) {
+					const currentNode = sortedRowNodes[i];
+					if (!nodesWithDivorcedSpouses.has(currentNode.id)) continue;
+
+					// This node has divorced spouses - check if there's a node to its left that's too close
+					// Divorced spouse is positioned 2 units to the left
+					const divorcedSpouseLeft = currentNode.left - 2;
+
+					// Find if any node would overlap with the divorced spouse position
+					for (let j = 0; j < i; j++) {
+						const leftNode = sortedRowNodes[j];
+						// If the left node is at or past the divorced spouse position, we need to shift
+						if (leftNode.left >= divorcedSpouseLeft - 0.5) {
+							// Need to shift the current node (and nodes to its right) to the right
+							const shiftAmount = 2; // Shift by 2 units to make room
+
+							// Find the adjusted node and all nodes to its right in this row
+							for (let k = i; k < sortedRowNodes.length; k++) {
+								const nodeToShift = adjustedNodes.find((n) => n.id === sortedRowNodes[k].id);
+								if (nodeToShift) {
+									nodeToShift.left += shiftAmount;
+								}
+							}
+							break;
+						}
+					}
+
+					// Also check if there's no space on the left edge (node is too close to left boundary)
+					if (divorcedSpouseLeft < 0) {
+						// Shift all nodes right to make room at the left edge
+						// const shiftAmount = Math.abs(divorcedSpouseLeft) + 0.5;
+						adjustedNodes.forEach((n) => {
+							if (n.top === row || n.top > row) {
+								// Shift this row and below (to maintain parent-child alignment)
+								// Actually, just shift all nodes to be safe
+							}
+						});
+					}
+				}
+			});
+
+			// Second pass: ensure divorced spouse positions don't overlap with any other nodes
+			// by adding a global offset if needed
+			let globalLeftOffset = 0;
+			adjustedNodes.forEach((node) => {
+				if (nodesWithDivorcedSpouses.has(node.id)) {
+					const divorcedSpouseLeft = node.left - 2;
+					// Check if any node is at this position
+					const overlappingNode = adjustedNodes.find(
+						(n) => n.id !== node.id && Math.abs(n.left - divorcedSpouseLeft) < 1 && n.top === node.top
+					);
+					if (overlappingNode) {
+						// Need more offset
+						globalLeftOffset = Math.max(globalLeftOffset, 2);
+					}
+					// Also check if divorced spouse would be at negative position
+					if (divorcedSpouseLeft < 0) {
+						globalLeftOffset = Math.max(globalLeftOffset, Math.abs(divorcedSpouseLeft) + 0.5);
+					}
+				}
+			});
+
+			// Apply global offset if needed
+			if (globalLeftOffset > 0) {
+				adjustedNodes.forEach((node) => {
+					node.left += globalLeftOffset;
+				});
+			}
+
+			return adjustedNodes;
+		},
+		[hasDivorcedSpousesToDisplay]
+	);
+
+	const transformDataToTreeNodes = useCallback(
+		(members: ExtendedFamilyMember[]) => {
+			try {
+				const nodes: Node[] = [];
+				const memberMap = new Map<number, ExtendedFamilyMember>();
+
+				// Create member map for easy lookup
+				members.forEach((member) => {
+					memberMap.set(member.id, member);
+				});
+
+				// Create a map of all parent-child relationships
+				const parentChildMap = new Map<string, Array<{ id: string; type: 'blood' | 'adopted' }>>();
+
+				// First pass: collect all children from API responses
+				members.forEach((member) => {
+					if (member.children && member.children.length > 0) {
+						const children: Array<{ id: string; type: 'blood' | 'adopted' }> = member.children.map((child) => {
+							const childMember = memberMap.get(child.id);
+							return {
+								id: child.id.toString(),
+								type: (childMember?.isAdopted ? 'adopted' : 'blood') as 'blood' | 'adopted',
+							};
+						});
+						parentChildMap.set(member.id.toString(), children);
+					}
+				});
+
+				// Second pass: ensure spouses also have the children
+				members.forEach((member) => {
+					const memberId = member.id.toString();
+					const memberChildren = parentChildMap.get(memberId) || [];
+
+					// Check spouse1 relationships
+					if (member.spouse1) {
+						member.spouse1.forEach((spouseRelation) => {
+							const spouseId = spouseRelation.familyMember2.id.toString();
+							const spouseChildren = parentChildMap.get(spouseId) || [];
+
+							// Merge children between member and spouse
+							const allChildren = new Map<string, { id: string; type: 'blood' | 'adopted' }>();
+
+							// Add member's children
+							memberChildren.forEach((child) => allChildren.set(child.id, child));
+							// Add spouse's children
+							spouseChildren.forEach((child) => allChildren.set(child.id, child));
+
+							const mergedChildren = Array.from(allChildren.values());
+
+							// Set merged children for both member and spouse
+							parentChildMap.set(memberId, mergedChildren);
+							parentChildMap.set(spouseId, mergedChildren);
+						});
+					}
+
+					// Check spouse2 relationships
+					if (member.spouse2) {
+						member.spouse2.forEach((spouseRelation) => {
+							const spouseId = spouseRelation.familyMember1.id.toString();
+							const spouseChildren = parentChildMap.get(spouseId) || [];
+
+							// Merge children between member and spouse
+							const allChildren = new Map<string, { id: string; type: 'blood' | 'adopted' }>();
+
+							// Add member's children
+							memberChildren.forEach((child) => allChildren.set(child.id, child));
+							// Add spouse's children
+							spouseChildren.forEach((child) => allChildren.set(child.id, child));
+
+							const mergedChildren = Array.from(allChildren.values());
+
+							// Set merged children for both member and spouse
+							parentChildMap.set(memberId, mergedChildren);
+							parentChildMap.set(spouseId, mergedChildren);
+						});
+					}
+				});
+
+				members.forEach((member) => {
+					// Map gender to relatives-tree format
+					let gender: 'male' | 'female' = 'male'; // default
+					if (member.gender === 'FEMALE') {
+						gender = 'female';
+					} else if (member.gender === 'MALE') {
+						gender = 'male';
+					}
+
+					// Add parents
+					const parents = member.parentId
+						? [
+								{
+									id: member.parentId.toString(),
+									type: member.isAdopted ? 'adopted' : 'blood',
+								},
+							]
+						: [];
+
+					// Get children from the parent-child map
+					const children = parentChildMap.get(member.id.toString()) || [];
+
+					// Add spouses
+					const spouses: { id: string; type: 'married' | 'divorced' }[] = [];
+					if (member.spouse1) {
+						member.spouse1.forEach((spouse) => {
+							spouses.push({
+								id: spouse.familyMember2.id.toString(),
+								type: spouse.divorceDate ? 'divorced' : 'married',
+							});
+						});
+					}
+					if (member.spouse2) {
+						member.spouse2.forEach((spouse) => {
+							spouses.push({
+								id: spouse.familyMember1.id.toString(),
+								type: spouse.divorceDate ? 'divorced' : 'married',
+							});
+						});
+					}
+
+					const node = {
+						id: member.id.toString(),
+						gender,
+						spouses,
+						siblings: [],
+						parents,
+						children,
+					};
+
+					nodes.push(node as Node);
+				});
+
+				setTreeNodes(nodes);
+
+				// Find root (member with no parents)
+				const rootMember = members.find((member) => !member.parentId);
+				if (rootMember) {
+					setRootId(rootMember.id.toString());
+				} else if (members.length > 0) {
+					// Fallback to first member
+					setRootId(members[0].id.toString());
+				}
+
+				// Calculate available generations
+				const generationSet = new Set<number>();
+				members.forEach((member) => {
+					if (member.generation) {
+						generationSet.add(parseInt(member.generation.toString()));
+					}
+				});
+				const generations = Array.from(generationSet).sort((a, b) => a - b);
+				setAvailableGenerations(generations);
+
+				// Calculate positioned nodes
+				const positionedNodes = relativesTree(nodes, {
+					rootId: rootMember?.id.toString() || members[0]?.id.toString() || '',
+				});
+				// Deduplicate nodes by ID to avoid React key warnings
+				const uniqueNodes = Array.from(new Map(positionedNodes.nodes.map((node) => [node.id, node])).values());
+
+				// Ensure current spouses are always on the right of parent-child nodes
+				const nodesWithSpousesAdjusted = ensureSpousesOnRight(uniqueNodes, memberMap);
+
+				// Adjust node positions to account for divorced spouse nodes
+				// Divorced spouses are positioned 2 units (200px) to the left of their ex-partner
+				// We need to ensure no other nodes occupy that space
+				const adjustedNodes = adjustNodesForDivorcedSpouses(nodesWithSpousesAdjusted, nodes, memberMap);
+
+				// Update treeNodes with positioned nodes
+				setTreeNodes([...adjustedNodes]);
+				setPositionedNodes([...adjustedNodes]);
+			} catch (err) {
+				console.error('Error processing family tree data:', err);
+				setError('Failed to process family tree data');
+				setLoading(false);
+			}
+		},
+		[adjustNodesForDivorcedSpouses, ensureSpousesOnRight]
+	);
 
 	const fetchFamilyMembers = useCallback(async () => {
 		try {
@@ -306,187 +486,11 @@ export default function FamilyTreePage() {
 		} finally {
 			setLoading(false);
 		}
-	}, [familyTreeId]);
+	}, [familyTreeId, transformDataToTreeNodes]);
 
 	useEffect(() => {
 		fetchFamilyMembers();
-	}, [familyTreeId, fetchFamilyMembers]);
-
-	const transformDataToTreeNodes = (members: ExtendedFamilyMember[]) => {
-		try {
-			const nodes: Node[] = [];
-			const memberMap = new Map<number, ExtendedFamilyMember>();
-
-			// Create member map for easy lookup
-			members.forEach((member) => {
-				memberMap.set(member.id, member);
-			});
-
-			// Create a map of all parent-child relationships
-			const parentChildMap = new Map<string, Array<{ id: string; type: 'blood' | 'adopted' }>>();
-
-			// First pass: collect all children from API responses
-			members.forEach((member) => {
-				if (member.children && member.children.length > 0) {
-					const children: Array<{ id: string; type: 'blood' | 'adopted' }> = member.children.map((child) => {
-						const childMember = memberMap.get(child.id);
-						return {
-							id: child.id.toString(),
-							type: (childMember?.isAdopted ? 'adopted' : 'blood') as 'blood' | 'adopted',
-						};
-					});
-					parentChildMap.set(member.id.toString(), children);
-				}
-			});
-
-			// Second pass: ensure spouses also have the children
-			members.forEach((member) => {
-				const memberId = member.id.toString();
-				const memberChildren = parentChildMap.get(memberId) || [];
-
-				// Check spouse1 relationships
-				if (member.spouse1) {
-					member.spouse1.forEach((spouseRelation) => {
-						const spouseId = spouseRelation.familyMember2.id.toString();
-						const spouseChildren = parentChildMap.get(spouseId) || [];
-
-						// Merge children between member and spouse
-						const allChildren = new Map<string, { id: string; type: 'blood' | 'adopted' }>();
-
-						// Add member's children
-						memberChildren.forEach((child) => allChildren.set(child.id, child));
-						// Add spouse's children
-						spouseChildren.forEach((child) => allChildren.set(child.id, child));
-
-						const mergedChildren = Array.from(allChildren.values());
-
-						// Set merged children for both member and spouse
-						parentChildMap.set(memberId, mergedChildren);
-						parentChildMap.set(spouseId, mergedChildren);
-					});
-				}
-
-				// Check spouse2 relationships
-				if (member.spouse2) {
-					member.spouse2.forEach((spouseRelation) => {
-						const spouseId = spouseRelation.familyMember1.id.toString();
-						const spouseChildren = parentChildMap.get(spouseId) || [];
-
-						// Merge children between member and spouse
-						const allChildren = new Map<string, { id: string; type: 'blood' | 'adopted' }>();
-
-						// Add member's children
-						memberChildren.forEach((child) => allChildren.set(child.id, child));
-						// Add spouse's children
-						spouseChildren.forEach((child) => allChildren.set(child.id, child));
-
-						const mergedChildren = Array.from(allChildren.values());
-
-						// Set merged children for both member and spouse
-						parentChildMap.set(memberId, mergedChildren);
-						parentChildMap.set(spouseId, mergedChildren);
-					});
-				}
-			});
-
-			members.forEach((member) => {
-				// Map gender to relatives-tree format
-				let gender: 'male' | 'female' = 'male'; // default
-				if (member.gender === 'FEMALE') {
-					gender = 'female';
-				} else if (member.gender === 'MALE') {
-					gender = 'male';
-				}
-
-				// Add parents
-				const parents = member.parentId
-					? [
-							{
-								id: member.parentId.toString(),
-								type: member.isAdopted ? 'adopted' : 'blood',
-							},
-						]
-					: [];
-
-				// Get children from the parent-child map
-				const children = parentChildMap.get(member.id.toString()) || [];
-
-				// Add spouses
-				const spouses: { id: string; type: 'married' | 'divorced' }[] = [];
-				if (member.spouse1) {
-					member.spouse1.forEach((spouse) => {
-						spouses.push({
-							id: spouse.familyMember2.id.toString(),
-							type: spouse.divorceDate ? 'divorced' : 'married',
-						});
-					});
-				}
-				if (member.spouse2) {
-					member.spouse2.forEach((spouse) => {
-						spouses.push({
-							id: spouse.familyMember1.id.toString(),
-							type: spouse.divorceDate ? 'divorced' : 'married',
-						});
-					});
-				}
-
-				const node = {
-					id: member.id.toString(),
-					gender,
-					spouses,
-					siblings: [],
-					parents,
-					children,
-				};
-
-				nodes.push(node as Node);
-			});
-
-			setTreeNodes(nodes);
-
-			// Find root (member with no parents)
-			const rootMember = members.find((member) => !member.parentId);
-			if (rootMember) {
-				setRootId(rootMember.id.toString());
-			} else if (members.length > 0) {
-				// Fallback to first member
-				setRootId(members[0].id.toString());
-			}
-
-			// Calculate available generations
-			const generationSet = new Set<number>();
-			members.forEach((member) => {
-				if (member.generation) {
-					generationSet.add(parseInt(member.generation.toString()));
-				}
-			});
-			const generations = Array.from(generationSet).sort((a, b) => a - b);
-			setAvailableGenerations(generations);
-
-			// Calculate positioned nodes
-			const positionedNodes = relativesTree(nodes, {
-				rootId: rootMember?.id.toString() || members[0]?.id.toString() || '',
-			});
-			// Deduplicate nodes by ID to avoid React key warnings
-			const uniqueNodes = Array.from(new Map(positionedNodes.nodes.map((node) => [node.id, node])).values());
-
-			// Ensure current spouses are always on the right of parent-child nodes
-			const nodesWithSpousesAdjusted = ensureSpousesOnRight(uniqueNodes, memberMap);
-
-			// Adjust node positions to account for divorced spouse nodes
-			// Divorced spouses are positioned 2 units (200px) to the left of their ex-partner
-			// We need to ensure no other nodes occupy that space
-			const adjustedNodes = adjustNodesForDivorcedSpouses(nodesWithSpousesAdjusted, nodes, memberMap);
-
-			// Update treeNodes with positioned nodes
-			setTreeNodes([...adjustedNodes]);
-			setPositionedNodes([...adjustedNodes]);
-		} catch (err) {
-			console.error('Error processing family tree data:', err);
-			setError('Failed to process family tree data');
-			setLoading(false);
-		}
-	};
+	}, [fetchFamilyMembers]);
 
 	const getMemberById = (id: string): ExtendedFamilyMember | undefined => {
 		return members.find((member) => member.id.toString() === id);
@@ -665,7 +669,14 @@ export default function FamilyTreePage() {
 								<ChevronDown className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-gray-500 pointer-events-none" />
 							</div>
 							<button
-								onClick={() => setShowAddPanel(true)}
+								onClick={async () => {
+									// await fetchFamilyMembers();
+									openPanel('member', {
+										mode: 'add',
+										familyTreeId,
+										existingMembers: members,
+									});
+								}}
 								className="bg-white hover:bg-gray-50 border border-gray-200 text-black rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-inter font-medium flex items-center gap-2 transition-all shadow-sm whitespace-nowrap"
 							>
 								<Plus className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -683,7 +694,7 @@ export default function FamilyTreePage() {
 							>
 								<Minus className="w-4 h-4 text-black" />
 							</button>
-							<span className="px-3 sm:px-4 text-xs sm:text-sm font-inter font-bold text-black min-w-[3.5rem] sm:min-w-[4rem] text-center border-x border-gray-100">
+							<span className="px-3 sm:px-4 text-xs sm:text-sm font-inter font-bold text-black min-w-14 sm:min-w-16 text-center border-x border-gray-100">
 								{zoomPercentage}%
 							</span>
 							<button
@@ -763,10 +774,14 @@ export default function FamilyTreePage() {
 																left: node.left * 100 - 80,
 																top: node.top * 180 - 128,
 															}}
-															onClick={() => {
-																setSelectedMemberIdForPanel(member.id);
-																setPanelMode('view');
-															}}
+															onClick={() =>
+																openPanel('member', {
+																	memberId: member.id,
+																	familyTreeId,
+																	existingMembers: members,
+																	mode: 'view',
+																})
+															}
 														/>
 													);
 												});
@@ -790,7 +805,7 @@ export default function FamilyTreePage() {
 													return (
 														<div
 															key={`ex-spouse-${node.id}-${spouse.id}`}
-															className="absolute flex flex-col items-center justify-start gap-3 rounded-[32px] border-2 p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
+															className="absolute flex flex-col items-center justify-start gap-3 rounded-4xl border-2 p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105"
 															style={{
 																position: 'absolute',
 																width: '160px',
@@ -800,10 +815,14 @@ export default function FamilyTreePage() {
 																backgroundColor: '#fbcbb0', // Orange color for divorced spouses
 																borderColor: 'rgba(0,0,0,0.04)',
 															}}
-															onClick={() => {
-																setSelectedMemberIdForPanel(spouse.id);
-																setPanelMode('view');
-															}}
+															onClick={() =>
+																openPanel('member', {
+																	memberId: spouse.id,
+																	familyTreeId,
+																	existingMembers: members,
+																	mode: 'view',
+																})
+															}
 														>
 															{/* Profile Image Container */}
 															<div className="relative">
@@ -859,7 +878,7 @@ export default function FamilyTreePage() {
 														>
 															{/* Stack effect - background cards */}
 															<div
-																className="absolute rounded-[32px] border-2"
+																className="absolute rounded-4xl border-2"
 																style={{
 																	width: '160px',
 																	height: '240px',
@@ -871,7 +890,7 @@ export default function FamilyTreePage() {
 																}}
 															/>
 															<div
-																className="absolute rounded-[32px] border-2"
+																className="absolute rounded-4xl border-2"
 																style={{
 																	width: '160px',
 																	height: '240px',
@@ -885,7 +904,7 @@ export default function FamilyTreePage() {
 
 															{/* Top card with count */}
 															<div
-																className="relative flex flex-col items-center justify-center gap-3 rounded-[32px] border-2 p-4 transition-all duration-200 hover:shadow-lg hover:scale-105"
+																className="relative flex flex-col items-center justify-center gap-3 rounded-4xl border-2 p-4 transition-all duration-200 hover:shadow-lg hover:scale-105"
 																style={{
 																	width: '160px',
 																	height: '240px',
@@ -898,7 +917,7 @@ export default function FamilyTreePage() {
 																	{divorcedSpouses.slice(0, 3).map((spouse, index) => (
 																		<div
 																			key={spouse.id}
-																			className="absolute w-16 h-16 rounded-[16px] bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100"
+																			className="absolute w-16 h-16 rounded-2xl bg-white shadow-md overflow-hidden flex items-center justify-center border-2 border-gray-100"
 																			style={{
 																				left: `${index * 12}px`,
 																				top: `${index * 12}px`,
@@ -1005,8 +1024,14 @@ export default function FamilyTreePage() {
 																			strokeWidth="2"
 																			className="cursor-pointer hover:fill-yellow-200"
 																			onClick={() => {
-																				setSelectedMemberId(`${node.id},${spouseId}`);
-																				setShowAddPanel(true);
+																				const parentMember = getMemberById(node.id);
+																				if (parentMember) {
+																					openPanel('member', {
+																						mode: 'add',
+																						familyTreeId,
+																						existingMembers: members,
+																					});
+																				}
 																			}}
 																		/>
 																		{/* Add icon */}
@@ -1160,59 +1185,8 @@ export default function FamilyTreePage() {
 				</div>
 			</div>
 
-			{/* Backdrop for mobile */}
-			{(selectedMemberIdForPanel !== null || showAddPanel) && (
-				<div
-					className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
-					onClick={() => {
-						setSelectedMemberIdForPanel(null);
-						setShowAddPanel(false);
-					}}
-				/>
-			)}
-
-			{/* Member Panel Sidebar - Push Style */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					{
-						'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]':
-							selectedMemberIdForPanel !== null || showAddPanel,
-						'w-0': selectedMemberIdForPanel === null && !showAddPanel,
-					}
-				)}
-			>
-				{selectedMemberIdForPanel !== null && (
-					<ViewEditMemberPanel
-						memberId={selectedMemberIdForPanel}
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						mode={panelMode}
-						onModeChange={setPanelMode}
-						onClose={() => setSelectedMemberIdForPanel(null)}
-						onSuccess={fetchFamilyMembers}
-					/>
-				)}
-				{showAddPanel && (
-					<AddMemberPanel
-						familyTreeId={familyTreeId}
-						existingMembers={members}
-						selectedMemberId={selectedMemberId}
-						onClose={() => {
-							setShowAddPanel(false);
-							setSelectedMemberId('');
-						}}
-						onSuccess={() => {
-							fetchFamilyMembers();
-							setShowAddPanel(false);
-							setSelectedMemberId('');
-						}}
-					/>
-				)}
-			</aside>
-
-			{/* Modals */}
-
+			{/* Panel Renderer */}
+			<PanelRenderer />
 			<RecordAchievementModal
 				isOpen={showAchievementModal}
 				onClose={() => setShowAchievementModal(false)}
@@ -1244,10 +1218,14 @@ export default function FamilyTreePage() {
 				}}
 				spouses={selectedDivorcedSpouses}
 				memberName={selectedDivorcedMemberName}
-				onSpouseClick={(spouseId) => {
-					setSelectedMemberIdForPanel(spouseId);
-					setPanelMode('view');
-				}}
+				onSpouseClick={(spouseId) =>
+					openPanel('member', {
+						mode: 'view',
+						memberId: spouseId,
+						familyTreeId,
+						existingMembers: members,
+					})
+				}
 			/>
 		</div>
 	);

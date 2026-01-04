@@ -680,13 +680,19 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 											<div className="flex items-center justify-between mb-3">
 												<span className="text-[16px] font-medium text-black">{change.field}</span>
 												{change.oldValue !== null && change.newValue !== null && (
-													<span className="text-[12px] text-blue-600 bg-blue-100 px-3 py-1 rounded-full font-medium">Updated</span>
+													<span className="text-[12px] text-blue-600 bg-blue-100 px-3 py-1 rounded-full font-medium">
+														Updated
+													</span>
 												)}
 												{change.oldValue === null && change.newValue !== null && (
-													<span className="text-[12px] text-green-600 bg-green-100 px-3 py-1 rounded-full font-medium">Added</span>
+													<span className="text-[12px] text-green-600 bg-green-100 px-3 py-1 rounded-full font-medium">
+														Added
+													</span>
 												)}
 												{change.oldValue !== null && change.newValue === null && (
-													<span className="text-[12px] text-red-600 bg-red-100 px-3 py-1 rounded-full font-medium">Removed</span>
+													<span className="text-[12px] text-red-600 bg-red-100 px-3 py-1 rounded-full font-medium">
+														Removed
+													</span>
 												)}
 											</div>
 

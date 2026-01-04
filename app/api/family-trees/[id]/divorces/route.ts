@@ -170,10 +170,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		// Validate divorce date is after marriage date
 		const divorceDateObj = new Date(divorceDate);
 		if (divorceDateObj <= spouseRelationship.marriageDate) {
-			return NextResponse.json(
-				{ error: 'Divorce date must be after the marriage date' },
-				{ status: 400 }
-			);
+			return NextResponse.json({ error: 'Divorce date must be after the marriage date' }, { status: 400 });
 		}
 
 		// Update the spouse relationship with divorce date
@@ -187,11 +184,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		});
 
 		// Log the change
-		await logChange('SpouseRelationship', spouseRelationship.id, 'UPDATE', familyTreeId, sessionData.user.id, {
-			divorceDate: null,
-		}, {
-			divorceDate: updatedRelationship.divorceDate,
-		});
+		await logChange(
+			'SpouseRelationship',
+			spouseRelationship.id,
+			'UPDATE',
+			familyTreeId,
+			sessionData.user.id,
+			{
+				divorceDate: null,
+			},
+			{
+				divorceDate: updatedRelationship.divorceDate,
+			}
+		);
 
 		return NextResponse.json(updatedRelationship, { status: 200 });
 	} catch (error) {
@@ -199,4 +204,3 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 	}
 }
-

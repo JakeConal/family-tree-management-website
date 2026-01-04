@@ -278,10 +278,7 @@ export default function RecordDivorceModal({
 				{/* Header */}
 				<div className="px-8 pt-6 pb-4">
 					{/* Back Button */}
-					<button
-						onClick={onClose}
-						className="flex items-center text-black hover:text-gray-600 transition-colors mb-6"
-					>
+					<button onClick={onClose} className="flex items-center text-black hover:text-gray-600 transition-colors mb-6">
 						<span className="font-light mr-1">&lt;</span>
 						<span className="font-normal">Back</span>
 					</button>
@@ -327,9 +324,7 @@ export default function RecordDivorceModal({
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
-							{errors.member1Id && touched.member1Id && (
-								<p className="mt-1 text-sm text-red-600">{errors.member1Id}</p>
-							)}
+							{errors.member1Id && touched.member1Id && <p className="mt-1 text-sm text-red-600">{errors.member1Id}</p>}
 						</div>
 
 						{/* Member 2 Selection */}
@@ -367,9 +362,7 @@ export default function RecordDivorceModal({
 								</select>
 								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
-							{errors.member2Id && touched.member2Id && (
-								<p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>
-							)}
+							{errors.member2Id && touched.member2Id && <p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>}
 						</div>
 
 						{/* Date of Divorce */}
@@ -442,4 +435,3 @@ export default function RecordDivorceModal({
 		</div>
 	);
 }
-

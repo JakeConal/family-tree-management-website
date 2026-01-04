@@ -1,9 +1,9 @@
 'use client';
 
+import classNames from 'classnames';
 import { X, ChevronLeft, Calendar, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import classNames from 'classnames';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -159,9 +159,7 @@ export default function PassingPanel({
 
 	const validateBurialPlaces = () => {
 		const newErrors = { ...errors };
-		const hasValidPlace = formData.burialPlaces.some(
-			(place) => place.location.trim() !== '' && place.startDate !== ''
-		);
+		const hasValidPlace = formData.burialPlaces.some((place) => place.location.trim() !== '' && place.startDate !== '');
 
 		if (!hasValidPlace) {
 			newErrors.burialPlaces = 'At least one burial place with location and start date is required';
@@ -377,7 +375,9 @@ export default function PassingPanel({
 			{isViewMode ? (
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">Passing Record Details</h2>
+					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+						Passing Record Details
+					</h2>
 
 					<div className="space-y-6">
 						<div>
@@ -656,4 +656,3 @@ export default function PassingPanel({
 		</div>
 	);
 }
-

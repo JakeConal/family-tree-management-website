@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 		const prisma = getPrisma();
 
 		// Build query based on role
-		let whereClause: any = { id: memberId };
+		const whereClause: any = { id: memberId };
 
 		if (sessionData.isGuest) {
 			// Guest can only view members in their assigned family tree
@@ -155,7 +155,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		const prisma = getPrisma();
 
 		// Build query based on role
-		let whereClause: any = { id: memberId };
+		const whereClause: any = { id: memberId };
 
 		if (sessionData.isGuest) {
 			// Guest can only edit their own profile

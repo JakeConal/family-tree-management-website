@@ -192,20 +192,14 @@ export async function PUT(
 		if (relationship.familyMember1?.birthday) {
 			const member1Birthday = new Date(relationship.familyMember1.birthday);
 			if (parsedMarriageDate < member1Birthday) {
-				return NextResponse.json(
-					{ error: 'Marriage date must be after first member\'s birthday' },
-					{ status: 400 }
-				);
+				return NextResponse.json({ error: "Marriage date must be after first member's birthday" }, { status: 400 });
 			}
 		}
 
 		if (relationship.familyMember2?.birthday) {
 			const member2Birthday = new Date(relationship.familyMember2.birthday);
 			if (parsedMarriageDate < member2Birthday) {
-				return NextResponse.json(
-					{ error: 'Marriage date must be after second member\'s birthday' },
-					{ status: 400 }
-				);
+				return NextResponse.json({ error: "Marriage date must be after second member's birthday" }, { status: 400 });
 			}
 		}
 
@@ -239,4 +233,3 @@ export async function PUT(
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 	}
 }
-

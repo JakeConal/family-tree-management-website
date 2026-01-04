@@ -4,10 +4,7 @@ import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
 
-export async function GET(
-	request: NextRequest,
-	{ params }: { params: Promise<{ id: string; childId: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string; childId: string }> }) {
 	try {
 		const sessionData = await getSessionWithRole();
 
@@ -90,10 +87,7 @@ export async function GET(
 	}
 }
 
-export async function PUT(
-	request: NextRequest,
-	{ params }: { params: Promise<{ id: string; childId: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string; childId: string }> }) {
 	try {
 		const sessionData = await getSessionWithRole();
 
@@ -182,10 +176,7 @@ export async function PUT(
 		if (childMember.parent?.birthday) {
 			const parentBirthday = new Date(childMember.parent.birthday);
 			if (parsedBirthDate < parentBirthday) {
-				return NextResponse.json(
-					{ error: 'Birth date must be after parent\'s birthday' },
-					{ status: 400 }
-				);
+				return NextResponse.json({ error: "Birth date must be after parent's birthday" }, { status: 400 });
 			}
 		}
 
@@ -234,4 +225,3 @@ export async function PUT(
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
 	}
 }
-

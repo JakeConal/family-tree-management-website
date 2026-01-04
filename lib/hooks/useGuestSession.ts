@@ -41,4 +41,3 @@ export function useGuestSession(): UseGuestSessionReturn {
 		isAuthenticated,
 	};
 }
-

@@ -1,9 +1,9 @@
 'use client';
 
+import classNames from 'classnames';
 import { X, ChevronLeft, Calendar } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import classNames from 'classnames';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { AchievementType, FamilyMember } from '@/types';
@@ -323,7 +323,9 @@ export default function AchievementPanel({
 			{isViewMode ? (
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">Achievement Details</h2>
+					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+						Achievement Details
+					</h2>
 
 					<div className="space-y-6">
 						<div>
@@ -577,12 +579,15 @@ export default function AchievementPanel({
 
 			{/* Delete Confirmation Modal */}
 			{showDeleteModal && (
-				<div className="fixed inset-0 flex items-center justify-center z-[9999] p-4" onClick={() => setShowDeleteModal(false)}>
+				<div
+					className="fixed inset-0 flex items-center justify-center z-[9999] p-4"
+					onClick={() => setShowDeleteModal(false)}
+				>
 					{/* Backdrop with blur effect */}
 					<div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998]"></div>
-					
+
 					{/* Modal Content */}
-					<div 
+					<div
 						className="bg-white rounded-[20px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-gray-200 w-[600px] h-[319px] relative z-[9999] flex flex-col"
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -600,9 +605,7 @@ export default function AchievementPanel({
 						{/* Content */}
 						<div className="flex-1 px-8 flex flex-col">
 							{/* Title */}
-							<h2 className="text-[20px] font-semibold text-black mb-6">
-								Delete Achievement
-							</h2>
+							<h2 className="text-[20px] font-semibold text-black mb-6">Delete Achievement</h2>
 
 							{/* Warning Message */}
 							<div className="text-[16px] font-normal text-black leading-6 mb-auto">
@@ -637,4 +640,3 @@ export default function AchievementPanel({
 		</div>
 	);
 }
-

@@ -17,12 +17,11 @@ export default function GuestBanner() {
 				</div>
 				<div className="flex-1">
 					<p className="text-sm text-blue-800">
-						<strong>Chế độ khách mời:</strong> Bạn đang xem với tư cách khách mời. Bạn chỉ có thể chỉnh sửa hồ sơ
-						của mình ({session?.user?.name}).
+						<strong>Chế độ khách mời:</strong> Bạn đang xem với tư cách khách mời. Bạn chỉ có thể chỉnh sửa hồ sơ của
+						mình ({session?.user?.name}).
 					</p>
 				</div>
 			</div>
 		</div>
 	);
 }
-

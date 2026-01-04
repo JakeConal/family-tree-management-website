@@ -1,9 +1,9 @@
 'use client';
 
+import classNames from 'classnames';
 import { X, ChevronLeft, Calendar, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import classNames from 'classnames';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -217,7 +217,7 @@ export default function DivorcePanel({
 			// Find the relationship to get the actual member2 ID
 			const relationshipId = parseInt(formData.member2Id);
 			const relationship = marriages.find((m) => m.id === relationshipId);
-			
+
 			if (!relationship) {
 				toast.error('Selected relationship not found');
 				setIsSubmitting(false);
@@ -226,9 +226,8 @@ export default function DivorcePanel({
 
 			// Get the actual member2 ID from the relationship
 			const member1Id = parseInt(formData.member1Id);
-			const actualMember2Id = relationship.familyMember1.id === member1Id 
-				? relationship.familyMember2.id 
-				: relationship.familyMember1.id;
+			const actualMember2Id =
+				relationship.familyMember1.id === member1Id ? relationship.familyMember2.id : relationship.familyMember1.id;
 
 			const url = `/api/family-trees/${familyTreeId}/divorces`;
 			const method = mode === 'add' ? 'PATCH' : 'PATCH'; // Both use PATCH for updating divorce date
@@ -475,7 +474,8 @@ export default function DivorcePanel({
 									<p className="text-[12px] text-black">
 										The <span className="font-bold">Family Member selected</span> for this record{' '}
 										<span className="font-bold">cannot be changed</span> once saved. Furthermore, this record is{' '}
-										<span className="font-bold">permanent</span> and <span className="font-bold">cannot be deleted</span>.
+										<span className="font-bold">permanent</span> and{' '}
+										<span className="font-bold">cannot be deleted</span>.
 									</p>
 								</div>
 							</div>
@@ -512,4 +512,3 @@ export default function DivorcePanel({
 		</div>
 	);
 }
-

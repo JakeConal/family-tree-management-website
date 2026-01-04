@@ -6,13 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
-import { openCreatePanel } from '@/lib/store/createPanelSlice';
-import { useAppDispatch } from '@/lib/store/hooks';
+import { usePanel } from '@/lib/hooks/usePanel';
 
 export default function DashboardPage() {
 	const { data: session, status } = useSession();
 	const router = useRouter();
-	const dispatch = useAppDispatch();
+	const { openPanel } = usePanel();
 	const [hasFamilyTrees, setHasFamilyTrees] = useState<boolean | null>(null);
 
 	useEffect(() => {
@@ -74,7 +73,9 @@ export default function DashboardPage() {
 
 				<div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 					{/* Main Heading */}
-					<h1 className="font-inter font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] text-black mb-4 leading-tight">Welcome to Family Tree</h1>
+					<h1 className="font-inter font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] text-black mb-4 leading-tight">
+						Welcome to Family Tree
+					</h1>
 
 					{/* Subtitle */}
 					<p className="font-inter font-normal text-base sm:text-lg md:text-xl lg:text-[22px] text-gray-600 mb-6 sm:mb-8 lg:mb-10 leading-relaxed">
@@ -83,7 +84,7 @@ export default function DashboardPage() {
 
 					{/* CTA Button */}
 					<button
-						onClick={() => dispatch(openCreatePanel())}
+						onClick={() => openPanel('createFamilyTree', {})}
 						className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[56px] sm:h-[64px] lg:h-[72px] text-base sm:text-lg lg:text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
 					>
 						<Plus className="w-6 h-6" />
@@ -99,7 +100,9 @@ export default function DashboardPage() {
 			<div className="bg-white rounded-3xl border-2 border-gray-200 p-4 sm:p-6 lg:p-8">
 				<div className="mb-6 sm:mb-8">
 					<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
-					<p className="text-gray-600 mt-2 text-sm sm:text-base">Welcome back, {session.user?.name || session.user?.email}!</p>
+					<p className="text-gray-600 mt-2 text-sm sm:text-base">
+						Welcome back, {session.user?.name || session.user?.email}!
+					</p>
 				</div>
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 					<div className="bg-gray-50 rounded-xl p-6">

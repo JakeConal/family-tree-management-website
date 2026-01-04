@@ -1,9 +1,9 @@
 'use client';
 
+import classNames from 'classnames';
 import { ChevronLeft, Baby } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import classNames from 'classnames';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -113,13 +113,13 @@ export default function BirthPanel({
 			if (parentBirthDate) {
 				const parentDate = new Date(parentBirthDate);
 				if (birthDate < parentDate) {
-					newErrors.birthDate = 'Birth date must be after parent\'s birthday';
+					newErrors.birthDate = "Birth date must be after parent's birthday";
 				}
 			}
 
 			if (selectedChildBirthDate && formData.birthDate !== selectedChildBirthDate) {
 				// Warn if different from child's birthday
-				console.warn('Birth date differs from child member\'s birthday');
+				console.warn("Birth date differs from child member's birthday");
 			}
 		}
 
@@ -193,10 +193,7 @@ export default function BirthPanel({
 		<div className="flex flex-col h-full bg-white">
 			{/* Header */}
 			<div className="border-b border-gray-200 p-6 pb-4">
-				<button
-					onClick={onClose}
-					className="flex items-center gap-2 text-[16px] text-black mb-4 hover:opacity-70"
-				>
+				<button onClick={onClose} className="flex items-center gap-2 text-[16px] text-black mb-4 hover:opacity-70">
 					<ChevronLeft className="w-4 h-4" />
 					<span>Back</span>
 				</button>
@@ -228,9 +225,7 @@ export default function BirthPanel({
 
 					{/* Date of Child's Birth Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">
-							Date of Child's Birth *
-						</label>
+						<label className="block text-[16px] font-normal text-black mb-2">Date of Child's Birth *</label>
 						{mode === 'view' ? (
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
@@ -300,4 +295,3 @@ export default function BirthPanel({
 		</div>
 	);
 }
-

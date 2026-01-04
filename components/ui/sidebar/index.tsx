@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { LogOut, LayoutDashboard, Home, TreePine, Users, Calendar, BarChart3, Settings, Plus } from 'lucide-react';
+import { LogOut, LayoutDashboard, TreePine, Users, Calendar, BarChart3, Settings, Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
@@ -9,8 +9,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useMemo } from 'react';
 
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
-import { openCreatePanel } from '@/lib/store/createPanelSlice';
-import { useAppDispatch } from '@/lib/store/hooks';
+import { usePanel } from '@/lib/hooks/usePanel';
 import { useFamilyTrees } from '@/lib/useFamilyTrees';
 
 import { NavigationButton } from './NavigationButton';
@@ -26,11 +25,11 @@ interface NavigationItem {
 
 export function Sidebar() {
 	const { data: session, status } = useSession();
-	const { isGuest, guestFamilyTreeId } = useGuestSession();
+	const { isGuest } = useGuestSession();
 	const router = useRouter();
 	const pathname = usePathname();
 	const { familyTrees, loading } = useFamilyTrees(session);
-	const dispatch = useAppDispatch();
+	const { openPanel } = usePanel();
 
 	// Extract family tree ID from pathname for active state
 	const getFamilyTreeIdFromPath = () => {
@@ -136,7 +135,7 @@ export function Sidebar() {
 								)}
 							</div>
 							<button
-								onClick={() => dispatch(openCreatePanel())}
+								onClick={() => openPanel('createFamilyTree', {})}
 								className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
 							>
 								<Plus className="w-5 h-5 mr-1" />

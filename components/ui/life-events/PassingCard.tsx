@@ -1,8 +1,9 @@
 'use client';
 
-import { CalendarIcon, PersonIcon } from '@/components/icons/achievement-metadata';
 import classNames from 'classnames';
 import { MapPin, Flower2 } from 'lucide-react';
+
+import { CalendarIcon, PersonIcon } from '@/components/icons/achievement-metadata';
 
 interface PassingCardProps {
 	id: number;
@@ -15,11 +16,20 @@ interface PassingCardProps {
 	onClick?: (id: number) => void;
 }
 
-export function PassingCard({ id, title, person, date, buriedPlace, description, className, onClick }: PassingCardProps) {
+export function PassingCard({
+	id,
+	title,
+	person,
+	date,
+	buriedPlace,
+	description,
+	className,
+	onClick,
+}: PassingCardProps) {
 	return (
-		<div 
+		<div
 			className={classNames(
-				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] bg-[#f5f5f5] transition-all', 
+				'relative h-[152px] rounded-lg shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] bg-[#f5f5f5] transition-all',
 				className,
 				{
 					'cursor-pointer hover:scale-[1.02] hover:shadow-lg': onClick,
@@ -88,4 +98,3 @@ export function PassingCard({ id, title, person, date, buriedPlace, description,
 		</div>
 	);
 }
-

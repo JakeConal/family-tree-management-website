@@ -1,6 +1,5 @@
 'use client';
 
-import classNames from 'classnames';
 import {
 	Users,
 	Heart,
@@ -22,10 +21,9 @@ import LoadingScreen from '@/components/LoadingScreen';
 import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
-import AchievementPanel from '@/components/panels/AchievementPanel';
-import AddMemberPanel from '@/components/panels/AddMemberPanel';
-import PassingPanel from '@/components/panels/PassingPanel';
+import PanelRenderer from '@/components/PanelRenderer';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
+import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
@@ -68,6 +66,7 @@ export default function FamilyTreeDashboard() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
 	const { isGuest } = useGuestSession();
+	const { openPanel } = usePanel();
 
 	// State for API data
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
@@ -81,7 +80,7 @@ export default function FamilyTreeDashboard() {
 	const [isAllChangeLogsModalOpen, setIsAllChangeLogsModalOpen] = useState(false);
 
 	// Panel state
-	const [activePanelType, setActivePanelType] = useState<'addMember' | 'achievement' | 'passing' | null>(null);
+	// Removed - now managed globally via usePanel hook
 
 	// Fetch real dashboard data
 	useEffect(() => {
@@ -296,6 +295,15 @@ export default function FamilyTreeDashboard() {
 		}
 	};
 
+	// Refresh all dashboard data after panel actions
+	const refreshDashboardData = async () => {
+		try {
+			await Promise.all([fetchFamilyTreeData(), fetchStatistics(), fetchActivities(), fetchExistingMembers()]);
+		} catch (error) {
+			console.error('Error refreshing dashboard data:', error);
+		}
+	};
+
 	if (loading) {
 		return <LoadingScreen message="Loading family tree data..." />;
 	}
@@ -401,14 +409,9 @@ export default function FamilyTreeDashboard() {
 			<div className="flex-1 overflow-y-auto p-4 lg:p-8">
 				<div className="space-y-8">
 					{/* Overview Section */}
-					<div
-						className={classNames(
-							'flex gap-4 sm:gap-6',
-							activePanelType !== null ? 'flex-col' : 'flex-col xl:flex-row'
-						)}
-					>
+					<div className="flex gap-4 sm:gap-6 flex-col xl:flex-row">
 						{/* Family Information Overview Box */}
-						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-4 sm:p-6 relative min-h-[248px]">
+						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-4 sm:p-6 relative min-h-62">
 							<div className="flex items-center gap-3 mb-6">
 								<div className="bg-white p-2 rounded-[10px] shadow-sm">
 									<Info className="w-5 h-5 text-black" />
@@ -465,12 +468,7 @@ export default function FamilyTreeDashboard() {
 						</div>
 
 						{/* Trends Grid */}
-						<div
-							className={classNames(
-								'grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full',
-								activePanelType === null ? 'xl:w-[468px]' : ''
-							)}
-						>
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full xl:w-117">
 							{/* Member Growth */}
 							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
@@ -553,45 +551,54 @@ export default function FamilyTreeDashboard() {
 				{!isGuest && (
 					<div className="space-y-4">
 						<h2 className="font-inter font-bold text-base sm:text-[18px] pt-4 text-black">Quick Action</h2>
-						<div
-							className={classNames(
-								'grid gap-3 sm:gap-4 lg:gap-6',
-								activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-							)}
-						>
+						<div className="grid gap-3 sm:gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 							<button
-								onClick={() => {
-									setActivePanelType('addMember');
-									fetchExistingMembers();
+								onClick={async () => {
+									await fetchExistingMembers();
+									openPanel('member', {
+										mode: 'add',
+										familyTreeId,
+										existingMembers,
+									});
 								}}
-								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<UserPlus className="w-5 h-5 text-black" />
 								<span className="font-roboto font-semibold text-[16px] text-black">Add Member</span>
 							</button>
 							<button
-								onClick={() => {
-									setActivePanelType('achievement');
-									fetchExistingMembers();
+								onClick={async () => {
+									await fetchExistingMembers();
+									openPanel('achievement', {
+										mode: 'add',
+										familyTreeId,
+										familyMembers: existingMembers,
+										onSuccess: refreshDashboardData,
+									});
 								}}
-								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<Trophy className="w-5 h-5 text-black" />
 								<span className="font-roboto font-semibold text-[16px] text-black">Record Achievement</span>
 							</button>
 							<button
-								onClick={() => {
-									setActivePanelType('passing');
-									fetchExistingMembers();
+								onClick={async () => {
+									await fetchExistingMembers();
+									openPanel('passing', {
+										mode: 'add',
+										familyTreeId,
+										familyMembers: existingMembers,
+										onSuccess: refreshDashboardData,
+									});
 								}}
-								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<Skull className="w-5 h-5 text-black" />
 								<span className="font-roboto font-semibold text-[16px] text-black">Record Passing</span>
 							</button>
 							<button
 								onClick={() => router.push(`/family-trees/${familyTreeId}/tree`)}
-								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<TreePine className="w-5 h-5 text-black" />
 								<span className="font-roboto font-semibold text-[16px] text-black">View Family Tree</span>
@@ -630,18 +637,18 @@ export default function FamilyTreeDashboard() {
 										return message ? (
 											<div
 												key={log.id}
-												className="h-[100px] flex items-center justify-between px-6 bg-[#f4f4f5] rounded-[20px]"
+												className="h-25 flex items-center justify-between px-6 bg-[#f4f4f5] rounded-[20px]"
 											>
 												<div className="flex items-center gap-4 flex-1">
-													<div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center flex-shrink-0">
+													<div className="w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center shrink-0">
 														<Users className="w-6 h-6 text-gray-500" />
 													</div>
 													<div className="flex-1">
-														<p className="font-inter font-medium text-[18px] text-black mb-1">System</p>
+														<p className="font-inter font-medium text-[18px] mb-1">System</p>
 														<p className="font-inter font-light text-[18px] text-black">{message}</p>
 													</div>
 												</div>
-												<div className="flex items-center gap-2 flex-shrink-0">
+												<div className="flex items-center gap-2 shrink-0">
 													<Clock className="w-5 h-5 text-black" />
 													<span className="font-inter font-light text-[18px] text-black whitespace-nowrap">
 														{formatChangeLogTimestamp(log.createdAt)}
@@ -691,79 +698,8 @@ export default function FamilyTreeDashboard() {
 				/>
 			</div>
 
-			{/* Backdrop for mobile */}
-			{activePanelType !== null && (
-				<div
-					className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
-					onClick={() => setActivePanelType(null)}
-				/>
-			)}
-
-			{/* Panel Sidebar */}
-			<aside
-				className={classNames(
-					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
-					activePanelType !== null
-						? 'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]'
-						: 'w-0'
-				)}
-			>
-				{activePanelType === 'addMember' && (
-					<AddMemberPanel
-						familyTreeId={familyTreeId}
-						existingMembers={existingMembers}
-						onClose={() => setActivePanelType(null)}
-						onSuccess={() => {
-							// Refresh data after adding member
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-							setActivePanelType(null);
-						}}
-					/>
-				)}
-
-				{activePanelType === 'achievement' && (
-					<AchievementPanel
-						mode="add"
-						familyTreeId={familyTreeId}
-						familyMembers={existingMembers}
-						onModeChange={() => {
-							// Not needed for add mode
-						}}
-						onClose={() => setActivePanelType(null)}
-						onSuccess={() => {
-							// Refresh data after recording achievement
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-							setActivePanelType(null);
-						}}
-					/>
-				)}
-
-				{activePanelType === 'passing' && (
-					<PassingPanel
-						mode="add"
-						familyTreeId={familyTreeId}
-						familyMembers={existingMembers}
-						onModeChange={() => {
-							// Not needed for add mode
-						}}
-						onClose={() => setActivePanelType(null)}
-						onSuccess={() => {
-							// Refresh data after recording passing
-							fetchFamilyTreeData();
-							fetchStatistics();
-							fetchActivities();
-							fetchExistingMembers();
-							setActivePanelType(null);
-						}}
-					/>
-				)}
-			</aside>
+			{/* Panel Renderer */}
+			<PanelRenderer />
 		</div>
 	);
 }

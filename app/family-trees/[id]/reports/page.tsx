@@ -692,7 +692,9 @@ export default function FamilyTreeReports() {
 				{/* Export Buttons */}
 				<div className="flex justify-end gap-3">
 					<div className="border border-[rgba(0,0,0,0.5)] rounded-[25px] flex flex-wrap items-center gap-2 p-1">
-						<button className="px-3 sm:px-4 py-2 text-sm sm:text-[16px] font-inter text-black whitespace-nowrap">Export Report</button>
+						<button className="px-3 sm:px-4 py-2 text-sm sm:text-[16px] font-inter text-black whitespace-nowrap">
+							Export Report
+						</button>
 						<button
 							onClick={() => exportReport('excel')}
 							className="px-4 sm:px-6 py-2 bg-[#f8f8f8] border border-[rgba(0,0,0,0.5)] rounded-[25px] text-sm sm:text-[16px] font-inter text-black hover:bg-gray-200 transition-colors whitespace-nowrap"
