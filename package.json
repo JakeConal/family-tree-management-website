@@ -49,6 +49,7 @@
 		"react-dom": "19.2.0",
 		"react-family-tree": "^3.2.0",
 		"react-hot-toast": "^2.6.0",
+		"react-intl": "^8.0.10",
 		"react-redux": "^9.2.0",
 		"react-zoom-pan-pinch": "^3.7.0",
 		"redux": "^5.0.1",

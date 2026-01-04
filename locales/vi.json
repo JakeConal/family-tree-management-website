@@ -1,0 +1,698 @@
+{
+	"common": {
+		"loading": "Đang tải...",
+		"save": "Lưu",
+		"cancel": "Hủy",
+		"delete": "Xóa",
+		"edit": "Sửa",
+		"add": "Thêm",
+		"back": "Quay lại",
+		"next": "Tiếp theo",
+		"previous": "Trước",
+		"submit": "Gửi",
+		"close": "Đóng",
+		"confirm": "Xác nhận",
+		"search": "Tìm kiếm",
+		"filter": "Lọc",
+		"export": "Xuất",
+		"import": "Nhập",
+		"saveChanges": "Lưu Thay Đổi",
+		"deleteAccount": "Xóa Tài Khoản",
+		"updatePassword": "Cập Nhật Mật Khẩu",
+		"saving": "Đang lưu...",
+		"deleting": "Đang xóa...",
+		"updating": "Đang cập nhật..."
+	},
+	"nav": {
+		"features": "Tính Năng",
+		"howItWorks": "Cách Hoạt Động",
+		"signIn": "Đăng nhập",
+		"startForFree": "Bắt đầu miễn phí",
+		"familyTree": "Cây Gia Phả",
+		"backToHome": "Quay Về Trang Chủ"
+	},
+	"home": {
+		"hero": {
+			"badge": "Xây Dựng Di Sản Gia Đình Ngay Hôm Nay",
+			"title": "Lưu Giữ Câu Chuyện Gia Đình Bạn",
+			"subtitle": "Dễ dàng xây dựng, xem và lưu giữ cây gia phả của bạn cho các thế hệ tương lai. Kết nối với nguồn gốc và tôn vinh hành trình độc đáo của gia đình bạn.",
+			"startForFree": "Bắt đầu miễn phí",
+			"explore": "Khám phá"
+		},
+		"features": {
+			"title": "Tính Năng",
+			"subtitle": "Công cụ mạnh mẽ để kể chuyện gia đình",
+			"description": "Khám phá các tính năng toàn diện của nền tảng cây gia phả",
+			"dashboard": {
+				"title": "Bảng Điều Khiển",
+				"description": "Nhận cái nhìn tổng quan rõ ràng về tất cả thông tin quan trọng ở một nơi"
+			},
+			"achievementList": {
+				"title": "Danh Sách Thành Tích",
+				"description": "Theo dõi thành tích với hồ sơ chi tiết, có tổ chức"
+			},
+			"report": {
+				"title": "Báo Cáo",
+				"description": "Hình dung tiến trình thông qua biểu đồ phân tích dễ đọc"
+			}
+		},
+		"additionalFeatures": {
+			"title": "Tính Năng Bổ Sung",
+			"subtitle": "Dệt nên bức tranh câu chuyện bền vững của gia đình bạn",
+			"interactiveTree": {
+				"title": "Cây Gia Phả Tương Tác",
+				"description": "Trực quan hóa các kết nối gia đình với sơ đồ cây đẹp, dễ điều hướng."
+			},
+			"memberManagement": {
+				"title": "Quản Lý Thành Viên",
+				"description": "Thêm và tổ chức các thành viên gia đình với hồ sơ và ảnh chi tiết."
+			},
+			"achievementTracking": {
+				"title": "Theo Dõi Thành Tích",
+				"description": "Ghi lại và kỷ niệm các mốc quan trọng trong gia đình."
+			},
+			"detailedReports": {
+				"title": "Báo Cáo Chi Tiết",
+				"description": "Tạo báo cáo và thống kê toàn diện về lịch sử gia đình."
+			}
+		},
+		"howItWorks": {
+			"title": "Cách Hoạt Động",
+			"subtitle": "Đơn Giản & Nhanh Chóng",
+			"description": "Chỉ vài bước để bắt đầu xây dựng cây gia phả",
+			"step1": {
+				"number": "01",
+				"title": "Tạo Tài Khoản",
+				"description": "Đăng ký miễn phí chỉ trong vài giây."
+			},
+			"step2": {
+				"number": "02",
+				"title": "Thêm Thành Viên",
+				"description": "Nhập thông tin về các thành viên gia đình."
+			},
+			"step3": {
+				"number": "03",
+				"title": "Xây Dựng Kết Nối",
+				"description": "Liên kết các mối quan hệ để xây dựng cây gia phả."
+			}
+		},
+		"cta": {
+			"title": "Câu Chuyện Gia Đình Đang Chờ Bạn",
+			"subtitle": "Bắt đầu ghi lại hành trình độc đáo của gia đình ngay hôm nay và tạo di sản lâu dài",
+			"startForFree": "Bắt đầu miễn phí",
+			"signIn": "Đăng nhập"
+		},
+		"footer": {
+			"tagline": "Lưu Giữ Di Sản",
+			"description": "Cây Gia Phả giúp bạn xây dựng, trực quan hóa và lưu giữ cây gia phả cho các thế hệ tương lai. Công cụ di sản được thiết kế để giúp bạn kết nối với nguồn gốc và tôn vinh hành trình độc đáo của gia đình.",
+			"product": {
+				"title": "Sản Phẩm",
+				"home": "Trang Chủ",
+				"guide": "Hướng Dẫn",
+				"faq": "Câu Hỏi Thường Gặp"
+			},
+			"features": {
+				"title": "Tính Năng",
+				"member": "Thành Viên",
+				"blog": "Blog"
+			},
+			"about": {
+				"title": "Về Chúng Tôi",
+				"contact": "Liên Hệ",
+				"community": "Cộng Đồng"
+			},
+			"copyright": "© 2025 Quản Lý Cây Gia Phả. Bảo lưu mọi quyền.",
+			"privacyPolicy": "Chính sách bảo mật",
+			"cookiePolicy": "Chính sách cookie",
+			"termsOfService": "Điều khoản dịch vụ"
+		}
+	},
+	"welcome": {
+		"title": "Chào Mừng Đến Cây Gia Phả",
+		"subtitle": "Chọn cách bạn muốn truy cập cây gia phả",
+		"createAccount": {
+			"title": "Tạo Tài Khoản hoặc Đăng Nhập",
+			"signIn": "Đăng Nhập",
+			"createAccount": "Tạo Tài Khoản"
+		},
+		"guestAccess": {
+			"title": "Truy Cập Bằng Mã",
+			"description": "Có mã truy cập từ chủ cây gia phả? Nhập vào đây để xem cây gia phả.",
+			"enterCode": "Nhập Mã Truy Cập"
+		}
+	},
+	"login": {
+		"title": "Đăng nhập",
+		"subtitle": "Chào mừng trở lại",
+		"email": {
+			"label": "Email",
+			"placeholder": "email@email.com"
+		},
+		"password": {
+			"label": "Mật khẩu",
+			"placeholder": "mậtkhẩucủabạn"
+		},
+		"signIn": "Đăng Nhập",
+		"signingIn": "Đang đăng nhập...",
+		"orContinueWith": "Hoặc tiếp tục với",
+		"continueWithGoogle": "Tiếp tục với Google",
+		"signingInWithGoogle": "Đang đăng nhập...",
+		"noAccount": "Chưa có tài khoản?",
+		"createAccount": "Tạo tài khoản",
+		"error": {
+			"invalidCredentials": "Email hoặc mật khẩu không đúng",
+			"generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+			"googleLogin": "Đã xảy ra lỗi khi đăng nhập bằng Google. Vui lòng thử lại."
+		}
+	},
+	"guestLogin": {
+		"title": "Mã Truy Cập",
+		"subtitle": "Nhập mã được cung cấp bởi chủ cây gia phả",
+		"accessCode": {
+			"label": "Mã Truy Cập",
+			"placeholder": "Nhập mã truy cập 45 ký tự",
+			"hint": "Mã có đúng 45 ký tự"
+		},
+		"verifying": "Đang xác minh...",
+		"submit": "Truy Cập Cây Gia Phả",
+		"helpText": "Chưa có mã truy cập?{br}Liên hệ chủ cây gia phả để lấy mã.",
+		"welcomeMessage": "Chào mừng {name}!",
+		"error": {
+			"invalidCode": "Mã truy cập không hợp lệ",
+			"loginFailed": "Đăng nhập thất bại. Vui lòng thử lại."
+		}
+	},
+	"signup": {
+		"title": "Tạo Tài Khoản",
+		"subtitle": "Bắt đầu xây dựng Cây Gia Phả của bạn",
+		"fullName": {
+			"label": "Họ Tên",
+			"placeholder": "tênbạn"
+		},
+		"email": {
+			"label": "Email",
+			"placeholder": "email@email.com"
+		},
+		"password": {
+			"label": "Mật khẩu"
+		},
+		"confirmPassword": {
+			"label": "Xác Nhận Mật Khẩu"
+		},
+		"createAccount": "Tạo Tài Khoản",
+		"creatingAccount": "Đang tạo tài khoản...",
+		"orContinueWith": "Hoặc tiếp tục với",
+		"continueWithGoogle": "Tiếp tục với Google",
+		"haveAccount": "Đã có tài khoản?",
+		"signIn": "Đăng nhập",
+		"success": "Tạo tài khoản thành công!",
+		"error": {
+			"passwordMismatch": "Mật khẩu không khớp!",
+			"failed": "Đăng ký thất bại",
+			"generic": "Đã xảy ra lỗi trong quá trình đăng ký"
+		}
+	},
+	"dashboard": {
+		"title": "Bảng Điều Khiển",
+		"welcome": "Chào mừng trở lại, {name}!",
+		"emptyState": {
+			"title": "Chào Mừng Đến Cây Gia Phả",
+			"subtitle": "Bắt đầu xây dựng di sản gia đình bằng cách tạo cây gia phả đầu tiên",
+			"cta": "Tạo cây gia phả đầu tiên của bạn"
+		},
+		"cards": {
+			"familyTrees": {
+				"title": "Cây Gia Phả",
+				"description": "Tạo và quản lý cây gia phả của bạn"
+			},
+			"members": {
+				"title": "Thành Viên",
+				"description": "Thêm và tổ chức các thành viên gia đình"
+			},
+			"achievements": {
+				"title": "Thành Tích",
+				"description": "Theo dõi thành tích và mốc quan trọng của gia đình"
+			}
+		}
+	},
+	"account": {
+		"title": "Cài Đặt Tài Khoản",
+		"accountInfo": {
+			"title": "Thông Tin Tài Khoản",
+			"fullName": "Họ Tên",
+			"fullNamePlaceholder": "Nhập họ tên của bạn",
+			"email": "Email",
+			"emailPlaceholder": "Email không thể thay đổi"
+		},
+		"changePassword": {
+			"title": "Đổi Mật Khẩu",
+			"currentPassword": "Mật Khẩu Hiện Tại",
+			"currentPasswordPlaceholder": "Nhập mật khẩu hiện tại",
+			"newPassword": "Mật Khẩu Mới",
+			"newPasswordPlaceholder": "Nhập mật khẩu mới",
+			"confirmNewPassword": "Xác Nhận Mật Khẩu Mới",
+			"confirmNewPasswordPlaceholder": "Xác nhận mật khẩu mới"
+		},
+		"validation": {
+			"fullNameRequired": "Họ tên là bắt buộc",
+			"currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc",
+			"newPasswordRequired": "Mật khẩu mới là bắt buộc",
+			"newPasswordMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
+			"passwordsDoNotMatch": "Mật khẩu mới không khớp"
+		},
+		"messages": {
+			"accountUpdated": "Cập nhật tài khoản thành công!",
+			"accountUpdateFailed": "Cập nhật tài khoản thất bại. Vui lòng thử lại.",
+			"passwordUpdated": "Cập nhật mật khẩu thành công!",
+			"passwordUpdateFailed": "Cập nhật mật khẩu thất bại. Vui lòng thử lại.",
+			"accountDeleted": "Xóa tài khoản thành công",
+			"accountDeleteFailed": "Xóa tài khoản thất bại. Vui lòng thử lại."
+		},
+		"deleteConfirm": {
+			"title": "Xóa Tài Khoản",
+			"message": "Bạn có chắc chắn muốn xóa tài khoản của mình?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả cây gia phả, thành viên và hồ sơ của bạn."
+		}
+	},
+	"guest": {
+		"banner": {
+			"title": "Chế độ khách mời:",
+			"description": "Bạn đang xem với tư cách khách mời. Bạn chỉ có thể chỉnh sửa hồ sơ của mình ({name})."
+		}
+	},
+	"familyTree": {
+		"create": {
+			"title": "Tạo Cây Gia Phả",
+			"familyInfo": "Thông Tin Gia Đình",
+			"familyName": "Tên Gia Đình",
+			"familyNamePlaceholder": "Nhập tên gia đình",
+			"origin": "Nguồn Gốc",
+			"originPlaceholder": "Nhập vị trí nguồn gốc",
+			"establishYear": "Năm Thành Lập",
+			"establishYearPlaceholder": "Nhập năm thành lập",
+			"rootPerson": "Thông Tin Người Gốc",
+			"fullName": "Họ Tên",
+			"fullNamePlaceholder": "Nhập họ tên",
+			"gender": "Giới Tính",
+			"genderPlaceholder": "Chọn giới tính",
+			"male": "Nam",
+			"female": "Nữ",
+			"other": "Khác",
+			"birthDate": "Ngày Sinh",
+			"birthDatePlaceholder": "Chọn ngày sinh",
+			"address": "Địa Chỉ",
+			"addressPlaceholder": "Nhập địa chỉ",
+			"placesOfOrigin": "Nơi Xuất Thân",
+			"occupations": "Nghề Nghiệp",
+			"profilePicture": "Ảnh Đại Diện",
+			"uploadPhoto": "Tải Ảnh Lên",
+			"changePhoto": "Thay Đổi Ảnh",
+			"confirmAccuracy": "Tôi xác nhận rằng tất cả thông tin được cung cấp là chính xác",
+			"submit": "Tạo Cây Gia Phả"
+		},
+		"edit": {
+			"title": "Chỉnh Sửa Cây Gia Phả",
+			"familyName": "Tên Gia Đình",
+			"origin": "Nguồn Gốc",
+			"establishYear": "Năm Thành Lập",
+			"save": "Lưu Thay Đổi"
+		},
+		"delete": {
+			"confirmTitle": "Xóa Cây Gia Phả",
+			"confirmMessage": "Bạn có chắc chắn muốn xóa cây gia phả này? Hành động này không thể hoàn tác."
+		}
+	},
+	"member": {
+		"add": {
+			"title": "Thêm Thành Viên Mới",
+			"personalInfo": "Thông Tin Cá Nhân",
+			"relationship": "Mối Quan Hệ",
+			"relatedMember": "Thành Viên Liên Quan",
+			"relatedMemberPlaceholder": "Chọn thành viên liên quan",
+			"relationshipType": "Loại Quan Hệ",
+			"relationshipTypePlaceholder": "Chọn mối quan hệ",
+			"relationshipDate": "Ngày Quan Hệ",
+			"relationshipDatePlaceholder": "Chọn ngày quan hệ",
+			"types": {
+				"spouse": "Vợ/Chồng",
+				"child": "Con",
+				"parent": "Cha/Mẹ",
+				"sibling": "Anh Chị Em"
+			}
+		},
+		"panel": {
+			"title": "Chi Tiết Thành Viên",
+			"personalInfo": "Thông Tin Cá Nhân",
+			"biography": "Tiểu Sử",
+			"lifeEvents": "Sự Kiện Cuộc Đời",
+			"birth": "Sinh",
+			"marriage": "Kết Hôn",
+			"divorce": "Ly Hôn",
+			"death": "Mất",
+			"achievements": "Thành Tích"
+		}
+	},
+	"modal": {
+		"achievement": {
+			"title": "Ghi Nhận Thành Tích",
+			"type": "Loại Thành Tích",
+			"typePlaceholder": "Chọn loại thành tích",
+			"date": "Ngày Đạt Thành Tích",
+			"datePlaceholder": "Chọn ngày đạt thành tích",
+			"description": "Mô Tả",
+			"descriptionPlaceholder": "Nhập mô tả thành tích",
+			"submit": "Ghi Nhận Thành Tích"
+		},
+		"divorce": {
+			"title": "Ghi Nhận Ly Hôn",
+			"spouse": "Vợ/Chồng",
+			"spousePlaceholder": "Chọn vợ/chồng",
+			"divorceDate": "Ngày Ly Hôn",
+			"divorceDatePlaceholder": "Chọn ngày ly hôn",
+			"reason": "Lý Do",
+			"reasonPlaceholder": "Nhập lý do (tùy chọn)",
+			"submit": "Ghi Nhận Ly Hôn"
+		},
+		"passing": {
+			"title": "Ghi Nhận Mất",
+			"deathDate": "Ngày Mất",
+			"deathDatePlaceholder": "Chọn ngày mất",
+			"causeOfDeath": "Nguyên Nhân Mất",
+			"causeOfDeathPlaceholder": "Nhập nguyên nhân mất (tùy chọn)",
+			"location": "Vị Trí",
+			"locationPlaceholder": "Nhập vị trí",
+			"submit": "Ghi Nhận Mất"
+		},
+		"inviteGuest": {
+			"title": "Mời Khách",
+			"email": "Địa Chỉ Email",
+			"emailPlaceholder": "Nhập email khách",
+			"permissions": "Quyền Hạn",
+			"viewOnly": "Chỉ Xem",
+			"canEdit": "Có Thể Chỉnh Sửa",
+			"submit": "Gửi Lời Mời"
+		},
+		"accessCode": {
+			"title": "Tạo Mã Truy Cập",
+			"description": "Chia sẻ mã này với các thành viên gia đình để cấp quyền truy cập vào cây gia phả",
+			"code": "Mã Truy Cập",
+			"expiresIn": "Hết hạn trong",
+			"days": "{count} ngày",
+			"copy": "Sao Chép Mã",
+			"copied": "Đã sao chép!",
+			"generate": "Tạo Mã Mới"
+		},
+		"changeLog": {
+			"title": "Lịch Sử Thay Đổi",
+			"allChanges": "Tất Cả Thay Đổi",
+			"details": "Chi Tiết Thay Đổi",
+			"type": "Loại",
+			"date": "Ngày",
+			"user": "Người Dùng",
+			"description": "Mô Tả",
+			"types": {
+				"create": "Đã Tạo",
+				"update": "Đã Cập Nhật",
+				"delete": "Đã Xóa"
+			}
+		}
+	},
+	"panel": {
+		"birth": {
+			"title": "Thông Tin Sinh",
+			"date": "Ngày Sinh",
+			"location": "Nơi Sinh",
+			"weight": "Cân Nặng Lúc Sinh",
+			"length": "Chiều Dài Lúc Sinh"
+		},
+		"marriage": {
+			"title": "Thông Tin Kết Hôn",
+			"spouse": "Vợ/Chồng",
+			"marriageDate": "Ngày Kết Hôn",
+			"location": "Nơi Kết Hôn",
+			"witnesses": "Nhân Chứng"
+		},
+		"achievement": {
+			"title": "Thành Tích",
+			"noAchievements": "Chưa ghi nhận thành tích nào",
+			"add": "Thêm Thành Tích"
+		},
+		"divorce": {
+			"title": "Thông Tin Ly Hôn",
+			"exSpouses": "Cựu Vợ/Chồng",
+			"viewDetails": "Xem Chi Tiết"
+		},
+		"passing": {
+			"title": "Thông Tin Mất",
+			"date": "Ngày Mất",
+			"cause": "Nguyên Nhân Mất",
+			"location": "Vị Trí",
+			"burialSite": "Nơi An Táng"
+		}
+	},
+	"validation": {
+		"required": "Trường này là bắt buộc",
+		"invalidEmail": "Địa chỉ email không hợp lệ",
+		"invalidDate": "Ngày không hợp lệ",
+		"minLength": "Phải có ít nhất {min} ký tự",
+		"maxLength": "Không được vượt quá {max} ký tự",
+		"mustBeAfter": "Phải sau {date}",
+		"mustBeBefore": "Phải trước {date}"
+	},
+	"error": {
+		"generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+		"networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối.",
+		"unauthorized": "Bạn không được phép thực hiện hành động này.",
+		"notFound": "Không tìm thấy tài nguyên được yêu cầu.",
+		"serverError": "Lỗi máy chủ. Vui lòng thử lại sau."
+	},
+	"familyTreeDashboard": {
+		"loading": "Đang tải dữ liệu cây gia phả...",
+		"notFound": {
+			"title": "Không Tìm Thấy Cây Gia Phả",
+			"message": "Cây gia phả bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập.",
+			"goToDashboard": "Về Bảng Điều Khiển"
+		},
+		"overview": {
+			"title": "Tổng Quan Thông Tin Gia Đình",
+			"familyName": "Tên Họ:",
+			"origin": "Quê Quán:",
+			"established": "Thành Lập:",
+			"notSpecified": "Chưa xác định",
+			"years": "năm",
+			"totalGenerations": "Tổng số đời",
+			"allMembers": "Tất Cả Thành Viên",
+			"totalMembers": "Tổng Số Thành Viên",
+			"livingMembers": "Thành Viên Còn Sống"
+		},
+		"trends": {
+			"memberGrowth": "Tăng trưởng thành viên",
+			"member": "Thành Viên",
+			"deathTrend": "Xu Hướng Tử Vong",
+			"death": "Tử Vong",
+			"marriageTrend": "Xu Hướng Hôn Nhân",
+			"married": "Kết Hôn",
+			"divorced": "Ly Hôn",
+			"achievementGrowth": "Tăng Trưởng Thành Tích",
+			"achievements": "Thành Tích"
+		},
+		"quickAction": {
+			"title": "Hành Động Nhanh",
+			"addMember": "Thêm Thành Viên",
+			"recordAchievement": "Ghi Nhận Thành Tích",
+			"recordPassing": "Ghi Nhận Qua Đời",
+			"viewFamilyTree": "Xem Cây Gia Phả"
+		},
+		"recentChanges": {
+			"title": "Thay Đổi Gần Đây",
+			"seeAll": "Xem Tất Cả",
+			"noChanges": "Chưa có thay đổi lớn nào được ghi nhận.",
+			"system": "Hệ Thống",
+			"justNow": "Vừa xong",
+			"minutesAgo": "{count} phút trước",
+			"hoursAgo": "{count} giờ trước",
+			"daysAgo": "{count} ngày trước",
+			"birthRecorded": "Đã ghi nhận sinh",
+			"newMemberAdded": "Đã thêm thành viên mới",
+			"memberUpdated": "Đã cập nhật thông tin thành viên",
+			"memberRemoved": "Đã xóa thành viên",
+			"passingAdded": "Đã ghi nhận qua đời",
+			"achievementRecorded": "Đã ghi nhận thành tích",
+			"marriageRecorded": "Đã ghi nhận kết hôn",
+			"marriageRemoved": "Đã xóa hồ sơ kết hôn",
+			"divorceRecorded": "Đã ghi nhận ly hôn",
+			"treeUpdated": "Đã cập nhật thông tin cây gia phả"
+		}
+	},
+	"treeView": {
+		"loading": "Đang tải cây gia phả...",
+		"noMembers": "Không tìm thấy thành viên nào",
+		"controls": {
+			"allGeneration": "Tất Cả Thế Hệ",
+			"generation": "Thế Hệ {number}",
+			"addMember": "Thêm Thành Viên",
+			"add": "Thêm"
+		},
+		"legend": {
+			"childParent": "Con - Cha/Mẹ",
+			"formerSpouse": "Vợ/Chồng Cũ",
+			"currentSpouse": "Vợ/Chồng Hiện Tại",
+			"passedAway": "Đã qua đời"
+		},
+		"exSpouse": {
+			"exHusband": "Chồng Cũ",
+			"exWife": "Vợ Cũ",
+			"multiple": "{count} Vợ/Chồng Cũ",
+			"clickToView": "Nhấp để xem"
+		}
+	},
+	"memberList": {
+		"loading": "Đang tải thành viên...",
+		"controls": {
+			"allGeneration": "Tất Cả Thế Hệ",
+			"searchByName": "Tìm theo tên",
+			"from": "Từ",
+			"to": "Đến",
+			"allParents": "Tất Cả Cha/Mẹ"
+		},
+		"table": {
+			"no": "STT",
+			"fullName": "Họ Tên",
+			"birthDate": "Ngày Sinh",
+			"genNo": "Đời",
+			"parent": "Cha/Mẹ",
+			"action": "Thao Tác",
+			"viewDetails": "Xem Chi Tiết",
+			"editMember": "Sửa Thành Viên",
+			"generateAccessCode": "Tạo Mã Truy Cập Khách",
+			"noMembers": "Không tìm thấy thành viên phù hợp với tiêu chí."
+		}
+	},
+	"lifeEvents": {
+		"loading": "Đang tải sự kiện cuộc đời...",
+		"tabs": {
+			"achievement": "Thành Tích",
+			"passing": "Qua Đời",
+			"lifeEvent": "Sự Kiện Cuộc Đời"
+		},
+		"filters": {
+			"allYears": "Tất Cả Năm",
+			"allTypes": "Tất Cả Loại",
+			"married": "Kết Hôn",
+			"divorce": "Ly Hôn"
+		},
+		"actions": {
+			"addAchievement": "Thêm Thành Tích",
+			"addPassing": "Thêm Qua Đời",
+			"addDivorce": "Thêm Ly Hôn"
+		},
+		"empty": {
+			"noAchievements": "Chưa ghi nhận thành tích nào",
+			"addFirstAchievement": "Thêm thành tích đầu tiên",
+			"noPassing": "Chưa có hồ sơ qua đời nào",
+			"addFirstPassing": "Thêm hồ sơ qua đời đầu tiên",
+			"noLifeEvents": "Chưa ghi nhận sự kiện cuộc đời nào",
+			"addDivorceRecord": "Thêm hồ sơ ly hôn"
+		},
+		"passingCard": {
+			"title": "Sự ra đi của {name}",
+			"buriedPlace": "Nơi An Táng:",
+			"notSpecified": "Chưa xác định",
+			"causes": "Nguyên nhân: {cause}",
+			"causeNotSpecified": "Nguyên nhân tử vong chưa xác định"
+		},
+		"lifeEventCard": {
+			"sayIDo": "{name1} & {name2} Nói 'Tôi Đồng Ý'",
+			"marriageDescription": "Hạnh phúc bắt đầu từ đây! Đôi uyên ương đã tổ chức lễ thành hôn thân mật, đánh dấu sự khởi đầu của chương mới trong cuộc đời.",
+			"separation": "Sự Chia Ly Của {name1} Với {name2}",
+			"separationDescription": "Kết thúc một mối quan hệ. Hai người đã đồng ý chia tay một cách hòa bình và tiếp tục cuộc sống riêng.",
+			"birth": "Sự Ra Đời Của {name}",
+			"bornTo": "Sinh ra từ {parent}"
+		}
+	},
+	"reports": {
+		"loading": "Đang tải báo cáo...",
+		"export": {
+			"title": "Xuất Báo Cáo",
+			"excel": "Excel",
+			"pdf": "PDF"
+		},
+		"cards": {
+			"totalMembers": "Tổng số thành viên gia đình",
+			"currentMembers": "Thành viên gia đình hiện tại",
+			"achievements": "Thành Tích",
+			"generations": "Thế Hệ"
+		},
+		"charts": {
+			"memberChanges": "Thay đổi thành viên gia đình",
+			"totalMembersByYear": "Tổng số thành viên theo năm",
+			"totalAchievementsByYear": "Tổng số thành tích theo năm",
+			"achievementCategories": "Danh Mục Thành Tích",
+			"noData": "Không có dữ liệu"
+		},
+		"chartLegends": {
+			"married": "Kết Hôn",
+			"deceased": "Tử Vong",
+			"birth": "Sinh",
+			"totalMembers": "Tổng Số Thành Viên",
+			"totalAchievements": "Tổng Số Thành Tích"
+		}
+	},
+	"settings": {
+		"loading": "Đang tải cài đặt...",
+		"familyInfo": {
+			"title": "Thông Tin Gia Đình",
+			"familyName": "Tên Họ",
+			"familyNamePlaceholder": "Nhập tên họ",
+			"origin": "Quê Quán",
+			"originPlaceholder": "Chọn nơi quê quán",
+			"established": "Thành Lập",
+			"establishedPlaceholder": "Nhập năm thành lập"
+		},
+		"guestAccess": {
+			"title": "Truy Cập Khách",
+			"description": "Mời các thành viên gia đình xem cây và chỉnh sửa hồ sơ của họ bằng cách tạo mã truy cập.",
+			"inviteGuest": "Mời Người Chỉnh Sửa Khách"
+		},
+		"actions": {
+			"saveChanges": "Lưu Thay Đổi",
+			"saving": "Đang lưu...",
+			"deleteFamilyTree": "Xóa Cây Gia Phả",
+			"deleting": "Đang xóa..."
+		},
+		"delete": {
+			"confirmTitle": "Xóa Cây Gia Phả",
+			"confirmMessage": "Bạn có chắc chắn muốn xóa \"{name}\"?\\n\\nHành động này không thể hoàn tác và sẽ xóa tất cả thành viên, mối quan hệ và hồ sơ liên quan.",
+			"deleteButton": "Xóa",
+			"cancelButton": "Hủy"
+		},
+		"messages": {
+			"updateSuccess": "Cập nhật cây gia phả thành công!",
+			"updateFailed": "Không thể cập nhật cây gia phả. Vui lòng thử lại.",
+			"deleteSuccess": "Xóa cây gia phả thành công",
+			"deleteFailed": "Không thể xóa cây gia phả. Vui lòng thử lại."
+		},
+		"notFound": {
+			"title": "Không Tìm Thấy Cây Gia Phả",
+			"message": "Cây gia phả bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập.",
+			"goToDashboard": "Về Bảng Điều Khiển"
+		}
+	},
+	"sidebar": {
+		"myFamilyTrees": "Cây Gia Phả Của Tôi",
+		"familyTree": "Cây Gia Phả",
+		"familyTreeGuestView": "Cây Gia Phả (Chế Độ Khách)",
+		"create": "Tạo",
+		"noFamilyTrees": "Chưa có cây gia phả nào",
+		"user": "Người Dùng",
+		"accountSettings": "Cài đặt tài khoản",
+		"accountSettingsGuest": "Cài đặt tài khoản không khả dụng cho khách",
+		"navigation": {
+			"overview": "Tổng Quan",
+			"familyTree": "Cây Gia Phả",
+			"members": "Thành Viên",
+			"lifeEvents": "Sự Kiện",
+			"reports": "Báo Cáo",
+			"settings": "Cài Đặt"
+		}
+	}
+}

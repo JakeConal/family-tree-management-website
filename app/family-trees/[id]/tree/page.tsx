@@ -4,6 +4,7 @@ import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import relativesTree from 'relatives-tree';
 import type { Node, ExtNode } from 'relatives-tree/lib/types';
@@ -23,6 +24,7 @@ export default function FamilyTreePage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
 	const { openPanel } = usePanel();
+	const intl = useIntl();
 
 	const [members, setMembers] = useState<ExtendedFamilyMember[]>([]);
 	const [treeNodes, setTreeNodes] = useState<Node[]>([]);

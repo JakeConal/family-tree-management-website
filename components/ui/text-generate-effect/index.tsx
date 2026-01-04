@@ -28,6 +28,11 @@ function TextGenerateEffect({
 	const [hasAnimated, setHasAnimated] = React.useState(false);
 	const wordsArray = React.useMemo(() => words.split(' '), [words]);
 
+	// Reset animation when words change
+	React.useEffect(() => {
+		setHasAnimated(false);
+	}, [words]);
+
 	React.useEffect(() => {
 		const ref = localRef.current;
 		if (!ref) return;

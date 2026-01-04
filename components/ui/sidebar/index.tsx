@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { useMemo } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
@@ -30,6 +31,7 @@ export function Sidebar() {
 	const pathname = usePathname();
 	const { familyTrees, loading } = useFamilyTrees(session);
 	const { openPanel } = usePanel();
+	const intl = useIntl();
 
 	// Extract family tree ID from pathname for active state
 	const getFamilyTreeIdFromPath = () => {
@@ -44,37 +46,37 @@ export function Sidebar() {
 		return activeFamilyTreeId
 			? [
 					{
-						name: 'Overview',
+						name: 'overview',
 						href: `/family-trees/${activeFamilyTreeId}`,
 						icon: LayoutDashboard,
 						familyTreeOnly: true,
 					},
 					{
-						name: 'Family Tree',
+						name: 'familyTree',
 						href: `/family-trees/${activeFamilyTreeId}/tree`,
 						icon: TreePine,
 						familyTreeOnly: true,
 					},
 					{
-						name: 'Members',
+						name: 'members',
 						href: `/family-trees/${activeFamilyTreeId}/members`,
 						icon: Users,
 						familyTreeOnly: true,
 					},
 					{
-						name: 'Life Events',
+						name: 'lifeEvents',
 						href: `/family-trees/${activeFamilyTreeId}/life-events`,
 						icon: Calendar,
 						familyTreeOnly: true,
 					},
 					{
-						name: 'Reports',
+						name: 'reports',
 						href: `/family-trees/${activeFamilyTreeId}/reports`,
 						icon: BarChart3,
 						familyTreeOnly: true,
 					},
 					{
-						name: 'Settings',
+						name: 'settings',
 						href: `/family-trees/${activeFamilyTreeId}/settings`,
 						icon: Settings,
 						familyTreeOnly: true,
@@ -105,14 +107,18 @@ export function Sidebar() {
 					{/* Family Trees Section */}
 					{status === 'authenticated' && !isGuest && (
 						<div className="px-5 py-5">
-							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">My Family Trees</h2>
+							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">
+								<FormattedMessage id="sidebar.myFamilyTrees" />
+							</h2>
 							<div className="space-y-1 mb-4">
 								{loading ? (
 									<div className="flex items-center justify-center py-4">
 										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
 									</div>
 								) : familyTrees.length === 0 ? (
-									<p className="text-sm text-gray-500 py-4">No family trees yet</p>
+									<p className="text-sm text-gray-500 py-4">
+										<FormattedMessage id="sidebar.noFamilyTrees" />
+									</p>
 								) : (
 									familyTrees.map((tree) => (
 										<button
@@ -139,7 +145,9 @@ export function Sidebar() {
 								className="flex items-center font-inter font-bold text-[16px] text-black hover:text-green-600 transition-colors px-[14px]"
 							>
 								<Plus className="w-5 h-5 mr-1" />
-								<span className="font-normal ml-1">Create</span>
+								<span className="font-normal ml-1">
+									<FormattedMessage id="sidebar.create" />
+								</span>
 							</button>
 						</div>
 					)}
@@ -148,20 +156,19 @@ export function Sidebar() {
 					{navigationItems.length > 0 && (
 						<div className="px-5 py-2">
 							<h2 className="font-inter font-bold text-[16px] text-black mb-2.5">
-								{isGuest ? 'Family Tree (Guest View)' : 'Family Tree'}
+								<FormattedMessage id={isGuest ? 'sidebar.familyTreeGuestView' : 'sidebar.familyTree'} />
 							</h2>
 							<nav className="space-y-1">
 								{navigationItems.map((item) => {
 									const isActive = pathname === item.href;
 									// Hide Settings for guests
-									if (isGuest && item.name === 'Settings') {
+									if (isGuest && item.name === 'settings') {
 										return null;
 									}
-
 									return (
 										<NavigationButton
 											key={item.name}
-											name={item.name}
+											name={intl.formatMessage({ id: `sidebar.navigation.${item.name}` })}
 											href={item.href}
 											icon={item.icon}
 											isActive={isActive}
@@ -184,7 +191,9 @@ export function Sidebar() {
 								'hover:bg-[#d4d4d8] cursor-pointer': !isGuest,
 								'opacity-50 cursor-not-allowed': isGuest,
 							})}
-							title={isGuest ? 'Account settings not available for guests' : 'Account settings'}
+							title={intl.formatMessage({
+								id: isGuest ? 'sidebar.accountSettingsGuest' : 'sidebar.accountSettings',
+							})}
 						>
 							<div className="relative w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-200">
 								{session?.user?.image ? (
@@ -199,7 +208,7 @@ export function Sidebar() {
 							</div>
 							<div className="ml-3.25">
 								<p className="font-inter font-bold text-[14px] text-black truncate max-w-25">
-									{session?.user?.name || 'User'}
+									{session?.user?.name || intl.formatMessage({ id: 'sidebar.user' })}
 								</p>
 							</div>
 						</button>

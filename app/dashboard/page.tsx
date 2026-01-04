@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { usePanel } from '@/lib/hooks/usePanel';
 
@@ -52,7 +53,9 @@ export default function DashboardPage() {
 			<div className="min-h-screen flex items-center justify-center">
 				<div className="text-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading...</p>
+					<p className="mt-4 text-gray-600">
+						<FormattedMessage id="common.loading" defaultMessage="Loading..." />
+					</p>
 				</div>
 			</div>
 		);
@@ -67,28 +70,31 @@ export default function DashboardPage() {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[calc(100vh-130px)] relative overflow-hidden">
 				{/* Background Logo */}
-				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-15 blur-[1px] pointer-events-none">
+				<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-112.5 h-112.5 opacity-15 blur-[1px] pointer-events-none">
 					<Image src="/images/logo.png" alt="Background Logo" fill className="object-contain" />
 				</div>
 
 				<div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 					{/* Main Heading */}
 					<h1 className="font-inter font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[42px] text-black mb-4 leading-tight">
-						Welcome to Family Tree
+						<FormattedMessage id="dashboard.emptyState.title" defaultMessage="Welcome to Family Tree" />
 					</h1>
 
 					{/* Subtitle */}
 					<p className="font-inter font-normal text-base sm:text-lg md:text-xl lg:text-[22px] text-gray-600 mb-6 sm:mb-8 lg:mb-10 leading-relaxed">
-						Start building your family legacy by creating your first family tree
+						<FormattedMessage
+							id="dashboard.emptyState.subtitle"
+							defaultMessage="Start building your family legacy by creating your first family tree"
+						/>
 					</p>
 
 					{/* CTA Button */}
 					<button
 						onClick={() => openPanel('createFamilyTree', {})}
-						className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-[500px] h-[56px] sm:h-[64px] lg:h-[72px] text-base sm:text-lg lg:text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
+						className="bg-[#84cc16] hover:bg-[#76b813] text-white w-full max-w-125 h-14 sm:h-16 lg:h-18 text-base sm:text-lg lg:text-[20px] font-semibold rounded-[25px] inline-flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98]"
 					>
 						<Plus className="w-6 h-6" />
-						Create your first family tree
+						<FormattedMessage id="dashboard.emptyState.cta" defaultMessage="Create your first family tree" />
 					</button>
 				</div>
 			</div>
@@ -99,23 +105,50 @@ export default function DashboardPage() {
 		<div className="p-4 sm:p-6 lg:p-8">
 			<div className="bg-white rounded-3xl border-2 border-gray-200 p-4 sm:p-6 lg:p-8">
 				<div className="mb-6 sm:mb-8">
-					<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+					<h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+						<FormattedMessage id="dashboard.title" defaultMessage="Dashboard" />
+					</h1>
 					<p className="text-gray-600 mt-2 text-sm sm:text-base">
-						Welcome back, {session.user?.name || session.user?.email}!
+						<FormattedMessage
+							id="dashboard.welcome"
+							defaultMessage="Welcome back, {name}!"
+							values={{ name: session.user?.name || session.user?.email }}
+						/>
 					</p>
 				</div>
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 					<div className="bg-gray-50 rounded-xl p-6">
-						<h3 className="text-lg font-semibold text-gray-900 mb-2">Family Trees</h3>
-						<p className="text-gray-600">Create and manage your family trees</p>
+						<h3 className="text-lg font-semibold text-gray-900 mb-2">
+							<FormattedMessage id="dashboard.cards.familyTrees.title" defaultMessage="Family Trees" />
+						</h3>
+						<p className="text-gray-600">
+							<FormattedMessage
+								id="dashboard.cards.familyTrees.description"
+								defaultMessage="Create and manage your family trees"
+							/>
+						</p>
 					</div>
 					<div className="bg-gray-50 rounded-xl p-6">
-						<h3 className="text-lg font-semibold text-gray-900 mb-2">Members</h3>
-						<p className="text-gray-600">Add and organize family members</p>
+						<h3 className="text-lg font-semibold text-gray-900 mb-2">
+							<FormattedMessage id="dashboard.cards.members.title" defaultMessage="Members" />
+						</h3>
+						<p className="text-gray-600">
+							<FormattedMessage
+								id="dashboard.cards.members.description"
+								defaultMessage="Add and organize family members"
+							/>
+						</p>
 					</div>
 					<div className="bg-gray-50 rounded-xl p-6">
-						<h3 className="text-lg font-semibold text-gray-900 mb-2">Achievements</h3>
-						<p className="text-gray-600">Track family achievements and milestones</p>
+						<h3 className="text-lg font-semibold text-gray-900 mb-2">
+							<FormattedMessage id="dashboard.cards.achievements.title" defaultMessage="Achievements" />
+						</h3>
+						<p className="text-gray-600">
+							<FormattedMessage
+								id="dashboard.cards.achievements.description"
+								defaultMessage="Track family achievements and milestones"
+							/>
+						</p>
 					</div>
 				</div>
 			</div>

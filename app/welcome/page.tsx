@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { RippleButton } from '@/components/ui/ripple-button';
 
@@ -24,7 +25,9 @@ export default function WelcomePage() {
 			<div className="min-h-screen flex items-center justify-center bg-gray-50">
 				<div className="text-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading...</p>
+					<p className="mt-4 text-gray-600">
+						<FormattedMessage id="common.loading" defaultMessage="Loading..." />
+					</p>
 				</div>
 			</div>
 		);
@@ -40,7 +43,9 @@ export default function WelcomePage() {
 			<div className="px-6 lg:px-12 py-8">
 				<Link href="/" className="inline-flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors">
 					<ArrowLeft className="w-5 h-5" />
-					<span className="text-lg font-medium">Back To Home</span>
+					<span className="text-lg font-medium">
+						<FormattedMessage id="nav.backToHome" defaultMessage="Back To Home" />
+					</span>
 				</Link>
 			</div>
 
@@ -49,8 +54,15 @@ export default function WelcomePage() {
 				<div className="max-w-6xl w-full">
 					{/* Heading */}
 					<div className="text-center mb-16">
-						<h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Welcome to Family Tree</h1>
-						<p className="text-lg text-gray-600">Choose how you&apos;d like to access your family tree</p>
+						<h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+							<FormattedMessage id="welcome.title" defaultMessage="Welcome to Family Tree" />
+						</h1>
+						<p className="text-lg text-gray-600">
+							<FormattedMessage
+								id="welcome.subtitle"
+								defaultMessage="Choose how you'd like to access your family tree"
+							/>
+						</p>
 					</div>
 
 					{/* Two Cards */}
@@ -63,7 +75,9 @@ export default function WelcomePage() {
 							</div>
 
 							{/* Title */}
-							<h2 className="text-2xl font-semibold text-gray-900 mb-8">Create or Sign In to Account</h2>
+							<h2 className="text-2xl font-semibold text-gray-900 mb-8">
+								<FormattedMessage id="welcome.createAccount.title" defaultMessage="Create or Sign In to Account" />
+							</h2>
 
 							{/* Buttons */}
 							<div className="w-full space-y-3">
@@ -72,7 +86,7 @@ export default function WelcomePage() {
 										className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
 										variant="default"
 									>
-										Sign In
+										<FormattedMessage id="welcome.createAccount.signIn" defaultMessage="Sign In" />
 										<ChevronRight className="w-5 h-5 ml-2" />
 									</RippleButton>
 								</Link>
@@ -81,7 +95,7 @@ export default function WelcomePage() {
 										variant="outline"
 										className="w-full bg-white text-gray-900 border-2 border-gray-900 hover:bg-gray-50 text-base py-6 rounded-full"
 									>
-										Create Account
+										<FormattedMessage id="welcome.createAccount.createAccount" defaultMessage="Create Account" />
 									</RippleButton>
 								</Link>
 							</div>
@@ -95,11 +109,16 @@ export default function WelcomePage() {
 							</div>
 
 							{/* Title */}
-							<h2 className="text-2xl font-semibold text-gray-900 mb-4">Access with Code</h2>
+							<h2 className="text-2xl font-semibold text-gray-900 mb-4">
+								<FormattedMessage id="welcome.guestAccess.title" defaultMessage="Access with Code" />
+							</h2>
 
 							{/* Description */}
 							<p className="text-center text-gray-600 mb-8 leading-relaxed">
-								Have an access code from your family tree owner? Enter it here to view the family tree.
+								<FormattedMessage
+									id="welcome.guestAccess.description"
+									defaultMessage="Have an access code from your family tree owner? Enter it here to view the family tree."
+								/>
 							</p>
 
 							{/* Button */}
@@ -109,7 +128,7 @@ export default function WelcomePage() {
 										className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full"
 										variant="default"
 									>
-										Enter Access Code
+										<FormattedMessage id="welcome.guestAccess.enterCode" defaultMessage="Enter Access Code" />
 										<ChevronRight className="w-5 h-5 ml-2" />
 									</RippleButton>
 								</Link>

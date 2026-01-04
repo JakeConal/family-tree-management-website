@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
 
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import PanelRenderer from '@/components/PanelRenderer';
 import { Sidebar } from '@/components/ui/sidebar';
 import { usePanel } from '@/lib/hooks/usePanel';
@@ -162,7 +163,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0 h-full">
 				{/* Header with hamburger menu and family tree name */}
-				<header className="h-[60px] flex items-center justify-center px-4 lg:px-8 border-b border-gray-100 relative flex-shrink-0 bg-white z-20">
+				<header className="h-15 flex items-center justify-between *:px-4 lg:px-8 border-b border-gray-100 relative shrink-0 bg-white z-20">
 					<button
 						onClick={() => {
 							const newVisible = !sidebarVisible;
@@ -174,7 +175,7 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 								})
 							);
 						}}
-						className="absolute left-4 lg:left-8 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+						className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
 					>
 						<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path
@@ -186,11 +187,10 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 							/>
 						</svg>
 					</button>
-					{activeFamilyTreeName && (
-						<h1 className="font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate">
-							{activeFamilyTreeName}
-						</h1>
-					)}
+					<h1 className="grow font-inter font-semibold text-[14px] md:text-[16px] lg:text-[20px] text-black truncate text-center">
+						{activeFamilyTreeName}
+					</h1>
+					<LanguageSwitcher compact />
 				</header>
 
 				{/* Content */}

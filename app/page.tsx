@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { GradientText } from '@/components/ui/gradient-text';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
 import { RippleButton } from '@/components/ui/ripple-button';
@@ -15,6 +17,7 @@ import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 export default function Home() {
 	const { status } = useSession();
 	const router = useRouter();
+	const intl = useIntl();
 
 	useEffect(() => {
 		if (status === 'authenticated') {
@@ -28,7 +31,9 @@ export default function Home() {
 			<div className="min-h-screen flex items-center justify-center bg-white">
 				<div className="text-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading...</p>
+					<p className="mt-4 text-gray-600">
+						<FormattedMessage id="common.loading" defaultMessage="Loading..." />
+					</p>
 				</div>
 			</div>
 		);
@@ -44,27 +49,30 @@ export default function Home() {
 				{/* Navigation */}
 				<nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
 					<div className="max-w-7xl mx-auto px-6 lg:px-8">
-						<div className="flex justify-between items-center h-16">
-							<div className="flex items-center gap-2">
+						<div className="grid grid-cols-3 items-center h-16">
+							<div className="flex items-center gap-2 col-span-1">
 								<Image src="/images/logo.png" alt="Family Tree Logo" width={24} height={24} className="w-6 h-6" />
-								<span className="text-lg font-semibold text-gray-900">Family Tree</span>
+								<span className="text-lg font-semibold text-gray-900">
+									<FormattedMessage id="nav.familyTree" defaultMessage="Family Tree" />
+								</span>
 							</div>
-							<div className="hidden md:flex items-center gap-8">
+							<div className="hidden md:flex items-center justify-center gap-8 col-span-1">
 								<a href="#features" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
-									Features
+									<FormattedMessage id="nav.features" defaultMessage="Features" />
 								</a>
 								<a href="#how-it-works" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
-									How It Works
+									<FormattedMessage id="nav.howItWorks" defaultMessage="How It Works" />
 								</a>
 							</div>
-							<div className="flex items-center gap-3">
+							<div className="flex items-center gap-3 col-span-1">
+								<LanguageSwitcher />
 								<Link href="/welcome">
 									<RippleButton
 										variant="outline"
 										size="sm"
 										className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
 									>
-										Sign in
+										<FormattedMessage id="nav.signIn" defaultMessage="Sign in" />
 									</RippleButton>
 								</Link>
 								<Link href="/signup">
@@ -73,7 +81,7 @@ export default function Home() {
 										className="bg-gray-900 text-white hover:bg-gray-800 border-0"
 										variant="default"
 									>
-										Start for free
+										<FormattedMessage id="nav.startForFree" defaultMessage="Start for free" />
 									</RippleButton>
 								</Link>
 							</div>
@@ -88,16 +96,24 @@ export default function Home() {
 						<div className="text-center mb-8">
 							<div className="inline-block mb-6">
 								<span className="px-4 py-2 text-sm border border-gray-400 rounded-full bg-white/50 backdrop-blur-sm">
-									<GradientText text="Build Your Family Legacy Today" className="font-medium" />
+									<GradientText
+										text={intl.formatMessage({
+											id: 'home.hero.badge',
+											defaultMessage: 'Build Your Family Legacy Today',
+										})}
+										className="font-medium"
+									/>
 								</span>
 							</div>
 							<TextGenerateEffect
-								words="Preserve Your Family Story"
+								words={intl.formatMessage({ id: 'home.hero.title', defaultMessage: 'Preserve Your Family Story' })}
 								className="text-5xl md:text-6xl lg:text-7xl text-gray-900 mb-6 leading-tight"
 							/>
 							<p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-								Easily build, view, and preserve your family tree for future generations. Connect with your roots and
-								celebrate your family&apos;s unique journey.
+								<FormattedMessage
+									id="home.hero.subtitle"
+									defaultMessage="Easily build, view, and preserve your family tree for future generations. Connect with your roots and celebrate your family's unique journey."
+								/>
 							</p>
 							<div className="flex flex-col sm:flex-row gap-4 justify-center">
 								<Link href="/signup">
@@ -106,7 +122,7 @@ export default function Home() {
 										className="bg-gray-900 text-white hover:bg-gray-800 border-0"
 										variant="default"
 									>
-										Start for free
+										<FormattedMessage id="home.hero.startForFree" defaultMessage="Start for free" />
 									</RippleButton>
 								</Link>
 								<a href="#features">
@@ -115,7 +131,7 @@ export default function Home() {
 										size="lg"
 										className="text-gray-900 bg-white border-gray-300 hover:bg-gray-50"
 									>
-										Explore
+										<FormattedMessage id="home.hero.explore" defaultMessage="Explore" />
 									</RippleButton>
 								</a>
 							</div>
@@ -150,13 +166,21 @@ export default function Home() {
 				<section id="features" className="py-20 px-6 lg:px-8 bg-gray-50 relative">
 					<div className="max-w-7xl mx-auto">
 						<div className="text-center mb-16">
-							<h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">Features</h2>
+							<h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
+								<FormattedMessage id="home.features.title" defaultMessage="Features" />
+							</h2>
 							<TextGenerateEffect
-								words="Powerful tools for family storytelling"
+								words={intl.formatMessage({
+									id: 'home.features.subtitle',
+									defaultMessage: 'Powerful tools for family storytelling',
+								})}
 								className="text-4xl md:text-5xl text-gray-900 mb-4"
 							/>
 							<p className="text-lg text-gray-600 max-w-2xl mx-auto">
-								Explore the comprehensive features of our family tree platform
+								<FormattedMessage
+									id="home.features.description"
+									defaultMessage="Explore the comprehensive features of our family tree platform"
+								/>
 							</p>
 						</div>
 
@@ -173,8 +197,15 @@ export default function Home() {
 									/>
 								</div>
 								<div className="p-6">
-									<h4 className="text-xl font-bold text-gray-900 mb-2">Dashboard</h4>
-									<p className="text-gray-600">Get a clear overview of all your key insights in one place</p>
+									<h4 className="text-xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.features.dashboard.title" defaultMessage="Dashboard" />
+									</h4>
+									<p className="text-gray-600">
+										<FormattedMessage
+											id="home.features.dashboard.description"
+											defaultMessage="Get a clear overview of all your key insights in one place"
+										/>
+									</p>
 								</div>
 							</div>
 
@@ -190,8 +221,15 @@ export default function Home() {
 									/>
 								</div>
 								<div className="p-6">
-									<h4 className="text-xl font-bold text-gray-900 mb-2">Achievement List</h4>
-									<p className="text-gray-600">Track your achievements with detailed, organized records</p>
+									<h4 className="text-xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.features.achievementList.title" defaultMessage="Achievement List" />
+									</h4>
+									<p className="text-gray-600">
+										<FormattedMessage
+											id="home.features.achievementList.description"
+											defaultMessage="Track your achievements with detailed, organized records"
+										/>
+									</p>
 								</div>
 							</div>
 
@@ -207,8 +245,15 @@ export default function Home() {
 									/>
 								</div>
 								<div className="p-6">
-									<h4 className="text-xl font-bold text-gray-900 mb-2">Report</h4>
-									<p className="text-gray-600">Visualize your progress through analytic, easy-to-read charts</p>
+									<h4 className="text-xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.features.report.title" defaultMessage="Report" />
+									</h4>
+									<p className="text-gray-600">
+										<FormattedMessage
+											id="home.features.report.description"
+											defaultMessage="Visualize your progress through analytic, easy-to-read charts"
+										/>
+									</p>
 								</div>
 							</div>
 						</div>
@@ -222,16 +267,19 @@ export default function Home() {
 							{/* Left: Title */}
 							<div>
 								<h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
-									Additional Features
+									<FormattedMessage id="home.additionalFeatures.title" defaultMessage="Additional Features" />
 								</h2>
 								<TextGenerateEffect
-									words="Weave the tapestry of your family's enduring story"
+									words={intl.formatMessage({
+										id: 'home.additionalFeatures.subtitle',
+										defaultMessage: "Weave the tapestry of your family's enduring story",
+									})}
 									className="text-3xl md:text-4xl text-gray-900"
 								/>
 							</div>
 
 							{/* Right: Feature List */}
-							<div className="space-y-10">
+							<div className="space-y-8">
 								{/* Interactive Family Tree */}
 								<div className="flex gap-4 items-start">
 									<div className="shrink-0">
@@ -240,9 +288,17 @@ export default function Home() {
 										</div>
 									</div>
 									<div className="flex-1">
-										<h4 className="text-xl font-bold text-gray-900 mb-2">Interactive Family Tree</h4>
+										<h4 className="text-xl font-bold text-gray-900 mb-2">
+											<FormattedMessage
+												id="home.additionalFeatures.interactiveTree.title"
+												defaultMessage="Interactive Family Tree"
+											/>
+										</h4>
 										<p className="text-gray-600 leading-relaxed">
-											Visualize your family connections with beautiful, easy-to-navigate tree diagrams.
+											<FormattedMessage
+												id="home.additionalFeatures.interactiveTree.description"
+												defaultMessage="Visualize your family connections with beautiful, easy-to-navigate tree diagrams."
+											/>
 										</p>
 									</div>
 								</div>
@@ -255,9 +311,17 @@ export default function Home() {
 										</div>
 									</div>
 									<div className="flex-1">
-										<h4 className="text-xl font-bold text-gray-900 mb-2">Member Management</h4>
+										<h4 className="text-xl font-bold text-gray-900 mb-2">
+											<FormattedMessage
+												id="home.additionalFeatures.memberManagement.title"
+												defaultMessage="Member Management"
+											/>
+										</h4>
 										<p className="text-gray-600 leading-relaxed">
-											Add and organize family members with detailed profiles and photos.
+											<FormattedMessage
+												id="home.additionalFeatures.memberManagement.description"
+												defaultMessage="Add and organize family members with detailed profiles and photos."
+											/>
 										</p>
 									</div>
 								</div>
@@ -270,13 +334,20 @@ export default function Home() {
 										</div>
 									</div>
 									<div className="flex-1">
-										<h4 className="text-xl font-bold text-gray-900 mb-2">Achievement Tracking</h4>
+										<h4 className="text-xl font-bold text-gray-900 mb-2">
+											<FormattedMessage
+												id="home.additionalFeatures.achievementTracking.title"
+												defaultMessage="Achievement Tracking"
+											/>
+										</h4>
 										<p className="text-gray-600 leading-relaxed">
-											Record and celebrate important milestones in your family.
+											<FormattedMessage
+												id="home.additionalFeatures.achievementTracking.description"
+												defaultMessage="Record and celebrate important milestones in your family."
+											/>
 										</p>
 									</div>
 								</div>
-
 								{/* Detailed Reports */}
 								<div className="flex gap-4 items-start">
 									<div className="shrink-0">
@@ -285,9 +356,17 @@ export default function Home() {
 										</div>
 									</div>
 									<div className="flex-1">
-										<h4 className="text-xl font-bold text-gray-900 mb-2">Detailed Reports</h4>
+										<h4 className="text-xl font-bold text-gray-900 mb-2">
+											<FormattedMessage
+												id="home.additionalFeatures.detailedReports.title"
+												defaultMessage="Detailed Reports"
+											/>
+										</h4>
 										<p className="text-gray-600 leading-relaxed">
-											Generate comprehensive reports and statistics about your family history.
+											<FormattedMessage
+												id="home.additionalFeatures.detailedReports.description"
+												defaultMessage="Generate comprehensive reports and statistics about your family history."
+											/>
 										</p>
 									</div>
 								</div>
@@ -300,11 +379,20 @@ export default function Home() {
 				<section id="how-it-works" className="py-20 px-6 lg:px-8 bg-gray-50 relative">
 					<div className="max-w-7xl mx-auto">
 						<div className="text-center mb-16">
-							<h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">How It Works</h2>
-							<TextGenerateEffect words="Simple & Fast" className="text-4xl md:text-5xl text-gray-900 mb-4" />
-							<p className="text-lg text-gray-600 max-w-2xl mx-auto">Just a steps to start building your family tree</p>
+							<h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">
+								<FormattedMessage id="home.howItWorks.title" defaultMessage="How It Works" />
+							</h2>
+							<TextGenerateEffect
+								words={intl.formatMessage({ id: 'home.howItWorks.subtitle', defaultMessage: 'Simple & Fast' })}
+								className="text-4xl md:text-5xl text-gray-900 mb-4"
+							/>
+							<p className="text-lg text-gray-600 max-w-2xl mx-auto">
+								<FormattedMessage
+									id="home.howItWorks.description"
+									defaultMessage="Just a steps to start building your family tree"
+								/>
+							</p>
 						</div>
-
 						<div className="grid lg:grid-cols-2 gap-12 items-center">
 							{/* Form Preview */}
 							<div className="order-2 lg:order-1">
@@ -322,21 +410,48 @@ export default function Home() {
 							{/* Steps */}
 							<div className="order-1 lg:order-2 space-y-8">
 								<div>
-									<div className="text-4xl font-bold text-gray-900 mb-2">01</div>
-									<h4 className="text-2xl font-bold text-gray-900 mb-2">Create Account</h4>
-									<p className="text-gray-600 leading-relaxed">Sign up for free in just a few seconds.</p>
+									<div className="text-4xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step1.number" defaultMessage="01" />
+									</div>
+									<h4 className="text-2xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step1.title" defaultMessage="Create Account" />
+									</h4>
+									<p className="text-gray-600 leading-relaxed">
+										<FormattedMessage
+											id="home.howItWorks.step1.description"
+											defaultMessage="Sign up for free in just a few seconds."
+										/>
+									</p>
 								</div>
 
 								<div>
-									<div className="text-4xl font-bold text-gray-900 mb-2">02</div>
-									<h4 className="text-2xl font-bold text-gray-900 mb-2">Add Member</h4>
-									<p className="text-gray-600 leading-relaxed">Enter information about your family members.</p>
+									<div className="text-4xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step2.number" defaultMessage="02" />
+									</div>
+									<h4 className="text-2xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step2.title" defaultMessage="Add Member" />
+									</h4>
+									<p className="text-gray-600 leading-relaxed">
+										<FormattedMessage
+											id="home.howItWorks.step2.description"
+											defaultMessage="Enter information about your family members."
+										/>
+									</p>
 								</div>
 
 								<div>
-									<div className="text-4xl font-bold text-gray-900 mb-2">03</div>
-									<h4 className="text-2xl font-bold text-gray-900 mb-2">Build Connections</h4>
-									<p className="text-gray-600 leading-relaxed">Link relationships to build your family tree.</p>
+									<div className="text-4xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step3.number" defaultMessage="03" />
+									</div>
+									<h4 className="text-2xl font-bold text-gray-900 mb-2">
+										<FormattedMessage id="home.howItWorks.step3.title" defaultMessage="Build Connections" />
+									</h4>
+									<p className="text-gray-600 leading-relaxed">
+										<FormattedMessage
+											id="home.howItWorks.step3.description"
+											defaultMessage="Link relationships to build your family tree."
+										/>
+									</p>
 								</div>
 							</div>
 						</div>
@@ -352,14 +467,20 @@ export default function Home() {
 						squares={[60, 60]}
 					/>
 					<div className="max-w-4xl mx-auto text-center">
-						<TextGenerateEffect words="Your Family Story Awaits" className="text-4xl md:text-5xl text-gray-900 mb-4" />
+						<TextGenerateEffect
+							words={intl.formatMessage({ id: 'home.cta.title', defaultMessage: 'Your Family Story Awaits' })}
+							className="text-4xl md:text-5xl text-gray-900 mb-4"
+						/>
 						<p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-							Start documenting your family&apos;s unique journey today and create a lasting legacy
+							<FormattedMessage
+								id="home.cta.subtitle"
+								defaultMessage="Start documenting your family's unique journey today and create a lasting legacy"
+							/>
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Link href="/signup">
 								<RippleButton size="lg" className="bg-gray-900 text-white hover:bg-gray-800 border-0" variant="default">
-									Start for free
+									<FormattedMessage id="home.cta.startForFree" defaultMessage="Start for free" />
 								</RippleButton>
 							</Link>
 							<Link href="/welcome">
@@ -368,7 +489,7 @@ export default function Home() {
 									size="lg"
 									className="text-gray-900 bg-white border-gray-300 hover:bg-gray-50"
 								>
-									Sign in
+									<FormattedMessage id="home.cta.signIn" defaultMessage="Sign in" />
 								</RippleButton>
 							</Link>
 						</div>
@@ -382,63 +503,75 @@ export default function Home() {
 							<div className="md:col-span-2">
 								<div className="flex items-center gap-2 mb-4">
 									<Image src="/images/logo.png" alt="Family Tree Logo" width={24} height={24} className="w-6 h-6" />
-									<span className="text-lg font-bold text-gray-900">Family Tree</span>
+									<span className="text-lg font-bold text-gray-900">
+										<FormattedMessage id="nav.familyTree" defaultMessage="Family Tree" />
+									</span>
 								</div>
-								<p className="text-sm text-gray-600 mb-4 leading-relaxed">Preserve Your Legacy</p>
+								<p className="text-sm text-gray-600 mb-4 leading-relaxed">
+									<FormattedMessage id="home.footer.tagline" defaultMessage="Preserve Your Legacy" />
+								</p>
 								<p className="text-sm text-gray-600 leading-relaxed">
-									Family Tree helps you build, visualize, and preserve your family tree for future generations. Legacy
-									tools designed to help you connect with your roots and celebrate your family&apos;s unique journey.
+									<FormattedMessage
+										id="home.footer.description"
+										defaultMessage="Family Tree helps you build, visualize, and preserve your family tree for future generations. Legacy tools designed to help you connect with your roots and celebrate your family's unique journey."
+									/>
 								</p>
 							</div>
 
 							<div>
-								<h4 className="font-semibold text-gray-900 mb-4 text-sm">Product</h4>
+								<h4 className="font-semibold text-gray-900 mb-4 text-sm">
+									<FormattedMessage id="home.footer.product.title" defaultMessage="Product" />
+								</h4>
 								<ul className="space-y-2 text-sm">
 									<li>
 										<a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Home
+											<FormattedMessage id="home.footer.product.home" defaultMessage="Home" />
 										</a>
 									</li>
 									<li>
 										<a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Guide
+											<FormattedMessage id="home.footer.product.guide" defaultMessage="Guide" />
 										</a>
 									</li>
 									<li>
 										<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-											FAQ
+											<FormattedMessage id="home.footer.product.faq" defaultMessage="FAQ" />
 										</a>
 									</li>
 								</ul>
 							</div>
 
 							<div>
-								<h4 className="font-semibold text-gray-900 mb-4 text-sm">Features</h4>
+								<h4 className="font-semibold text-gray-900 mb-4 text-sm">
+									<FormattedMessage id="home.footer.features.title" defaultMessage="Features" />
+								</h4>
 								<ul className="space-y-2 text-sm">
 									<li>
 										<a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Member
+											<FormattedMessage id="home.footer.features.member" defaultMessage="Member" />
 										</a>
 									</li>
 									<li>
 										<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Blog
+											<FormattedMessage id="home.footer.features.blog" defaultMessage="Blog" />
 										</a>
 									</li>
 								</ul>
 							</div>
 
 							<div>
-								<h4 className="font-semibold text-gray-900 mb-4 text-sm">About</h4>
+								<h4 className="font-semibold text-gray-900 mb-4 text-sm">
+									<FormattedMessage id="home.footer.about.title" defaultMessage="About" />
+								</h4>
 								<ul className="space-y-2 text-sm">
 									<li>
 										<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Contact
+											<FormattedMessage id="home.footer.about.contact" defaultMessage="Contact" />
 										</a>
 									</li>
 									<li>
 										<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-											Community
+											<FormattedMessage id="home.footer.about.community" defaultMessage="Community" />
 										</a>
 									</li>
 								</ul>
@@ -446,16 +579,21 @@ export default function Home() {
 						</div>
 
 						<div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-							<p className="text-sm text-gray-600">&copy; 2025 Family Tree Management. All rights reserved.</p>
+							<p className="text-sm text-gray-600">
+								<FormattedMessage
+									id="home.footer.copyright"
+									defaultMessage="© 2025 Family Tree Management. All rights reserved."
+								/>
+							</p>
 							<div className="flex gap-6 text-sm">
 								<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-									Privacy policy
+									<FormattedMessage id="home.footer.privacyPolicy" defaultMessage="Privacy policy" />
 								</a>
 								<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-									Cookie policy
+									<FormattedMessage id="home.footer.cookiePolicy" defaultMessage="Cookie policy" />
 								</a>
 								<a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
-									Terms of service
+									<FormattedMessage id="home.footer.termsOfService" defaultMessage="Terms of service" />
 								</a>
 							</div>
 						</div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { RippleButton } from '@/components/ui/ripple-button';
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
 	const router = useRouter();
+	const intl = useIntl();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -28,13 +30,17 @@ export default function LoginPage() {
 			});
 
 			if (result?.error) {
-				setError('Invalid email or password');
+				setError(
+					intl.formatMessage({ id: 'login.error.invalidCredentials', defaultMessage: 'Invalid email or password' })
+				);
 			} else {
 				router.push('/dashboard');
 			}
 		} catch (err) {
 			console.error(err);
-			setError('An error occurred. Please try again.');
+			setError(
+				intl.formatMessage({ id: 'login.error.generic', defaultMessage: 'An error occurred. Please try again.' })
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -48,7 +54,12 @@ export default function LoginPage() {
 			await signIn('google', { callbackUrl: '/dashboard' });
 		} catch (err) {
 			console.error(err);
-			setError('An error occurred with Google login. Please try again.');
+			setError(
+				intl.formatMessage({
+					id: 'login.error.googleLogin',
+					defaultMessage: 'An error occurred with Google login. Please try again.',
+				})
+			);
 			setIsLoading(false);
 		}
 	};
@@ -64,13 +75,19 @@ export default function LoginPage() {
 						className="inline-flex items-center gap-1 text-gray-700 hover:text-gray-900 transition-colors mb-8"
 					>
 						<ChevronLeft className="w-5 h-5" />
-						<span className="text-sm font-medium">Back</span>
+						<span className="text-sm font-medium">
+							<FormattedMessage id="common.back" defaultMessage="Back" />
+						</span>
 					</Link>
 
 					{/* Header */}
 					<div className="text-center mb-8">
-						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Sign in</h1>
-						<p className="text-lg text-gray-600">Welcome back</p>
+						<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+							<FormattedMessage id="login.title" defaultMessage="Sign in" />
+						</h1>
+						<p className="text-lg text-gray-600">
+							<FormattedMessage id="login.subtitle" defaultMessage="Welcome back" />
+						</p>
 					</div>
 
 					{/* Form */}
@@ -81,7 +98,7 @@ export default function LoginPage() {
 						{/* Email Field */}
 						<div>
 							<label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-								Email
+								<FormattedMessage id="login.email.label" defaultMessage="Email" />
 							</label>
 							<div className="relative">
 								<Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -90,7 +107,10 @@ export default function LoginPage() {
 									type="email"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
-									placeholder="youremail@email.com"
+									placeholder={intl.formatMessage({
+										id: 'login.email.placeholder',
+										defaultMessage: 'youremail@email.com',
+									})}
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 								/>
@@ -100,7 +120,7 @@ export default function LoginPage() {
 						{/* Password Field */}
 						<div>
 							<label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
-								Password
+								<FormattedMessage id="login.password.label" defaultMessage="Password" />
 							</label>
 							<div className="relative">
 								<Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -109,7 +129,7 @@ export default function LoginPage() {
 									type="password"
 									value={password}
 									onChange={(e) => setPassword(e.target.value)}
-									placeholder="yourpassword"
+									placeholder={intl.formatMessage({ id: 'login.password.placeholder', defaultMessage: '********' })}
 									className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-full bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
 									required
 								/>
@@ -124,7 +144,11 @@ export default function LoginPage() {
 								className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0 text-base py-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
 								variant="default"
 							>
-								{isLoading ? 'Signing In...' : 'Sign In'}
+								{isLoading ? (
+									<FormattedMessage id="login.signingIn" defaultMessage="Signing In..." />
+								) : (
+									<FormattedMessage id="login.signIn" defaultMessage="Sign In" />
+								)}
 								<ChevronRight className="w-5 h-5 ml-2" />
 							</RippleButton>
 						</div>
@@ -136,7 +160,9 @@ export default function LoginPage() {
 							<div className="w-full border-t border-gray-200"></div>
 						</div>
 						<div className="relative flex justify-center text-sm">
-							<span className="px-4 bg-white text-gray-500">Or continue with</span>
+							<span className="px-4 bg-white text-gray-500">
+								<FormattedMessage id="login.orContinueWith" defaultMessage="Or continue with" />
+							</span>
 						</div>
 					</div>
 
@@ -165,14 +191,18 @@ export default function LoginPage() {
 								d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
 							/>
 						</svg>
-						{isLoading ? 'Signing in...' : 'Continue with Google'}
+						{isLoading ? (
+							<FormattedMessage id="login.signingInWithGoogle" defaultMessage="Signing in..." />
+						) : (
+							<FormattedMessage id="login.continueWithGoogle" defaultMessage="Continue with Google" />
+						)}
 					</button>
 
 					{/* Sign Up Link */}
 					<p className="text-center mt-6 text-gray-600">
-						Don&apos;t have an account?{' '}
+						<FormattedMessage id="login.noAccount" defaultMessage="Don't have an account?" />{' '}
 						<Link href="/signup" className="font-semibold text-gray-900 hover:underline">
-							Create one
+							<FormattedMessage id="login.createAccount" defaultMessage="Create one" />
 						</Link>
 					</p>
 				</div>

@@ -4,6 +4,7 @@ import { Loader2, UserPlus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import ConfirmModal from '@/components/modals/ConfirmModal';
@@ -16,6 +17,7 @@ export default function FamilyTreeSettings() {
 	const router = useRouter();
 	const params = useParams();
 	const familyTreeId = params.id as string;
+	const intl = useIntl();
 
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
 	const [loading, setLoading] = useState(true);

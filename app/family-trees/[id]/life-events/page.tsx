@@ -6,6 +6,7 @@ import { ChevronDown, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import PanelRenderer from '@/components/PanelRenderer';
@@ -32,6 +33,7 @@ export default function LifeEventsPage() {
 	const familyTreeId = params.id as string;
 	const { isGuest } = useGuestSession();
 	const { openPanel, activePanel } = usePanel();
+	const intl = useIntl();
 
 	const [activeTab, setActiveTab] = useState<'achievement' | 'passing' | 'life-event'>('achievement');
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -345,7 +347,7 @@ export default function LifeEventsPage() {
 	};
 
 	if (loading) {
-		return <LoadingScreen message="Loading life events..." />;
+		return <LoadingScreen message={intl.formatMessage({ id: 'lifeEvents.loading' })} />;
 	}
 
 	if (error) {
@@ -361,20 +363,20 @@ export default function LifeEventsPage() {
 			{/* Main Content */}
 			<div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
 				<div className="p-4 sm:p-6 lg:p-8">
-					<div className="max-w-[1440px] mx-auto">
+					<div className="max-w-360 mx-auto">
 						{/* Tab Navigation */}
-						<div className="mb-6 sm:mb-8 lg:mb-[52px]">
+						<div className="mb-6 sm:mb-8 lg:mb-13">
 							<TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 						</div>
 
 						{/* Filters and Add Button */}
-						<div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-[24px] mb-6 sm:mb-8 lg:mb-[32px]">
+						<div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 lg:mb-8">
 							{/* Year Filter */}
 							<div className="relative w-full sm:w-auto">
 								<select
 									value={selectedYear}
 									onChange={(e) => setSelectedYear(e.target.value)}
-									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
+									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 								>
 									<option value="all">All Years</option>
 									{availableYears.map((year) => (
@@ -383,7 +385,7 @@ export default function LifeEventsPage() {
 										</option>
 									))}
 								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
 							</div>
 
 							{/* Type Filter - Show for Achievement and Life Event tabs */}
@@ -392,7 +394,7 @@ export default function LifeEventsPage() {
 									<select
 										value={selectedType}
 										onChange={(e) => setSelectedType(e.target.value)}
-										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
+										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 									>
 										<option value="all">All Types</option>
 										{achievementTypes.map((type) => (
@@ -401,7 +403,7 @@ export default function LifeEventsPage() {
 											</option>
 										))}
 									</select>
-									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
 								</div>
 							)}
 							{activeTab === 'life-event' && (
@@ -409,13 +411,13 @@ export default function LifeEventsPage() {
 									<select
 										value={selectedType}
 										onChange={(e) => setSelectedType(e.target.value)}
-										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] pr-10 sm:pr-[48px] text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-[43px] w-full sm:w-auto"
+										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 									>
 										<option value="all">All Types</option>
 										<option value="Married">Married</option>
 										<option value="Divorce">Divorce</option>
 									</select>
-									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-black pointer-events-none" />
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
 								</div>
 							)}
 
@@ -427,28 +429,34 @@ export default function LifeEventsPage() {
 							{activeTab === 'achievement' && !isGuest && (
 								<button
 									onClick={() => handleOpenAchievementPanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
+									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
 								>
-									<Plus className="w-[15px] h-[15px] text-black" />
-									<span className="whitespace-nowrap">Add Achievement</span>
+									<Plus className="w-3.75 h-3.75 text-black" />
+									<span className="whitespace-nowrap">
+										<FormattedMessage id="lifeEvents.actions.addAchievement" />
+									</span>
 								</button>
 							)}
 							{activeTab === 'passing' && !isGuest && (
 								<button
 									onClick={() => handleOpenPassingPanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
+									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
 								>
-									<Plus className="w-[15px] h-[15px] text-black" />
-									<span className="whitespace-nowrap">Add Passing</span>
+									<Plus className="w-3.75 h-3.75 text-black" />
+									<span className="whitespace-nowrap">
+										<FormattedMessage id="lifeEvents.actions.addPassing" />
+									</span>
 								</button>
 							)}
 							{activeTab === 'life-event' && !isGuest && (
 								<button
 									onClick={() => handleOpenDivorcePanel()}
-									className="flex items-center gap-[8px] bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-[20px] py-[10px] text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-[43px] w-full sm:w-auto"
+									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
 								>
-									<Plus className="w-[15px] h-[15px] text-black" />
-									<span className="whitespace-nowrap">Add Divorce</span>
+									<Plus className="w-3.75 h-3.75 text-black" />
+									<span className="whitespace-nowrap">
+										<FormattedMessage id="lifeEvents.actions.addDivorce" />
+									</span>
 								</button>
 							)}
 						</div>
@@ -464,12 +472,12 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
 										{sortedYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
 												<div
-													className={classNames('grid gap-[44px]', {
+													className={classNames('grid gap-11', {
 														'grid-cols-1': activePanel !== null,
 														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
@@ -478,7 +486,9 @@ export default function LifeEventsPage() {
 														<EventCard
 															key={achievement.id}
 															id={achievement.id}
-															title={achievement.title || 'Untitled Achievement'}
+															title={
+																achievement.title || intl.formatMessage({ id: 'lifeEvents.cards.untitledAchievement' })
+															}
 															person={achievement.familyMember.fullName}
 															date={formatDate(achievement.achieveDate)}
 															description={achievement.description || ''}
@@ -504,12 +514,12 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
 										{sortedPassingYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
 												<div
-													className={classNames('grid gap-[44px]', {
+													className={classNames('grid gap-11', {
 														'grid-cols-1': activePanel !== null,
 														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
@@ -550,12 +560,12 @@ export default function LifeEventsPage() {
 										</button>
 									</div>
 								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-[64px]">
+									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
 										{sortedLifeEventYears.map((year) => (
 											<div key={year}>
 												<YearSection year={parseInt(year)} />
 												<div
-													className={classNames('grid gap-[44px]', {
+													className={classNames('grid gap-11', {
 														'grid-cols-1': activePanel !== null,
 														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
