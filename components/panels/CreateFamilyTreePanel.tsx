@@ -293,10 +293,17 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 						<div>
 							<label className="block text-base font-medium mb-1 text-black">Origin *</label>
+						<div className="relative">
 							<select
-								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 focus:outline-none text-black"
+								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 pr-10 focus:outline-none text-black appearance-none cursor-pointer"
 								value={familyData.origin}
 								onChange={(e) => setFamilyData({ ...familyData, origin: e.target.value })}
+								style={{
+									backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'right 1rem center',
+									backgroundSize: '1.25rem'
+								}}
 								required
 							>
 								<option value="">Select place of origin</option>
@@ -335,9 +342,10 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 								<option value="Hue">Hue</option>
 							</select>
 						</div>
+				</div>
 
-						<div>
-							<label className="block text-base font-medium mb-1 text-black">Establish year *</label>
+				<div>
+					<label className="block text-base font-medium mb-1 text-black">Establish year *</label>
 							<input
 								type="text"
 								placeholder="e.g., 1945"
@@ -463,16 +471,22 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										</div>
 										<div className="relative">
 											<select
-												className="w-full bg-[#eff6ff] mb-2 border border-black/50 rounded-[30px] h-[33px] px-4 text-[11px] focus:outline-none text-black"
-												value={place.location}
-												onChange={(e) => {
-													const newPlaces = [...placesOfOrigin];
-													newPlaces[index].location = e.target.value;
-													setPlacesOfOrigin(newPlaces);
-													setErrors((prev) => ({
-														...prev,
-														placesOfOrigin: '',
-													}));
+											className="w-full bg-[#eff6ff] mb-2 border border-black/50 rounded-[30px] h-[33px] px-4 pr-10 text-[11px] focus:outline-none text-black appearance-none cursor-pointer"
+											value={place.location}
+											onChange={(e) => {
+												const newPlaces = [...placesOfOrigin];
+												newPlaces[index].location = e.target.value;
+												setPlacesOfOrigin(newPlaces);
+												setErrors((prev) => ({
+													...prev,
+													placesOfOrigin: '',
+												}));
+											}}
+											style={{
+												backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+												backgroundRepeat: 'no-repeat',
+												backgroundPosition: 'right 1rem center',
+												backgroundSize: '1.25rem'
 												}}
 												required
 											>
@@ -754,3 +768,5 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 		</div>
 	);
 }
+
+
