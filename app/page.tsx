@@ -122,8 +122,8 @@ export default function Home() {
 						</div>
 
 						{/* Dashboard Preview */}
-						<div className="mt-12 relative">
-							<div className="rounded-xl shadow-2xl overflow-hidden border-8 border-gray-200 bg-white">
+						<div className="mt-12 relative flex justify-center">
+							<div className="inline-block rounded-xl shadow-2xl overflow-hidden border-8 border-gray-200 bg-white">
 								<div className="bg-purple-900 px-4 py-3 flex items-center gap-2">
 									<div className="flex gap-1.5">
 										<div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -131,13 +131,13 @@ export default function Home() {
 										<div className="w-3 h-3 rounded-full bg-green-500"></div>
 									</div>
 								</div>
-							<div className="bg-white flex items-center justify-center p-4 min-h-[500px]">
-								<Image
-									src="/images/Family-Tree-Overview.png"
-									alt="Family Tree Dashboard"
-									width={1200}
-									height={675}
-									className="w-auto h-auto max-w-full max-h-[600px] object-contain"
+								<div className="bg-white">
+									<Image
+										src="/images/Family-Tree-Overview.png"
+										alt="Family Tree Dashboard"
+										width={1200}
+										height={675}
+										className="w-full h-auto"
 										priority
 									/>
 								</div>
