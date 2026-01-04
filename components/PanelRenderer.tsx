@@ -2,7 +2,6 @@
 
 import classNames from 'classnames';
 import dynamic from 'next/dynamic';
-import { useEffect } from 'react';
 
 import { usePanel } from '@/lib/hooks/usePanel';
 

@@ -1,5 +1,3 @@
-import type { FamilyTree } from '@prisma/client';
-
 interface SpouseRelationship {
 	id: number;
 	marriageDate: Date;
@@ -47,4 +45,5 @@ class DivorceService {
 	}
 }
 
-export default new DivorceService();
+const divorceService = new DivorceService();
+export default divorceService;

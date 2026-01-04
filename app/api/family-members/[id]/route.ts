@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/auth';
 import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
 import { logChange } from '@/lib/utils';
@@ -23,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 		const prisma = getPrisma();
 
 		// Build query based on role
-		const whereClause: any = { id: memberId };
+		const whereClause: Record<string, unknown> = { id: memberId };
 
 		if (sessionData.isGuest) {
 			// Guest can only view members in their assigned family tree
@@ -155,7 +154,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		const prisma = getPrisma();
 
 		// Build query based on role
-		const whereClause: any = { id: memberId };
+		const whereClause: Record<string, unknown> = { id: memberId };
 
 		if (sessionData.isGuest) {
 			// Guest can only edit their own profile

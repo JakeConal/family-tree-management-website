@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
-import { PlaceOfOriginForm, FamilyMember } from '@/types';
+import { PlaceOfOriginForm, FamilyMember, ExtendedFamilyMember } from '@/types';
 
 interface ExistingMember {
 	id: number;
@@ -224,14 +224,12 @@ export default function MemberPanel({
 
 						if (data.occupations && data.occupations.length > 0) {
 							setOccupations(
-								data.occupations.map(
-									(occ: { id: number; jobTitle: string; startDate?: string; endDate?: string }, index: number) => ({
-										id: occ.id.toString(),
-										jobTitle: occ.jobTitle,
-										startDate: occ.startDate ? occ.startDate.split('T')[0] : '',
-										endDate: occ.endDate ? occ.endDate.split('T')[0] : '',
-									})
-								)
+								data.occupations.map((occ: { id: number; jobTitle: string; startDate?: string; endDate?: string }) => ({
+									id: occ.id.toString(),
+									jobTitle: occ.jobTitle,
+									startDate: occ.startDate ? occ.startDate.split('T')[0] : '',
+									endDate: occ.endDate ? occ.endDate.split('T')[0] : '',
+								}))
 							);
 						} else {
 							setOccupations([{ id: '1', jobTitle: '', startDate: '', endDate: '' }]);
@@ -320,18 +318,20 @@ export default function MemberPanel({
 			if (!memberFormData.relationship) {
 				errors.relationship = 'Relationship is required';
 			} else if (memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId) {
-				const selectedMember = existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId) as any;
-				const currentMember = mode === 'add' ? null : (member as any);
+				const selectedMember = existingMembers.find(
+					(m) => m.id.toString() === memberFormData.relatedMemberId
+				) as ExtendedFamilyMember;
+				const currentMember = mode === 'add' ? null : member;
 
 				if (selectedMember) {
 					const hasOtherActiveSpouse =
 						(selectedMember.spouse1 &&
 							selectedMember.spouse1.some(
-								(s: any) => !s.divorceDate && (!currentMember || s.familyMember2.id !== currentMember.id)
+								(s) => !s.divorceDate && (!currentMember || s.familyMember2.id !== currentMember.id)
 							)) ||
 						(selectedMember.spouse2 &&
 							selectedMember.spouse2.some(
-								(s: any) => !s.divorceDate && (!currentMember || s.familyMember1.id !== currentMember.id)
+								(s) => !s.divorceDate && (!currentMember || s.familyMember1.id !== currentMember.id)
 							));
 
 					if (hasOtherActiveSpouse) {

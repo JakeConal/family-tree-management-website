@@ -31,23 +31,23 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 	const [selectedYear, setSelectedYear] = useState<string>('');
 
 	useEffect(() => {
+		const fetchChangeLogs = async () => {
+			setLoading(true);
+			try {
+				const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
+				setChangeLogs(logs);
+			} catch (error) {
+				console.error('Error fetching change logs:', error);
+				setChangeLogs([]);
+			} finally {
+				setLoading(false);
+			}
+		};
+
 		if (isOpen) {
 			fetchChangeLogs();
 		}
 	}, [isOpen, familyTreeId]);
-
-	const fetchChangeLogs = async () => {
-		setLoading(true);
-		try {
-			const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
-			setChangeLogs(logs);
-		} catch (error) {
-			console.error('Error fetching change logs:', error);
-			setChangeLogs([]);
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	const formatChangeLogMessage = (log: ChangeLog) => {
 		const entityType = log.entityType;
@@ -107,7 +107,7 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 		const year = date.getFullYear();
 		const month = String(date.getMonth() + 1).padStart(2, '0');
 		const day = String(date.getDate()).padStart(2, '0');
-		const hours = String(date.getHours()).padStart(2, '0');
+		// const hours = String(date.getHours()).padStart(2, '0');
 		const minutes = String(date.getMinutes()).padStart(2, '0');
 		const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
 		const displayHours = date.getHours() % 12 || 12;
@@ -121,11 +121,11 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 		return log.userId ? 'User' : 'System';
 	};
 
-	const getUserAvatar = (log: ChangeLog) => {
-		// Return default avatar path or user avatar if available
-		// For now, return null to use icon fallback
-		return null;
-	};
+	// const getUserAvatar = (log: ChangeLog) => {
+	// 	// Return default avatar path or user avatar if available
+	// 	// For now, return null to use icon fallback
+	// 	return null;
+	// };
 
 	const filteredLogs = changeLogs.filter((log) => {
 		if (!selectedMonth && !selectedYear) return true;

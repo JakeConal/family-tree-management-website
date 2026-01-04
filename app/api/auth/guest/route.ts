@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { signIn } from '@/auth';
 import { getPrisma } from '@/lib/prisma';
 
 /**

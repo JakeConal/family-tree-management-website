@@ -245,23 +245,23 @@ export default function RecordAchievementModal({
 	};
 
 	// Get selected achievement type name for display
-	const getSelectedTypeName = () => {
-		const type = achievementTypes.find((t) => t.id.toString() === achievementFormData.achievementTypeId);
-		return type?.typeName || '';
-	};
+	// const getSelectedTypeName = () => {
+	// 	const type = achievementTypes.find((t) => t.id.toString() === achievementFormData.achievementTypeId);
+	// 	return type?.typeName || '';
+	// };
 
 	// Get selected member name for display
-	const getSelectedMemberName = () => {
-		const member = existingMembers.find((m) => m.id.toString() === achievementFormData.familyMemberId);
-		return member?.fullName || '';
-	};
+	// const getSelectedMemberName = () => {
+	// 	const member = existingMembers.find((m) => m.id.toString() === achievementFormData.familyMemberId);
+	// 	return member?.fullName || '';
+	// };
 
 	// Format date for display
-	const formatDateDisplay = (dateString: string) => {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-	};
+	// const formatDateDisplay = (dateString: string) => {
+	// 	if (!dateString) return '';
+	// 	const date = new Date(dateString);
+	// 	return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+	// };
 
 	if (!isOpen) return null;
 

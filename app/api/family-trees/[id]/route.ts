@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 		const prisma = getPrisma();
 
 		// Build query based on role
-		const whereClause: any = { id: familyTreeId };
+		const whereClause: Record<string, unknown> = { id: familyTreeId };
 
 		if (sessionData.isGuest) {
 			// Guest can only access their assigned family tree

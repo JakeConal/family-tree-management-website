@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { ChevronLeft, Heart } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 

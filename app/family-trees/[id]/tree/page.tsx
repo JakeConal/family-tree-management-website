@@ -1,6 +1,5 @@
 'use client';
 
-import { FamilyMember as PrismaFamilyMember } from '@prisma/client';
 import { ChevronDown, Plus, Minus, Skull } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -18,56 +17,7 @@ import RecordPassingModal from '@/components/modals/RecordPassingModal';
 import PanelRenderer from '@/components/PanelRenderer';
 import { usePanel } from '@/lib/hooks/usePanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
-
-interface ExtendedFamilyMember extends PrismaFamilyMember {
-	parent?: {
-		id: number;
-		fullName: string;
-	} | null;
-	children?: {
-		id: number;
-		fullName: string;
-	}[];
-	divorceDate?: Date | null;
-	hasProfilePicture?: boolean;
-	spouse1?: {
-		divorceDate: Date | null;
-		familyMember2: {
-			id: number;
-			fullName: string;
-		};
-	}[];
-	spouse2?: {
-		divorceDate: Date | null;
-		familyMember1: {
-			id: number;
-			fullName: string;
-		};
-	}[];
-	passingRecords?: {
-		id: number;
-		dateOfPassing: Date;
-	}[];
-	achievements?: {
-		id: number;
-		title: string;
-		achieveDate: Date | null;
-		achievementType: {
-			typeName: string;
-		};
-	}[];
-	occupations?: {
-		id: number;
-		jobTitle: string;
-		startDate: Date | null;
-		endDate: Date | null;
-	}[];
-	birthPlaces?: {
-		placeOfOrigin: {
-			location: string;
-		};
-	}[];
-}
+import { ExtendedFamilyMember } from '@/types';
 
 export default function FamilyTreePage() {
 	const params = useParams();

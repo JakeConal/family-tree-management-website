@@ -225,7 +225,7 @@ export default function BirthPanel({
 
 					{/* Date of Child's Birth Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Date of Child's Birth *</label>
+						<label className="block text-[16px] font-normal text-black mb-2">Date of Child&apos;s Birth *</label>
 						{mode === 'view' ? (
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
