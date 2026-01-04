@@ -605,23 +605,25 @@ export default function MemberPanel({
 									<label className="block text-base font-normal text-black mb-1.5 ml-1">Place of Origin *</label>
 									<div className="space-y-4">
 										{placesOfOrigin.map((place, index) => (
-											<div key={place.id} className="grid grid-cols-3 gap-4">
-												<div className="col-span-3">
+											<div key={place.id} className="space-y-3">
+												<div>
 													<label className="block text-xs text-black/70 mb-1.5 ml-1">Location {index + 1}</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 														{place.location || '-'}
 													</div>
 												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.startDate ? new Date(place.startDate).toLocaleDateString() : '-'}
+												<div className="flex gap-4">
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{place.startDate ? new Date(place.startDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
-												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.endDate ? new Date(place.endDate).toLocaleDateString() : '-'}
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{place.endDate ? new Date(place.endDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
 												</div>
 											</div>
@@ -635,23 +637,25 @@ export default function MemberPanel({
 									<label className="block text-base font-normal text-black mb-1.5 ml-1">Occupation *</label>
 									<div className="space-y-4">
 										{occupations.map((occ, index) => (
-											<div key={occ.id} className="grid grid-cols-3 gap-4">
-												<div className="col-span-3">
+											<div key={occ.id} className="space-y-3">
+												<div>
 													<label className="block text-xs text-black/70 mb-1.5 ml-1">Job Title {index + 1}</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 														{occ.jobTitle || '-'}
 													</div>
 												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.startDate ? new Date(occ.startDate).toLocaleDateString() : '-'}
+												<div className="flex gap-4">
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{occ.startDate ? new Date(occ.startDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
-												</div>
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.endDate ? new Date(occ.endDate).toLocaleDateString() : '-'}
+													<div className="flex-1">
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{occ.endDate ? new Date(occ.endDate).toLocaleDateString() : '-'}
+														</div>
 													</div>
 												</div>
 											</div>
@@ -881,21 +885,62 @@ export default function MemberPanel({
 												)}
 												<div className="space-y-3">
 													<div>
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">Location {index + 1} *</label>
-														<input
-															type="text"
-															value={place.location}
-															onChange={(e) => {
-																const updated = [...placesOfOrigin];
-																updated[index].location = e.target.value;
-																setPlacesOfOrigin(updated);
-															}}
-															placeholder="Enter location"
-															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-														/>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">Origin *</label>
+														<div className="relative">
+															<select
+																value={place.location}
+																onChange={(e) => {
+																	const updated = [...placesOfOrigin];
+																	updated[index].location = e.target.value;
+																	setPlacesOfOrigin(updated);
+																}}
+																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 pr-10 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none cursor-pointer"
+																style={{
+																	backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+																	backgroundRepeat: 'no-repeat',
+																	backgroundPosition: 'right 1rem center',
+																	backgroundSize: '1.25rem'
+																}}
+															>
+																<option value="">Select place of origin</option>
+															<option value="An Giang">An Giang</option>
+															<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
+															<option value="Bac Giang">Bac Giang</option>
+															<option value="Bac Ninh">Bac Ninh</option>
+															<option value="Binh Duong">Binh Duong</option>
+															<option value="Binh Dinh">Binh Dinh</option>
+															<option value="Binh Phuoc">Binh Phuoc</option>
+															<option value="Binh Thuan">Binh Thuan</option>
+															<option value="Ca Mau">Ca Mau</option>
+															<option value="Dak Lak">Dak Lak</option>
+															<option value="Dak Nong">Dak Nong</option>
+															<option value="Dong Nai">Dong Nai</option>
+															<option value="Dong Thap">Dong Thap</option>
+															<option value="Gia Lai">Gia Lai</option>
+															<option value="Ha Giang">Ha Giang</option>
+															<option value="Ha Nam">Ha Nam</option>
+															<option value="Ha Tinh">Ha Tinh</option>
+															<option value="Khanh Hoa">Khanh Hoa</option>
+															<option value="Kien Giang">Kien Giang</option>
+															<option value="Lam Dong">Lam Dong</option>
+															<option value="Lao Cai">Lao Cai</option>
+															<option value="Long An">Long An</option>
+															<option value="Nam Dinh">Nam Dinh</option>
+															<option value="Nghe An">Nghe An</option>
+															<option value="Ninh Binh">Ninh Binh</option>
+															<option value="Phu Tho">Phu Tho</option>
+															<option value="Quang Nam">Quang Nam</option>
+															<option value="Hanoi">Hanoi</option>
+															<option value="Ho Chi Minh City">Ho Chi Minh City</option>
+															<option value="Hai Phong">Hai Phong</option>
+															<option value="Da Nang">Da Nang</option>
+															<option value="Can Tho">Can Tho</option>
+															<option value="Hue">Hue</option>
+															</select>
+														</div>
 													</div>
-													<div className="grid grid-cols-2 gap-4">
-														<div>
+													<div className="flex gap-4">
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
 															<input
 																type="date"
@@ -908,7 +953,7 @@ export default function MemberPanel({
 																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 															/>
 														</div>
-														<div>
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
 															<input
 																type="date"
@@ -972,8 +1017,8 @@ export default function MemberPanel({
 															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 														/>
 													</div>
-													<div className="grid grid-cols-2 gap-4">
-														<div>
+													<div className="flex gap-4">
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
 															<input
 																type="date"
@@ -986,7 +1031,7 @@ export default function MemberPanel({
 																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 															/>
 														</div>
-														<div>
+														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
 															<input
 																type="date"
@@ -1253,3 +1298,4 @@ export default function MemberPanel({
 		</div>
 	);
 }
+
