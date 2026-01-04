@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { X, ChevronLeft, Calendar, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Calendar, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -430,7 +430,7 @@ export default function DivorcePanel({
 										</option>
 									))}
 								</select>
-								<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+							<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.member2Id && touched.member2Id && <p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>}
 						</div>
@@ -438,28 +438,25 @@ export default function DivorcePanel({
 						{/* Date of Divorce */}
 						<div>
 							<label className="block text-[16px] font-normal text-black mb-2">Date of Divorce *</label>
-							<div className="relative">
-								<input
-									type="date"
-									value={formData.divorceDate}
-									onChange={(e) => {
-										setFormData({
-											...formData,
-											divorceDate: e.target.value,
-										});
-										handleFieldChange('divorceDate');
-									}}
-									onBlur={() => validateField('divorceDate', formData.divorceDate)}
-									className={classNames(
-										'w-full h-[35px] px-4 pr-10 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.divorceDate && touched.divorceDate,
-										}
-									)}
-									placeholder="MM/DD/YYYY"
-								/>
-								<Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
+							<input
+								type="date"
+								value={formData.divorceDate}
+								onChange={(e) => {
+									setFormData({
+										...formData,
+										divorceDate: e.target.value,
+									});
+									handleFieldChange('divorceDate');
+								}}
+								onBlur={() => validateField('divorceDate', formData.divorceDate)}
+								className={classNames(
+									'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+									{
+										'border-red-500 bg-red-50': errors.divorceDate && touched.divorceDate,
+									}
+								)}
+								placeholder="MM/DD/YYYY"
+							/>
 							{errors.divorceDate && touched.divorceDate && (
 								<p className="mt-1 text-sm text-red-600">{errors.divorceDate}</p>
 							)}

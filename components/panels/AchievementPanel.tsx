@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { X, ChevronLeft, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronDown, Calendar } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -438,7 +438,7 @@ export default function AchievementPanel({
 										</option>
 									))}
 								</select>
-								<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+							<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.familyMemberId && touched.familyMemberId && (
 								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
@@ -475,7 +475,7 @@ export default function AchievementPanel({
 											</option>
 										))}
 									</select>
-									<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 								</div>
 								{errors.achievementTypeId && touched.achievementTypeId && (
 									<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
@@ -485,30 +485,24 @@ export default function AchievementPanel({
 							{/* Date Achieved */}
 							<div>
 								<label className="block text-[16px] font-normal text-black mb-2">Date Achieved *</label>
-								<div className="relative">
-									<input
-										type="date"
-										value={formData.achieveDate}
-										onChange={(e) => {
-											setFormData({
-												...formData,
-												achieveDate: e.target.value,
-											});
-											handleFieldChange('achieveDate');
-										}}
-										onBlur={() => validateField('achieveDate', formData.achieveDate)}
-										className={classNames(
-											'w-full h-[35px] px-4 pr-10 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-											{
-												'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
-											}
-										)}
-									/>
-									<Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-								</div>
-								{errors.achieveDate && touched.achieveDate && (
-									<p className="mt-1 text-sm text-red-600">{errors.achieveDate}</p>
-								)}
+						<input
+							type="date"
+							value={formData.achieveDate}
+							onChange={(e) => {
+								setFormData({
+									...formData,
+									achieveDate: e.target.value,
+								});
+								handleFieldChange('achieveDate');
+							}}
+							onBlur={() => validateField('achieveDate', formData.achieveDate)}
+							className={classNames(
+								'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+								{
+									'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
+								}
+							)}
+						/>
 							</div>
 						</div>
 

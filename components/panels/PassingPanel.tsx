@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { X, ChevronLeft, Calendar, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Calendar, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -493,27 +493,24 @@ export default function PassingPanel({
 						{/* Date of Passing */}
 						<div>
 							<label className="block text-[16px] font-normal text-black mb-2">Date Of Passing *</label>
-							<div className="relative">
-								<input
-									type="date"
-									value={formData.dateOfPassing}
-									onChange={(e) => {
-										setFormData({
-											...formData,
-											dateOfPassing: e.target.value,
-										});
-										handleFieldChange('dateOfPassing');
-									}}
-									onBlur={() => validateField('dateOfPassing', formData.dateOfPassing)}
-									className={classNames(
-										'w-full h-[35px] px-4 pr-10 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.dateOfPassing && touched.dateOfPassing,
-										}
-									)}
-								/>
-								<Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
+							<input
+								type="date"
+								value={formData.dateOfPassing}
+								onChange={(e) => {
+									setFormData({
+										...formData,
+										dateOfPassing: e.target.value,
+									});
+									handleFieldChange('dateOfPassing');
+								}}
+								onBlur={() => validateField('dateOfPassing', formData.dateOfPassing)}
+								className={classNames(
+									'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+									{
+										'border-red-500 bg-red-50': errors.dateOfPassing && touched.dateOfPassing,
+									}
+								)}
+							/>
 							{errors.dateOfPassing && touched.dateOfPassing && (
 								<p className="mt-1 text-sm text-red-600">{errors.dateOfPassing}</p>
 							)}
