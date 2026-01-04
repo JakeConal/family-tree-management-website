@@ -1,5 +1,6 @@
 'use client';
 
+import classNames from 'classnames';
 import type { FamilyMember } from '@prisma/client';
 import { ChevronDown, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -90,7 +91,7 @@ export default function LifeEventsPage() {
 	const params = useParams();
 	const familyTreeId = params.id as string;
 	const { isGuest } = useGuestSession();
-	const { openPanel } = usePanel();
+	const { openPanel, activePanel } = usePanel();
 
 	const [activeTab, setActiveTab] = useState<'achievement' | 'passing' | 'life-event'>('achievement');
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -382,8 +383,9 @@ export default function LifeEventsPage() {
 	};
 
 	const handleOpenBirthPanel = (id?: number) => {
+		if (!id) return; // Birth records can only be viewed/edited, not added directly
 		openPanel('birth', {
-			mode: id ? 'view' : 'add',
+			mode: 'view',
 			childMemberId: id,
 			familyTreeId,
 			familyMembers,
@@ -391,8 +393,9 @@ export default function LifeEventsPage() {
 	};
 
 	const handleOpenMarriagePanel = (id?: number) => {
+		if (!id) return; // Marriage records can only be viewed/edited, not added directly
 		openPanel('marriage', {
-			mode: id ? 'view' : 'add',
+			mode: 'view',
 			relationshipId: id,
 			familyTreeId,
 			familyMembers,
@@ -525,8 +528,8 @@ export default function LifeEventsPage() {
 												<YearSection year={parseInt(year)} />
 												<div
 													className={classNames('grid gap-[44px]', {
-														'grid-cols-1': panelType !== null,
-														'grid-cols-1 md:grid-cols-2': panelType === null,
+														'grid-cols-1': activePanel !== null,
+														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
 												>
 													{groupedAchievements[year].map((achievement) => (
@@ -565,8 +568,8 @@ export default function LifeEventsPage() {
 												<YearSection year={parseInt(year)} />
 												<div
 													className={classNames('grid gap-[44px]', {
-														'grid-cols-1': panelType !== null,
-														'grid-cols-1 md:grid-cols-2': panelType === null,
+														'grid-cols-1': activePanel !== null,
+														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
 												>
 													{groupedPassingRecords[year].map((record) => (
@@ -611,8 +614,8 @@ export default function LifeEventsPage() {
 												<YearSection year={parseInt(year)} />
 												<div
 													className={classNames('grid gap-[44px]', {
-														'grid-cols-1': panelType !== null,
-														'grid-cols-1 md:grid-cols-2': panelType === null,
+														'grid-cols-1': activePanel !== null,
+														'grid-cols-1 md:grid-cols-2': activePanel === null,
 													})}
 												>
 													{groupedLifeEvents[year].map((event) => (
