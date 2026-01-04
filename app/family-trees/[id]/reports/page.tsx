@@ -22,6 +22,7 @@ import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import * as XLSX from 'xlsx';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { addFonts } from '@/fonts';
 import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 import { FamilyTree } from '@/types/dashboard';
 import { Achievement, SpouseRelationship } from '@/types/lifeEvents';
@@ -154,7 +155,14 @@ export default function FamilyTreeReports() {
 			}
 		});
 
-		const labels = Object.keys(yearData).sort();
+		// Filter out years with no events
+		const labels = Object.keys(yearData).filter((year) => {
+			const data = yearData[year];
+			return data.birth > 0 || data.married > 0 || data.deceased > 0;
+		});
+
+		console.log('Filtered Labels:', labels);
+
 		const marriedData = labels.map((year) => yearData[year].married);
 		const deceasedData = labels.map((year) => yearData[year].deceased);
 		const birthData = labels.map((year) => yearData[year].birth);
@@ -310,28 +318,20 @@ export default function FamilyTreeReports() {
 	const exportToExcel = () => {
 		const wb = XLSX.utils.book_new();
 
-		// Statistics Sheet
-		const statsData = [
-			['Family Tree Report'],
-			['Family Name', familyTree?.familyName || ''],
-			['Generated On', new Date().toLocaleDateString()],
-			[''],
-			['Statistics'],
-			['Metric', 'Value'],
-			['Total Family Members', totalMembers],
-			['Current Family Members', currentMembers],
-			['Total Achievements', totalAchievements],
-			['Generations', generations],
-		];
-		const statsSheet = XLSX.utils.aoa_to_sheet(statsData);
-		XLSX.utils.book_append_sheet(wb, statsSheet, 'Statistics');
+		// Get year range
+		const startYear = memberChangesData?.labels[0] || '';
+		const endYear = memberChangesData?.labels[memberChangesData.labels.length - 1] || '';
 
-		// Member Changes by Year Sheet
+		// Biểu mẫu 5.1 - Tăng Giảm Thành Viên (Member Changes)
 		if (memberChangesData) {
 			const memberChangesSheetData = [
-				['Changes in Family Members by Year'],
-				['Year', 'Births', 'Marriages', 'Deaths'],
+				['BM5.1:', 'Tăng Giảm Thành Viên'],
+				[],
+				[`Từ năm: ${startYear}`, '', '', `Đến năm: ${endYear}`],
+				[],
+				['STT', 'Năm', 'Số Lượng Sinh', 'Số Lượng Kết Hôn', 'Số Lượng Mất'],
 				...memberChangesData.labels.map((year: string, idx: number) => [
+					idx + 1,
 					year,
 					memberChangesData.datasets[2].data[idx], // Birth
 					memberChangesData.datasets[0].data[idx], // Married
@@ -339,46 +339,21 @@ export default function FamilyTreeReports() {
 				]),
 			];
 			const memberChangesSheet = XLSX.utils.aoa_to_sheet(memberChangesSheetData);
-			XLSX.utils.book_append_sheet(wb, memberChangesSheet, 'Member Changes');
+			XLSX.utils.book_append_sheet(wb, memberChangesSheet, 'Tăng Giảm Thành Viên');
 		}
 
-		// Total Members by Year Sheet
-		if (totalMembersByYearData) {
-			const totalMembersSheetData = [
-				['Total Members by Year'],
-				['Year', 'Total Members'],
-				...totalMembersByYearData.labels.map((year: string, idx: number) => [
-					year,
-					totalMembersByYearData.datasets[0].data[idx],
-				]),
-			];
-			const totalMembersSheet = XLSX.utils.aoa_to_sheet(totalMembersSheetData);
-			XLSX.utils.book_append_sheet(wb, totalMembersSheet, 'Total Members');
-		}
-
-		// Total Achievements by Year Sheet
-		if (totalAchievementsByYearData) {
-			const achievementsSheetData = [
-				['Total Achievements by Year'],
-				['Year', 'Total Achievements'],
-				...totalAchievementsByYearData.labels.map((year: string, idx: number) => [
-					year,
-					totalAchievementsByYearData.datasets[0].data[idx],
-				]),
-			];
-			const achievementsSheet = XLSX.utils.aoa_to_sheet(achievementsSheetData);
-			XLSX.utils.book_append_sheet(wb, achievementsSheet, 'Total Achievements');
-		}
-
-		// Achievement Categories Sheet
+		// Biểu mẫu 5.2 - Thành Tích Các Thành Viên (Member Achievements)
 		if (achievementCategoriesData.length > 0) {
 			const categoriesSheetData = [
-				['Achievement Categories'],
-				['Category', 'Count'],
-				...achievementCategoriesData.map((cat) => [cat.name || cat.category, cat.count]),
+				['BM5.2:', 'Thành Tích Các Thành Viên'],
+				[],
+				[`Từ năm: ${startYear}`, '', `Đến năm: ${endYear}`],
+				[],
+				['STT', 'Loại Thành Tích', 'Số Lượng'],
+				...achievementCategoriesData.map((cat, idx) => [idx + 1, cat.name || cat.category, cat.count]),
 			];
 			const categoriesSheet = XLSX.utils.aoa_to_sheet(categoriesSheetData);
-			XLSX.utils.book_append_sheet(wb, categoriesSheet, 'Achievement Categories');
+			XLSX.utils.book_append_sheet(wb, categoriesSheet, 'Thành Tích');
 		}
 
 		// Save the file
@@ -388,61 +363,35 @@ export default function FamilyTreeReports() {
 
 	const exportToPDF = () => {
 		const doc = new jsPDF() as jsPDFWithAutoTable;
+
+		addFonts(doc);
+
 		const pageWidth = doc.internal.pageSize.getWidth();
 		let yPos = 20;
 
-		// Title
-		doc.setFontSize(20);
-		doc.setFont('helvetica', 'bold');
-		doc.text('Family Tree Report', pageWidth / 2, yPos, { align: 'center' });
-		yPos += 10;
+		// Get year range
+		const startYear = memberChangesData?.labels[0] || '';
+		const endYear = memberChangesData?.labels[memberChangesData.labels.length - 1] || '';
 
-		// Family name and date
-		doc.setFontSize(12);
-		doc.setFont('helvetica', 'normal');
-		doc.text(`Family: ${familyTree?.familyName || ''}`, 14, yPos);
-		yPos += 7;
-		doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, yPos);
-		yPos += 15;
-
-		// Statistics
-		doc.setFontSize(14);
-		doc.setFont('helvetica', 'bold');
-		doc.text('Statistics', 14, yPos);
-		yPos += 7;
-
-		const statsTableData = [
-			['Total Family Members', totalMembers.toString()],
-			['Current Family Members', currentMembers.toString()],
-			['Total Achievements', totalAchievements.toString()],
-			['Generations', generations.toString()],
-		];
-
-		autoTable(doc, {
-			startY: yPos,
-			head: [['Metric', 'Value']],
-			body: statsTableData,
-			theme: 'grid',
-			headStyles: { fillColor: [41, 128, 185] },
-			margin: { left: 14 },
-		});
-
-		if (doc.lastAutoTable) {
-			yPos = doc.lastAutoTable.finalY + 15;
-		}
-
-		// Member Changes by Year
+		// Biểu mẫu 5.1 - Tăng Giảm Thành Viên
 		if (memberChangesData) {
-			if (yPos > 250) {
-				doc.addPage();
-				yPos = 20;
-			}
-			doc.setFontSize(14);
+			// Title
+			doc.setFontSize(16);
 			doc.setFont('helvetica', 'bold');
-			doc.text('Changes in Family Members by Year', 14, yPos);
-			yPos += 7;
+			doc.text('BM5.1:', 14, yPos);
+			doc.text('Tăng Giảm Thành Viên', 50, yPos);
+			yPos += 10;
 
+			// Date range
+			doc.setFontSize(11);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`Từ năm: ${startYear}`, 14, yPos);
+			doc.text(`Đến năm: ${endYear}`, pageWidth - 60, yPos);
+			yPos += 10;
+
+			// Table data
 			const memberChangesTableData = memberChangesData.labels.map((year: string, idx: number) => [
+				(idx + 1).toString(),
 				year,
 				memberChangesData.datasets[2].data[idx].toString(), // Birth
 				memberChangesData.datasets[0].data[idx].toString(), // Married
@@ -451,101 +400,78 @@ export default function FamilyTreeReports() {
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [['Year', 'Births', 'Marriages', 'Deaths']],
+				head: [['STT', 'Năm', 'Số Lượng Sinh', 'Số Lượng Kết Hôn', 'Số Lượng Mất']],
 				body: memberChangesTableData,
 				theme: 'grid',
-				headStyles: { fillColor: [41, 128, 185] },
-				margin: { left: 14 },
+				headStyles: {
+					fillColor: [0, 0, 0],
+					textColor: [255, 255, 255],
+					fontStyle: 'bold',
+					halign: 'center',
+				},
+				bodyStyles: {
+					halign: 'center',
+				},
+				columnStyles: {
+					0: { cellWidth: 20 }, // STT
+					1: { cellWidth: 30 }, // Năm
+				},
+				margin: { left: 14, right: 14 },
 			});
 
 			if (doc.lastAutoTable) {
-				yPos = doc.lastAutoTable.finalY + 15;
+				yPos = doc.lastAutoTable.finalY + 20;
 			}
 		}
 
-		// Total Members by Year
-		if (totalMembersByYearData) {
-			if (yPos > 250) {
-				doc.addPage();
-				yPos = 20;
-			}
-			doc.setFontSize(14);
-			doc.setFont('helvetica', 'bold');
-			doc.text('Total Members by Year', 14, yPos);
-			yPos += 7;
-
-			const totalMembersTableData = totalMembersByYearData.labels.map((year: string, idx: number) => [
-				year,
-				totalMembersByYearData.datasets[0].data[idx].toString(),
-			]);
-
-			autoTable(doc, {
-				startY: yPos,
-				head: [['Year', 'Total Members']],
-				body: totalMembersTableData,
-				theme: 'grid',
-				headStyles: { fillColor: [41, 128, 185] },
-				margin: { left: 14 },
-			});
-
-			if (doc.lastAutoTable) {
-				yPos = doc.lastAutoTable.finalY + 15;
-			}
-		}
-
-		// Total Achievements by Year
-		if (totalAchievementsByYearData) {
-			if (yPos > 250) {
-				doc.addPage();
-				yPos = 20;
-			}
-			doc.setFontSize(14);
-			doc.setFont('helvetica', 'bold');
-			doc.text('Total Achievements by Year', 14, yPos);
-			yPos += 7;
-
-			const achievementsTableData = totalAchievementsByYearData.labels.map((year: string, idx: number) => [
-				year,
-				totalAchievementsByYearData.datasets[0].data[idx].toString(),
-			]);
-
-			autoTable(doc, {
-				startY: yPos,
-				head: [['Year', 'Total Achievements']],
-				body: achievementsTableData,
-				theme: 'grid',
-				headStyles: { fillColor: [41, 128, 185] },
-				margin: { left: 14 },
-			});
-
-			if (doc.lastAutoTable) {
-				yPos = doc.lastAutoTable.finalY + 15;
-			}
-		}
-
-		// Achievement Categories
+		// Biểu mẫu 5.2 - Thành Tích Các Thành Viên
 		if (achievementCategoriesData.length > 0) {
-			if (yPos > 250) {
+			// Add new page if needed
+			if (yPos > 200) {
 				doc.addPage();
 				yPos = 20;
 			}
-			doc.setFontSize(14);
-			doc.setFont('helvetica', 'bold');
-			doc.text('Achievement Categories', 14, yPos);
-			yPos += 7;
 
-			const categoriesTableData = achievementCategoriesData.map((cat) => [
+			// Title
+			doc.setFontSize(16);
+			doc.setFont('helvetica', 'bold');
+			doc.text('BM5.2:', 14, yPos);
+			doc.text('Thành Tích Các Thành Viên', 50, yPos);
+			yPos += 10;
+
+			// Date range
+			doc.setFontSize(11);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`Từ năm: ${startYear}`, 14, yPos);
+			doc.text(`Đến năm: ${endYear}`, pageWidth - 60, yPos);
+			yPos += 10;
+
+			// Table data
+			const categoriesTableData = achievementCategoriesData.map((cat, idx) => [
+				(idx + 1).toString(),
 				cat.name || cat.category || '',
 				cat.count.toString(),
 			]);
 
 			autoTable(doc, {
 				startY: yPos,
-				head: [['Category', 'Count']],
+				head: [['STT', 'Loại Thành Tích', 'Số Lượng']],
 				body: categoriesTableData,
 				theme: 'grid',
-				headStyles: { fillColor: [41, 128, 185] },
-				margin: { left: 14 },
+				headStyles: {
+					fillColor: [0, 0, 0],
+					textColor: [255, 255, 255],
+					fontStyle: 'bold',
+					halign: 'center',
+				},
+				bodyStyles: {
+					halign: 'center',
+				},
+				columnStyles: {
+					0: { cellWidth: 20 }, // STT
+					2: { cellWidth: 40 }, // Số Lượng
+				},
+				margin: { left: 14, right: 14 },
 			});
 		}
 

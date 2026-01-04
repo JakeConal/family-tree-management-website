@@ -609,9 +609,9 @@ export default function FamilyTreeDashboard() {
 													<div className="w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center shrink-0">
 														<Users className="w-6 h-6 text-gray-500" />
 													</div>
-													<div className="flex-1">
+													<div className="flex-1 text-black">
 														<p className="font-inter font-medium text-[18px] mb-1">System</p>
-														<p className="font-inter font-light text-[18px] text-black">{message}</p>
+														<p className="font-inter font-light text-[18px] ">{message}</p>
 													</div>
 												</div>
 												<div className="flex items-center gap-2 shrink-0">
