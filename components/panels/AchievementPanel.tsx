@@ -101,6 +101,9 @@ export default function AchievementPanel({
 				if (member?.birthday) {
 					setSelectedMemberBirthDate(new Date(member.birthday).toISOString().split('T')[0]);
 				}
+
+				// Fetch member passing record for date validation
+				fetchMemberPassingRecord(data.familyMember.id.toString());
 			}
 		} catch (error) {
 			console.error('Error fetching achievement:', error);

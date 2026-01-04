@@ -24,7 +24,7 @@ interface PanelRendererProps {
  * Only renders the active panel to improve performance
  */
 export default function PanelRenderer({ className, pushMode = false }: PanelRendererProps) {
-	const { activePanel, panelProps, closePanel } = usePanel();
+	const { activePanel, panelProps, closePanel, updatePanelProps } = usePanel();
 
 	// Determine if panel should be visible
 	const isVisible = activePanel !== null;
@@ -66,9 +66,10 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 					{activePanel === 'achievement' && panelProps.achievement && (
 						<AchievementPanel
 							mode={panelProps.achievement.mode}
+							achievementId={panelProps.achievement.achievementId}
 							familyTreeId={panelProps.achievement.familyTreeId}
 							familyMembers={panelProps.achievement.familyMembers}
-							onModeChange={() => {}}
+							onModeChange={(mode) => updatePanelProps('achievement', { mode })}
 							onClose={closePanel}
 							onSuccess={() => {
 								closePanel();
@@ -79,9 +80,10 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 					{activePanel === 'passing' && panelProps.passing && (
 						<PassingPanel
 							mode={panelProps.passing.mode}
+							passingRecordId={panelProps.passing.passingRecordId}
 							familyTreeId={panelProps.passing.familyTreeId}
 							familyMembers={panelProps.passing.familyMembers}
-							onModeChange={() => {}}
+							onModeChange={(mode) => updatePanelProps('passing', { mode })}
 							onClose={closePanel}
 							onSuccess={() => {
 								closePanel();
@@ -95,7 +97,7 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 							childMemberId={panelProps.birth.childMemberId}
 							familyTreeId={panelProps.birth.familyTreeId}
 							familyMembers={panelProps.birth.familyMembers}
-							onModeChange={() => {}}
+							onModeChange={(mode) => updatePanelProps('birth', { mode })}
 							onClose={closePanel}
 							onSuccess={() => {
 								closePanel();
@@ -109,7 +111,7 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 							relationshipId={panelProps.marriage.relationshipId}
 							familyTreeId={panelProps.marriage.familyTreeId}
 							familyMembers={panelProps.marriage.familyMembers}
-							onModeChange={() => {}}
+							onModeChange={(mode) => updatePanelProps('marriage', { mode })}
 							onClose={closePanel}
 							onSuccess={() => {
 								closePanel();
@@ -123,7 +125,7 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 							divorceId={panelProps.divorce.divorceId}
 							familyTreeId={panelProps.divorce.familyTreeId}
 							familyMembers={panelProps.divorce.familyMembers}
-							onModeChange={() => {}}
+							onModeChange={(mode) => updatePanelProps('divorce', { mode })}
 							onClose={closePanel}
 							onSuccess={() => {
 								closePanel();

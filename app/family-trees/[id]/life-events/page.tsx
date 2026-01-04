@@ -300,6 +300,7 @@ export default function LifeEventsPage() {
 	const handleOpenAchievementPanel = (id?: number) => {
 		openPanel('achievement', {
 			mode: id ? 'view' : 'add',
+			achievementId: id,
 			familyTreeId,
 			familyMembers,
 		});
@@ -308,6 +309,7 @@ export default function LifeEventsPage() {
 	const handleOpenPassingPanel = (id?: number) => {
 		openPanel('passing', {
 			mode: id ? 'view' : 'add',
+			passingRecordId: id,
 			familyTreeId,
 			familyMembers,
 		});

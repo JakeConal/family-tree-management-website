@@ -24,13 +24,15 @@ export interface PanelProps {
 		selectedMemberId?: string;
 	};
 	achievement?: {
-		mode: 'add' | 'view';
+		mode: 'add' | 'view' | 'edit';
+		achievementId?: number;
 		familyTreeId: string;
 		familyMembers: FamilyMember[];
 		onSuccess?: () => void | Promise<void>;
 	};
 	passing?: {
-		mode: 'add' | 'view';
+		mode: 'add' | 'view' | 'edit';
+		passingRecordId?: number;
 		familyTreeId: string;
 		familyMembers: FamilyMember[];
 		onSuccess?: () => void | Promise<void>;
