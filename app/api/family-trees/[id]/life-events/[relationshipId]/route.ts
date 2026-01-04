@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getSessionWithRole } from '@/lib/auth-helpers';
 import { getPrisma } from '@/lib/prisma';
+import { logChange } from '@/lib/utils';
 
 export async function GET(
 	request: NextRequest,
@@ -226,6 +227,27 @@ export async function PUT(
 				},
 			},
 		});
+
+		// Log the marriage date update
+		try {
+			await logChange(
+				'SpouseRelationship',
+				relId,
+				'UPDATE',
+				familyTreeId,
+				sessionData.user.id,
+				{
+					marriageDate: relationship.marriageDate,
+				},
+				{
+					marriageDate: parsedMarriageDate,
+				}
+			);
+			console.log('Marriage date update logged successfully for SpouseRelationship ID:', relId);
+		} catch (logError) {
+			console.error('Failed to log marriage date update:', logError);
+			// Continue execution even if logging fails
+		}
 
 		return NextResponse.json(updatedRelationship);
 	} catch (error) {

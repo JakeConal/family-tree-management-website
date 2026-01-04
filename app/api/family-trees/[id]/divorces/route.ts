@@ -183,20 +183,26 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 			},
 		});
 
-		// Log the change
-		await logChange(
-			'SpouseRelationship',
-			spouseRelationship.id,
-			'UPDATE',
-			familyTreeId,
-			sessionData.user.id,
-			{
-				divorceDate: null,
-			},
-			{
-				divorceDate: updatedRelationship.divorceDate,
-			}
-		);
+		// Log the divorce event
+		try {
+			await logChange(
+				'SpouseRelationship',
+				spouseRelationship.id,
+				'UPDATE',
+				familyTreeId,
+				sessionData.user.id,
+				{
+					divorceDate: null,
+				},
+				{
+					divorceDate: updatedRelationship.divorceDate,
+				}
+			);
+			console.log('Divorce event logged successfully for SpouseRelationship ID:', spouseRelationship.id);
+		} catch (logError) {
+			console.error('Failed to log divorce event:', logError);
+			// Continue execution even if logging fails
+		}
 
 		return NextResponse.json(updatedRelationship, { status: 200 });
 	} catch (error) {

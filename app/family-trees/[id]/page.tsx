@@ -27,6 +27,14 @@ import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember, FamilyTree, FamilyStatistics, ChangeLog } from '@/types';
 
+const getUserName = (log: ChangeLog) => {
+	// Return user name if available, otherwise fallback to email or 'Unknown User'
+	if (log.user) {
+		return log.user.name || log.user.email || 'Unknown User';
+	}
+	return log.userId ? 'Unknown User' : 'Unknown User';
+};
+
 export default function FamilyTreeDashboard() {
 	const router = useRouter();
 	const params = useParams();
@@ -254,6 +262,11 @@ export default function FamilyTreeDashboard() {
 
 		try {
 			const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
+			console.log('Fetched activities - Total logs:', logs.length);
+			console.log(
+				'SpouseRelationship logs:',
+				logs.filter((log: ChangeLog) => log.entityType === 'SpouseRelationship')
+			);
 			setChangeLogs(logs);
 		} catch (error) {
 			console.error('Error fetching change logs:', error);
@@ -264,7 +277,9 @@ export default function FamilyTreeDashboard() {
 	// Refresh all dashboard data after panel actions
 	const refreshDashboardData = async () => {
 		try {
+			console.log('Refreshing dashboard data...');
 			await Promise.all([fetchFamilyTreeData(), fetchStatistics(), fetchActivities(), fetchExistingMembers()]);
+			console.log('Dashboard data refreshed successfully');
 		} catch (error) {
 			console.error('Error refreshing dashboard data:', error);
 		}
@@ -336,8 +351,22 @@ export default function FamilyTreeDashboard() {
 			case 'SpouseRelationship':
 				if (action === 'create') {
 					message = 'Marriage recorded';
+				} else if (action === 'update') {
+					// Check if this is a divorce (divorceDate was added)
+					let oldValues = null;
+					let newValues = null;
+					try {
+						oldValues = log.oldValues ? JSON.parse(log.oldValues) : null;
+						newValues = log.newValues ? JSON.parse(log.newValues) : null;
+					} catch {
+						// Ignore parsing errors
+					}
+
+					if (newValues && newValues.divorceDate && (!oldValues || !oldValues.divorceDate)) {
+						message = 'Divorce recorded';
+					}
 				} else if (action === 'delete') {
-					message = 'Divorce recorded';
+					message = 'Marriage relationship deleted';
 				}
 				break;
 			case 'FamilyTree':
@@ -610,7 +639,7 @@ export default function FamilyTreeDashboard() {
 														<Users className="w-6 h-6 text-gray-500" />
 													</div>
 													<div className="flex-1 text-black">
-														<p className="font-inter font-medium text-[18px] mb-1">System</p>
+														<p className="font-inter font-medium text-[18px] mb-1">{getUserName(log)}</p>
 														<p className="font-inter font-light text-[18px] ">{message}</p>
 													</div>
 												</div>

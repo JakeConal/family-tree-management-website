@@ -18,6 +18,11 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 			setLoading(true);
 			try {
 				const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
+				console.log('Fetched change logs:', logs);
+				console.log(
+					'SpouseRelationship logs:',
+					logs.filter((log: ChangeLog) => log.entityType === 'SpouseRelationship')
+				);
 				setChangeLogs(logs);
 			} catch (error) {
 				console.error('Error fetching change logs:', error);
@@ -67,10 +72,26 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 			case 'SpouseRelationship':
 				if (action === 'create') {
 					message = 'Marriage recorded';
-				} else if (action === 'delete') {
-					message = 'Divorce recorded';
 				} else if (action === 'update') {
-					message = 'Marriage information updated';
+					// Check if this is a divorce (divorceDate was added)
+					let oldValues = null;
+					let newValues = null;
+					try {
+						oldValues = log.oldValues ? JSON.parse(log.oldValues) : null;
+						newValues = log.newValues ? JSON.parse(log.newValues) : null;
+					} catch {
+						// Ignore parsing errors
+					}
+
+					console.log(`SpouseRelationship UPDATE - oldValues:`, oldValues, 'newValues:', newValues);
+
+					if (newValues && newValues.divorceDate && (!oldValues || !oldValues.divorceDate)) {
+						message = 'Divorce recorded';
+					} else {
+						message = 'Marriage information updated';
+					}
+				} else if (action === 'delete') {
+					message = 'Marriage relationship deleted';
 				}
 				break;
 			case 'FamilyTree':
@@ -80,6 +101,10 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 				break;
 			default:
 				message = `${entityType} ${action}d`;
+		}
+
+		if (entityType === 'SpouseRelationship') {
+			console.log(`SpouseRelationship ${action} message: "${message}"`);
 		}
 
 		return message;
@@ -99,9 +124,11 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 	};
 
 	const getUserName = (log: ChangeLog) => {
-		// For now, return "System" if userId is null
-		// In the future, you can fetch user details from userId
-		return log.userId ? 'User' : 'System';
+		// Return user name if available, otherwise fallback to email or 'Unknown User'
+		if (log.user) {
+			return log.user.name || log.user.email || 'Unknown User';
+		}
+		return log.userId ? 'Unknown User' : 'Unknown User';
 	};
 
 	// const getUserAvatar = (log: ChangeLog) => {

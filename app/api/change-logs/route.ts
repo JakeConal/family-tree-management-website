@@ -44,16 +44,30 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: 'Family tree not found or access denied' }, { status: 404 });
 		}
 
-		// Get change logs for this family tree
+		// Get change logs for this family tree with user information
 		const changeLogs = await prisma.changeLog.findMany({
 			where: {
 				familyTreeId: treeId,
+			},
+			include: {
+				user: {
+					select: {
+						name: true,
+						email: true,
+					},
+				},
 			},
 			orderBy: {
 				createdAt: 'desc',
 			},
 			take: 100, // Limit to last 100 changes
 		});
+
+		console.log(`[CHANGELOG API] Found ${changeLogs.length} change logs for family tree ${treeId}`);
+		console.log(
+			`[CHANGELOG API] SpouseRelationship logs:`,
+			changeLogs.filter((log) => log.entityType === 'SpouseRelationship')
+		);
 
 		return NextResponse.json(changeLogs);
 	} catch (error) {

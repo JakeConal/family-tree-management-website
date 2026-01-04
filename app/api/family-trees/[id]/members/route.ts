@@ -125,6 +125,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			generation: familyMember.generation,
 			parentId: familyMember.parentId,
 		});
+		console.log(`[CHANGELOG] 1. Added new member log - FamilyMember ID: ${familyMember.id}`);
 
 		// Create places of origin if provided
 		if (placesOfOrigin && Array.isArray(placesOfOrigin)) {
@@ -180,12 +181,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 				},
 			});
 
-			// Log the spouse relationship creation
-			await logChange('SpouseRelationship', spouseRelationship.id, 'CREATE', familyTreeId, sessionData.user.id, null, {
-				marriageDate: spouseRelationship.marriageDate,
-				familyMember1Id: spouseRelationship.familyMember1Id,
-				familyMember2Id: spouseRelationship.familyMember2Id,
-			});
+			// Log the spouse relationship creation (marriage event)
+			try {
+				await logChange(
+					'SpouseRelationship',
+					spouseRelationship.id,
+					'CREATE',
+					familyTreeId,
+					sessionData.user.id,
+					null,
+					{
+						marriageDate: spouseRelationship.marriageDate,
+						familyMember1Id: spouseRelationship.familyMember1Id,
+						familyMember2Id: spouseRelationship.familyMember2Id,
+					}
+				);
+				console.log(`[CHANGELOG] 2. Added marriage log - SpouseRelationship ID: ${spouseRelationship.id}`);
+				console.log(`[CHANGELOG] Total logs created: 2 (FamilyMember + SpouseRelationship)`);
+			} catch (logError) {
+				console.error('Failed to log marriage event:', logError);
+				// Continue execution even if logging fails
+			}
 		}
 
 		return NextResponse.json(familyMember, { status: 201 });

@@ -201,6 +201,7 @@ model User {
   treeOwner     TreeOwner?
   accounts      Account[]
   sessions      Session[]
+  changeLogs    ChangeLog[]
 
   @@map("users")
 }
@@ -256,6 +257,7 @@ model ChangeLog {
   oldValues   String?   @db.Text         // JSON string of old values (for UPDATE)
   newValues   String?   @db.Text         // JSON string of new values (for CREATE/UPDATE)
   createdAt   DateTime  @default(now())
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   familyTree  FamilyTree @relation(fields: [familyTreeId], references: [id], onDelete: Cascade)
 
   @@index([familyTreeId], map: "ChangeLog_familyTreeId_fkey")

@@ -12,6 +12,10 @@ export interface ChangeLog {
 	oldValues: string | null;
 	newValues: string | null;
 	createdAt: string;
+	user?: {
+		name: string | null;
+		email: string | null;
+	} | null;
 }
 
 export interface ChangeDetail {

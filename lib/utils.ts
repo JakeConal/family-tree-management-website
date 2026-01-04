@@ -19,7 +19,9 @@ export async function logChange(
 	try {
 		const prisma = getPrisma();
 
-		await prisma.changeLog.create({
+		console.log(`Logging change: ${entityType} ${action} for entity ID ${entityId} in family tree ${familyTreeId}`);
+
+		const changeLog = await prisma.changeLog.create({
 			data: {
 				entityType,
 				entityId,
@@ -30,8 +32,20 @@ export async function logChange(
 				newValues: newValues ? JSON.stringify(newValues) : null,
 			},
 		});
+
+		console.log(`Change log created successfully with ID: ${changeLog.id}`);
+		return changeLog;
 	} catch (error) {
-		console.error('Failed to log change:', error);
+		console.error('Failed to log change:', {
+			entityType,
+			entityId,
+			action,
+			familyTreeId,
+			userId,
+			error: error instanceof Error ? error.message : error,
+			stack: error instanceof Error ? error.stack : undefined,
+		});
 		// Don't throw error to avoid breaking the main operation
+		return null;
 	}
 }
