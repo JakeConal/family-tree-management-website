@@ -12,79 +12,19 @@ import PanelRenderer from '@/components/PanelRenderer';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
-
-interface Achievement {
-	id: number;
-	title: string;
-	achieveDate: Date | null;
-	description: string | null;
-	familyMember: {
-		id: number;
-		fullName: string;
-	};
-	achievementType: {
-		id: number;
-		typeName: string;
-	};
-}
+import {
+	Achievement,
+	PassingRecord,
+	SpouseRelationship,
+	LifeEvent,
+	GroupedAchievements,
+	GroupedPassingRecords,
+	GroupedLifeEvents,
+} from '@/types';
 
 interface AchievementType {
 	id: number;
 	typeName: string;
-}
-
-interface GroupedAchievements {
-	[year: string]: Achievement[];
-}
-
-interface PassingRecord {
-	id: number;
-	dateOfPassing: Date;
-	familyMember: {
-		id: number;
-		fullName: string;
-	};
-	causeOfDeath: {
-		id: number;
-		causeName: string;
-	} | null;
-	buriedPlaces: {
-		id: number;
-		location: string;
-		startDate: Date | null;
-		endDate: Date | null;
-	}[];
-}
-
-interface GroupedPassingRecords {
-	[year: string]: PassingRecord[];
-}
-
-interface SpouseRelationship {
-	id: number;
-	marriageDate: Date;
-	divorceDate: Date | null;
-	familyMember1: {
-		id: number;
-		fullName: string;
-	};
-	familyMember2: {
-		id: number;
-		fullName: string;
-	};
-}
-
-interface LifeEvent {
-	id: string;
-	type: 'Married' | 'Divorce' | 'Birth Event';
-	date: Date;
-	title: string;
-	description: string;
-	relationshipId: number;
-}
-
-interface GroupedLifeEvents {
-	[year: string]: LifeEvent[];
 }
 
 export default function LifeEventsPage() {

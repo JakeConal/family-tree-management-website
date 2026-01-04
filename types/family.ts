@@ -18,11 +18,6 @@ export interface FamilyMember {
 	} | null;
 }
 
-export interface AchievementType {
-	id: number;
-	typeName: string;
-}
-
 export interface ExtendedFamilyMember extends PrismaFamilyMember {
 	parent?: {
 		id: number;

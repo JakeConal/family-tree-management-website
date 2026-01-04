@@ -5,94 +5,18 @@ import { X, Clock, User, FileText, Trophy, Briefcase, Heart, Skull } from 'lucid
 import { useState, useEffect } from 'react';
 
 import LoadingScreen from '@/components/LoadingScreen';
-
-interface ChangeLog {
-	id: number;
-	entityType: string;
-	entityId: number;
-	action: string;
-	userId: string | null;
-	familyTreeId: number;
-	oldValues: string | null;
-	newValues: string | null;
-	createdAt: string;
-}
-
-interface ChangeDetail {
-	field: string;
-	oldValue: string | null | undefined;
-	newValue: string | null | undefined;
-	type?: string;
-}
-
-interface FamilyMemberData {
-	fullName?: string;
-	birthday?: string;
-	gender?: string;
-	generation?: number;
-	address?: string;
-	isAdopted?: boolean;
-	profilePicture?: string;
-	[key: string]: unknown;
-}
-
-interface AchievementData {
-	familyMemberName?: string;
-	achievementTypeName?: string;
-	achieveDate?: string;
-	title?: string;
-	description?: string;
-	note?: string;
-	[key: string]: unknown;
-}
-
-interface SpouseRelationshipData {
-	familyMember1Id?: number;
-	familyMember2Id?: number;
-	relationshipEstablished?: string;
-	relationshipEnd?: string;
-	relationshipType?: string;
-	marriageDate?: string;
-	[key: string]: unknown;
-}
-
-interface OccupationData {
-	title?: string;
-	jobTitle?: string;
-	startDate?: string;
-	endDate?: string;
-	[key: string]: unknown;
-}
-
-interface BurialPlace {
-	location: string;
-	startDate?: string;
-}
-
-interface PassingRecordData {
-	familyMemberName?: string;
-	passingDate?: string;
-	dateOfPassing?: string;
-	causeOfDeath?: string;
-	placeOfDeath?: string;
-	burialPlaces?: BurialPlace[];
-	[key: string]: unknown;
-}
-
-type ChangeLogData = (
-	| FamilyMemberData
-	| AchievementData
-	| SpouseRelationshipData
-	| OccupationData
-	| PassingRecordData
-) &
-	Record<string, unknown>;
-
-interface ChangeLogDetailsModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	changeLog: ChangeLog | null;
-}
+import {
+	ChangeLog,
+	ChangeDetail,
+	FamilyMemberData,
+	AchievementData,
+	SpouseRelationshipData,
+	OccupationData,
+	BurialPlace,
+	PassingRecordData,
+	ChangeLogData,
+} from '@/types/changelog';
+import { ChangeLogDetailsModalProps } from '@/types/ui';
 
 export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: ChangeLogDetailsModalProps) {
 	const [relatedMembers, setRelatedMembers] = useState<{

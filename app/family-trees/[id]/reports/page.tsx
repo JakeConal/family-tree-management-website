@@ -23,13 +23,9 @@ import * as XLSX from 'xlsx';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
-
-// Extend jsPDF type to include autoTable properties
-interface jsPDFWithAutoTable extends jsPDF {
-	lastAutoTable: {
-		finalY: number;
-	};
-}
+import { FamilyTree } from '@/types/dashboard';
+import { Achievement, SpouseRelationship } from '@/types/lifeEvents';
+import { jsPDFWithAutoTable, FamilyMemberWithDetails, ChartData, AchievementCategory } from '@/types/reports';
 
 // Register Chart.js components
 ChartJS.register(
@@ -44,66 +40,6 @@ ChartJS.register(
 	Legend,
 	Filler
 );
-
-interface FamilyTree {
-	id: number;
-	familyName: string;
-	establishYear?: number;
-}
-
-interface PassingRecord {
-	passingDate: string;
-}
-
-interface SpouseRelationship {
-	relationshipEstablished?: string;
-}
-
-interface AchievementType {
-	typeName: string;
-}
-
-interface Achievement {
-	achieveDate: string;
-	achievementType: AchievementType;
-	achievementDate?: string;
-}
-
-interface FamilyMemberWithDetails {
-	id: number;
-	birthday?: string;
-	generation?: number;
-	passingRecords?: PassingRecord[];
-	spouseRelationships?: SpouseRelationship[];
-	achievements?: Achievement[];
-}
-
-interface ChartDataset {
-	label: string;
-	data: number[];
-	backgroundColor?: string | string[];
-	borderColor?: string;
-	pointBackgroundColor?: string;
-	pointBorderColor?: string;
-	pointBorderWidth?: number;
-	pointRadius?: number;
-	pointHoverRadius?: number;
-	tension?: number;
-	fill?: boolean;
-	borderRadius?: number;
-	borderWidth?: number;
-}
-
-interface ChartData {
-	labels: string[];
-	datasets: ChartDataset[];
-}
-
-interface AchievementCategory {
-	name: string;
-	count: number;
-	color: string;
-}
 
 export default function FamilyTreeReports() {
 	const params = useParams();
@@ -209,8 +145,8 @@ export default function FamilyTreeReports() {
 		// Count deceased (from passingRecords)
 		members.forEach((member) => {
 			if (member.passingRecords && member.passingRecords.length > 0) {
-				member.passingRecords.forEach((record: PassingRecord) => {
-					const year = new Date(record.passingDate).getFullYear();
+				member.passingRecords.forEach((record) => {
+					const year = new Date(record.passingDate || record.dateOfPassing).getFullYear();
 					if (yearData[year]) {
 						yearData[year].deceased++;
 					}
@@ -261,7 +197,7 @@ export default function FamilyTreeReports() {
 			yearCounts[year] = members.filter((member) => {
 				const birthYear = member.birthday ? new Date(member.birthday).getFullYear() : startYear;
 				const deathYear =
-					member.passingRecords && member.passingRecords.length > 0
+					member.passingRecords && member.passingRecords.length > 0 && member.passingRecords[0].passingDate
 						? new Date(member.passingRecords[0].passingDate).getFullYear()
 						: null;
 
@@ -303,8 +239,9 @@ export default function FamilyTreeReports() {
 		// Count cumulative achievements by year
 		for (let year = startYear; year <= endYear; year++) {
 			yearCounts[year] = achievements.filter((achievement) => {
-				const achievementYear = achievement.achievementDate
-					? new Date(achievement.achievementDate).getFullYear()
+				const achieveValue = achievement.achieveDate;
+				const achievementYear = achieveValue
+					? new Date(achieveValue instanceof Date ? achieveValue : achieveValue).getFullYear()
 					: endYear;
 				return achievementYear <= year;
 			}).length;
@@ -438,7 +375,7 @@ export default function FamilyTreeReports() {
 			const categoriesSheetData = [
 				['Achievement Categories'],
 				['Category', 'Count'],
-				...achievementCategoriesData.map((cat) => [cat.name, cat.count]),
+				...achievementCategoriesData.map((cat) => [cat.name || cat.category, cat.count]),
 			];
 			const categoriesSheet = XLSX.utils.aoa_to_sheet(categoriesSheetData);
 			XLSX.utils.book_append_sheet(wb, categoriesSheet, 'Achievement Categories');
@@ -490,7 +427,9 @@ export default function FamilyTreeReports() {
 			margin: { left: 14 },
 		});
 
-		yPos = doc.lastAutoTable.finalY + 15;
+		if (doc.lastAutoTable) {
+			yPos = doc.lastAutoTable.finalY + 15;
+		}
 
 		// Member Changes by Year
 		if (memberChangesData) {
@@ -519,7 +458,9 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = doc.lastAutoTable.finalY + 15;
+			if (doc.lastAutoTable) {
+				yPos = doc.lastAutoTable.finalY + 15;
+			}
 		}
 
 		// Total Members by Year
@@ -547,7 +488,9 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = doc.lastAutoTable.finalY + 15;
+			if (doc.lastAutoTable) {
+				yPos = doc.lastAutoTable.finalY + 15;
+			}
 		}
 
 		// Total Achievements by Year
@@ -575,7 +518,9 @@ export default function FamilyTreeReports() {
 				margin: { left: 14 },
 			});
 
-			yPos = doc.lastAutoTable.finalY + 15;
+			if (doc.lastAutoTable) {
+				yPos = doc.lastAutoTable.finalY + 15;
+			}
 		}
 
 		// Achievement Categories
@@ -589,7 +534,10 @@ export default function FamilyTreeReports() {
 			doc.text('Achievement Categories', 14, yPos);
 			yPos += 7;
 
-			const categoriesTableData = achievementCategoriesData.map((cat) => [cat.name, cat.count.toString()]);
+			const categoriesTableData = achievementCategoriesData.map((cat) => [
+				cat.name || cat.category || '',
+				cat.count.toString(),
+			]);
 
 			autoTable(doc, {
 				startY: yPos,

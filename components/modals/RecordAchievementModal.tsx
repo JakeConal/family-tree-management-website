@@ -7,14 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 import { AchievementType, FamilyMember } from '@/types';
-
-interface RecordAchievementModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	onAchievementRecorded: () => void;
-}
+import { RecordAchievementModalProps } from '@/types/ui';
 
 export default function RecordAchievementModal({
 	isOpen,

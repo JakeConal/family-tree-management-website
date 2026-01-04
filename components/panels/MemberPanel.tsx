@@ -8,68 +8,7 @@ import toast from 'react-hot-toast';
 import LoadingScreen from '@/components/LoadingScreen';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { PlaceOfOriginForm, FamilyMember, ExtendedFamilyMember } from '@/types';
-
-interface ExistingMember {
-	id: number;
-	fullName: string;
-	gender: 'MALE' | 'FEMALE' | null;
-	birthday: string | null;
-	address: string | null;
-	generation: string | null;
-	isRootPerson: boolean | null;
-	isAdopted: boolean | null;
-	relationshipEstablishedDate?: string | null;
-	hasProfilePicture?: boolean;
-	birthPlaces?: {
-		startDate: string;
-		endDate: string;
-		placeOfOrigin: {
-			location: string;
-		};
-	}[];
-	occupations?: {
-		id: number;
-		jobTitle: string;
-		startDate: string | null;
-		endDate: string | null;
-	}[];
-	parent?: {
-		id: number;
-		fullName: string;
-	} | null;
-	spouse1?: Array<{
-		marriageDate?: string | null;
-		divorceDate: Date | null;
-		familyMember2: {
-			id: number;
-			fullName: string;
-		};
-	}>;
-	spouse2?: Array<{
-		marriageDate?: string | null;
-		divorceDate: Date | null;
-		familyMember1: {
-			id: number;
-			fullName: string;
-		};
-	}>;
-}
-
-interface OccupationApiResponse {
-	id: string | number;
-	jobTitle: string;
-	startDate: string;
-	endDate: string;
-}
-
-interface MemberPanelProps {
-	mode: 'add' | 'view' | 'edit';
-	memberId?: number;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	selectedMemberId?: string;
-	onClose: () => void;
-}
+import { ExistingMember, OccupationApiResponse, MemberPanelProps } from '@/types/ui';
 
 export default function MemberPanel({
 	mode: initialMode,

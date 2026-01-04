@@ -15,13 +15,3 @@ export interface OccupationForm {
 	startDate: string;
 	endDate: string;
 }
-
-/**
- * API response types that may differ from form types
- */
-export interface OccupationApiResponse {
-	id: string | number;
-	jobTitle: string;
-	startDate: string;
-	endDate: string;
-}

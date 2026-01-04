@@ -25,41 +25,7 @@ import PanelRenderer from '@/components/PanelRenderer';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
-import { FamilyMember } from '@/types';
-
-// Mock data types (representing API responses)
-interface FamilyTree {
-	id: number;
-	familyName: string;
-	origin: string | null;
-	establishYear: number | null;
-	createdAt: string;
-	treeOwner: {
-		fullName: string;
-	};
-}
-
-interface FamilyStatistics {
-	totalGenerations: number;
-	totalMembers: number;
-	livingMembers: number;
-	memberGrowth: { count: number; percentage: number };
-	deathTrend: { count: number; percentage: number };
-	marriageTrend: { marriages: number; divorces: number };
-	achievementGrowth: { count: number; percentage: number };
-}
-
-interface ChangeLog {
-	id: number;
-	entityType: string;
-	entityId: number;
-	action: string;
-	userId: string | null;
-	familyTreeId: number;
-	oldValues: string | null;
-	newValues: string | null;
-	createdAt: string;
-}
+import { FamilyMember, FamilyTree, FamilyStatistics, ChangeLog } from '@/types';
 
 export default function FamilyTreeDashboard() {
 	const router = useRouter();

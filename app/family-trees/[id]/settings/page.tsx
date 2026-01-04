@@ -10,16 +10,7 @@ import ConfirmModal from '@/components/modals/ConfirmModal';
 import InviteGuestModal from '@/components/modals/InviteGuestModal';
 import { FamilyTreeService, FamilyMemberService } from '@/lib/services';
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
-import { FamilyMember } from '@/types';
-
-interface FamilyTree {
-	id: number;
-	familyName: string;
-	origin: string | null;
-	establishYear: number | null;
-	createdAt: string;
-	treeOwnerId: number;
-}
+import { FamilyMember, FamilyTree } from '@/types';
 
 export default function FamilyTreeSettings() {
 	const router = useRouter();

@@ -4,23 +4,7 @@ import { ChevronLeft, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-interface FamilyTree {
-	id: number;
-	familyName: string;
-	origin: string | null;
-	establishYear: number | null;
-	createdAt: string;
-	treeOwner: {
-		fullName: string;
-	};
-}
-
-interface EditFamilyTreeModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTree: FamilyTree;
-	onFamilyTreeUpdated: () => void;
-}
+import { EditFamilyTreeModalProps } from '@/types/ui';
 
 export default function EditFamilyTreeModal({
 	isOpen,

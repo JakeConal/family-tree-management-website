@@ -4,25 +4,8 @@ import { X, Calendar, ChevronDown, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 import { ChangeLogService } from '@/lib/services';
-
-interface ChangeLog {
-	id: number;
-	entityType: string;
-	entityId: number;
-	action: string;
-	userId: string | null;
-	familyTreeId: number;
-	oldValues: string | null;
-	newValues: string | null;
-	createdAt: string;
-}
-
-interface AllChangeLogsModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	onLogClick?: (log: ChangeLog) => void;
-}
+import { ChangeLog } from '@/types/changelog';
+import { AllChangeLogsModalProps } from '@/types/ui';
 
 export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLogClick }: AllChangeLogsModalProps) {
 	const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
