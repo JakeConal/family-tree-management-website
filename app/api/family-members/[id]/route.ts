@@ -351,7 +351,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 						'SpouseRelationship',
 						spouseRelationship.id,
 						'CREATE',
-						familyMember.familyTreeId,
+						existingMember.familyTreeId,
 						sessionData.user.id,
 						null,
 						{
