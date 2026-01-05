@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, type Transition } from 'motion/react';
+import { motion } from 'motion/react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -9,7 +9,7 @@ type GradientTextProps = React.ComponentProps<'span'> & {
 	text: string;
 	gradient?: string;
 	neon?: boolean;
-	transition?: Transition;
+	transition?: Record<string, any>;
 };
 
 function GradientText({
