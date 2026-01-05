@@ -50,18 +50,18 @@
 			"description": "Just a steps to start building your family tree",
 			"step1": {
 				"number": "01",
-				"title": "Create Account",
-				"description": "Sign up for free in just a few seconds."
+				"title": "Create Family Tree",
+				"description": "Start by creating your family tree to organize and preserve your family's history."
 			},
 			"step2": {
 				"number": "02",
 				"title": "Add Member",
-				"description": "Enter information about your family members."
+				"description": "Add family members to your tree by entering their details in our easy form."
 			},
 			"step3": {
 				"number": "03",
-				"title": "Build Connections",
-				"description": "Link relationships to build your family tree."
+				"title": "Share Access Code",
+				"description": "Generate an access code and share it with family members to invite them to contribute."
 			}
 		},
 		"cta": {

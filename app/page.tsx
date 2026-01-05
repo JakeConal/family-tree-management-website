@@ -440,12 +440,12 @@ export default function Home() {
 										<FormattedMessage id="home.howItWorks.step1.number" defaultMessage="01" />
 									</div>
 									<h4 className="text-2xl font-bold text-gray-900 mb-2">
-										<FormattedMessage id="home.howItWorks.step1.title" defaultMessage="Create Account" />
+										<FormattedMessage id="home.howItWorks.step1.title" defaultMessage="Create Family Tree" />
 									</h4>
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step1.description"
-											defaultMessage="Sign up for free in just a few seconds and start your journey."
+											defaultMessage="Start by creating your family tree to organize and preserve your family's history."
 										/>
 									</p>
 								</div>
@@ -464,7 +464,7 @@ export default function Home() {
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step2.description"
-											defaultMessage="Enter detailed information about your family members with our easy-to-use form."
+											defaultMessage="Add family members to your tree by entering their details in our easy form."
 										/>
 									</p>
 								</div>
@@ -478,12 +478,12 @@ export default function Home() {
 										<FormattedMessage id="home.howItWorks.step3.number" defaultMessage="03" />
 									</div>
 									<h4 className="text-2xl font-bold text-gray-900 mb-2">
-										<FormattedMessage id="home.howItWorks.step3.title" defaultMessage="Build Connections" />
+										<FormattedMessage id="home.howItWorks.step3.title" defaultMessage="Share Access Code" />
 									</h4>
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step3.description"
-											defaultMessage="Link family relationships and watch your family tree come to life."
+											defaultMessage="Generate an access code and share it with family members to invite them to contribute."
 										/>
 									</p>
 								</div>

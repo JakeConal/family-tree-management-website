@@ -253,8 +253,8 @@ export default function MemberPanel({
 			errors.address = intl.formatMessage({ id: 'panel.member.validation.addressRequired' });
 		}
 
-		// For add mode or root person, related member is required
-		if ((mode === 'add' && !member?.isRootPerson) || (mode !== 'add' && !member?.isRootPerson)) {
+		// For add mode or edit mode (not root person), related member is required only if there are existing members
+		if ((mode === 'add' && existingMembers.length > 0) || (mode !== 'add' && !member?.isRootPerson)) {
 			if (!memberFormData.relatedMemberId) {
 				errors.relatedMemberId = intl.formatMessage({ id: 'panel.member.validation.relatedMemberRequired' });
 			}
@@ -1221,8 +1221,8 @@ export default function MemberPanel({
 								</div>
 							</section>
 
-							{/* Only show Family Connection section if not root person or in add mode with existing members */}
-							{((isAddMode && existingMembers.length > 0) || (!isAddMode && !member?.isRootPerson)) && (
+							{/* Only show Family Connection section if not root person in edit mode, or always in add mode */}
+							{(isAddMode || (!isAddMode && !member?.isRootPerson)) && (
 								<>
 									<div className="w-full h-px bg-black/20 my-10"></div>
 
@@ -1241,146 +1241,125 @@ export default function MemberPanel({
 											<div>
 												<label className="block text-base font-normal text-black mb-1.5 ml-1">
 													<FormattedMessage id="panel.member.relatedMember" />
+													{existingMembers.length === 0 && (
+														<span className="text-[11.5px] text-black/50 ml-2">
+															<FormattedMessage id="common.optional" />
+														</span>
+													)}
 												</label>
-												<select
-													value={memberFormData.relatedMemberId}
-													onChange={(e) => {
-														setMemberFormData({
-															...memberFormData,
-															relatedMemberId: e.target.value,
-														});
-													}}
-													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
-													required
-												>
-													<option value="">
-														<FormattedMessage id="panel.member.selectFamilyMember" />
-													</option>
-													{existingMembers
-														.filter((m) => (isAddMode ? true : m.id !== memberId))
-														.map((m) => (
-															<option key={m.id} value={m.id}>
-																{m.fullName}
+												{existingMembers.length > 0 ? (
+													<>
+														<select
+															value={memberFormData.relatedMemberId}
+															onChange={(e) => {
+																setMemberFormData({
+																	...memberFormData,
+																	relatedMemberId: e.target.value,
+																});
+															}}
+															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
+															required
+														>
+															<option value="">
+																<FormattedMessage id="panel.member.selectFamilyMember" />
 															</option>
-														))}
-												</select>
-												{validationErrors.relatedMemberId && (
-													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relatedMemberId}</p>
-												)}
-											</div>
-
-											<div>
-												<label className="block text-base font-normal text-black mb-1.5 ml-1">
-													<FormattedMessage id="panel.member.label.relationship" />
-												</label>
-												<select
-													value={memberFormData.relationship}
-													onChange={(e) => {
-														setMemberFormData({
-															...memberFormData,
-															relationship: e.target.value,
-														});
-													}}
-													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
-													required
-												>
-													<option value="">
-														<FormattedMessage id="panel.member.selectRelationship" />
-													</option>
-													<option value="parent">
-														<FormattedMessage id="panel.member.parent" />
-													</option>
-													<option value="spouse">
-														<FormattedMessage id="panel.member.spouse" />
-													</option>
-												</select>
-												{validationErrors.relationship && (
-													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationship}</p>
-												)}
-											</div>
-
-											<div>
-												<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-													<FormattedMessage id="panel.member.relationshipDate" />
-												</label>
-												<input
-													type="date"
-													value={memberFormData.relationshipDate}
-													onChange={(e) => {
-														setMemberFormData({
-															...memberFormData,
-															relationshipDate: e.target.value,
-														});
-													}}
-													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-													required
-												/>
-												{validationErrors.relationshipDate && (
-													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationshipDate}</p>
-												)}
-												<div className="flex items-start space-x-2 mt-2 ml-3">
-													<Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-													<p className="text-[10px] text-black/50">
-														{memberFormData.relationship === 'parent' ? (
-															<FormattedMessage id="panel.member.relationshipParentHint" />
-														) : memberFormData.relationship === 'spouse' ? (
-															<FormattedMessage id="panel.member.relationshipSpouseHint" />
-														) : (
-															<FormattedMessage id="panel.member.relationshipSelectHint" />
+															{existingMembers
+																.filter((m) => (isAddMode ? true : m.id !== memberId))
+																.map((m) => (
+																	<option key={m.id} value={m.id}>
+																		{m.fullName}
+																	</option>
+																))}
+														</select>
+														<p className="text-[10px] text-black/50 mt-2 ml-3">
+															<FormattedMessage id="panel.member.selectMemberHint" />
+														</p>
+														{validationErrors.relatedMemberId && (
+															<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relatedMemberId}</p>
 														)}
+													</>
+												) : (
+													<div className="bg-blue-50 border border-blue-200 rounded-[30px] px-5 py-3 text-xs text-blue-800">
+														<FormattedMessage id="panel.member.firstMemberNotice" />
+													</div>
+												)}
+											</div>
+
+											{existingMembers.length > 0 && (
+												<>
+													<div>
+														<label className="block text-base font-normal text-black mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.label.relationship" />
+														</label>
+														<select
+															value={memberFormData.relationship}
+															onChange={(e) => {
+																setMemberFormData({
+																	...memberFormData,
+																	relationship: e.target.value,
+																});
+															}}
+															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
+															required
+														>
+															<option value="">
+																<FormattedMessage id="panel.member.selectRelationship" />
+															</option>
+															<option value="parent">
+																<FormattedMessage id="panel.member.parent" />
+															</option>
+															<option value="spouse">
+																<FormattedMessage id="panel.member.spouse" />
+															</option>
+														</select>
+														<p className="text-[10px] text-black/50 mt-2 ml-3">
+															<FormattedMessage id="panel.member.relationshipToSelectedHint" />
+														</p>
+														{validationErrors.relationship && (
+															<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationship}</p>
+														)}
+													</div>
+
+													<div>
+														<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+															<FormattedMessage id="panel.member.relationshipDate" />
+														</label>
+														<input
+															type="date"
+															value={memberFormData.relationshipDate}
+															onChange={(e) => {
+																setMemberFormData({
+																	...memberFormData,
+																	relationshipDate: e.target.value,
+																});
+															}}
+															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+															required
+														/>
+														<p className="text-[10px] text-black/50 mt-2 ml-3">
+															<FormattedMessage id="panel.member.relationshipToSelectedHint" />
+														</p>
+														{validationErrors.relationshipDate && (
+															<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationshipDate}</p>
+														)}
+													</div>
+												</>
+											)}
+										</div>
+
+										{/* Important Notice Box */}
+										<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+											<div className="flex items-start space-x-3">
+												<AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+												<div>
+													<p className="text-xs text-blue-900 font-semibold mb-1">
+														<FormattedMessage id="panel.member.important" />
+													</p>
+													<p className="text-[11px] text-blue-800">
+														<FormattedMessage id="panel.member.permanentRecordNotice" />
 													</p>
 												</div>
 											</div>
-
-											{memberFormData.relationship === 'parent' && memberFormData.relatedMemberId && (
-												<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-													<div className="flex items-start space-x-3">
-														<AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-														<div>
-															<p className="text-xs text-blue-900 font-medium">
-																<FormattedMessage id="panel.member.parentRelationshipInfo" />
-															</p>
-															<p className="text-[10px] text-blue-700 mt-1">
-																<FormattedMessage
-																	id="panel.member.parentRelationshipDetails"
-																	values={{
-																		name:
-																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																		relatedName:
-																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																				?.fullName || '',
-																	}}
-																/>
-															</p>
-														</div>
-													</div>
-												</div>
-											)}
-
-											{memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId && (
-												<div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-													<div className="flex items-start space-x-3">
-														<Heart className="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" />
-														<div>
-															<p className="text-xs text-pink-900 font-medium">
-																<FormattedMessage id="panel.member.spouseRelationshipInfo" />
-															</p>
-															<p className="text-[10px] text-pink-700 mt-1">
-																<FormattedMessage
-																	id="panel.member.spouseRelationshipDetails"
-																	values={{
-																		name:
-																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																		relatedName:
-																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																				?.fullName || '',
-																	}}
-																/>
-															</p>
-														</div>
-													</div>
-												</div>
-											)}
 										</div>
 									</section>
 								</>

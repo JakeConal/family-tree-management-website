@@ -30,18 +30,6 @@ export interface ChangeLogDetailsModalProps {
 	changeLog: ChangeLog | null;
 }
 
-export interface EditFamilyTreeModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTree: {
-		id: number;
-		familyName: string;
-		origin: string | null;
-		establishYear: number | null;
-	};
-	onFamilyTreeUpdated: () => void;
-}
-
 export interface InviteGuestModalProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -56,38 +44,6 @@ export interface GenerateAccessCodeModalProps {
 	familyTreeId: string;
 	familyTreeName: string;
 	onCodeGenerated: (code: string) => void;
-}
-
-export interface RecordAchievementModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	onAchievementRecorded: () => void;
-}
-
-export interface RecordPassingModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	onPassingRecorded: () => void;
-}
-
-export interface RecordDivorceModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	onDivorceRecorded: () => void;
-}
-
-export interface AddMemberModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	familyTreeId: string;
-	existingMembers: FamilyMember[];
-	onMemberAdded: () => void;
 }
 
 export interface DivorcedSpousesModalProps {
