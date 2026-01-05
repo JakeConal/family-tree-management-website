@@ -105,9 +105,16 @@ export default function FamilyTreeDashboard() {
 				const marriagesCount = recentLogs.filter(
 					(log) => log.entityType === 'SpouseRelationship' && log.action === 'CREATE'
 				).length;
-				const divorcesCount = recentLogs.filter(
-					(log) => log.entityType === 'SpouseRelationship' && log.action === 'DELETE'
-				).length;
+				const divorcesCount = recentLogs.filter((log) => {
+					if (log.entityType !== 'SpouseRelationship' || log.action !== 'UPDATE') return false;
+					try {
+						const oldValues = log.oldValues ? JSON.parse(log.oldValues) : {};
+						const newValues = log.newValues ? JSON.parse(log.newValues) : {};
+						return oldValues.divorceDate === null && newValues.divorceDate !== null;
+					} catch {
+						return false;
+					}
+				}).length;
 				const achievementGrowthCount = recentLogs.filter(
 					(log) => log.entityType === 'Achievement' && log.action === 'CREATE'
 				).length;
@@ -217,9 +224,16 @@ export default function FamilyTreeDashboard() {
 			const marriagesCount = recentLogs.filter(
 				(log) => log.entityType === 'SpouseRelationship' && log.action === 'CREATE'
 			).length;
-			const divorcesCount = recentLogs.filter(
-				(log) => log.entityType === 'SpouseRelationship' && log.action === 'DELETE'
-			).length;
+			const divorcesCount = recentLogs.filter((log) => {
+				if (log.entityType !== 'SpouseRelationship' || log.action !== 'UPDATE') return false;
+				try {
+					const oldValues = log.oldValues ? JSON.parse(log.oldValues) : {};
+					const newValues = log.newValues ? JSON.parse(log.newValues) : {};
+					return oldValues.divorceDate === null && newValues.divorceDate !== null;
+				} catch {
+					return false;
+				}
+			}).length;
 			const achievementGrowthCount = recentLogs.filter(
 				(log) => log.entityType === 'Achievement' && log.action === 'CREATE'
 			).length;
