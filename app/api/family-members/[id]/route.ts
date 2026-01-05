@@ -419,10 +419,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				// Add new occupations
 				const occupations = JSON.parse(occupationsData);
 				for (const occ of occupations) {
-					if ((occ.title || occ.jobTitle) && occ.startDate) {
+					if (occ.jobTitle && occ.startDate) {
 						await prisma.occupation.create({
 							data: {
-								jobTitle: occ.title || occ.jobTitle,
+								jobTitle: occ.jobTitle,
 								startDate: new Date(occ.startDate),
 								endDate: occ.endDate ? new Date(occ.endDate) : null,
 								familyMemberId: memberId,
