@@ -164,6 +164,7 @@ export interface MemberPanelProps {
 	existingMembers: FamilyMember[];
 	selectedMemberId?: string;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
 export interface AchievementPanelProps {

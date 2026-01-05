@@ -17,6 +17,7 @@ export default function MemberPanel({
 	existingMembers,
 	selectedMemberId,
 	onClose,
+	onSuccess,
 }: MemberPanelProps) {
 	const { isGuest, guestMemberId } = useGuestSession();
 	const [mode, setMode] = useState<'add' | 'view' | 'edit'>(initialMode);
@@ -441,8 +442,13 @@ export default function MemberPanel({
 
 			if (response.ok) {
 				toast.success(mode === 'add' ? 'Family member added successfully!' : 'Family member updated successfully!');
-				// Refresh the page to show updated data
-				window.location.reload();
+				// Call onSuccess callback if provided
+				if (onSuccess) {
+					onSuccess();
+				} else {
+					// Fallback: Refresh the page to show updated data
+					window.location.reload();
+				}
 			} else {
 				const error = await response.json();
 				toast.error(error.error || `Failed to ${mode === 'add' ? 'add' : 'update'} family member`);
