@@ -155,6 +155,13 @@ export default function FamilyTreeDashboard() {
 		}
 	}, [familyTreeId, isGuest]);
 
+	// Fetch existing family members when page loads
+	useEffect(() => {
+		if (familyTreeId) {
+			fetchExistingMembers();
+		}
+	}, [familyTreeId]);
+
 	const calculateAge = (establishYear?: number | null) => {
 		if (!establishYear) return null;
 		const currentYear = new Date().getFullYear();
