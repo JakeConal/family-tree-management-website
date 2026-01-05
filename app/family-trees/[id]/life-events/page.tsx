@@ -135,6 +135,23 @@ export default function LifeEventsPage() {
 		}
 	}, [activeTab, fetchAchievements, fetchAchievementTypes, fetchPassingRecords, fetchFamilyMembers, fetchLifeEvents]);
 
+	// Refresh data when panel closes
+	useEffect(() => {
+		// When panel closes (activePanel becomes null), refresh the data
+		if (activePanel === null) {
+			if (activeTab === 'achievement') {
+				fetchAchievements();
+				fetchFamilyMembers();
+			} else if (activeTab === 'passing') {
+				fetchPassingRecords();
+				fetchFamilyMembers();
+			} else if (activeTab === 'life-event') {
+				fetchLifeEvents();
+				fetchFamilyMembers();
+			}
+		}
+	}, [activePanel, activeTab, fetchAchievements, fetchPassingRecords, fetchLifeEvents, fetchFamilyMembers]);
+
 	// Filter achievements
 	const filteredAchievements = achievements.filter((achievement) => {
 		if (selectedYear !== 'all' && achievement.achieveDate) {

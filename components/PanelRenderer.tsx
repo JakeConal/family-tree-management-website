@@ -71,9 +71,7 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 							familyMembers={panelProps.achievement.familyMembers}
 							onModeChange={(mode) => updatePanelProps('achievement', { mode })}
 							onClose={closePanel}
-							onSuccess={() => {
-								closePanel();
-							}}
+						onSuccess={closePanel}
 						/>
 					)}
 
@@ -85,9 +83,7 @@ export default function PanelRenderer({ className, pushMode = false }: PanelRend
 							familyMembers={panelProps.passing.familyMembers}
 							onModeChange={(mode) => updatePanelProps('passing', { mode })}
 							onClose={closePanel}
-							onSuccess={() => {
-								closePanel();
-							}}
+						onSuccess={closePanel}
 						/>
 					)}
 
