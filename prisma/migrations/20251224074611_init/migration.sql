@@ -90,7 +90,7 @@ CREATE TABLE `CauseOfDeath` (
     `passingRecordId` INTEGER NOT NULL,
     `familyMemberId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `CauseOfDeath_passingRecordId_key`(`passingRecordId`),
+    INDEX `idx_passingRecordId`(`passingRecordId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

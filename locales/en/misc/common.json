@@ -22,6 +22,7 @@
 		"deleteAccount": "Delete Account",
 		"updatePassword": "Update Password",
 		"saving": "Saving...",
+		"creating": "Creating...",
 		"deleting": "Deleting...",
 		"updating": "Updating...",
 		"optional": "(optional)",

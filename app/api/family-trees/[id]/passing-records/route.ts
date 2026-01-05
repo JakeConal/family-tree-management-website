@@ -182,45 +182,59 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 		}
 
 		// Create the passing record with related data in a transaction
-		const passingRecord = await prisma.passingRecord.create({
-			data: {
-				familyMemberId: familyMemberId,
-				dateOfPassing: new Date(dateOfPassing),
-				...(causesOfDeath && causesOfDeath.length > 0
-					? {
-							causeOfDeath: {
-								create: causesOfDeath.map((cause: string) => ({
-									causeName: cause,
-									familyMemberId: familyMemberId,
-								})),
-							},
-						}
-					: {}),
-				buriedPlaces: {
-					create: burialPlaces.map((place: { location: string; startDate: string }) => ({
+		const passingRecord = await prisma.$transaction(async (tx) => {
+			// First, create the passing record
+			const newPassingRecord = await tx.passingRecord.create({
+				data: {
+					familyMemberId: familyMemberId,
+					dateOfPassing: new Date(dateOfPassing),
+				},
+			});
+
+			// Then create causes of death if any
+			if (causesOfDeath && causesOfDeath.length > 0) {
+				await tx.causeOfDeath.createMany({
+					data: causesOfDeath.map((cause: string) => ({
+						causeName: cause,
+						familyMemberId: familyMemberId,
+						passingRecordId: newPassingRecord.id,
+					})),
+				});
+			}
+
+			// Then create buried places
+			if (burialPlaces && burialPlaces.length > 0) {
+				await tx.buriedPlace.createMany({
+					data: burialPlaces.map((place: { location: string; startDate: string }) => ({
 						location: place.location,
 						startDate: new Date(place.startDate),
+						passingRecordId: newPassingRecord.id,
 					})),
-				},
-			},
-			include: {
-				familyMember: {
-					select: {
-						fullName: true,
+				});
+			}
+
+			// Finally, fetch the complete passing record with relations
+			return await tx.passingRecord.findUnique({
+				where: { id: newPassingRecord.id },
+				include: {
+					familyMember: {
+						select: {
+							fullName: true,
+						},
+					},
+					causeOfDeath: {
+						select: {
+							causeName: true,
+						},
+					},
+					buriedPlaces: {
+						select: {
+							location: true,
+							startDate: true,
+						},
 					},
 				},
-				causeOfDeath: {
-					select: {
-						causeName: true,
-					},
-				},
-				buriedPlaces: {
-					select: {
-						location: true,
-						startDate: true,
-					},
-				},
-			},
+			});
 		});
 
 		// Log the passing record creation
