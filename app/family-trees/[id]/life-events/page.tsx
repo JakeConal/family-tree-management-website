@@ -557,10 +557,7 @@ export default function LifeEventsPage() {
 															<PassingCard
 																key={record.id}
 																id={record.id}
-																title={intl.formatMessage(
-																	{ id: 'lifeEvents.cards.passingOf' },
-																	{ name: record.familyMember.fullName }
-																)}
+																title={`The passing of ${record.familyMember.fullName}`}
 																person={record.familyMember.fullName}
 																date={formatDate(record.dateOfPassing)}
 																buriedPlace={
@@ -569,12 +566,9 @@ export default function LifeEventsPage() {
 																		: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
 																}
 																description={
-																	record.causeOfDeath
-																		? intl.formatMessage(
-																				{ id: 'lifeEvents.cards.causes' },
-																				{ causes: record.causeOfDeath.causeName }
-																			)
-																		: intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })
+																	record.causeOfDeath?.causeName 
+																		? `Cause: ${record.causeOfDeath.causeName}`
+																		: `Cause: ${intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })}`
 																}
 																onClick={handleOpenPassingPanel}
 															/>

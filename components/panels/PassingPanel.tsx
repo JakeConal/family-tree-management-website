@@ -158,31 +158,13 @@ export default function PassingPanel({
 	};
 
 	const validateCausesOfDeath = () => {
-		const newErrors = { ...errors };
-		const hasValidCause = formData.causesOfDeath.some((cause) => cause.trim() !== '');
-
-		if (!hasValidCause) {
-			newErrors.causesOfDeath = intl.formatMessage({ id: 'panel.passing.validation.causeOfPassingRequired' });
-		} else {
-			delete newErrors.causesOfDeath;
-		}
-
-		setErrors(newErrors);
-		return hasValidCause;
+		// Cause of death is optional, so always return true
+		return true;
 	};
 
 	const validateBurialPlaces = () => {
-		const newErrors = { ...errors };
-		const hasValidPlace = formData.burialPlaces.some((place) => place.location.trim() !== '' && place.startDate !== '');
-
-		if (!hasValidPlace) {
-			newErrors.burialPlaces = intl.formatMessage({ id: 'panel.passing.validation.burialPlacesRequired' });
-		} else {
-			delete newErrors.burialPlaces;
-		}
-
-		setErrors(newErrors);
-		return hasValidPlace;
+		// Burial places are optional, so always return true
+		return true;
 	};
 
 	const validateDates = () => {
@@ -395,11 +377,11 @@ export default function PassingPanel({
 				</button>
 			</div>
 
-			<div className="relative">
+			<div className="relative flex-1 overflow-hidden">
 				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.passing.loadingMessage' })} />}
 				{isViewMode ? (
 					/* View Mode */
-					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+					<div className="h-full overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
 							<FormattedMessage id="panel.passing.title" />
 						</h2>
@@ -479,7 +461,7 @@ export default function PassingPanel({
 					</div>
 				) : (
 					/* Add/Edit Mode */
-					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+					<div className="h-full overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
 							<FormattedMessage id={isAddMode ? 'panel.passing.addRecord' : 'panel.passing.editRecord'} />
 						</h2>
