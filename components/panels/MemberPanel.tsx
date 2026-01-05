@@ -570,7 +570,7 @@ export default function MemberPanel({
 				</button>
 			</div>
 
-			<div className="relative">
+			<div className="relative overflow-auto flex-1">
 				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.member.loading' })} />}
 				{isViewMode ? (
 					/* View Mode */
@@ -634,7 +634,7 @@ export default function MemberPanel({
 												<FormattedMessage id="panel.member.label.birthDate" />
 											</label>
 											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												<FormattedDate value={new Date(memberFormData.birthDate)} />
+												{memberFormData.birthDate && <FormattedDate value={new Date(memberFormData.birthDate)} />}
 											</div>
 										</div>
 									</div>
@@ -658,7 +658,7 @@ export default function MemberPanel({
 													<div className="flex gap-4">
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.startDate" />
+																<FormattedMessage id="panel.member.label.startDate" />
 															</label>
 															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 																{place.startDate ? (
@@ -670,7 +670,7 @@ export default function MemberPanel({
 														</div>
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.endDate" />
+																<FormattedMessage id="panel.member.label.endDate" />
 															</label>
 															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 																{place.endDate ? (
@@ -708,7 +708,7 @@ export default function MemberPanel({
 													<div className="flex gap-4">
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.startDate" />
+																<FormattedMessage id="panel.member.label.startDate" />
 															</label>
 															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 																{occ.startDate ? (
@@ -720,7 +720,7 @@ export default function MemberPanel({
 														</div>
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.endDate" />
+																<FormattedMessage id="panel.member.label.endDate" />
 															</label>
 															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 																{occ.endDate ? (
