@@ -303,11 +303,11 @@ export default function DivorcePanel({
 				</button>
 			</div>
 
-			<div className="flex-1 relative">
+			<div className="relative flex-1 overflow-hidden">
 				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.divorce.loadingMessage' })} />}
 				{isViewMode ? (
 					/* View Mode */
-					<div className="flex-1 overflow-y-auto px-10 py-8">
+					<div className="h-full overflow-y-auto px-10 py-8">
 						<h2 className="text-[26px] font-normal text-black text-center mb-10">
 							<FormattedMessage id="panel.divorce.title" />
 						</h2>
@@ -382,7 +382,7 @@ export default function DivorcePanel({
 					</div>
 				) : (
 					/* Add/Edit Mode */
-					<div className="flex-1 overflow-y-auto px-10 py-8">
+					<div className="h-full overflow-y-auto px-10 py-8">
 						<h2 className="text-[26px] font-normal text-black text-center mb-10">
 							{isAddMode ? (
 								<FormattedMessage id="panel.divorce.addRecord" />

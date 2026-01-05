@@ -39,6 +39,8 @@
 			"separationDescription": "Kết thúc một mối quan hệ. Hai người đã đồng ý chia tay một cách hòa bình và tiếp tục cuộc sống riêng.",
 			"birthTitle": "Sự Ra Đời Của {name}",
 			"birthDescription": "Sinh ra từ {parent}"
-		}
+		},
+		"divorceTitle": "Ly Hôn Của {name1} & {name2}",
+		"divorceDescription": "Cặp đôi chính thức kết thúc cuộc hôn nhân và chia tay."
 	}
 }

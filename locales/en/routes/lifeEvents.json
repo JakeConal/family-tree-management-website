@@ -39,6 +39,8 @@
 			"separationDescription": "The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.",
 			"birthTitle": "{name}'s Birth",
 			"birthDescription": "Born to {parent}"
-		}
+		},
+		"divorceTitle": "{name1} & {name2} Divorce",
+		"divorceDescription": "The couple officially ended their marriage and parted ways."
 	}
 }
