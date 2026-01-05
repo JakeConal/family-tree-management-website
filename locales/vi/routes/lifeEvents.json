@@ -33,12 +33,12 @@
 			"causeNotSpecified": "Nguyên nhân tử vong chưa xác định"
 		},
 		"lifeEventCard": {
-			"sayIDo": "{name1} & {name2} Nói 'Tôi Đồng Ý'",
+			"marriageTitle": "{name1} & {name2} Nói 'Tôi Đồng Ý'",
 			"marriageDescription": "Hạnh phúc bắt đầu từ đây! Đôi uyên ương đã tổ chức lễ thành hôn thân mật, đánh dấu sự khởi đầu của chương mới trong cuộc đời.",
 			"separation": "Sự Chia Ly Của {name1} Với {name2}",
 			"separationDescription": "Kết thúc một mối quan hệ. Hai người đã đồng ý chia tay một cách hòa bình và tiếp tục cuộc sống riêng.",
-			"birth": "Sự Ra Đời Của {name}",
-			"bornTo": "Sinh ra từ {parent}"
+			"birthTitle": "Sự Ra Đời Của {name}",
+			"birthDescription": "Sinh ra từ {parent}"
 		}
 	}
 }

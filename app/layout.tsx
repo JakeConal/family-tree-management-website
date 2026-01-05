@@ -5,6 +5,7 @@ import { Geist, Geist_Mono, Playfair_Display, Inter, Crimson_Text, Roboto, Nunit
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import PanelRenderer from '@/components/PanelRenderer';
@@ -70,16 +71,17 @@ function RootLayoutContent({ children }: { children: React.ReactNode }) {
 	const { data: session, status } = useSession();
 	const { familyTrees } = useFamilyTrees(session);
 	const { closePanel } = usePanel();
+	const intl = useIntl();
 
 	const activeFamilyTreeName = useMemo(() => {
 		const match = pathname.match(/\/family-trees\/(\d+)/);
 		if (match) {
 			const id = parseInt(match[1]);
 			const tree = familyTrees.find((t) => t.id === id);
-			return tree ? `${tree.familyName} Family` : '';
+			return tree ? intl.formatMessage({ id: 'common.familyHeader' }, { name: tree.familyName }) : '';
 		}
 		return '';
-	}, [pathname, familyTrees]);
+	}, [pathname, familyTrees, intl]);
 
 	// Only show sidebar when authenticated and not on welcome/login/signup pages
 	const shouldShowSidebar =

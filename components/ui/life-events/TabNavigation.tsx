@@ -1,6 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
+import { FormattedMessage } from 'react-intl';
 
 interface TabNavigationProps {
 	activeTab: 'achievement' | 'passing' | 'life-event';
@@ -27,7 +28,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
 					className="font-semibold text-[20px] leading-[28px] text-black text-center"
 					style={{ fontFamily: 'Roboto, sans-serif' }}
 				>
-					Achievement
+					<FormattedMessage id="lifeEvents.tabs.achievement" />
 				</span>
 			</button>
 
@@ -47,7 +48,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
 					className="font-semibold text-[20px] leading-[28px] text-black text-center"
 					style={{ fontFamily: 'Roboto, sans-serif' }}
 				>
-					Passing
+					<FormattedMessage id="lifeEvents.tabs.passing" />
 				</span>
 			</button>
 
@@ -68,7 +69,7 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
 					className="font-semibold text-[20px] leading-[28px] text-black text-center"
 					style={{ fontFamily: 'Roboto, sans-serif' }}
 				>
-					Life Event
+					<FormattedMessage id="lifeEvents.tabs.lifeEvent" />
 				</span>
 			</button>
 		</div>

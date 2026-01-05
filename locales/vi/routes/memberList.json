@@ -1,12 +1,19 @@
 {
 	"memberList": {
 		"loading": "Đang tải thành viên...",
+		"common": {
+			"dash": "-",
+			"generationPrefix": "F{number}"
+		},
 		"controls": {
 			"allGeneration": "Tất Cả Thế Hệ",
 			"searchByName": "Tìm theo tên",
 			"from": "Từ",
 			"to": "Đến",
-			"allParents": "Tất Cả Cha/Mẹ"
+			"allParents": "Tất Cả Cha/Mẹ",
+			"birthDateFromPlaceholder": "Ngày Sinh Từ",
+			"birthDateToPlaceholder": "Ngày Sinh Đến",
+			"generation": "Đời {number}"
 		},
 		"table": {
 			"no": "STT",

@@ -191,7 +191,7 @@ export default function MarriagePanel({
 		return (
 			<div className="w-full h-full flex items-center justify-center">
 				<p className="text-gray-500">
-					<FormattedMessage id="panel.marriage.noInfo" />
+					<FormattedMessage id="panel.marriage.noInformation" />
 				</p>
 			</div>
 		);

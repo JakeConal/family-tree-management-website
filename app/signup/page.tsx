@@ -266,7 +266,8 @@ export default function SignUpPage() {
 
 					{/* Sign In Link */}
 					<p className="text-center mt-6 text-gray-600">
-						<FormattedMessage id="signup.haveAccount" defaultMessage="Already have an account?" />{' '}
+						<FormattedMessage id="signup.haveAccount" defaultMessage="Already have an account?" />
+						&nbsp;
 						<Link href="/welcome/login" className="font-semibold text-gray-900 hover:underline">
 							<FormattedMessage id="signup.signIn" defaultMessage="Sign in" />
 						</Link>

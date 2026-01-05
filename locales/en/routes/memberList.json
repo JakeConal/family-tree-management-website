@@ -1,12 +1,19 @@
 {
 	"memberList": {
 		"loading": "Loading members...",
+		"common": {
+			"dash": "-",
+			"generationPrefix": "F{number}"
+		},
 		"controls": {
 			"allGeneration": "All Generation",
 			"searchByName": "Search by name",
 			"from": "From",
 			"to": "To",
-			"allParents": "All Parents"
+			"allParents": "All Parents",
+			"birthDateFromPlaceholder": "Birth Date From",
+			"birthDateToPlaceholder": "Birth Date To",
+			"generation": "Gen. {number}"
 		},
 		"table": {
 			"no": "No.",

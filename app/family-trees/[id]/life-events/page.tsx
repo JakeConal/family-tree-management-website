@@ -216,9 +216,14 @@ export default function LifeEventsPage() {
 			id: `marriage-${relationship.id}`,
 			type: 'Married',
 			date: relationship.marriageDate,
-			title: `${relationship.familyMember1.fullName} & ${relationship.familyMember2.fullName} Say 'I Do'`,
-			description:
-				'Happiness starts here! The couple held an intimate ceremony, marking the beginning of a new chapter in their lives.',
+			title: intl.formatMessage(
+				{ id: 'lifeEvents.lifeEventCard.marriageTitle' },
+				{
+					name1: relationship.familyMember1.fullName,
+					name2: relationship.familyMember2.fullName,
+				}
+			),
+			description: intl.formatMessage({ id: 'lifeEvents.lifeEventCard.marriageDescription' }),
 			relationshipId: relationship.id,
 		});
 
@@ -228,9 +233,14 @@ export default function LifeEventsPage() {
 				id: `divorce-${relationship.id}`,
 				type: 'Divorce',
 				date: relationship.divorceDate,
-				title: `${relationship.familyMember1.fullName}'s Separation from ${relationship.familyMember2.fullName}`,
-				description:
-					'The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.',
+				title: intl.formatMessage(
+					{ id: 'lifeEvents.divorceTitle' },
+					{
+						name1: relationship.familyMember1.fullName,
+						name2: relationship.familyMember2.fullName,
+					}
+				),
+				description: intl.formatMessage({ id: 'lifeEvents.divorceDescription' }),
 				relationshipId: relationship.id,
 			});
 		}
@@ -251,8 +261,8 @@ export default function LifeEventsPage() {
 				id: `birth-${member.id}`,
 				type: 'Birth Event' as const,
 				date: member.relationshipEstablishedDate,
-				title: `${member.fullName}'s Birth`,
-				description: `Born to ${parentName}`,
+				title: intl.formatMessage({ id: 'lifeEvents.lifeEventCard.birthTitle' }, { name: member.fullName }),
+				description: intl.formatMessage({ id: 'lifeEvents.lifeEventCard.birthDescription' }, { parent: parentName }),
 				relationshipId: member.id,
 			};
 		});
@@ -368,11 +378,8 @@ export default function LifeEventsPage() {
 	}
 
 	if (error) {
-		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-red-500 text-lg">Error: {error}</div>
-			</div>
-		);
+		toast.error(intl.formatMessage({ id: 'errors.generic' }));
+		return null;
 	}
 
 	return (
@@ -395,7 +402,9 @@ export default function LifeEventsPage() {
 									onChange={(e) => setSelectedYear(e.target.value)}
 									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 								>
-									<option value="all">All Years</option>
+									<option value="all">
+										<FormattedMessage id="lifeEvents.filters.allYears" />
+									</option>
 									{availableYears.map((year) => (
 										<option key={year} value={year}>
 											{year}
@@ -413,7 +422,9 @@ export default function LifeEventsPage() {
 										onChange={(e) => setSelectedType(e.target.value)}
 										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 									>
-										<option value="all">All Types</option>
+										<option value="all">
+											<FormattedMessage id="lifeEvents.filters.allTypes" />
+										</option>
 										{achievementTypes.map((type) => (
 											<option key={type.id} value={type.id}>
 												{type.typeName}
@@ -430,9 +441,15 @@ export default function LifeEventsPage() {
 										onChange={(e) => setSelectedType(e.target.value)}
 										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 									>
-										<option value="all">All Types</option>
-										<option value="Married">Married</option>
-										<option value="Divorce">Divorce</option>
+										<option value="all">
+											<FormattedMessage id="lifeEvents.filters.allTypes" />
+										</option>
+										<option value="Married">
+											<FormattedMessage id="lifeEvents.filters.married" />
+										</option>
+										<option value="Divorce">
+											<FormattedMessage id="lifeEvents.filters.divorce" />
+										</option>
 									</select>
 									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
 								</div>
@@ -483,9 +500,11 @@ export default function LifeEventsPage() {
 							<>
 								{sortedYears.length === 0 ? (
 									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">No achievements recorded yet</p>
+										<p className="text-gray-500 text-lg">
+											<FormattedMessage id="lifeEvents.empty.noAchievements" />
+										</p>
 										<button onClick={() => handleOpenAchievementPanel()} className="mt-4 text-black hover:underline">
-											Add your first achievement
+											<FormattedMessage id="lifeEvents.empty.addFirstAchievement" />
 										</button>
 									</div>
 								) : (
@@ -525,9 +544,11 @@ export default function LifeEventsPage() {
 							<>
 								{sortedPassingYears.length === 0 ? (
 									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">No passing records yet</p>
+										<p className="text-gray-500 text-lg">
+											<FormattedMessage id="lifeEvents.empty.noPassing" />
+										</p>
 										<button onClick={() => handleOpenPassingPanel()} className="mt-4 text-black hover:underline">
-											Add your first passing record
+											<FormattedMessage id="lifeEvents.empty.addFirstPassing" />
 										</button>
 									</div>
 								) : (
@@ -545,16 +566,24 @@ export default function LifeEventsPage() {
 														<PassingCard
 															key={record.id}
 															id={record.id}
-															title={`The passing of ${record.familyMember.fullName}`}
+															title={intl.formatMessage(
+																{ id: 'lifeEvents.cards.passingOf' },
+																{ name: record.familyMember.fullName }
+															)}
 															person={record.familyMember.fullName}
 															date={formatDate(record.dateOfPassing)}
 															buriedPlace={
-																record.buriedPlaces.length > 0 ? record.buriedPlaces[0].location : 'Not specified'
+																record.buriedPlaces.length > 0
+																	? record.buriedPlaces[0].location
+																	: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
 															}
 															description={
 																record.causeOfDeath
-																	? `Causes: ${record.causeOfDeath.causeName}`
-																	: 'Cause of death not specified'
+																	? intl.formatMessage(
+																			{ id: 'lifeEvents.cards.causes' },
+																			{ causes: record.causeOfDeath.causeName }
+																		)
+																	: intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })
 															}
 															onClick={handleOpenPassingPanel}
 														/>
@@ -571,9 +600,11 @@ export default function LifeEventsPage() {
 							<>
 								{sortedLifeEventYears.length === 0 ? (
 									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">No life events recorded yet</p>
+										<p className="text-gray-500 text-lg">
+											<FormattedMessage id="lifeEvents.empty.noLifeEvents" />
+										</p>
 										<button onClick={() => handleOpenDivorcePanel()} className="mt-4 text-black hover:underline">
-											Add divorce record
+											<FormattedMessage id="lifeEvents.empty.addDivorceRecord" />
 										</button>
 									</div>
 								) : (

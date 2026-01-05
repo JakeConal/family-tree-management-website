@@ -79,7 +79,9 @@ function TextGenerateEffect({
 							filter: filter ? 'blur(10px)' : 'none',
 						}}
 					>
-						{word}{' '}
+						{word}
+						{/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+						{idx < wordsArray.length - 1 && ' '}
 					</motion.span>
 				))}
 			</motion.div>

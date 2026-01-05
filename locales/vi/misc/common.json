@@ -1,6 +1,8 @@
 {
 	"common": {
 		"loading": "Đang tải...",
+		"familyHeader": "Gia Đình của {name}",
+		"create": "Tạo",
 		"save": "Lưu",
 		"cancel": "Hủy",
 		"delete": "Xóa",

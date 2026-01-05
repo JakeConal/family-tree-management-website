@@ -1,12 +1,13 @@
 'use client';
 
-import { Users, Camera, Plus, Info, ChevronDown, Trash2 } from 'lucide-react';
+import { Users, Camera, Plus, Info, ChevronDown, Trash2, ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import ProvinceList from '@/components/ui/province-list';
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
 
 interface PlaceOfOrigin {
@@ -280,7 +281,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 					onClick={onClose}
 					className="absolute left-4 lg:left-6 top-4 lg:top-6 flex items-center text-black hover:opacity-70 transition-opacity"
 				>
-					<span className="text-xl font-light mr-2">{'<'}</span>
+					<ChevronLeft className="w-4 h-4" />
 					<span className="font-medium">
 						<FormattedMessage id="common.back" />
 					</span>
@@ -304,8 +305,8 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 					<div className="space-y-4">
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">
-								<FormattedMessage id="panel.createFamilyTree.familyName" /> *
+							<label className="block text-base font-medium mb-1 text-black required-label">
+								<FormattedMessage id="panel.createFamilyTree.familyName" />
 							</label>
 							<input
 								type="text"
@@ -318,8 +319,8 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 						</div>
 
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">
-								<FormattedMessage id="panel.createFamilyTree.origin" /> *
+							<label className="block text-base font-medium mb-1 text-black required-label">
+								<FormattedMessage id="panel.createFamilyTree.origin" />
 							</label>
 							<div className="relative">
 								<select
@@ -338,46 +339,14 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 									<option value="">
 										<FormattedMessage id="panel.createFamilyTree.selectOrigin" />
 									</option>
-									<option value="An Giang">An Giang</option>
-									<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
-									<option value="Bac Giang">Bac Giang</option>
-									<option value="Bac Ninh">Bac Ninh</option>
-									<option value="Binh Duong">Binh Duong</option>
-									<option value="Binh Dinh">Binh Dinh</option>
-									<option value="Binh Phuoc">Binh Phuoc</option>
-									<option value="Binh Thuan">Binh Thuan</option>
-									<option value="Ca Mau">Ca Mau</option>
-									<option value="Dak Lak">Dak Lak</option>
-									<option value="Dak Nong">Dak Nong</option>
-									<option value="Dong Nai">Dong Nai</option>
-									<option value="Dong Thap">Dong Thap</option>
-									<option value="Gia Lai">Gia Lai</option>
-									<option value="Ha Giang">Ha Giang</option>
-									<option value="Ha Nam">Ha Nam</option>
-									<option value="Ha Tinh">Ha Tinh</option>
-									<option value="Khanh Hoa">Khanh Hoa</option>
-									<option value="Kien Giang">Kien Giang</option>
-									<option value="Lam Dong">Lam Dong</option>
-									<option value="Lao Cai">Lao Cai</option>
-									<option value="Long An">Long An</option>
-									<option value="Nam Dinh">Nam Dinh</option>
-									<option value="Nghe An">Nghe An</option>
-									<option value="Ninh Binh">Ninh Binh</option>
-									<option value="Phu Tho">Phu Tho</option>
-									<option value="Quang Nam">Quang Nam</option>
-									<option value="Hanoi">Hanoi</option>
-									<option value="Ho Chi Minh City">Ho Chi Minh City</option>
-									<option value="Hai Phong">Hai Phong</option>
-									<option value="Da Nang">Da Nang</option>
-									<option value="Can Tho">Can Tho</option>
-									<option value="Hue">Hue</option>
+									<ProvinceList />
 								</select>
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">
-								<FormattedMessage id="panel.createFamilyTree.establishYear" /> *
+							<label className="block text-base font-medium mb-1 text-black required-label">
+								<FormattedMessage id="panel.createFamilyTree.establishYear" />
 							</label>
 							<input
 								type="text"
@@ -454,10 +423,10 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 											<FormattedMessage id="panel.createFamilyTree.selectGender" />
 										</option>
 										<option value="MALE" className="text-black">
-											<FormattedMessage id="common.male" />
+											<FormattedMessage id="panel.createFamilyTree.male" />
 										</option>
 										<option value="FEMALE" className="text-black">
-											<FormattedMessage id="common.female" />
+											<FormattedMessage id="panel.createFamilyTree.female" />
 										</option>
 									</select>
 									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-black" />
@@ -541,39 +510,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 												<option value="">
 													<FormattedMessage id="panel.createFamilyTree.selectOrigin" />
 												</option>
-												<option value="An Giang">An Giang</option>
-												<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
-												<option value="Bac Giang">Bac Giang</option>
-												<option value="Bac Ninh">Bac Ninh</option>
-												<option value="Binh Duong">Binh Duong</option>
-												<option value="Binh Dinh">Binh Dinh</option>
-												<option value="Binh Phuoc">Binh Phuoc</option>
-												<option value="Binh Thuan">Binh Thuan</option>
-												<option value="Ca Mau">Ca Mau</option>
-												<option value="Dak Lak">Dak Lak</option>
-												<option value="Dak Nong">Dak Nong</option>
-												<option value="Dong Nai">Dong Nai</option>
-												<option value="Dong Thap">Dong Thap</option>
-												<option value="Gia Lai">Gia Lai</option>
-												<option value="Ha Giang">Ha Giang</option>
-												<option value="Ha Nam">Ha Nam</option>
-												<option value="Ha Tinh">Ha Tinh</option>
-												<option value="Khanh Hoa">Khanh Hoa</option>
-												<option value="Kien Giang">Kien Giang</option>
-												<option value="Lam Dong">Lam Dong</option>
-												<option value="Lao Cai">Lao Cai</option>
-												<option value="Long An">Long An</option>
-												<option value="Nam Dinh">Nam Dinh</option>
-												<option value="Nghe An">Nghe An</option>
-												<option value="Ninh Binh">Ninh Binh</option>
-												<option value="Phu Tho">Phu Tho</option>
-												<option value="Quang Nam">Quang Nam</option>
-												<option value="Hanoi">Hanoi</option>
-												<option value="Ho Chi Minh City">Ho Chi Minh City</option>
-												<option value="Hai Phong">Hai Phong</option>
-												<option value="Da Nang">Da Nang</option>
-												<option value="Can Tho">Can Tho</option>
-												<option value="Hue">Hue</option>
+												<ProvinceList />
 											</select>
 										</div>
 										<div className="grid grid-cols-2 gap-4">

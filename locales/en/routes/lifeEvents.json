@@ -33,12 +33,12 @@
 			"causeNotSpecified": "Cause of death not specified"
 		},
 		"lifeEventCard": {
-			"sayIDo": "{name1} & {name2} Say 'I Do'",
+			"marriageTitle": "{name1} & {name2} Say 'I Do'",
 			"marriageDescription": "Happiness starts here! The couple held an intimate ceremony, marking the beginning of a new chapter in their lives.",
 			"separation": "{name1}'s Separation from {name2}",
 			"separationDescription": "The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.",
-			"birth": "{name}'s Birth",
-			"bornTo": "Born to {parent}"
+			"birthTitle": "{name}'s Birth",
+			"birthDescription": "Born to {parent}"
 		}
 	}
 }
