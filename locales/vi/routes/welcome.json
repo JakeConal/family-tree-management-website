@@ -1,0 +1,16 @@
+{
+	"welcome": {
+		"title": "Chào Mừng Đến Cây Gia Phả",
+		"subtitle": "Chọn cách bạn muốn truy cập cây gia phả",
+		"createAccount": {
+			"title": "Tạo Tài Khoản hoặc Đăng Nhập",
+			"signIn": "Đăng Nhập",
+			"createAccount": "Tạo Tài Khoản"
+		},
+		"guestAccess": {
+			"title": "Truy Cập Bằng Mã",
+			"description": "Có mã truy cập từ chủ cây gia phả? Nhập vào đây để xem cây gia phả.",
+			"enterCode": "Nhập Mã Truy Cập"
+		}
+	}
+}

@@ -1,0 +1,44 @@
+{
+	"familyTree": {
+		"create": {
+			"title": "Tạo Cây Gia Phả",
+			"familyInfo": "Thông Tin Gia Đình",
+			"familyName": "Tên Gia Đình",
+			"familyNamePlaceholder": "Nhập tên gia đình",
+			"origin": "Nguồn Gốc",
+			"originPlaceholder": "Nhập vị trí nguồn gốc",
+			"establishYear": "Năm Thành Lập",
+			"establishYearPlaceholder": "Nhập năm thành lập",
+			"rootPerson": "Thông Tin Người Gốc",
+			"fullName": "Họ Tên",
+			"fullNamePlaceholder": "Nhập họ tên",
+			"gender": "Giới Tính",
+			"genderPlaceholder": "Chọn giới tính",
+			"male": "Nam",
+			"female": "Nữ",
+			"other": "Khác",
+			"birthDate": "Ngày Sinh",
+			"birthDatePlaceholder": "Chọn ngày sinh",
+			"address": "Địa Chỉ",
+			"addressPlaceholder": "Nhập địa chỉ",
+			"placesOfOrigin": "Nơi Xuất Thân",
+			"occupations": "Nghề Nghiệp",
+			"profilePicture": "Ảnh Đại Diện",
+			"uploadPhoto": "Tải Ảnh Lên",
+			"changePhoto": "Thay Đổi Ảnh",
+			"confirmAccuracy": "Tôi xác nhận rằng tất cả thông tin được cung cấp là chính xác",
+			"submit": "Tạo Cây Gia Phả"
+		},
+		"edit": {
+			"title": "Chỉnh Sửa Cây Gia Phả",
+			"familyName": "Tên Gia Đình",
+			"origin": "Nguồn Gốc",
+			"establishYear": "Năm Thành Lập",
+			"save": "Lưu Thay Đổi"
+		},
+		"delete": {
+			"confirmTitle": "Xóa Cây Gia Phả",
+			"confirmMessage": "Bạn có chắc chắn muốn xóa cây gia phả này? Hành động này không thể hoàn tác."
+		}
+	}
+}

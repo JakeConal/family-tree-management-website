@@ -1,0 +1,24 @@
+{
+	"treeView": {
+		"loading": "Đang tải cây gia phả...",
+		"noMembers": "Không tìm thấy thành viên nào",
+		"controls": {
+			"allGeneration": "Tất Cả Thế Hệ",
+			"generation": "Thế Hệ {number}",
+			"addMember": "Thêm Thành Viên",
+			"add": "Thêm"
+		},
+		"legend": {
+			"childParent": "Con - Cha/Mẹ",
+			"formerSpouse": "Vợ/Chồng Cũ",
+			"currentSpouse": "Vợ/Chồng Hiện Tại",
+			"passedAway": "Đã qua đời"
+		},
+		"exSpouse": {
+			"exHusband": "Chồng Cũ",
+			"exWife": "Vợ Cũ",
+			"multiple": "{count} Vợ/Chồng Cũ",
+			"clickToView": "Nhấp để xem"
+		}
+	}
+}

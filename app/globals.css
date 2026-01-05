@@ -155,4 +155,8 @@ body {
 	select {
 		@apply text-black placeholder:text-black/40;
 	}
+	.required-label::after {
+		content: ' *';
+		color: red;
+	}
 }

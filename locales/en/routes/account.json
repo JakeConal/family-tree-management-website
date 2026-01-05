@@ -1,0 +1,46 @@
+{
+	"account": {
+		"title": "Account Settings",
+		"accountInfo": {
+			"title": "Account Information",
+			"fullName": "Full Name",
+			"fullNamePlaceholder": "Enter your full name",
+			"email": "Email",
+			"emailPlaceholder": "Email cannot be changed"
+		},
+		"changePassword": {
+			"title": "Change Password",
+			"currentPassword": "Current Password",
+			"currentPasswordPlaceholder": "Enter current password",
+			"newPassword": "New Password",
+			"newPasswordPlaceholder": "Enter new password",
+			"confirmNewPassword": "Confirm New Password",
+			"confirmNewPasswordPlaceholder": "Confirm new password"
+		},
+		"validation": {
+			"fullNameRequired": "Full name is required",
+			"currentPasswordRequired": "Current password is required",
+			"newPasswordRequired": "New password is required",
+			"newPasswordMinLength": "New password must be at least 8 characters",
+			"passwordsDoNotMatch": "New passwords do not match"
+		},
+		"messages": {
+			"accountUpdated": "Account updated successfully!",
+			"accountUpdateFailed": "Failed to update account. Please try again.",
+			"passwordUpdated": "Password updated successfully!",
+			"passwordUpdateFailed": "Failed to update password. Please try again.",
+			"accountDeleted": "Account deleted successfully",
+			"accountDeleteFailed": "Failed to delete account. Please try again."
+		},
+		"deleteConfirm": {
+			"title": "Delete Account",
+			"message": "Are you sure you want to delete your account?\n\nThis action cannot be undone and will delete all your family trees, members, and records."
+		}
+	},
+	"guest": {
+		"banner": {
+			"title": "Guest Mode:",
+			"description": "You are viewing as a guest. You can only edit your own profile ({name})."
+		}
+	}
+}

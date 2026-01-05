@@ -1,0 +1,30 @@
+{
+	"reports": {
+		"loading": "Loading reports...",
+		"export": {
+			"title": "Export Report",
+			"excel": "Excel",
+			"pdf": "PDF"
+		},
+		"cards": {
+			"totalMembers": "Total family members",
+			"currentMembers": "Current family members",
+			"achievements": "Achievements",
+			"generations": "Generations"
+		},
+		"charts": {
+			"memberChanges": "Changes in family members",
+			"totalMembersByYear": "Total members by year",
+			"totalAchievementsByYear": "Total achievements by year",
+			"achievementCategories": "Achievement Categories",
+			"noData": "No data available"
+		},
+		"chartLegends": {
+			"married": "Married",
+			"deceased": "Deceased",
+			"birth": "Birth",
+			"totalMembers": "Total Members",
+			"totalAchievements": "Total Achievements"
+		}
+	}
+}

@@ -4,10 +4,11 @@ import { ChevronLeft, Heart, Lightbulb, AlertTriangle, Camera, X, Info } from 'l
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
-import { PlaceOfOriginForm, FamilyMember, ExtendedFamilyMember } from '@/types';
+import { PlaceOfOriginForm, ExtendedFamilyMember } from '@/types';
 import { ExistingMember, OccupationApiResponse, MemberPanelProps } from '@/types/ui';
 
 export default function MemberPanel({
@@ -20,6 +21,7 @@ export default function MemberPanel({
 	onSuccess,
 }: MemberPanelProps) {
 	const { isGuest, guestMemberId } = useGuestSession();
+	const intl = useIntl();
 	const [mode, setMode] = useState<'add' | 'view' | 'edit'>(initialMode);
 	const [member, setMember] = useState<ExistingMember | null>(null);
 	const [loading, setLoading] = useState(mode !== 'add');
@@ -238,25 +240,25 @@ export default function MemberPanel({
 		};
 
 		if (!memberFormData.fullName.trim()) {
-			errors.fullName = 'Full name is required';
+			errors.fullName = intl.formatMessage({ id: 'panel.member.validation.fullNameRequired' });
 		}
 		if (!memberFormData.gender) {
-			errors.gender = 'Gender is required';
+			errors.gender = intl.formatMessage({ id: 'panel.member.validation.genderRequired' });
 		}
 		if (!memberFormData.birthDate) {
-			errors.birthDate = 'Birth date is required';
+			errors.birthDate = intl.formatMessage({ id: 'panel.member.validation.birthDateRequired' });
 		}
 		if (!memberFormData.address.trim()) {
-			errors.address = 'Address is required';
+			errors.address = intl.formatMessage({ id: 'panel.member.validation.addressRequired' });
 		}
 
 		// For add mode or root person, related member is required
 		if ((mode === 'add' && !member?.isRootPerson) || (mode !== 'add' && !member?.isRootPerson)) {
 			if (!memberFormData.relatedMemberId) {
-				errors.relatedMemberId = 'Related member is required';
+				errors.relatedMemberId = intl.formatMessage({ id: 'panel.member.validation.relatedMemberRequired' });
 			}
 			if (!memberFormData.relationship) {
-				errors.relationship = 'Relationship is required';
+				errors.relationship = intl.formatMessage({ id: 'panel.member.validation.relationshipRequired' });
 			} else if (memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId) {
 				const selectedMember = existingMembers.find(
 					(m) => m.id.toString() === memberFormData.relatedMemberId
@@ -275,27 +277,26 @@ export default function MemberPanel({
 							));
 
 					if (hasOtherActiveSpouse) {
-						errors.relatedMemberId =
-							'This person already has an active spouse relationship. They must be divorced first before adding a new spouse.';
+						errors.relatedMemberId = intl.formatMessage({ id: 'panel.member.validation.activeSpouseExists' });
 					}
 				}
 			}
 			if (!memberFormData.relationshipDate) {
-				errors.relationshipDate = 'Relationship date is required';
+				errors.relationshipDate = intl.formatMessage({ id: 'panel.member.validation.relationshipDateRequired' });
 			} else if (memberFormData.birthDate && memberFormData.relationship) {
 				const birthDate = new Date(memberFormData.birthDate);
 				const relationshipDate = new Date(memberFormData.relationshipDate);
 
 				if (memberFormData.relationship === 'parent') {
 					if (relationshipDate < birthDate) {
-						errors.relationshipDate = 'Relationship date must be on or after birth date';
+						errors.relationshipDate = intl.formatMessage({ id: 'panel.member.validation.relationshipDateAfterBirth' });
 					}
 				} else if (memberFormData.relationship === 'spouse') {
 					const minSpouseDate = new Date(birthDate);
 					minSpouseDate.setFullYear(minSpouseDate.getFullYear() + 7);
 
 					if (relationshipDate < minSpouseDate) {
-						errors.relationshipDate = 'Relationship date must be at least 7 years after birth date';
+						errors.relationshipDate = intl.formatMessage({ id: 'panel.member.validation.relationshipDateMinSpouse' });
 					}
 				}
 			}
@@ -303,11 +304,11 @@ export default function MemberPanel({
 
 		const hasValidPlaceOfOrigin = placesOfOrigin.some((place) => place.location.trim() !== '');
 		if (!hasValidPlaceOfOrigin) {
-			errors.placesOfOrigin = 'At least one place of origin is required';
+			errors.placesOfOrigin = intl.formatMessage({ id: 'panel.member.validation.placesOfOriginRequired' });
 		} else {
 			const invalidPlaces = placesOfOrigin.filter((place) => place.location.trim() !== '' && !place.startDate);
 			if (invalidPlaces.length > 0) {
-				errors.placesOfOrigin = 'Places of origin must have start dates';
+				errors.placesOfOrigin = intl.formatMessage({ id: 'panel.member.validation.placesOfOriginStartDate' });
 			} else {
 				const invalidBirthDatePlaces = placesOfOrigin.filter(
 					(place) =>
@@ -317,7 +318,7 @@ export default function MemberPanel({
 						place.startDate < memberFormData.birthDate
 				);
 				if (invalidBirthDatePlaces.length > 0) {
-					errors.placesOfOrigin = 'Place of origin start dates must be after birth date';
+					errors.placesOfOrigin = intl.formatMessage({ id: 'panel.member.validation.placeOfOriginAfterBirth' });
 				} else {
 					for (let i = 1; i < placesOfOrigin.length; i++) {
 						const currentPlace = placesOfOrigin[i];
@@ -325,10 +326,12 @@ export default function MemberPanel({
 
 						if (currentPlace.location.trim() && currentPlace.startDate) {
 							if (!previousPlace.endDate) {
-								errors.placesOfOrigin = 'Previous place of origin must have an end date';
+								errors.placesOfOrigin = intl.formatMessage({
+									id: 'panel.member.validation.placesOfOriginEndDate',
+								});
 								break;
 							} else if (currentPlace.startDate <= previousPlace.endDate) {
-								errors.placesOfOrigin = 'Start date must be after the end date of the previous place';
+								errors.placesOfOrigin = intl.formatMessage({ id: 'panel.member.validation.placesOfOriginOrder' });
 								break;
 							}
 						}
@@ -339,11 +342,11 @@ export default function MemberPanel({
 
 		const hasValidOccupation = occupations.some((occ) => occ.jobTitle.trim() !== '');
 		if (!hasValidOccupation) {
-			errors.occupations = 'At least one occupation is required';
+			errors.occupations = intl.formatMessage({ id: 'panel.member.validation.occupationsRequired' });
 		} else {
 			const invalidOccupations = occupations.filter((occ) => occ.jobTitle.trim() !== '' && !occ.startDate);
 			if (invalidOccupations.length > 0) {
-				errors.occupations = 'Occupations must have start dates';
+				errors.occupations = intl.formatMessage({ id: 'panel.member.validation.occupationsStartDate' });
 			} else {
 				const invalidBirthDateOccupations = occupations.filter(
 					(occ) =>
@@ -353,7 +356,7 @@ export default function MemberPanel({
 						occ.startDate < memberFormData.birthDate
 				);
 				if (invalidBirthDateOccupations.length > 0) {
-					errors.occupations = 'Occupation start dates must be after birth date';
+					errors.occupations = intl.formatMessage({ id: 'panel.member.validation.occupationsAfterBirth' });
 				} else {
 					for (let i = 1; i < occupations.length; i++) {
 						const currentOccupation = occupations[i];
@@ -361,10 +364,14 @@ export default function MemberPanel({
 
 						if (currentOccupation.jobTitle.trim() && currentOccupation.startDate) {
 							if (!previousOccupation.endDate) {
-								errors.occupations = 'Previous occupation must have an end date';
+								errors.occupations = intl.formatMessage({
+									id: 'panel.member.validation.occupationsEndDate',
+								});
 								break;
 							} else if (currentOccupation.startDate <= previousOccupation.endDate) {
-								errors.occupations = 'Start date must be after the end date of the previous occupation';
+								errors.occupations = intl.formatMessage({
+									id: 'panel.member.validation.occupationsDateOrder',
+								});
 								break;
 							}
 						}
@@ -383,12 +390,12 @@ export default function MemberPanel({
 		setGeneralError('');
 
 		if (!validateForm()) {
-			setGeneralError('Please check your information');
+			setGeneralError(intl.formatMessage({ id: 'panel.member.general.checkInformation' }));
 			return;
 		}
 
 		if (!confirmAccuracy) {
-			setGeneralError('Please check your information');
+			setGeneralError(intl.formatMessage({ id: 'panel.member.general.confirmAccuracy' }));
 			return;
 		}
 
@@ -441,21 +448,34 @@ export default function MemberPanel({
 			}
 
 			if (response.ok) {
-				toast.success(mode === 'add' ? 'Family member added successfully!' : 'Family member updated successfully!');
 				// Call onSuccess callback if provided
 				if (onSuccess) {
 					onSuccess();
+					toast.success(
+						mode === 'add'
+							? intl.formatMessage({ id: 'panel.member.toast.addSuccess' })
+							: intl.formatMessage({ id: 'panel.member.toast.updateSuccess' })
+					);
 				} else {
 					// Fallback: Refresh the page to show updated data
 					window.location.reload();
 				}
 			} else {
 				const error = await response.json();
-				toast.error(error.error || `Failed to ${mode === 'add' ? 'add' : 'update'} family member`);
+				toast.error(
+					error.error ||
+						(mode === 'add'
+							? intl.formatMessage({ id: 'panel.member.toast.addFailed' })
+							: intl.formatMessage({ id: 'panel.member.toast.updateFailed' }))
+				);
 			}
 		} catch (error) {
 			console.error(`Error ${mode === 'add' ? 'adding' : 'updating'} member:`, error);
-			toast.error(`Failed to ${mode === 'add' ? 'add' : 'update'} family member`);
+			toast.error(
+				mode === 'add'
+					? intl.formatMessage({ id: 'panel.member.toast.addFailed' })
+					: intl.formatMessage({ id: 'panel.member.toast.updateFailed' })
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -502,12 +522,12 @@ export default function MemberPanel({
 		if (file) {
 			const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 			if (!allowedTypes.includes(file.type)) {
-				toast.error('Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.');
+				toast.error(intl.formatMessage({ id: 'panel.member.toast.invalidFileType' }));
 				return;
 			}
 
 			if (file.size > 5 * 1024 * 1024) {
-				toast.error('File size too large. Maximum size is 5MB.');
+				toast.error(intl.formatMessage({ id: 'panel.member.toast.fileTooLarge' }));
 				return;
 			}
 
@@ -524,14 +544,16 @@ export default function MemberPanel({
 	if (loading) {
 		return (
 			<div className="w-full h-full">
-				<LoadingScreen message="Loading member information..." />
+				<LoadingScreen message={intl.formatMessage({ id: 'panel.member.loading' })} />
 			</div>
 		);
 	}
 
 	if (mode !== 'add' && !member) {
 		return (
-			<div className="w-full h-full flex items-center justify-center text-gray-500 bg-white">Member not found</div>
+			<div className="w-full h-full flex items-center justify-center text-gray-500 bg-white">
+				<FormattedMessage id="panel.member.notFound" />
+			</div>
 		);
 	}
 
@@ -549,7 +571,9 @@ export default function MemberPanel({
 					className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
 				>
 					<ChevronLeft className="w-5 h-5 mr-2" />
-					<span className="font-['Inter']">Back</span>
+					<span className="font-inter">
+						<FormattedMessage id="panel.common.back" />
+					</span>
 				</button>
 			</div>
 
@@ -557,7 +581,7 @@ export default function MemberPanel({
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
 					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{memberFormData.fullName}&apos;s Information
+						<FormattedMessage id="panel.member.viewTitle" values={{ name: memberFormData.fullName }} />
 					</h2>
 
 					<div className="space-y-8">
@@ -580,12 +604,16 @@ export default function MemberPanel({
 										<line x1="7" y1="16" x2="13" y2="16" />
 									</svg>
 								</div>
-								<h3 className="text-base font-normal text-black">Personal Information</h3>
+								<h3 className="text-base font-normal text-black">
+									<FormattedMessage id="panel.member.personalInformation" />
+								</h3>
 							</div>
 
 							<div className="space-y-4">
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Full Name *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.fullName" />
+									</label>
 									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 										{memberFormData.fullName}
 									</div>
@@ -593,86 +621,134 @@ export default function MemberPanel({
 
 								<div className="grid grid-cols-2 gap-6">
 									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">Gender *</label>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.gender" />
+										</label>
 										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-											{memberFormData.gender === 'MALE' ? 'Male' : memberFormData.gender === 'FEMALE' ? 'Female' : '-'}
+											{memberFormData.gender === 'MALE' ? (
+												<FormattedMessage id="panel.member.male" />
+											) : memberFormData.gender === 'FEMALE' ? (
+												<FormattedMessage id="panel.member.female" />
+											) : (
+												<FormattedMessage id="panel.member.notAvailable" />
+											)}
 										</div>
 									</div>
 									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">Birth Date *</label>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.birthDate" />
+										</label>
 										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-											{memberFormData.birthDate ? new Date(memberFormData.birthDate).toLocaleDateString() : '-'}
+											<FormattedDate value={new Date(memberFormData.birthDate)} />
 										</div>
 									</div>
 								</div>
 
 								{/* Place of Origin */}
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Place of Origin *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.placeOfOrigin" />
+									</label>
 									<div className="space-y-4">
 										{placesOfOrigin.map((place, index) => (
 											<div key={place.id} className="space-y-3">
 												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Location {index + 1}</label>
+													<label className="block text-xs text-black/70 mb-1.5 ml-1">
+														<FormattedMessage id="panel.member.locationNumber" values={{ number: index + 1 }} />
+													</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.location || '-'}
+														{place.location || <FormattedMessage id="panel.member.notAvailable" />}
 													</div>
 												</div>
 												<div className="flex gap-4">
 													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.startDate" />
+														</label>
 														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{place.startDate ? new Date(place.startDate).toLocaleDateString() : '-'}
+															{place.startDate ? (
+																new Date(place.startDate).toLocaleDateString()
+															) : (
+																<FormattedMessage id="panel.member.notAvailable" />
+															)}
 														</div>
 													</div>
 													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.endDate" />
+														</label>
 														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{place.endDate ? new Date(place.endDate).toLocaleDateString() : '-'}
+															{place.endDate ? (
+																new Date(place.endDate).toLocaleDateString()
+															) : (
+																<FormattedMessage id="panel.member.notAvailable" />
+															)}
 														</div>
 													</div>
 												</div>
 											</div>
 										))}
 									</div>
-									<p className="text-xs text-black/50 mt-2">Maximum 4 places of origin per person</p>
+									<p className="text-xs text-black/50 mt-2">
+										<FormattedMessage id="panel.member.note.maxPlaces" />
+									</p>
 								</div>
 
 								{/* Occupation */}
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Occupation *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.occupation" />
+									</label>
 									<div className="space-y-4">
 										{occupations.map((occ, index) => (
 											<div key={occ.id} className="space-y-3">
 												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">Job Title {index + 1}</label>
+													<label className="block text-xs text-black/70 mb-1.5 ml-1">
+														<FormattedMessage id="panel.member.jobTitleNumber" values={{ number: index + 1 }} />
+													</label>
 													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.jobTitle || '-'}
+														{occ.jobTitle || <FormattedMessage id="panel.member.notAvailable" />}
 													</div>
 												</div>
 												<div className="flex gap-4">
 													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.startDate" />
+														</label>
 														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{occ.startDate ? new Date(occ.startDate).toLocaleDateString() : '-'}
+															{occ.startDate ? (
+																<FormattedDate value={new Date(occ.startDate)} />
+															) : (
+																<FormattedMessage id="panel.member.notAvailable" />
+															)}
 														</div>
 													</div>
 													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.endDate" />
+														</label>
 														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{occ.endDate ? new Date(occ.endDate).toLocaleDateString() : '-'}
+															{occ.endDate ? (
+																<FormattedDate value={new Date(occ.endDate)} />
+															) : (
+																<FormattedMessage id="panel.member.notAvailable" />
+															)}
 														</div>
 													</div>
 												</div>
 											</div>
 										))}
 									</div>
-									<p className="text-xs text-black/50 mt-2">Maximum 15 occupations per person</p>
+									<p className="text-xs text-black/50 mt-2">
+										<FormattedMessage id="panel.member.note.maxOccupations" />
+									</p>
 								</div>
 
 								{/* Address */}
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Address *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.address" />
+									</label>
 									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 										{memberFormData.address}
 									</div>
@@ -681,8 +757,12 @@ export default function MemberPanel({
 								{/* Profile Picture */}
 								<div>
 									<div className="flex items-center mb-2">
-										<label className="text-base font-normal text-black mr-1.5">Profile Picture</label>
-										<span className="text-[11.5px] text-black/50">(optional)</span>
+										<label className="text-base font-normal text-black mr-1.5">
+											<FormattedMessage id="panel.member.label.profilePicture" />
+										</label>
+										<span className="text-[11.5px] text-black/50">
+											<FormattedMessage id="common.optional" />
+										</span>
 									</div>
 									<div className="w-[100px] h-[100px] bg-gray-200 overflow-hidden border border-black/10">
 										{profilePicturePreview ? (
@@ -694,7 +774,9 @@ export default function MemberPanel({
 												className="w-full h-full object-cover"
 											/>
 										) : (
-											<div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+											<div className="w-full h-full flex items-center justify-center text-gray-400">
+												<FormattedMessage id="panel.member.noImage" />
+											</div>
 										)}
 									</div>
 								</div>
@@ -712,37 +794,52 @@ export default function MemberPanel({
 										<div className="w-5 h-5 mr-3">
 											<Heart className="w-full h-full text-black" strokeWidth={1.5} />
 										</div>
-										<h3 className="text-base font-normal text-black">Family Connection</h3>
+										<h3 className="text-base font-normal text-black">
+											<FormattedMessage id="panel.member.familyConnection" />
+										</h3>
 									</div>
 
 									<div className="space-y-6">
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Related Member *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.relatedMember" />
+											</label>
 											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relatedMemberId
-													? existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)?.fullName ||
-														'-'
-													: '-'}
+												{memberFormData.relatedMemberId ? (
+													existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)?.fullName || (
+														<FormattedMessage id="panel.common.notAvailable" />
+													)
+												) : (
+													<FormattedMessage id="panel.common.notAvailable" />
+												)}
 											</div>
 										</div>
 
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Relationship *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.relationship" />
+											</label>
 											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relationship === 'parent'
-													? 'Parent'
-													: memberFormData.relationship === 'spouse'
-														? 'Spouse'
-														: '-'}
+												{memberFormData.relationship === 'parent' ? (
+													<FormattedMessage id="panel.member.parent" />
+												) : memberFormData.relationship === 'spouse' ? (
+													<FormattedMessage id="panel.member.spouse" />
+												) : (
+													<FormattedMessage id="panel.common.notAvailable" />
+												)}
 											</div>
 										</div>
 
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Relationship Date *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.relationshipDate" />
+											</label>
 											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relationshipDate
-													? new Date(memberFormData.relationshipDate).toLocaleDateString()
-													: '-'}
+												{memberFormData.relationshipDate ? (
+													new Date(memberFormData.relationshipDate).toLocaleDateString()
+												) : (
+													<FormattedMessage id="panel.common.notAvailable" />
+												)}
 											</div>
 										</div>
 									</div>
@@ -756,14 +853,14 @@ export default function MemberPanel({
 								onClick={onClose}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								Back
+								<FormattedMessage id="panel.common.back" />
 							</button>
 							{canEdit && (
 								<button
 									onClick={() => setMode('edit')}
 									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
 								>
-									Edit
+									<FormattedMessage id="panel.common.edit" />
 								</button>
 							)}
 						</div>
@@ -773,7 +870,11 @@ export default function MemberPanel({
 				/* Add/Edit Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
 					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{isAddMode ? 'Add New Family Member' : `Edit ${memberFormData.fullName}'s Information`}
+						{isAddMode ? (
+							<FormattedMessage id="panel.member.addTitle" />
+						) : (
+							<FormattedMessage id="panel.member.editTitle" values={{ name: memberFormData.fullName }} />
+						)}
 					</h2>
 
 					<form onSubmit={handleSubmit} className="space-y-8">
@@ -796,12 +897,16 @@ export default function MemberPanel({
 										<line x1="7" y1="16" x2="13" y2="16" />
 									</svg>
 								</div>
-								<h3 className="text-base font-normal text-black">Personal Information</h3>
+								<h3 className="text-base font-normal text-black">
+									<FormattedMessage id="panel.member.personalInformation" />
+								</h3>
 							</div>
 
 							<div className="space-y-4">
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Full Name *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.fullName" />
+									</label>
 									<input
 										type="text"
 										value={memberFormData.fullName}
@@ -821,7 +926,9 @@ export default function MemberPanel({
 
 								<div className="grid grid-cols-2 gap-6">
 									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">Gender *</label>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.gender" />
+										</label>
 										<select
 											value={memberFormData.gender}
 											onChange={(e) => {
@@ -833,16 +940,24 @@ export default function MemberPanel({
 											className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
 											required
 										>
-											<option value="">Select gender</option>
-											<option value="MALE">Male</option>
-											<option value="FEMALE">Female</option>
+											<option value="">
+												<FormattedMessage id="panel.member.selectGender" />
+											</option>
+											<option value="MALE">
+												<FormattedMessage id="panel.member.male" />
+											</option>
+											<option value="FEMALE">
+												<FormattedMessage id="panel.member.female" />
+											</option>
 										</select>
 										{validationErrors.gender && (
 											<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.gender}</p>
 										)}
 									</div>
 									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">Birth Date *</label>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.birthDate" />
+										</label>
 										<input
 											type="date"
 											value={memberFormData.birthDate}
@@ -864,14 +979,16 @@ export default function MemberPanel({
 								{/* Place of Origin */}
 								<div>
 									<div className="flex justify-between items-center mb-1.5 ml-1">
-										<label className="text-base font-normal text-black">Place of Origin *</label>
+										<label className="text-base font-normal text-black">
+											<FormattedMessage id="panel.member.label.placeOfOrigin" />
+										</label>
 										<button
 											type="button"
 											onClick={addPlaceOfOrigin}
 											disabled={placesOfOrigin.length >= 4}
 											className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
 										>
-											+ Add Place
+											<FormattedMessage id="panel.member.addPlace" />
 										</button>
 									</div>
 									{validationErrors.placesOfOrigin && (
@@ -891,7 +1008,9 @@ export default function MemberPanel({
 												)}
 												<div className="space-y-3">
 													<div>
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">Origin *</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.label.origin" />
+														</label>
 														<div className="relative">
 															<select
 																value={place.location}
@@ -902,52 +1021,57 @@ export default function MemberPanel({
 																}}
 																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 pr-10 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none cursor-pointer"
 																style={{
-																	backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+																	backgroundImage:
+																		"url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")",
 																	backgroundRepeat: 'no-repeat',
 																	backgroundPosition: 'right 1rem center',
-																	backgroundSize: '1.25rem'
+																	backgroundSize: '1.25rem',
 																}}
 															>
-																<option value="">Select place of origin</option>
-															<option value="An Giang">An Giang</option>
-															<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
-															<option value="Bac Giang">Bac Giang</option>
-															<option value="Bac Ninh">Bac Ninh</option>
-															<option value="Binh Duong">Binh Duong</option>
-															<option value="Binh Dinh">Binh Dinh</option>
-															<option value="Binh Phuoc">Binh Phuoc</option>
-															<option value="Binh Thuan">Binh Thuan</option>
-															<option value="Ca Mau">Ca Mau</option>
-															<option value="Dak Lak">Dak Lak</option>
-															<option value="Dak Nong">Dak Nong</option>
-															<option value="Dong Nai">Dong Nai</option>
-															<option value="Dong Thap">Dong Thap</option>
-															<option value="Gia Lai">Gia Lai</option>
-															<option value="Ha Giang">Ha Giang</option>
-															<option value="Ha Nam">Ha Nam</option>
-															<option value="Ha Tinh">Ha Tinh</option>
-															<option value="Khanh Hoa">Khanh Hoa</option>
-															<option value="Kien Giang">Kien Giang</option>
-															<option value="Lam Dong">Lam Dong</option>
-															<option value="Lao Cai">Lao Cai</option>
-															<option value="Long An">Long An</option>
-															<option value="Nam Dinh">Nam Dinh</option>
-															<option value="Nghe An">Nghe An</option>
-															<option value="Ninh Binh">Ninh Binh</option>
-															<option value="Phu Tho">Phu Tho</option>
-															<option value="Quang Nam">Quang Nam</option>
-															<option value="Hanoi">Hanoi</option>
-															<option value="Ho Chi Minh City">Ho Chi Minh City</option>
-															<option value="Hai Phong">Hai Phong</option>
-															<option value="Da Nang">Da Nang</option>
-															<option value="Can Tho">Can Tho</option>
-															<option value="Hue">Hue</option>
+																<option value="">
+																	<FormattedMessage id="panel.member.selectPlaceOfOrigin" />
+																</option>
+																<option value="An Giang">An Giang</option>
+																<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
+																<option value="Bac Giang">Bac Giang</option>
+																<option value="Bac Ninh">Bac Ninh</option>
+																<option value="Binh Duong">Binh Duong</option>
+																<option value="Binh Dinh">Binh Dinh</option>
+																<option value="Binh Phuoc">Binh Phuoc</option>
+																<option value="Binh Thuan">Binh Thuan</option>
+																<option value="Ca Mau">Ca Mau</option>
+																<option value="Dak Lak">Dak Lak</option>
+																<option value="Dak Nong">Dak Nong</option>
+																<option value="Dong Nai">Dong Nai</option>
+																<option value="Dong Thap">Dong Thap</option>
+																<option value="Gia Lai">Gia Lai</option>
+																<option value="Ha Giang">Ha Giang</option>
+																<option value="Ha Nam">Ha Nam</option>
+																<option value="Ha Tinh">Ha Tinh</option>
+																<option value="Khanh Hoa">Khanh Hoa</option>
+																<option value="Kien Giang">Kien Giang</option>
+																<option value="Lam Dong">Lam Dong</option>
+																<option value="Lao Cai">Lao Cai</option>
+																<option value="Long An">Long An</option>
+																<option value="Nam Dinh">Nam Dinh</option>
+																<option value="Nghe An">Nghe An</option>
+																<option value="Ninh Binh">Ninh Binh</option>
+																<option value="Phu Tho">Phu Tho</option>
+																<option value="Quang Nam">Quang Nam</option>
+																<option value="Hanoi">Hanoi</option>
+																<option value="Ho Chi Minh City">Ho Chi Minh City</option>
+																<option value="Hai Phong">Hai Phong</option>
+																<option value="Da Nang">Da Nang</option>
+																<option value="Can Tho">Can Tho</option>
+																<option value="Hue">Hue</option>
 															</select>
 														</div>
 													</div>
 													<div className="flex gap-4">
 														<div className="flex-1">
-															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.label.startDate" />
+															</label>
 															<input
 																type="date"
 																value={place.startDate}
@@ -960,7 +1084,9 @@ export default function MemberPanel({
 															/>
 														</div>
 														<div className="flex-1">
-															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.label.endDate" />
+															</label>
 															<input
 																type="date"
 																value={place.endDate}
@@ -977,20 +1103,24 @@ export default function MemberPanel({
 											</div>
 										))}
 									</div>
-									<p className="text-xs text-black/50 mt-2">Maximum 4 places of origin per person</p>
+									<p className="text-xs text-black/50 mt-2">
+										<FormattedMessage id="panel.member.note.maxPlaces" />
+									</p>
 								</div>
 
 								{/* Occupation */}
 								<div>
 									<div className="flex justify-between items-center mb-1.5 ml-1">
-										<label className="text-base font-normal text-black">Occupation *</label>
+										<label className="text-base font-normal text-black">
+											<FormattedMessage id="panel.member.label.occupation" />
+										</label>
 										<button
 											type="button"
 											onClick={addOccupation}
 											disabled={occupations.length >= 15}
 											className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
 										>
-											+ Add Occupation
+											<FormattedMessage id="panel.member.addOccupation" />
 										</button>
 									</div>
 									{validationErrors.occupations && (
@@ -1010,7 +1140,9 @@ export default function MemberPanel({
 												)}
 												<div className="space-y-3">
 													<div>
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">Job Title {index + 1} *</label>
+														<label className="block text-xs text-black/70 mb-1.5 ml-1">
+															<FormattedMessage id="panel.member.label.jobTitle" values={{ index: index + 1 }} />
+														</label>
 														<input
 															type="text"
 															value={occ.jobTitle}
@@ -1019,13 +1151,15 @@ export default function MemberPanel({
 																updated[index].jobTitle = e.target.value;
 																setOccupations(updated);
 															}}
-															placeholder="Enter job title"
+															placeholder={intl.formatMessage({ id: 'panel.member.jobTitlePlaceholder' })}
 															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 														/>
 													</div>
 													<div className="flex gap-4">
 														<div className="flex-1">
-															<label className="block text-xs text-black/70 mb-1.5 ml-1">Start Date *</label>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1 required-label">
+																<FormattedMessage id="panel.member.label.startDate" />
+															</label>
 															<input
 																type="date"
 																value={occ.startDate}
@@ -1038,7 +1172,9 @@ export default function MemberPanel({
 															/>
 														</div>
 														<div className="flex-1">
-															<label className="block text-xs text-black/70 mb-1.5 ml-1">End Date</label>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.label.endDate" />
+															</label>
 															<input
 																type="date"
 																value={occ.endDate}
@@ -1055,12 +1191,16 @@ export default function MemberPanel({
 											</div>
 										))}
 									</div>
-									<p className="text-xs text-black/50 mt-2">Maximum 15 occupations per person</p>
+									<p className="text-xs text-black/50 mt-2">
+										<FormattedMessage id="panel.member.note.maxOccupations" />
+									</p>
 								</div>
 
 								{/* Address */}
 								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">Address *</label>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1">
+										<FormattedMessage id="panel.member.label.address" />
+									</label>
 									<input
 										type="text"
 										value={memberFormData.address}
@@ -1070,7 +1210,7 @@ export default function MemberPanel({
 												address: e.target.value,
 											});
 										}}
-										placeholder="Enter current address"
+										placeholder={intl.formatMessage({ id: 'panel.member.addressPlaceholder' })}
 										className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 										required
 									/>
@@ -1082,8 +1222,12 @@ export default function MemberPanel({
 								{/* Profile Picture */}
 								<div>
 									<div className="flex items-center mb-2">
-										<label className="text-base font-normal text-black mr-1.5">Profile Picture</label>
-										<span className="text-[11.5px] text-black/50">(optional)</span>
+										<label className="text-base font-normal text-black mr-1.5">
+											<FormattedMessage id="panel.member.label.profilePicture" />
+										</label>
+										<span className="text-[11.5px] text-black/50">
+											<FormattedMessage id="common.optional" />
+										</span>
 									</div>
 									<div className="flex items-center space-x-6">
 										<div className="w-[100px] h-[100px] bg-gray-200 overflow-hidden border border-black/10">
@@ -1102,7 +1246,7 @@ export default function MemberPanel({
 											)}
 										</div>
 										<label className="cursor-pointer bg-white border border-black/30 rounded-[10px] px-4 py-2 text-xs text-black hover:bg-gray-50 transition-colors">
-											Choose File
+											<FormattedMessage id="panel.common.chooseFile" />
 											<input
 												type="file"
 												accept="image/jpeg,image/png,image/gif,image/webp"
@@ -1126,12 +1270,16 @@ export default function MemberPanel({
 										<div className="w-5 h-5 mr-3">
 											<Heart className="w-full h-full text-black" strokeWidth={1.5} />
 										</div>
-										<h3 className="text-base font-normal text-black">Family Connection</h3>
+										<h3 className="text-base font-normal text-black">
+											<FormattedMessage id="panel.member.familyConnection" />
+										</h3>
 									</div>
 
 									<div className="space-y-6">
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Related Member *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.relatedMember" />
+											</label>
 											<select
 												value={memberFormData.relatedMemberId}
 												onChange={(e) => {
@@ -1143,7 +1291,9 @@ export default function MemberPanel({
 												className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
 												required
 											>
-												<option value="">Select a family member</option>
+												<option value="">
+													<FormattedMessage id="panel.member.selectFamilyMember" />
+												</option>
 												{existingMembers
 													.filter((m) => (isAddMode ? true : m.id !== memberId))
 													.map((m) => (
@@ -1158,7 +1308,9 @@ export default function MemberPanel({
 										</div>
 
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Relationship *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.relationship" />
+											</label>
 											<select
 												value={memberFormData.relationship}
 												onChange={(e) => {
@@ -1170,9 +1322,15 @@ export default function MemberPanel({
 												className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
 												required
 											>
-												<option value="">Select relationship</option>
-												<option value="parent">Parent</option>
-												<option value="spouse">Spouse</option>
+												<option value="">
+													<FormattedMessage id="panel.member.selectRelationship" />
+												</option>
+												<option value="parent">
+													<FormattedMessage id="panel.member.parent" />
+												</option>
+												<option value="spouse">
+													<FormattedMessage id="panel.member.spouse" />
+												</option>
 											</select>
 											{validationErrors.relationship && (
 												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationship}</p>
@@ -1180,7 +1338,9 @@ export default function MemberPanel({
 										</div>
 
 										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">Relationship Date *</label>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+												<FormattedMessage id="panel.member.relationshipDate" />
+											</label>
 											<input
 												type="date"
 												value={memberFormData.relationshipDate}
@@ -1197,13 +1357,15 @@ export default function MemberPanel({
 												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationshipDate}</p>
 											)}
 											<div className="flex items-start space-x-2 mt-2 ml-3">
-												<Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+												<Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
 												<p className="text-[10px] text-black/50">
-													{memberFormData.relationship === 'parent'
-														? 'For parent relationships, this is the date when the parent-child relationship was established.'
-														: memberFormData.relationship === 'spouse'
-															? 'For spouse relationships, this is the date of marriage.'
-															: 'Select a relationship type to see more information.'}
+													{memberFormData.relationship === 'parent' ? (
+														<FormattedMessage id="panel.member.relationshipParentHint" />
+													) : memberFormData.relationship === 'spouse' ? (
+														<FormattedMessage id="panel.member.relationshipSpouseHint" />
+													) : (
+														<FormattedMessage id="panel.member.relationshipSelectHint" />
+													)}
 												</p>
 											</div>
 										</div>
@@ -1213,16 +1375,20 @@ export default function MemberPanel({
 												<div className="flex items-start space-x-3">
 													<AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
 													<div>
-														<p className="text-xs text-blue-900 font-medium">Parent Relationship</p>
+														<p className="text-xs text-blue-900 font-medium">
+															<FormattedMessage id="panel.member.parentRelationshipInfo" />
+														</p>
 														<p className="text-[10px] text-blue-700 mt-1">
-															You are adding <strong>{memberFormData.fullName || 'this person'}</strong> as a child of{' '}
-															<strong>
-																{
-																	existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																		?.fullName
-																}
-															</strong>
-															.
+															<FormattedMessage
+																id="panel.member.parentRelationshipDetails"
+																values={{
+																	name:
+																		memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
+																	relatedName:
+																		existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
+																			?.fullName || '',
+																}}
+															/>
 														</p>
 													</div>
 												</div>
@@ -1234,16 +1400,20 @@ export default function MemberPanel({
 												<div className="flex items-start space-x-3">
 													<Heart className="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" />
 													<div>
-														<p className="text-xs text-pink-900 font-medium">Spouse Relationship</p>
+														<p className="text-xs text-pink-900 font-medium">
+															<FormattedMessage id="panel.member.spouseRelationshipInfo" />
+														</p>
 														<p className="text-[10px] text-pink-700 mt-1">
-															You are adding <strong>{memberFormData.fullName || 'this person'}</strong> as a spouse of{' '}
-															<strong>
-																{
-																	existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																		?.fullName
-																}
-															</strong>
-															.
+															<FormattedMessage
+																id="panel.member.spouseRelationshipDetails"
+																values={{
+																	name:
+																		memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
+																	relatedName:
+																		existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
+																			?.fullName || '',
+																}}
+															/>
 														</p>
 													</div>
 												</div>
@@ -1265,10 +1435,10 @@ export default function MemberPanel({
 							/>
 							<div>
 								<label htmlFor="confirm-accuracy" className="text-sm text-black font-medium">
-									I confirm that all information provided is accurate
+									<FormattedMessage id="panel.member.confirmAccuracy" />
 								</label>
 								<p className="text-[10px] text-black/40 mt-0.5">
-									Please verify all dates and relationships before submitting.
+									<FormattedMessage id="panel.member.confirmAccuracyHint" />
 								</p>
 							</div>
 						</div>
@@ -1288,14 +1458,24 @@ export default function MemberPanel({
 								onClick={isEditMode ? () => setMode('view') : onClose}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								{isEditMode ? 'Cancel' : 'Back'}
+								{isEditMode ? <FormattedMessage id="common.cancel" /> : <FormattedMessage id="common.back" />}
 							</button>
 							<button
 								type="submit"
 								disabled={isSubmitting}
 								className="w-[150px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
 							>
-								{isSubmitting ? (isAddMode ? 'Adding...' : 'Updating...') : isAddMode ? 'Add Member' : 'Update Member'}
+								{isSubmitting ? (
+									isAddMode ? (
+										<FormattedMessage id="panel.member.adding" />
+									) : (
+										<FormattedMessage id="panel.member.updating" />
+									)
+								) : isAddMode ? (
+									<FormattedMessage id="panel.member.addMember" />
+								) : (
+									<FormattedMessage id="panel.member.updateMember" />
+								)}
 							</button>
 						</div>
 					</form>
@@ -1304,4 +1484,3 @@ export default function MemberPanel({
 		</div>
 	);
 }
-

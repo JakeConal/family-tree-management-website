@@ -1,0 +1,24 @@
+{
+	"treeView": {
+		"loading": "Loading family tree...",
+		"noMembers": "No family members found",
+		"controls": {
+			"allGeneration": "All Generation",
+			"generation": "Generation {number}",
+			"addMember": "Add Member",
+			"add": "Add"
+		},
+		"legend": {
+			"childParent": "Child - Parent",
+			"formerSpouse": "Former Spouse",
+			"currentSpouse": "Current Spouse",
+			"passedAway": "Passed away"
+		},
+		"exSpouse": {
+			"exHusband": "Ex-Husband",
+			"exWife": "Ex-Wife",
+			"multiple": "{count} Ex-Spouses",
+			"clickToView": "Click to view"
+		}
+	}
+}

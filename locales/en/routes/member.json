@@ -1,0 +1,32 @@
+{
+	"member": {
+		"add": {
+			"title": "Add New Member",
+			"personalInfo": "Personal Information",
+			"relationship": "Relationship",
+			"relatedMember": "Related Member",
+			"relatedMemberPlaceholder": "Select related member",
+			"relationshipType": "Relationship Type",
+			"relationshipTypePlaceholder": "Select relationship",
+			"relationshipDate": "Relationship Date",
+			"relationshipDatePlaceholder": "Select relationship date",
+			"types": {
+				"spouse": "Spouse",
+				"child": "Child",
+				"parent": "Parent",
+				"sibling": "Sibling"
+			}
+		},
+		"panel": {
+			"title": "Member Details",
+			"personalInfo": "Personal Information",
+			"biography": "Biography",
+			"lifeEvents": "Life Events",
+			"birth": "Birth",
+			"marriage": "Marriage",
+			"divorce": "Divorce",
+			"death": "Death",
+			"achievements": "Achievements"
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"member": {
+		"add": {
+			"title": "Thêm Thành Viên Mới",
+			"personalInfo": "Thông Tin Cá Nhân",
+			"relationship": "Mối Quan Hệ",
+			"relatedMember": "Thành Viên Liên Quan",
+			"relatedMemberPlaceholder": "Chọn thành viên liên quan",
+			"relationshipType": "Loại Quan Hệ",
+			"relationshipTypePlaceholder": "Chọn mối quan hệ",
+			"relationshipDate": "Ngày Quan Hệ",
+			"relationshipDatePlaceholder": "Chọn ngày quan hệ",
+			"types": {
+				"spouse": "Vợ/Chồng",
+				"child": "Con",
+				"parent": "Cha/Mẹ",
+				"sibling": "Anh Chị Em"
+			}
+		},
+		"panel": {
+			"title": "Chi Tiết Thành Viên",
+			"personalInfo": "Thông Tin Cá Nhân",
+			"biography": "Tiểu Sử",
+			"lifeEvents": "Sự Kiện Cuộc Đời",
+			"birth": "Sinh",
+			"marriage": "Kết Hôn",
+			"divorce": "Ly Hôn",
+			"death": "Mất",
+			"achievements": "Thành Tích"
+		}
+	}
+}

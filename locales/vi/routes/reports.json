@@ -1,0 +1,30 @@
+{
+	"reports": {
+		"loading": "Đang tải báo cáo...",
+		"export": {
+			"title": "Xuất Báo Cáo",
+			"excel": "Excel",
+			"pdf": "PDF"
+		},
+		"cards": {
+			"totalMembers": "Tổng số thành viên gia đình",
+			"currentMembers": "Thành viên gia đình hiện tại",
+			"achievements": "Thành Tích",
+			"generations": "Thế Hệ"
+		},
+		"charts": {
+			"memberChanges": "Thay đổi thành viên gia đình",
+			"totalMembersByYear": "Tổng số thành viên theo năm",
+			"totalAchievementsByYear": "Tổng số thành tích theo năm",
+			"achievementCategories": "Danh Mục Thành Tích",
+			"noData": "Không có dữ liệu"
+		},
+		"chartLegends": {
+			"married": "Kết Hôn",
+			"deceased": "Tử Vong",
+			"birth": "Sinh",
+			"totalMembers": "Tổng Số Thành Viên",
+			"totalAchievements": "Tổng Số Thành Tích"
+		}
+	}
+}

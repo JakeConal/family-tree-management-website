@@ -1,0 +1,20 @@
+{
+	"sidebar": {
+		"myFamilyTrees": "My Family Trees",
+		"familyTree": "Family Tree",
+		"familyTreeGuestView": "Family Tree (Guest View)",
+		"create": "Create",
+		"noFamilyTrees": "No family trees yet",
+		"user": "User",
+		"accountSettings": "Account settings",
+		"accountSettingsGuest": "Account settings not available for guests",
+		"navigation": {
+			"overview": "Overview",
+			"familyTree": "Family Tree",
+			"members": "Members",
+			"lifeEvents": "Life Events",
+			"reports": "Reports",
+			"settings": "Settings"
+		}
+	}
+}

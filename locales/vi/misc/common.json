@@ -22,7 +22,9 @@
 		"saving": "Đang lưu...",
 		"deleting": "Đang xóa...",
 		"updating": "Đang cập nhật...",
-		"optional": "tùy chọn"
+		"optional": "(tùy chọn)",
+		"undo": "Hoàn tác",
+		"cannotUndo": "Hành động này không thể hoàn tác."
 	},
 	"nav": {
 		"features": "Tính Năng",

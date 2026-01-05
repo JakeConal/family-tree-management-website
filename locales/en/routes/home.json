@@ -1,0 +1,98 @@
+{
+	"home": {
+		"hero": {
+			"badge": "Build Your Family Legacy Today",
+			"title": "Preserve Your Family Story",
+			"subtitle": "Easily build, view, and preserve your family tree for future generations. Connect with your roots and celebrate your family's unique journey.",
+			"startForFree": "Start for free",
+			"explore": "Explore"
+		},
+		"features": {
+			"title": "Features",
+			"subtitle": "Powerful tools for family storytelling",
+			"description": "Explore the comprehensive features of our family tree platform",
+			"dashboard": {
+				"title": "Dashboard",
+				"description": "Get a clear overview of all your key insights in one place"
+			},
+			"achievementList": {
+				"title": "Achievement List",
+				"description": "Track your achievements with detailed, organized records"
+			},
+			"report": {
+				"title": "Report",
+				"description": "Visualize your progress through analytic, easy-to-read charts"
+			}
+		},
+		"additionalFeatures": {
+			"title": "Additional Features",
+			"subtitle": "Weave the tapestry of your family's enduring story",
+			"interactiveTree": {
+				"title": "Interactive Family Tree",
+				"description": "Visualize your family connections with beautiful, easy-to-navigate tree diagrams."
+			},
+			"memberManagement": {
+				"title": "Member Management",
+				"description": "Add and organize family members with detailed profiles and photos."
+			},
+			"achievementTracking": {
+				"title": "Achievement Tracking",
+				"description": "Record and celebrate important milestones in your family."
+			},
+			"detailedReports": {
+				"title": "Detailed Reports",
+				"description": "Generate comprehensive reports and statistics about your family history."
+			}
+		},
+		"howItWorks": {
+			"title": "How It Works",
+			"subtitle": "Simple & Fast",
+			"description": "Just a steps to start building your family tree",
+			"step1": {
+				"number": "01",
+				"title": "Create Account",
+				"description": "Sign up for free in just a few seconds."
+			},
+			"step2": {
+				"number": "02",
+				"title": "Add Member",
+				"description": "Enter information about your family members."
+			},
+			"step3": {
+				"number": "03",
+				"title": "Build Connections",
+				"description": "Link relationships to build your family tree."
+			}
+		},
+		"cta": {
+			"title": "Your Family Story Awaits",
+			"subtitle": "Start documenting your family's unique journey today and create a lasting legacy",
+			"startForFree": "Start for free",
+			"signIn": "Sign in"
+		},
+		"footer": {
+			"tagline": "Preserve Your Legacy",
+			"description": "Family Tree helps you build, visualize, and preserve your family tree for future generations. Legacy tools designed to help you connect with your roots and celebrate your family's unique journey.",
+			"product": {
+				"title": "Product",
+				"home": "Home",
+				"guide": "Guide",
+				"faq": "FAQ"
+			},
+			"features": {
+				"title": "Features",
+				"member": "Member",
+				"blog": "Blog"
+			},
+			"about": {
+				"title": "About",
+				"contact": "Contact",
+				"community": "Community"
+			},
+			"copyright": "© 2025 Family Tree Management. All rights reserved.",
+			"privacyPolicy": "Privacy policy",
+			"cookiePolicy": "Cookie policy",
+			"termsOfService": "Terms of service"
+		}
+	}
+}

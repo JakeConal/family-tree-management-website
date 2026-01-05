@@ -597,7 +597,6 @@ export default function FamilyTreeDashboard() {
 						<div className="grid gap-3 sm:gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 							<button
 								onClick={async () => {
-									await fetchExistingMembers();
 									openPanel('member', {
 										mode: 'add',
 										familyTreeId,
@@ -613,7 +612,6 @@ export default function FamilyTreeDashboard() {
 							</button>
 							<button
 								onClick={async () => {
-									await fetchExistingMembers();
 									openPanel('achievement', {
 										mode: 'add',
 										familyTreeId,
@@ -629,7 +627,6 @@ export default function FamilyTreeDashboard() {
 							</button>
 							<button
 								onClick={async () => {
-									await fetchExistingMembers();
 									openPanel('passing', {
 										mode: 'add',
 										familyTreeId,

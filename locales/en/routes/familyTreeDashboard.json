@@ -1,0 +1,60 @@
+{
+	"familyTreeDashboard": {
+		"loading": "Loading family tree data...",
+		"notFound": {
+			"title": "Family Tree Not Found",
+			"message": "The family tree you're looking for doesn't exist or you don't have access to it.",
+			"goToDashboard": "Go to Dashboard"
+		},
+		"overview": {
+			"title": "Family Information Overview",
+			"familyName": "Family Name:",
+			"origin": "Origin:",
+			"established": "Established:",
+			"notSpecified": "Not specified",
+			"years": "years",
+			"totalGenerations": "Total generations",
+			"allMembers": "All Members",
+			"totalMembers": "Total Members",
+			"livingMembers": "Living Members"
+		},
+		"trends": {
+			"memberGrowth": "Member growth",
+			"member": "Member",
+			"deathTrend": "Death Trend",
+			"death": "Death",
+			"marriageTrend": "Marriage Trend",
+			"married": "Married",
+			"divorced": "Divorced",
+			"achievementGrowth": "Achievement Growth",
+			"achievements": "Achievements"
+		},
+		"quickAction": {
+			"title": "Quick Action",
+			"addMember": "Add Member",
+			"recordAchievement": "Record Achievement",
+			"recordPassing": "Record Passing",
+			"viewFamilyTree": "View Family Tree"
+		},
+		"recentChanges": {
+			"title": "Recent Changes",
+			"seeAll": "See All",
+			"noChanges": "No major changes recorded yet.",
+			"system": "System",
+			"justNow": "Just now",
+			"minutesAgo": "{count} minutes ago",
+			"hoursAgo": "{count} hours ago",
+			"daysAgo": "{count} days ago",
+			"birthRecorded": "Birth recorded",
+			"newMemberAdded": "New family member added",
+			"memberUpdated": "Family member information updated",
+			"memberRemoved": "Family member removed",
+			"passingAdded": "Passing record added",
+			"achievementRecorded": "Achievement recorded",
+			"marriageRecorded": "Marriage recorded",
+			"marriageRemoved": "Marriage record removed",
+			"divorceRecorded": "Divorce recorded",
+			"treeUpdated": "Family tree information updated"
+		}
+	}
+}

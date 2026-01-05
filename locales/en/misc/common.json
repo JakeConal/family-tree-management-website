@@ -22,7 +22,9 @@
 		"saving": "Saving...",
 		"deleting": "Deleting...",
 		"updating": "Updating...",
-		"optional": "optional"
+		"optional": "(optional)",
+		"undo": "Undo",
+		"cannotUndo": "This action cannot be undone."
 	},
 	"nav": {
 		"features": "Features",

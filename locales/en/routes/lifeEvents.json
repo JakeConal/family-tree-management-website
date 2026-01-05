@@ -1,0 +1,44 @@
+{
+	"lifeEvents": {
+		"loading": "Loading life events...",
+		"tabs": {
+			"achievement": "Achievement",
+			"passing": "Passing",
+			"lifeEvent": "Life Event"
+		},
+		"filters": {
+			"allYears": "All Years",
+			"allTypes": "All Types",
+			"married": "Married",
+			"divorce": "Divorce"
+		},
+		"actions": {
+			"addAchievement": "Add Achievement",
+			"addPassing": "Add Passing",
+			"addDivorce": "Add Divorce"
+		},
+		"empty": {
+			"noAchievements": "No achievements recorded yet",
+			"addFirstAchievement": "Add your first achievement",
+			"noPassing": "No passing records yet",
+			"addFirstPassing": "Add your first passing record",
+			"noLifeEvents": "No life events recorded yet",
+			"addDivorceRecord": "Add divorce record"
+		},
+		"passingCard": {
+			"title": "The passing of {name}",
+			"buriedPlace": "Buried Place:",
+			"notSpecified": "Not specified",
+			"causes": "Causes: {cause}",
+			"causeNotSpecified": "Cause of death not specified"
+		},
+		"lifeEventCard": {
+			"sayIDo": "{name1} & {name2} Say 'I Do'",
+			"marriageDescription": "Happiness starts here! The couple held an intimate ceremony, marking the beginning of a new chapter in their lives.",
+			"separation": "{name1}'s Separation from {name2}",
+			"separationDescription": "The end of a relationship. The two agreed to separate peacefully and move on with their individual lives.",
+			"birth": "{name}'s Birth",
+			"bornTo": "Born to {parent}"
+		}
+	}
+}

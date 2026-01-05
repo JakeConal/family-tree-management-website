@@ -1,0 +1,44 @@
+{
+	"familyTree": {
+		"create": {
+			"title": "Create Family Tree",
+			"familyInfo": "Family Information",
+			"familyName": "Family Name",
+			"familyNamePlaceholder": "Enter family name",
+			"origin": "Origin",
+			"originPlaceholder": "Enter origin location",
+			"establishYear": "Establish Year",
+			"establishYearPlaceholder": "Enter establishment year",
+			"rootPerson": "Root Person Information",
+			"fullName": "Full Name",
+			"fullNamePlaceholder": "Enter full name",
+			"gender": "Gender",
+			"genderPlaceholder": "Select gender",
+			"male": "Male",
+			"female": "Female",
+			"other": "Other",
+			"birthDate": "Birth Date",
+			"birthDatePlaceholder": "Select birth date",
+			"address": "Address",
+			"addressPlaceholder": "Enter address",
+			"placesOfOrigin": "Places of Origin",
+			"occupations": "Occupations",
+			"profilePicture": "Profile Picture",
+			"uploadPhoto": "Upload Photo",
+			"changePhoto": "Change Photo",
+			"confirmAccuracy": "I confirm that all information provided is accurate",
+			"submit": "Create Family Tree"
+		},
+		"edit": {
+			"title": "Edit Family Tree",
+			"familyName": "Family Name",
+			"origin": "Origin",
+			"establishYear": "Establish Year",
+			"save": "Save Changes"
+		},
+		"delete": {
+			"confirmTitle": "Delete Family Tree",
+			"confirmMessage": "Are you sure you want to delete this family tree? This action cannot be undone."
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"welcome": {
+		"title": "Welcome to Family Tree",
+		"subtitle": "Choose how you'd like to access your family tree",
+		"createAccount": {
+			"title": "Create or Sign In to Account",
+			"signIn": "Sign In",
+			"createAccount": "Create Account"
+		},
+		"guestAccess": {
+			"title": "Access with Code",
+			"description": "Have an access code from your family tree owner? Enter it here to view the family tree.",
+			"enterCode": "Enter Access Code"
+		}
+	}
+}

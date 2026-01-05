@@ -1,0 +1,46 @@
+{
+	"account": {
+		"title": "Cài Đặt Tài Khoản",
+		"accountInfo": {
+			"title": "Thông Tin Tài Khoản",
+			"fullName": "Họ Tên",
+			"fullNamePlaceholder": "Nhập họ tên của bạn",
+			"email": "Email",
+			"emailPlaceholder": "Email không thể thay đổi"
+		},
+		"changePassword": {
+			"title": "Đổi Mật Khẩu",
+			"currentPassword": "Mật Khẩu Hiện Tại",
+			"currentPasswordPlaceholder": "Nhập mật khẩu hiện tại",
+			"newPassword": "Mật Khẩu Mới",
+			"newPasswordPlaceholder": "Nhập mật khẩu mới",
+			"confirmNewPassword": "Xác Nhận Mật Khẩu Mới",
+			"confirmNewPasswordPlaceholder": "Xác nhận mật khẩu mới"
+		},
+		"validation": {
+			"fullNameRequired": "Họ tên là bắt buộc",
+			"currentPasswordRequired": "Mật khẩu hiện tại là bắt buộc",
+			"newPasswordRequired": "Mật khẩu mới là bắt buộc",
+			"newPasswordMinLength": "Mật khẩu mới phải có ít nhất 8 ký tự",
+			"passwordsDoNotMatch": "Mật khẩu mới không khớp"
+		},
+		"messages": {
+			"accountUpdated": "Cập nhật tài khoản thành công!",
+			"accountUpdateFailed": "Cập nhật tài khoản thất bại. Vui lòng thử lại.",
+			"passwordUpdated": "Cập nhật mật khẩu thành công!",
+			"passwordUpdateFailed": "Cập nhật mật khẩu thất bại. Vui lòng thử lại.",
+			"accountDeleted": "Xóa tài khoản thành công",
+			"accountDeleteFailed": "Xóa tài khoản thất bại. Vui lòng thử lại."
+		},
+		"deleteConfirm": {
+			"title": "Xóa Tài Khoản",
+			"message": "Bạn có chắc chắn muốn xóa tài khoản của mình?\n\nHành động này không thể hoàn tác và sẽ xóa tất cả cây gia phả, thành viên và hồ sơ của bạn."
+		}
+	},
+	"guest": {
+		"banner": {
+			"title": "Chế độ khách mời:",
+			"description": "Bạn đang xem với tư cách khách mời. Bạn chỉ có thể chỉnh sửa hồ sơ của mình ({name})."
+		}
+	}
+}

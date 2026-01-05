@@ -1,0 +1,42 @@
+{
+	"settings": {
+		"loading": "Đang tải cài đặt...",
+		"familyInfo": {
+			"title": "Thông Tin Gia Đình",
+			"familyName": "Tên Họ",
+			"familyNamePlaceholder": "Nhập tên họ",
+			"origin": "Quê Quán",
+			"originPlaceholder": "Chọn nơi quê quán",
+			"established": "Thành Lập",
+			"establishedPlaceholder": "Nhập năm thành lập"
+		},
+		"guestAccess": {
+			"title": "Truy Cập Khách",
+			"description": "Mời các thành viên gia đình xem cây và chỉnh sửa hồ sơ của họ bằng cách tạo mã truy cập.",
+			"inviteGuest": "Mời Người Chỉnh Sửa Khách"
+		},
+		"actions": {
+			"saveChanges": "Lưu Thay Đổi",
+			"saving": "Đang lưu...",
+			"deleteFamilyTree": "Xóa Cây Gia Phả",
+			"deleting": "Đang xóa..."
+		},
+		"delete": {
+			"confirmTitle": "Xóa Cây Gia Phả",
+			"confirmMessage": "Bạn có chắc chắn muốn xóa \"{name}\"?\\n\\nHành động này không thể hoàn tác và sẽ xóa tất cả thành viên, mối quan hệ và hồ sơ liên quan.",
+			"deleteButton": "Xóa",
+			"cancelButton": "Hủy"
+		},
+		"messages": {
+			"updateSuccess": "Cập nhật cây gia phả thành công!",
+			"updateFailed": "Không thể cập nhật cây gia phả. Vui lòng thử lại.",
+			"deleteSuccess": "Xóa cây gia phả thành công",
+			"deleteFailed": "Không thể xóa cây gia phả. Vui lòng thử lại."
+		},
+		"notFound": {
+			"title": "Không Tìm Thấy Cây Gia Phả",
+			"message": "Cây gia phả bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập.",
+			"goToDashboard": "Về Bảng Điều Khiển"
+		}
+	}
+}

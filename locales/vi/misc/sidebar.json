@@ -1,0 +1,20 @@
+{
+	"sidebar": {
+		"myFamilyTrees": "Cây Gia Phả Của Tôi",
+		"familyTree": "Cây Gia Phả",
+		"familyTreeGuestView": "Cây Gia Phả (Chế Độ Khách)",
+		"create": "Tạo",
+		"noFamilyTrees": "Chưa có cây gia phả nào",
+		"user": "Người Dùng",
+		"accountSettings": "Cài đặt tài khoản",
+		"accountSettingsGuest": "Cài đặt tài khoản không khả dụng cho khách",
+		"navigation": {
+			"overview": "Tổng Quan",
+			"familyTree": "Cây Gia Phả",
+			"members": "Thành Viên",
+			"lifeEvents": "Sự Kiện",
+			"reports": "Báo Cáo",
+			"settings": "Cài Đặt"
+		}
+	}
+}

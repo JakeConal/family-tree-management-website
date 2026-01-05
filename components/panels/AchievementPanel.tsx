@@ -1,11 +1,13 @@
 'use client';
 
 import classNames from 'classnames';
-import { ChevronLeft, ChevronDown, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 import { AchievementType, FamilyMember } from '@/types';
 
 interface Achievement {
@@ -42,6 +44,7 @@ export default function AchievementPanel({
 	onClose,
 	onSuccess,
 }: AchievementPanelProps) {
+	const intl = useIntl();
 	const [achievement, setAchievement] = useState<Achievement | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [achievementTypes, setAchievementTypes] = useState<AchievementType[]>([]);
@@ -77,6 +80,23 @@ export default function AchievementPanel({
 		}
 	}, [familyTreeId]);
 
+	const fetchMemberPassingRecord = useCallback(
+		async (memberId: string) => {
+			try {
+				const data = await FamilyTreeService.checkPassingRecords(familyTreeId, memberId);
+				if (data.hasRecord && data.passingRecord) {
+					setSelectedMemberPassingDate(data.passingRecord.dateOfPassing);
+				} else {
+					setSelectedMemberPassingDate('');
+				}
+			} catch (error) {
+				console.error('Error fetching member passing record:', error);
+				setSelectedMemberPassingDate('');
+			}
+		},
+		[familyTreeId]
+	);
+
 	const fetchAchievement = useCallback(async () => {
 		if (!achievementId) return;
 
@@ -107,11 +127,11 @@ export default function AchievementPanel({
 			}
 		} catch (error) {
 			console.error('Error fetching achievement:', error);
-			toast.error('Failed to load achievement');
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
 		} finally {
 			setLoading(false);
 		}
-	}, [achievementId, familyTreeId, familyMembers]);
+	}, [achievementId, familyTreeId, familyMembers, fetchMemberPassingRecord, intl]);
 
 	useEffect(() => {
 		fetchAchievementTypes();
@@ -130,42 +150,29 @@ export default function AchievementPanel({
 		}
 	}, [mode, achievementId, fetchAchievementTypes, fetchAchievement]);
 
-	const fetchMemberPassingRecord = async (memberId: string) => {
-		try {
-			const response = await fetch(`/api/family-trees/${familyTreeId}/passing-records/check/${memberId}`);
-			const data = await response.json();
-			if (data.hasRecord && data.passingRecord) {
-				setSelectedMemberPassingDate(data.passingRecord.dateOfPassing);
-			} else {
-				setSelectedMemberPassingDate('');
-			}
-		} catch (error) {
-			console.error('Error fetching member passing record:', error);
-			setSelectedMemberPassingDate('');
-		}
-	};
-
 	const validateField = (field: string, value: string) => {
 		const newErrors = { ...errors };
 
 		switch (field) {
 			case 'familyMemberId':
 				if (!value) {
-					newErrors.familyMemberId = 'Family member is required';
+					newErrors.familyMemberId = intl.formatMessage({ id: 'panel.achievement.validation.familyMemberRequired' });
 				} else {
 					delete newErrors.familyMemberId;
 				}
 				break;
 			case 'achievementTypeId':
 				if (!value) {
-					newErrors.achievementTypeId = 'Achievement type is required';
+					newErrors.achievementTypeId = intl.formatMessage({
+						id: 'panel.achievement.validation.achievementTypeRequired',
+					});
 				} else {
 					delete newErrors.achievementTypeId;
 				}
 				break;
 			case 'achieveDate':
 				if (!value) {
-					newErrors.achieveDate = 'Date achieved is required';
+					newErrors.achieveDate = intl.formatMessage({ id: 'panel.achievement.validation.dateAchievedRequired' });
 				} else {
 					delete newErrors.achieveDate;
 				}
@@ -181,10 +188,10 @@ export default function AchievementPanel({
 
 		if (formData.achieveDate) {
 			if (selectedMemberBirthDate && formData.achieveDate <= selectedMemberBirthDate) {
-				newErrors.achieveDate = 'Achievement date must be after the birth date';
+				newErrors.achieveDate = intl.formatMessage({ id: 'panel.achievement.validation.achievementDateAfterBirth' });
 				hasDateErrors = true;
 			} else if (selectedMemberPassingDate && formData.achieveDate >= selectedMemberPassingDate) {
-				newErrors.achieveDate = 'Achievement date must be before the date of passing';
+				newErrors.achieveDate = intl.formatMessage({ id: 'panel.achievement.validation.achievementDateBeforePassing' });
 				hasDateErrors = true;
 			} else {
 				delete newErrors.achieveDate;
@@ -252,16 +259,29 @@ export default function AchievementPanel({
 			});
 
 			if (response.ok) {
-				toast.success(mode === 'add' ? 'Achievement created successfully!' : 'Achievement updated successfully!');
+				toast.success(
+					mode === 'add'
+						? intl.formatMessage({ id: 'panel.achievement.messages.createSuccess' })
+						: intl.formatMessage({ id: 'panel.achievement.messages.updateSuccess' })
+				);
 				onSuccess();
 				onClose();
 			} else {
 				const error = await response.json();
-				toast.error(error.error || `Failed to ${mode === 'add' ? 'create' : 'update'} achievement`);
+				toast.error(
+					error.error ||
+						intl.formatMessage({
+							id: mode === 'add' ? 'panel.achievement.messages.createError' : 'panel.achievement.messages.updateError',
+						})
+				);
 			}
 		} catch (error) {
 			console.error('Error saving achievement:', error);
-			toast.error(`Failed to ${mode === 'add' ? 'create' : 'update'} achievement`);
+			toast.error(
+				intl.formatMessage({
+					id: mode === 'add' ? 'panel.achievement.messages.createError' : 'panel.achievement.messages.updateError',
+				})
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -283,16 +303,16 @@ export default function AchievementPanel({
 			});
 
 			if (response.ok) {
-				toast.success('Achievement deleted successfully!');
+				toast.success(intl.formatMessage({ id: 'panel.achievement.messages.deleteSuccess' }));
 				onSuccess();
 				onClose();
 			} else {
 				const error = await response.json();
-				toast.error(error.error || 'Failed to delete achievement');
+				toast.error(error.error || intl.formatMessage({ id: 'panel.achievement.messages.deleteError' }));
 			}
 		} catch (error) {
 			console.error('Error deleting achievement:', error);
-			toast.error('Failed to delete achievement');
+			toast.error(intl.formatMessage({ id: 'panel.achievement.messages.deleteError' }));
 		} finally {
 			setIsDeleting(false);
 			setShowDeleteModal(false);
@@ -302,7 +322,7 @@ export default function AchievementPanel({
 	if (loading) {
 		return (
 			<div className="w-full h-full">
-				<LoadingScreen message="Loading achievement..." />
+				<LoadingScreen message={intl.formatMessage({ id: 'panel.achievement.loadingMessage' })} />
 			</div>
 		);
 	}
@@ -319,7 +339,9 @@ export default function AchievementPanel({
 					className="flex items-center text-black font-normal text-sm sm:text-base hover:opacity-70 transition-opacity"
 				>
 					<ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-					<span className="font-['Inter']">Back</span>
+					<span className="font-['Inter']">
+						<FormattedMessage id="common.back" />
+					</span>
 				</button>
 			</div>
 
@@ -327,12 +349,13 @@ export default function AchievementPanel({
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						Achievement Details
+						<FormattedMessage id="panel.achievement.title" />
 					</h2>
-
 					<div className="space-y-6">
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Family Member *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.achievement.familyMember" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 								{achievement?.familyMember.fullName}
 							</div>
@@ -340,34 +363,44 @@ export default function AchievementPanel({
 
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
 							<div>
-								<label className="block text-base font-normal text-black mb-1.5 ml-1">Achievement Type *</label>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.achievement.achievementType" />
+								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 									{achievement?.achievementType.typeName}
 								</div>
 							</div>
 							<div>
-								<label className="block text-base font-normal text-black mb-1.5 ml-1">Date Achieved *</label>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.achievement.dateAchieved" />
+								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									{formatDate(achievement?.achieveDate || '')}
+									<FormattedDate value={new Date(achievement?.achieveDate || '')} />
 								</div>
 							</div>
 						</div>
 
 						<div>
 							<label className="block text-base font-normal text-black mb-1.5 ml-1">
-								Title <span className="text-[11.5px] text-black/50">(optional)</span>
+								<FormattedMessage id="panel.achievement.titleLabel" />
+								<span className="text-[11.5px] text-black/50 ml-1">
+									<FormattedMessage id="common.optional" />
+								</span>
 							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{achievement?.title || 'No title'}
+								{achievement?.title || intl.formatMessage({ id: 'panel.achievement.noTitle' })}
 							</div>
 						</div>
 
 						<div>
 							<label className="block text-base font-normal text-black mb-1.5 ml-1">
-								Description <span className="text-[11.5px] text-black/50">(optional)</span>
+								<FormattedMessage id="panel.achievement.description" />
+								<span className="text-[11.5px] text-black/50 ml-1">
+									<FormattedMessage id="common.optional" />
+								</span>
 							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-5 py-3 text-xs text-black min-h-[100px]">
-								{achievement?.description || 'No description'}
+								{achievement?.description || intl.formatMessage({ id: 'panel.achievement.noDescription' })}
 							</div>
 						</div>
 
@@ -377,13 +410,13 @@ export default function AchievementPanel({
 								onClick={() => setShowDeleteModal(true)}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								Delete
+								<FormattedMessage id="common.delete" />
 							</button>
 							<button
 								onClick={() => onModeChange('edit')}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
 							>
-								Edit
+								<FormattedMessage id="common.edit" />
 							</button>
 						</div>
 					</div>
@@ -392,13 +425,18 @@ export default function AchievementPanel({
 				/* Add/Edit Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						{isAddMode ? 'Add New Achievement' : 'Edit Achievement'}
+						{isAddMode ? (
+							<FormattedMessage id="panel.achievement.addNew" />
+						) : (
+							<FormattedMessage id="panel.achievement.edit" />
+						)}
 					</h2>
-
 					<form onSubmit={handleSubmit} className="space-y-5">
 						{/* Family Member Selection */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Family Member *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.achievement.familyMember" />
+							</label>
 							<div className="relative">
 								<select
 									value={formData.familyMemberId}
@@ -431,14 +469,16 @@ export default function AchievementPanel({
 									)}
 									disabled={!isAddMode}
 								>
-									<option value="">Select member</option>
+									<option value="">
+										<FormattedMessage id="panel.achievement.selectMember" />
+									</option>
 									{familyMembers.map((member) => (
 										<option key={member.id} value={member.id}>
 											{member.fullName}
 										</option>
 									))}
 								</select>
-							<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.familyMemberId && touched.familyMemberId && (
 								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
@@ -449,7 +489,9 @@ export default function AchievementPanel({
 						<div className="grid grid-cols-2 gap-4">
 							{/* Achievement Type Selection */}
 							<div>
-								<label className="block text-[16px] font-normal text-black mb-2">Achievement Type *</label>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.achievement.achievementType" />
+								</label>
 								<div className="relative">
 									<select
 										value={formData.achievementTypeId}
@@ -468,14 +510,16 @@ export default function AchievementPanel({
 											}
 										)}
 									>
-										<option value="">Select type</option>
+										<option value="">
+											<FormattedMessage id="panel.achievement.selectType" />
+										</option>
 										{achievementTypes.map((type) => (
 											<option key={type.id} value={type.id}>
 												{type.typeName}
 											</option>
 										))}
 									</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 								</div>
 								{errors.achievementTypeId && touched.achievementTypeId && (
 									<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
@@ -484,32 +528,37 @@ export default function AchievementPanel({
 
 							{/* Date Achieved */}
 							<div>
-								<label className="block text-[16px] font-normal text-black mb-2">Date Achieved *</label>
-						<input
-							type="date"
-							value={formData.achieveDate}
-							onChange={(e) => {
-								setFormData({
-									...formData,
-									achieveDate: e.target.value,
-								});
-								handleFieldChange('achieveDate');
-							}}
-							onBlur={() => validateField('achieveDate', formData.achieveDate)}
-							className={classNames(
-								'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-								{
-									'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
-								}
-							)}
-						/>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.achievement.dateAchieved" />
+								</label>
+								<input
+									type="date"
+									value={formData.achieveDate}
+									onChange={(e) => {
+										setFormData({
+											...formData,
+											achieveDate: e.target.value,
+										});
+										handleFieldChange('achieveDate');
+									}}
+									onBlur={() => validateField('achieveDate', formData.achieveDate)}
+									className={classNames(
+										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+										{
+											'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
+										}
+									)}
+								/>
 							</div>
 						</div>
 
 						{/* Achievement Title */}
 						<div>
 							<label className="block text-[16px] font-normal text-black mb-2">
-								Achievement Title <span className="text-[11.5px] text-black/50">(optional)</span>
+								<FormattedMessage id="panel.achievement.titleLabel" />
+								<span className="text-[11.5px] text-black/50 ml-1">
+									<FormattedMessage id="common.optional" />
+								</span>
 							</label>
 							<input
 								type="text"
@@ -521,7 +570,7 @@ export default function AchievementPanel({
 									});
 									handleFieldChange('title');
 								}}
-								placeholder="e.g. Master's Degree in Computer Science"
+								placeholder={intl.formatMessage({ id: 'modal.recordAchievement.achievementTitlePlaceholder' })}
 								className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 							/>
 						</div>
@@ -529,7 +578,10 @@ export default function AchievementPanel({
 						{/* Description */}
 						<div>
 							<label className="block text-[16px] font-normal text-black mb-2">
-								Description <span className="text-[11.5px] text-black/50">(optional)</span>
+								<FormattedMessage id="panel.achievement.description" />
+								<span className="text-[11.5px] text-black/50 ml-1">
+									<FormattedMessage id="common.optional" />
+								</span>
 							</label>
 							<textarea
 								value={formData.description}
@@ -539,7 +591,7 @@ export default function AchievementPanel({
 										description: e.target.value,
 									})
 								}
-								placeholder="Describe the achievement..."
+								placeholder={intl.formatMessage({ id: 'panel.achievement.descriptionPlaceholder' })}
 								rows={4}
 								className="w-full px-4 py-3 bg-[#f3f2f2] border border-black/50 rounded-[20px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
 							/>
@@ -548,7 +600,9 @@ export default function AchievementPanel({
 						{/* Error Message */}
 						{Object.keys(errors).length > 0 && (
 							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">Please fill in all required fields</p>
+								<p className="text-sm font-medium text-red-800">
+									<FormattedMessage id="panel.achievement.validation.fillAllFields" />
+								</p>
 							</div>
 						)}
 
@@ -560,14 +614,14 @@ export default function AchievementPanel({
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 								disabled={isSubmitting}
 							>
-								{isAddMode ? 'Cancel' : 'Back'}
+								{isAddMode ? <FormattedMessage id="common.back" /> : <FormattedMessage id="common.cancel" />}
 							</button>
 							<button
 								type="submit"
 								disabled={isSubmitting}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
 							>
-								{isSubmitting ? 'Saving...' : 'Save'}
+								{isSubmitting ? <FormattedMessage id="common.saving" /> : <FormattedMessage id="common.save" />}
 							</button>
 						</div>
 					</form>
@@ -594,22 +648,30 @@ export default function AchievementPanel({
 								onClick={() => setShowDeleteModal(false)}
 								className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
 							>
-								<span className="font-light">&lt;</span>
-								<span className="ml-1">Back</span>
+								<ChevronLeft className="w-4 h-4" />
+								<span className="ml-1">
+									<FormattedMessage id="common.back" />
+								</span>
 							</button>
 						</div>
 
 						{/* Content */}
 						<div className="flex-1 px-8 flex flex-col">
 							{/* Title */}
-							<h2 className="text-[20px] font-semibold text-black mb-6">Delete Achievement</h2>
+							<h2 className="text-[20px] font-semibold text-black mb-6">
+								<FormattedMessage id="panel.achievement.deleteTitle" />
+							</h2>
 
 							{/* Warning Message */}
 							<div className="text-[16px] font-normal text-black leading-6 mb-auto">
-								<p>This action cannot be undone.</p>
 								<p>
-									Are you sure you want to delete the achievement of{' '}
-									<span className="font-bold">{achievement?.familyMember.fullName || ''}</span> ?
+									<FormattedMessage id="common.cannotUndo" />
+								</p>
+								<p>
+									<FormattedMessage
+										id="panel.achievement.deleteMessage"
+										values={{ memberName: achievement?.familyMember.fullName || '' }}
+									/>
 								</p>
 							</div>
 
@@ -620,14 +682,14 @@ export default function AchievementPanel({
 									disabled={isDeleting}
 									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center disabled:opacity-50"
 								>
-									Cancel
+									<FormattedMessage id="common.cancel" />
 								</button>
 								<button
 									onClick={handleDelete}
 									disabled={isDeleting}
 									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-normal text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
 								>
-									{isDeleting ? 'Deleting...' : 'Delete'}
+									{isDeleting ? <FormattedMessage id="common.deleting" /> : <FormattedMessage id="common.delete" />}
 								</button>
 							</div>
 						</div>

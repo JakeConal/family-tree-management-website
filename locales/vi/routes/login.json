@@ -1,0 +1,73 @@
+{
+	"login": {
+		"title": "Đăng nhập",
+		"subtitle": "Chào mừng trở lại",
+		"email": {
+			"label": "Email",
+			"placeholder": "email@email.com"
+		},
+		"password": {
+			"label": "Mật khẩu",
+			"placeholder": "mậtkhẩucủabạn"
+		},
+		"signIn": "Đăng Nhập",
+		"signingIn": "Đang đăng nhập...",
+		"orContinueWith": "Hoặc tiếp tục với",
+		"continueWithGoogle": "Tiếp tục với Google",
+		"signingInWithGoogle": "Đang đăng nhập...",
+		"noAccount": "Chưa có tài khoản?",
+		"createAccount": "Tạo tài khoản",
+		"error": {
+			"invalidCredentials": "Email hoặc mật khẩu không đúng",
+			"generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+			"googleLogin": "Đã xảy ra lỗi khi đăng nhập bằng Google. Vui lòng thử lại."
+		}
+	},
+	"guestLogin": {
+		"title": "Mã Truy Cập",
+		"subtitle": "Nhập mã được cung cấp bởi chủ cây gia phả",
+		"accessCode": {
+			"label": "Mã Truy Cập",
+			"placeholder": "Nhập mã truy cập 45 ký tự",
+			"hint": "Mã có đúng 45 ký tự"
+		},
+		"verifying": "Đang xác minh...",
+		"submit": "Truy Cập Cây Gia Phả",
+		"helpText": "Chưa có mã truy cập?{br}Liên hệ chủ cây gia phả để lấy mã.",
+		"welcomeMessage": "Chào mừng {name}!",
+		"error": {
+			"invalidCode": "Mã truy cập không hợp lệ",
+			"loginFailed": "Đăng nhập thất bại. Vui lòng thử lại."
+		}
+	},
+	"signup": {
+		"title": "Tạo Tài Khoản",
+		"subtitle": "Bắt đầu xây dựng Cây Gia Phả của bạn",
+		"fullName": {
+			"label": "Họ Tên",
+			"placeholder": "tênbạn"
+		},
+		"email": {
+			"label": "Email",
+			"placeholder": "email@email.com"
+		},
+		"password": {
+			"label": "Mật khẩu"
+		},
+		"confirmPassword": {
+			"label": "Xác Nhận Mật Khẩu"
+		},
+		"createAccount": "Tạo Tài Khoản",
+		"creatingAccount": "Đang tạo tài khoản...",
+		"orContinueWith": "Hoặc tiếp tục với",
+		"continueWithGoogle": "Tiếp tục với Google",
+		"haveAccount": "Đã có tài khoản?",
+		"signIn": "Đăng nhập",
+		"success": "Tạo tài khoản thành công!",
+		"error": {
+			"passwordMismatch": "Mật khẩu không khớp!",
+			"failed": "Đăng ký thất bại",
+			"generic": "Đã xảy ra lỗi trong quá trình đăng ký"
+		}
+	}
+}

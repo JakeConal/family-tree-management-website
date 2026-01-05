@@ -1,0 +1,25 @@
+{
+	"dashboard": {
+		"title": "Bảng Điều Khiển",
+		"welcome": "Chào mừng trở lại, {name}!",
+		"emptyState": {
+			"title": "Chào Mừng Đến Cây Gia Phả",
+			"subtitle": "Bắt đầu xây dựng di sản gia đình bằng cách tạo cây gia phả đầu tiên",
+			"cta": "Tạo cây gia phả đầu tiên của bạn"
+		},
+		"cards": {
+			"familyTrees": {
+				"title": "Cây Gia Phả",
+				"description": "Tạo và quản lý cây gia phả của bạn"
+			},
+			"members": {
+				"title": "Thành Viên",
+				"description": "Thêm và tổ chức các thành viên gia đình"
+			},
+			"achievements": {
+				"title": "Thành Tích",
+				"description": "Theo dõi thành tích và mốc quan trọng của gia đình"
+			}
+		}
+	}
+}
