@@ -17,7 +17,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Users, HeartHandshake, Trophy, Network } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 import * as XLSX from 'xlsx';
@@ -50,10 +50,19 @@ export default function FamilyTreeReports() {
 
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [totalMembers, setTotalMembers] = useState(0);
-	const [currentMembers, setCurrentMembers] = useState(0);
-	const [totalAchievements, setTotalAchievements] = useState(0);
-	const [generations, setGenerations] = useState(0);
+	const [members, setMembers] = useState<FamilyMemberWithDetails[]>([]);
+
+	const totalMembers = useMemo(() => members.length, [members]);
+	const currentMembers = useMemo(
+		() => members.filter((m: FamilyMemberWithDetails) => !m.passingRecords || m.passingRecords.length === 0).length,
+		[members]
+	);
+	const totalAchievements = useMemo(() => {
+		return members.flatMap((member: FamilyMemberWithDetails) => member.achievements || []).length;
+	}, [members]);
+	const generations = useMemo(() => {
+		return Math.max(...members.map((m: FamilyMemberWithDetails) => parseInt(String(m.generation)) || 1), 1);
+	}, [members]);
 
 	// Chart data
 	const [memberChangesData, setMemberChangesData] = useState<ChartData | null>(null);
@@ -61,46 +70,191 @@ export default function FamilyTreeReports() {
 	const [totalAchievementsByYearData, setTotalAchievementsByYearData] = useState<ChartData | null>(null);
 	const [achievementCategoriesData, setAchievementCategoriesData] = useState<AchievementCategory[]>([]);
 
+	const processMemberChangesByYear = useCallback(
+		(members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
+			const yearData: { [key: string]: { married: number; deceased: number; birth: number } } = {};
+
+			// Initialize years from start to end
+			for (let year = startYear; year <= endYear; year++) {
+				yearData[year] = { married: 0, deceased: 0, birth: 0 };
+			}
+
+			// Count births
+			members.forEach((member) => {
+				if (member.birthday) {
+					const birthYear = new Date(member.birthday).getFullYear();
+					if (yearData[birthYear]) {
+						yearData[birthYear].birth++;
+					}
+				}
+			});
+
+			// Count marriages (from spouseRelationships)
+			members.forEach((member) => {
+				if (member.spouseRelationships) {
+					member.spouseRelationships.forEach((rel: SpouseRelationship) => {
+						if (rel.relationshipEstablished) {
+							const year = new Date(rel.relationshipEstablished).getFullYear();
+							if (yearData[year]) {
+								yearData[year].married++;
+							}
+						}
+					});
+				}
+			});
+
+			// Count deceased (from passingRecords)
+			members.forEach((member) => {
+				if (member.passingRecords && member.passingRecords.length > 0) {
+					member.passingRecords.forEach((record) => {
+						const year = new Date(record.passingDate || record.dateOfPassing).getFullYear();
+						if (yearData[year]) {
+							yearData[year].deceased++;
+						}
+					});
+				}
+			});
+
+			// Filter out years with no events
+			const labels = Object.keys(yearData).filter((year) => {
+				const data = yearData[year];
+				return data.birth > 0 || data.married > 0 || data.deceased > 0;
+			});
+
+			console.log('Filtered Labels:', labels);
+
+			const marriedData = labels.map((year) => yearData[year].married);
+			const deceasedData = labels.map((year) => yearData[year].deceased);
+			const birthData = labels.map((year) => yearData[year].birth);
+
+			setMemberChangesData({
+				labels,
+				datasets: [
+					{
+						label: intl.formatMessage({ id: 'reports.chartLegends.married' }),
+						data: marriedData,
+						backgroundColor: 'rgba(147, 197, 253, 0.8)',
+						borderRadius: 4,
+					},
+					{
+						label: intl.formatMessage({ id: 'reports.chartLegends.deceased' }),
+						data: deceasedData,
+						backgroundColor: 'rgba(252, 165, 165, 0.8)',
+						borderRadius: 4,
+					},
+					{
+						label: intl.formatMessage({ id: 'reports.chartLegends.birth' }),
+						data: birthData,
+						backgroundColor: 'rgba(134, 239, 172, 0.8)',
+						borderRadius: 4,
+					},
+				],
+			});
+		},
+		[intl]
+	);
+
+	const processTotalMembersByYear = useCallback(
+		(members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
+			const yearCounts: { [key: string]: number } = {};
+
+			// Initialize years
+			for (let year = startYear; year <= endYear; year++) {
+				yearCounts[year] = 0;
+			}
+
+			// For each year, count members born before or in that year and still alive
+			for (let year = startYear; year <= endYear; year++) {
+				yearCounts[year] = members.filter((member) => {
+					const birthYear = member.birthday ? new Date(member.birthday).getFullYear() : startYear;
+					const deathYear =
+						member.passingRecords && member.passingRecords.length > 0 && member.passingRecords[0].passingDate
+							? new Date(member.passingRecords[0].passingDate).getFullYear()
+							: null;
+
+					return birthYear <= year && (!deathYear || deathYear > year);
+				}).length;
+			}
+
+			const labels = Object.keys(yearCounts).sort();
+			const data = labels.map((year) => yearCounts[year]);
+
+			setTotalMembersByYearData({
+				labels,
+				datasets: [
+					{
+						label: intl.formatMessage({ id: 'reports.chartLegends.totalMembers' }),
+						data,
+						borderColor: '#00a6f4',
+						backgroundColor: 'rgba(0, 166, 244, 0.1)',
+						pointBackgroundColor: '#00a6f4',
+						pointBorderColor: '#fff',
+						pointBorderWidth: 2,
+						pointRadius: 4,
+						pointHoverRadius: 6,
+						tension: 0.4,
+						fill: true,
+					},
+				],
+			});
+		},
+		[intl]
+	);
+
+	const processAchievementsByYear = useCallback(
+		(achievements: Achievement[], startYear: number, endYear: number) => {
+			const yearCounts: { [key: string]: number } = {};
+
+			// Initialize years
+			for (let year = startYear; year <= endYear; year++) {
+				yearCounts[year] = 0;
+			}
+
+			// Count cumulative achievements by year
+			for (let year = startYear; year <= endYear; year++) {
+				yearCounts[year] = achievements.filter((achievement) => {
+					const achieveValue = achievement.achieveDate;
+					const achievementYear = achieveValue
+						? new Date(achieveValue instanceof Date ? achieveValue : achieveValue).getFullYear()
+						: endYear;
+					return achievementYear <= year;
+				}).length;
+			}
+
+			const labels = Object.keys(yearCounts).sort();
+			const data = labels.map((year) => yearCounts[year]);
+
+			setTotalAchievementsByYearData({
+				labels,
+				datasets: [
+					{
+						label: intl.formatMessage({ id: 'reports.chartLegends.totalAchievements' }),
+						data,
+						borderColor: '#00bc7d',
+						backgroundColor: 'rgba(0, 188, 125, 0.1)',
+						pointBackgroundColor: '#00bc7d',
+						pointBorderColor: '#fff',
+						pointBorderWidth: 2,
+						pointRadius: 4,
+						pointHoverRadius: 6,
+						tension: 0.4,
+						fill: true,
+					},
+				],
+			});
+		},
+		[intl]
+	);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				// Fetch family tree
 				const tree = await FamilyTreeService.getById(familyTreeId);
 				setFamilyTree(tree);
 
 				// Fetch family members
 				const members = await FamilyMemberService.getAll({ familyTreeId });
-
-				const total = members.length;
-				const living = members.filter(
-					(m: FamilyMemberWithDetails) => !m.passingRecords || m.passingRecords.length === 0
-				).length;
-				const maxGen = Math.max(...members.map((m: FamilyMemberWithDetails) => m.generation || 1), 1);
-
-				setTotalMembers(total);
-				setCurrentMembers(living);
-				setGenerations(maxGen);
-
-				// Determine year range
-				const currentYear = new Date().getFullYear();
-				const startYear = tree?.establishYear || currentYear - 5;
-
-				// Process member changes by year
-				processMemberChangesByYear(members, startYear, currentYear);
-				processTotalMembersByYear(members, startYear, currentYear);
-
-				// Extract achievements from members
-				const allAchievements = members.flatMap((member: FamilyMemberWithDetails) =>
-					(member.achievements || []).map((achievement: Achievement) => ({
-						...achievement,
-						achievementDate: achievement.achieveDate,
-						achievementType: achievement.achievementType,
-					}))
-				);
-
-				setTotalAchievements(allAchievements.length);
-				processAchievementsByYear(allAchievements, startYear, currentYear);
-				processAchievementCategories(allAchievements);
+				setMembers(members);
 			} catch (error) {
 				console.error('Error fetching data:', error);
 			} finally {
@@ -113,172 +267,27 @@ export default function FamilyTreeReports() {
 		}
 	}, [familyTreeId]);
 
-	const processMemberChangesByYear = (members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
-		const yearData: { [key: string]: { married: number; deceased: number; birth: number } } = {};
+	useEffect(() => {
+		// Determine year range
+		const currentYear = new Date().getFullYear();
+		const startYear = familyTree?.establishYear || currentYear - 5;
 
-		// Initialize years from start to end
-		for (let year = startYear; year <= endYear; year++) {
-			yearData[year] = { married: 0, deceased: 0, birth: 0 };
-		}
+		// Process member changes by year
+		processMemberChangesByYear(members, startYear, currentYear);
+		processTotalMembersByYear(members, startYear, currentYear);
 
-		// Count births
-		members.forEach((member) => {
-			if (member.birthday) {
-				const birthYear = new Date(member.birthday).getFullYear();
-				if (yearData[birthYear]) {
-					yearData[birthYear].birth++;
-				}
-			}
-		});
+		// Extract achievements from members
+		const allAchievements = members.flatMap((member: FamilyMemberWithDetails) =>
+			(member.achievements || []).map((achievement: Achievement) => ({
+				...achievement,
+				achievementDate: achievement.achieveDate,
+				achievementType: achievement.achievementType,
+			}))
+		);
 
-		// Count marriages (from spouseRelationships)
-		members.forEach((member) => {
-			if (member.spouseRelationships) {
-				member.spouseRelationships.forEach((rel: SpouseRelationship) => {
-					if (rel.relationshipEstablished) {
-						const year = new Date(rel.relationshipEstablished).getFullYear();
-						if (yearData[year]) {
-							yearData[year].married++;
-						}
-					}
-				});
-			}
-		});
-
-		// Count deceased (from passingRecords)
-		members.forEach((member) => {
-			if (member.passingRecords && member.passingRecords.length > 0) {
-				member.passingRecords.forEach((record) => {
-					const year = new Date(record.passingDate || record.dateOfPassing).getFullYear();
-					if (yearData[year]) {
-						yearData[year].deceased++;
-					}
-				});
-			}
-		});
-
-		// Filter out years with no events
-		const labels = Object.keys(yearData).filter((year) => {
-			const data = yearData[year];
-			return data.birth > 0 || data.married > 0 || data.deceased > 0;
-		});
-
-		console.log('Filtered Labels:', labels);
-
-		const marriedData = labels.map((year) => yearData[year].married);
-		const deceasedData = labels.map((year) => yearData[year].deceased);
-		const birthData = labels.map((year) => yearData[year].birth);
-
-		setMemberChangesData({
-			labels,
-			datasets: [
-				{
-					label: 'Married',
-					data: marriedData,
-					backgroundColor: 'rgba(147, 197, 253, 0.8)',
-					borderRadius: 4,
-				},
-				{
-					label: 'Deceased',
-					data: deceasedData,
-					backgroundColor: 'rgba(252, 165, 165, 0.8)',
-					borderRadius: 4,
-				},
-				{
-					label: 'Birth',
-					data: birthData,
-					backgroundColor: 'rgba(134, 239, 172, 0.8)',
-					borderRadius: 4,
-				},
-			],
-		});
-	};
-
-	const processTotalMembersByYear = (members: FamilyMemberWithDetails[], startYear: number, endYear: number) => {
-		const yearCounts: { [key: string]: number } = {};
-
-		// Initialize years
-		for (let year = startYear; year <= endYear; year++) {
-			yearCounts[year] = 0;
-		}
-
-		// For each year, count members born before or in that year and still alive
-		for (let year = startYear; year <= endYear; year++) {
-			yearCounts[year] = members.filter((member) => {
-				const birthYear = member.birthday ? new Date(member.birthday).getFullYear() : startYear;
-				const deathYear =
-					member.passingRecords && member.passingRecords.length > 0 && member.passingRecords[0].passingDate
-						? new Date(member.passingRecords[0].passingDate).getFullYear()
-						: null;
-
-				return birthYear <= year && (!deathYear || deathYear > year);
-			}).length;
-		}
-
-		const labels = Object.keys(yearCounts).sort();
-		const data = labels.map((year) => yearCounts[year]);
-
-		setTotalMembersByYearData({
-			labels,
-			datasets: [
-				{
-					label: 'Total Members',
-					data,
-					borderColor: '#00a6f4',
-					backgroundColor: 'rgba(0, 166, 244, 0.1)',
-					pointBackgroundColor: '#00a6f4',
-					pointBorderColor: '#fff',
-					pointBorderWidth: 2,
-					pointRadius: 4,
-					pointHoverRadius: 6,
-					tension: 0.4,
-					fill: true,
-				},
-			],
-		});
-	};
-
-	const processAchievementsByYear = (achievements: Achievement[], startYear: number, endYear: number) => {
-		const yearCounts: { [key: string]: number } = {};
-
-		// Initialize years
-		for (let year = startYear; year <= endYear; year++) {
-			yearCounts[year] = 0;
-		}
-
-		// Count cumulative achievements by year
-		for (let year = startYear; year <= endYear; year++) {
-			yearCounts[year] = achievements.filter((achievement) => {
-				const achieveValue = achievement.achieveDate;
-				const achievementYear = achieveValue
-					? new Date(achieveValue instanceof Date ? achieveValue : achieveValue).getFullYear()
-					: endYear;
-				return achievementYear <= year;
-			}).length;
-		}
-
-		const labels = Object.keys(yearCounts).sort();
-		const data = labels.map((year) => yearCounts[year]);
-
-		setTotalAchievementsByYearData({
-			labels,
-			datasets: [
-				{
-					label: 'Total Achievements',
-					data,
-					borderColor: '#00bc7d',
-					backgroundColor: 'rgba(0, 188, 125, 0.1)',
-					pointBackgroundColor: '#00bc7d',
-					pointBorderColor: '#fff',
-					pointBorderWidth: 2,
-					pointRadius: 4,
-					pointHoverRadius: 6,
-					tension: 0.4,
-					fill: true,
-				},
-			],
-		});
-	};
+		processAchievementsByYear(allAchievements, startYear, currentYear);
+		processAchievementCategories(allAchievements);
+	}, [members, familyTree, processMemberChangesByYear, processTotalMembersByYear, processAchievementsByYear]);
 
 	const processAchievementCategories = (achievements: Achievement[]) => {
 		const categoryCounts: { [key: string]: number } = {};
@@ -618,6 +627,7 @@ export default function FamilyTreeReports() {
 						<h3 className="font-inter font-bold text-sm sm:text-[16px] text-black mb-2">
 							<FormattedMessage id="reports.cards.generations" />
 						</h3>
+						<p className="font-inter text-3xl sm:text-[40px] text-black">{generations}</p>
 					</div>
 				</div>
 
@@ -637,7 +647,9 @@ export default function FamilyTreeReports() {
 						{memberChangesData ? (
 							<Bar data={memberChangesData} options={barChartOptions} />
 						) : (
-							<div className="flex items-center justify-center h-full text-gray-400 text-sm">No data available</div>
+							<div className="flex items-center justify-center h-full text-gray-400 text-sm">
+								<FormattedMessage id="reports.charts.noData" />
+							</div>
 						)}
 					</div>
 				</div>
@@ -681,7 +693,9 @@ export default function FamilyTreeReports() {
 							{totalAchievementsByYearData ? (
 								<Line data={totalAchievementsByYearData} options={lineChartOptions} />
 							) : (
-								<div className="flex items-center justify-center h-full text-gray-400 text-sm">No data available</div>
+								<div className="flex items-center justify-center h-full text-gray-400 text-sm">
+									<FormattedMessage id="reports.charts.noData" />
+								</div>
 							)}
 						</div>
 					</div>
