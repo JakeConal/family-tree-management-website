@@ -1,2 +1,2 @@
-yarn typecheck
+yarn build
 npx lint-staged
