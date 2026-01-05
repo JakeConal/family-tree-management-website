@@ -251,11 +251,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			parentId: existingMember.parentId,
 		};
 
-		// Handle spouse relationship logic based on parentId changes
-		// const newParentId = parentId ? parseInt(parentId) : null;
-		const oldParentId = existingMember.parentId;
-		// const parentIdChanged = newParentId !== oldParentId;
-
 		// Get current spouse relationships
 		const currentSpouseRel =
 			existingMember.spouse1.length > 0
@@ -263,6 +258,41 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				: existingMember.spouse2.length > 0
 					? existingMember.spouse2[0]
 					: null;
+
+		// Handle spouse relationship logic based on parentId changes
+		// const newParentId = parentId ? parseInt(parentId) : null;
+		const oldParentId = existingMember.parentId;
+		// const parentIdChanged = newParentId !== oldParentId;
+
+		// Check if member has spouse (divorced or not)
+		const hasSpouse = currentSpouseRel !== null;
+		const isDivorced = currentSpouseRel?.divorceDate !== null;
+		const isMarried = hasSpouse && !isDivorced;
+
+		// RELATIONSHIP CHANGE VALIDATION RULES
+		// Rule 1: If parentId is not null and member has no spouse, clear parentId and relationshipEstablishedDate before changing relationship
+		let finalParentId = parentId;
+		let finalRelationshipEstablishedDate = relationshipEstablishedDate;
+
+		// Check if parent relationship has actually changed
+		const oldParentIdNum = oldParentId;
+		const newParentIdNum = parentId ? parseInt(parentId) : null;
+		const parentRelationshipChanged = oldParentIdNum !== newParentIdNum;
+
+		const isChangingRelationship = parentRelationshipChanged || spouseId !== null;
+
+		if (isChangingRelationship && oldParentId !== null && !hasSpouse) {
+			// Clear parentId and relationshipEstablishedDate when changing relationship
+			finalParentId = null;
+			finalRelationshipEstablishedDate = null;
+		}
+
+		// Rule 2: If parentId is null and trying to change relationship, delete spouse relationships first
+		let shouldDeleteSpouseBeforeChange = false;
+		let spouseRelationshipAlreadyDeleted = false;
+		if (isChangingRelationship && oldParentId === null && hasSpouse) {
+			shouldDeleteSpouseBeforeChange = true;
+		}
 
 		// Get old spouse ID to potentially delete their record
 		let oldSpouseId: number | null = null;
@@ -272,16 +302,24 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 				existingMember.spouse1.length > 0 ? currentSpouseRel.familyMember2Id : currentSpouseRel.familyMember1Id;
 		}
 
-		// Check if member has spouse (divorced or not)
-		const hasSpouse = currentSpouseRel !== null;
-		const isDivorced = currentSpouseRel?.divorceDate !== null;
-		const isMarried = hasSpouse && !isDivorced;
+		// APPLY RULE 2: Delete spouse relationships before changing relationship if parentId is null
+		if (shouldDeleteSpouseBeforeChange && currentSpouseRel) {
+			await prisma.spouseRelationship.delete({
+				where: { id: currentSpouseRel.id },
+			});
+			spouseRelationshipAlreadyDeleted = true;
+		}
 
 		// Track if we need to delete old spouse relationship
 		let shouldDeleteOldSpouseRel = false;
 		let shouldDeleteOldSpouseMember = false;
 
-		if (spouseId) {
+		// Check if spouse relationship has actually changed
+		const oldSpouseIdNum = oldSpouseId;
+		const newSpouseIdNum = spouseId ? parseInt(spouseId) : null;
+		const spouseRelationshipChanged = oldSpouseIdNum !== newSpouseIdNum;
+
+		if (spouseId && spouseRelationshipChanged) {
 			const newSpouseId = parseInt(spouseId);
 
 			// Get information about the new spouse
@@ -376,7 +414,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		}
 
 		// Delete old spouse relationship and member if needed (before creating new member update)
-		if (shouldDeleteOldSpouseRel && currentSpouseRel) {
+		// Only delete if we haven't already deleted it in the Rule 2 section
+		if (shouldDeleteOldSpouseRel && currentSpouseRel && !spouseRelationshipAlreadyDeleted) {
 			await prisma.spouseRelationship.delete({
 				where: { id: currentSpouseRel.id },
 			});
@@ -430,20 +469,28 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		}
 
 		// Update the family member
+		const updateData: any = {
+			fullName: fullName.trim(),
+			gender: validatedGender,
+			birthday: birthday ? new Date(birthday) : null,
+			address: address?.trim() || null,
+			profilePicture: profilePicture,
+			profilePictureType: profilePictureType,
+			generation: generation?.trim() || null,
+			isAdopted: isAdopted || false,
+		};
+
+		// Only update parent relationship if it has changed
+		if (parentRelationshipChanged) {
+			updateData.parentId = finalParentId ? parseInt(finalParentId) : null;
+			updateData.relationshipEstablishedDate = finalRelationshipEstablishedDate
+				? new Date(finalRelationshipEstablishedDate)
+				: null;
+		}
+
 		const updatedMember = await prisma.familyMember.update({
 			where: { id: memberId },
-			data: {
-				fullName: fullName.trim(),
-				gender: validatedGender,
-				birthday: birthday ? new Date(birthday) : null,
-				address: address?.trim() || null,
-				profilePicture: profilePicture,
-				profilePictureType: profilePictureType,
-				generation: generation?.trim() || null,
-				isAdopted: isAdopted || false,
-				parentId: parentId ? parseInt(parentId) : null,
-				relationshipEstablishedDate: relationshipEstablishedDate ? new Date(relationshipEstablishedDate) : null,
-			},
+			data: updateData,
 			select: {
 				id: true,
 				fullName: true,
@@ -495,8 +542,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			},
 		});
 
-		// Handle spouse relationship updates
-		if (spouseId) {
+		// Handle spouse relationship updates - only if spouse relationship has changed
+		if (spouseId && spouseRelationshipChanged) {
 			const spouseIdNum = parseInt(spouseId);
 			const marriageDateObj = marriageDate ? new Date(marriageDate) : new Date();
 
