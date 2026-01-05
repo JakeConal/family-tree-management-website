@@ -273,14 +273,6 @@ export default function DivorcePanel({
 		return rel.familyMember1.fullName;
 	};
 
-	if (loading) {
-		return (
-			<div className="w-full h-full">
-				<LoadingScreen message={intl.formatMessage({ id: 'panel.divorce.loadingMessage' })} />
-			</div>
-		);
-	}
-
 	const isViewMode = mode === 'view';
 	const isAddMode = mode === 'add';
 
@@ -299,246 +291,253 @@ export default function DivorcePanel({
 				</button>
 			</div>
 
-			{isViewMode ? (
-				/* View Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						<FormattedMessage id="panel.divorce.title" />
-					</h2>
+			<div className="flex-1 relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.divorce.loadingMessage' })} />}
+				{isViewMode ? (
+					/* View Mode */
+					<div className="flex-1 overflow-y-auto px-10 py-8">
+						<h2 className="text-[26px] font-normal text-black text-center mb-10">
+							<FormattedMessage id="panel.divorce.title" />
+						</h2>
 
-					<div className="space-y-6">
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.divorce.member1" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{relationship?.familyMember1.fullName}
-							</div>
-						</div>
-
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.divorce.member2" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{relationship?.familyMember2.fullName}
-							</div>
-						</div>
-
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">
-								<FormattedMessage id="panel.divorce.marriageDate" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								<FormattedDate
-									value={new Date(relationship?.marriageDate || '')}
-									year="numeric"
-									month="short"
-									day="2-digit"
-								/>
-							</div>
-						</div>
-
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.divorce.divorceDate" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								<FormattedDate
-									value={new Date(relationship?.divorceDate || '')}
-									year="numeric"
-									month="short"
-									day="2-digit"
-								/>
-							</div>
-						</div>
-
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10">
-							<button
-								onClick={onClose}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="common.back" />
-							</button>
-							<button
-								onClick={() => onModeChange('edit')}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="common.edit" />
-							</button>
-						</div>
-					</div>
-				</div>
-			) : (
-				/* Add/Edit Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{isAddMode ? (
-							<FormattedMessage id="panel.divorce.addRecord" />
-						) : (
-							<FormattedMessage id="panel.divorce.editDate" />
-						)}
-					</h2>
-
-					<form onSubmit={handleSubmit} className="space-y-5">
-						{/* Member 1 Selection */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.divorce.member1" />
-							</label>
-							<div className="relative">
-								<select
-									value={formData.member1Id}
-									onChange={(e) => {
-										setFormData({
-											...formData,
-											member1Id: e.target.value,
-											member2Id: '',
-										});
-										handleFieldChange('member1Id');
-									}}
-									onBlur={() => validateField('member1Id', formData.member1Id)}
-									className={classNames(
-										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.member1Id && touched.member1Id,
-										}
-									)}
-									disabled={!isAddMode}
-								>
-									<option value="">
-										<FormattedMessage id="panel.divorce.selectMember" />
-									</option>
-									{familyMembers.map((member) => (
-										<option key={member.id} value={member.id}>
-											{member.fullName}
-										</option>
-									))}
-								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
-							{errors.member1Id && touched.member1Id && <p className="mt-1 text-sm text-red-600">{errors.member1Id}</p>}
-						</div>
-
-						{/* Member 2 Selection */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.divorce.member2" />
-							</label>
-							<div className="relative">
-								<select
-									value={formData.member2Id}
-									onChange={(e) => {
-										setFormData({
-											...formData,
-											member2Id: e.target.value,
-										});
-										handleFieldChange('member2Id');
-									}}
-									onBlur={() => validateField('member2Id', formData.member2Id)}
-									disabled={!formData.member1Id || filteredSpouses.length === 0 || !isAddMode}
-									className={classNames(
-										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
-										{
-											'border-red-500 bg-red-50': errors.member2Id && touched.member2Id,
-										}
-									)}
-								>
-									<option value="">
-										{!formData.member1Id ? (
-											<FormattedMessage id="panel.divorce.selectMember1First" />
-										) : filteredSpouses.length === 0 ? (
-											<FormattedMessage id="panel.divorce.noMarriedSpouses" />
-										) : (
-											<FormattedMessage id="panel.divorce.selectMember" />
-										)}
-									</option>
-									{filteredSpouses.map((rel) => (
-										<option key={rel.id} value={rel.id}>
-											{getSpouseName(rel.id)}
-										</option>
-									))}
-								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
-							{errors.member2Id && touched.member2Id && <p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>}
-						</div>
-
-						{/* Date of Divorce */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.divorce.divorceDate" />
-							</label>
-							<input
-								type="date"
-								value={formData.divorceDate}
-								onChange={(e) => {
-									setFormData({
-										...formData,
-										divorceDate: e.target.value,
-									});
-									handleFieldChange('divorceDate');
-								}}
-								onBlur={() => validateField('divorceDate', formData.divorceDate)}
-								className={classNames(
-									'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-									{
-										'border-red-500 bg-red-50': errors.divorceDate && touched.divorceDate,
-									}
-								)}
-								placeholder={intl.formatMessage({ id: 'panel.divorce.datePlaceholder' })}
-							/>
-							{errors.divorceDate && touched.divorceDate && (
-								<p className="mt-1 text-sm text-red-600">{errors.divorceDate}</p>
-							)}
-						</div>
-
-						{/* Important Notice - Only show in add mode */}
-						{isAddMode && (
-							<div className="bg-[#bfdbfe] border border-black/50 rounded-[10px] p-4 flex gap-3">
-								<AlertTriangle className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
-								<div>
-									<h3 className="text-[14px] font-medium text-black mb-1">
-										<FormattedMessage id="panel.divorce.importantTitle" />
-									</h3>
-									<p className="text-[12px] text-black">
-										<FormattedMessage id="panel.divorce.importantMessage" />
-									</p>
+						<div className="space-y-6">
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.divorce.member1" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									{relationship?.familyMember1.fullName}
 								</div>
 							</div>
-						)}
 
-						{/* Error Message */}
-						{Object.keys(errors).length > 0 && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">
-									<FormattedMessage id="panel.divorce.validation.fillAllFields" />
-								</p>
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.divorce.member2" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									{relationship?.familyMember2.fullName}
+								</div>
 							</div>
-						)}
 
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-6">
-							<button
-								type="button"
-								onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-								disabled={isSubmitting}
-							>
-								<FormattedMessage id={isAddMode ? 'panel.divorce.cancel' : 'panel.divorce.back'} />
-							</button>
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
-							>
-								<FormattedMessage id={isSubmitting ? 'panel.divorce.saving' : 'panel.divorce.save'} />
-							</button>
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1">
+									<FormattedMessage id="panel.divorce.marriageDate" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									<FormattedDate
+										value={new Date(relationship?.marriageDate || '')}
+										year="numeric"
+										month="short"
+										day="2-digit"
+									/>
+								</div>
+							</div>
+
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.divorce.divorceDate" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									<FormattedDate
+										value={new Date(relationship?.divorceDate || '')}
+										year="numeric"
+										month="short"
+										day="2-digit"
+									/>
+								</div>
+							</div>
+
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-10">
+								<button
+									onClick={onClose}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="common.back" />
+								</button>
+								<button
+									onClick={() => onModeChange('edit')}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="common.edit" />
+								</button>
+							</div>
 						</div>
-					</form>
-				</div>
-			)}
+					</div>
+				) : (
+					/* Add/Edit Mode */
+					<div className="flex-1 overflow-y-auto px-10 py-8">
+						<h2 className="text-[26px] font-normal text-black text-center mb-10">
+							{isAddMode ? (
+								<FormattedMessage id="panel.divorce.addRecord" />
+							) : (
+								<FormattedMessage id="panel.divorce.editDate" />
+							)}
+						</h2>
+
+						<form onSubmit={handleSubmit} className="space-y-5">
+							{/* Member 1 Selection */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.divorce.member1" />
+								</label>
+								<div className="relative">
+									<select
+										value={formData.member1Id}
+										onChange={(e) => {
+											setFormData({
+												...formData,
+												member1Id: e.target.value,
+												member2Id: '',
+											});
+											handleFieldChange('member1Id');
+										}}
+										onBlur={() => validateField('member1Id', formData.member1Id)}
+										className={classNames(
+											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
+											{
+												'border-red-500 bg-red-50': errors.member1Id && touched.member1Id,
+											}
+										)}
+										disabled={!isAddMode}
+									>
+										<option value="">
+											<FormattedMessage id="panel.divorce.selectMember" />
+										</option>
+										{familyMembers.map((member) => (
+											<option key={member.id} value={member.id}>
+												{member.fullName}
+											</option>
+										))}
+									</select>
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								</div>
+								{errors.member1Id && touched.member1Id && (
+									<p className="mt-1 text-sm text-red-600">{errors.member1Id}</p>
+								)}
+							</div>
+
+							{/* Member 2 Selection */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.divorce.member2" />
+								</label>
+								<div className="relative">
+									<select
+										value={formData.member2Id}
+										onChange={(e) => {
+											setFormData({
+												...formData,
+												member2Id: e.target.value,
+											});
+											handleFieldChange('member2Id');
+										}}
+										onBlur={() => validateField('member2Id', formData.member2Id)}
+										disabled={!formData.member1Id || filteredSpouses.length === 0 || !isAddMode}
+										className={classNames(
+											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed',
+											{
+												'border-red-500 bg-red-50': errors.member2Id && touched.member2Id,
+											}
+										)}
+									>
+										<option value="">
+											{!formData.member1Id ? (
+												<FormattedMessage id="panel.divorce.selectMember1First" />
+											) : filteredSpouses.length === 0 ? (
+												<FormattedMessage id="panel.divorce.noMarriedSpouses" />
+											) : (
+												<FormattedMessage id="panel.divorce.selectMember" />
+											)}
+										</option>
+										{filteredSpouses.map((rel) => (
+											<option key={rel.id} value={rel.id}>
+												{getSpouseName(rel.id)}
+											</option>
+										))}
+									</select>
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								</div>
+								{errors.member2Id && touched.member2Id && (
+									<p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>
+								)}
+							</div>
+
+							{/* Date of Divorce */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.divorce.divorceDate" />
+								</label>
+								<input
+									type="date"
+									value={formData.divorceDate}
+									onChange={(e) => {
+										setFormData({
+											...formData,
+											divorceDate: e.target.value,
+										});
+										handleFieldChange('divorceDate');
+									}}
+									onBlur={() => validateField('divorceDate', formData.divorceDate)}
+									className={classNames(
+										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+										{
+											'border-red-500 bg-red-50': errors.divorceDate && touched.divorceDate,
+										}
+									)}
+									placeholder={intl.formatMessage({ id: 'panel.divorce.datePlaceholder' })}
+								/>
+								{errors.divorceDate && touched.divorceDate && (
+									<p className="mt-1 text-sm text-red-600">{errors.divorceDate}</p>
+								)}
+							</div>
+
+							{/* Important Notice - Only show in add mode */}
+							{isAddMode && (
+								<div className="bg-[#bfdbfe] border border-black/50 rounded-[10px] p-4 flex gap-3">
+									<AlertTriangle className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
+									<div>
+										<h3 className="text-[14px] font-medium text-black mb-1">
+											<FormattedMessage id="panel.divorce.importantTitle" />
+										</h3>
+										<p className="text-[12px] text-black">
+											<FormattedMessage id="panel.divorce.importantMessage" />
+										</p>
+									</div>
+								</div>
+							)}
+
+							{/* Error Message */}
+							{Object.keys(errors).length > 0 && (
+								<div className="bg-red-50 border border-red-200 rounded-lg p-3">
+									<p className="text-sm font-medium text-red-800">
+										<FormattedMessage id="panel.divorce.validation.fillAllFields" />
+									</p>
+								</div>
+							)}
+
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-6">
+								<button
+									type="button"
+									onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+									disabled={isSubmitting}
+								>
+									<FormattedMessage id={isAddMode ? 'panel.divorce.cancel' : 'panel.divorce.back'} />
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									<FormattedMessage id={isSubmitting ? 'panel.divorce.saving' : 'panel.divorce.save'} />
+								</button>
+							</div>
+						</form>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

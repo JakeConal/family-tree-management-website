@@ -128,7 +128,7 @@ export default function GenerateAccessCodePanel({
 			{/* Content Section */}
 			<div className="flex-1 px-8 pb-8">
 				{isGenerating ? (
-					<div className="flex items-center justify-center h-64">
+					<div className="flex items-center justify-center h-64 relative">
 						<LoadingScreen message="Đang tạo mã truy cập..." />
 					</div>
 				) : accessCode ? (

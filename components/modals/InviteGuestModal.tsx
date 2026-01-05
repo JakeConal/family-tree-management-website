@@ -180,8 +180,8 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<p className="text-sm text-blue-800">
-								<strong>Info:</strong> The selected member will be able to view the entire family tree but can only
-								edit their own profile.
+								<strong>Info:</strong> The selected member will be able to view the entire family tree but can only edit
+								their own profile.
 							</p>
 						</div>
 

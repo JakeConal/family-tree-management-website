@@ -128,13 +128,10 @@ export default function FamilyTreeSettings() {
 		}
 	};
 
-	if (loading) {
-		return <LoadingScreen message="Loading settings..." />;
-	}
-
 	if (!familyTree) {
 		return (
-			<div className="text-center py-12">
+			<div className="text-center py-12 relative">
+				{loading && <LoadingScreen message="Loading settings..." />}
 				<div className="bg-red-50 rounded-lg p-6 max-w-md mx-auto">
 					<h2 className="text-lg font-semibold text-red-800 mb-2">Family Tree Not Found</h2>
 					<p className="text-red-600 mb-4">
@@ -152,7 +149,8 @@ export default function FamilyTreeSettings() {
 	}
 
 	return (
-		<div className="flex-1 overflow-y-auto p-4 lg:p-8">
+		<div className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
+			{loading && <LoadingScreen message="Loading settings..." />}
 			<div className="max-w-5xl border-2 border-[rgba(0,0,0,0.30)] rounded-lg p-6">
 				{/* Header */}
 				<h2 className="font-roboto font-normal text-[23.788px] text-black mb-8">Family Information</h2>

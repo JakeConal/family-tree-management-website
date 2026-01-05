@@ -179,11 +179,7 @@ export default function BirthPanel({
 		validateForm();
 	};
 
-	if (loading) {
-		return <LoadingScreen message={intl.formatMessage({ id: 'panel.birth.loadingMessage' })} />;
-	}
-
-	if (!birthRecord) {
+	if (!loading && !birthRecord) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
 				<p className="text-gray-500">
@@ -213,7 +209,8 @@ export default function BirthPanel({
 			</div>
 
 			{/* Form Content */}
-			<div className="flex-1 overflow-y-auto p-6">
+			<div className="flex-1 overflow-y-auto p-6 relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.birth.loadingMessage' })} />}
 				<div className="space-y-6">
 					{/* Parent Field */}
 					<div>
@@ -221,7 +218,7 @@ export default function BirthPanel({
 							<FormattedMessage id="panel.birth.parent" />
 						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
-							<span className="text-[12px] text-black">{birthRecord.parent.fullName}</span>
+							<span className="text-[12px] text-black">{birthRecord?.parent.fullName}</span>
 						</div>
 					</div>
 
@@ -231,7 +228,7 @@ export default function BirthPanel({
 							<FormattedMessage id="panel.birth.child" />
 						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
-							<span className="text-[12px] text-black">{birthRecord.child.fullName}</span>
+							<span className="text-[12px] text-black">{birthRecord?.child.fullName}</span>
 						</div>
 					</div>
 
@@ -244,7 +241,7 @@ export default function BirthPanel({
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
 									<FormattedDate
-										value={new Date(birthRecord.birthDate || '')}
+										value={new Date(birthRecord?.birthDate || '')}
 										year="numeric"
 										month="2-digit"
 										day="2-digit"

@@ -482,10 +482,6 @@ export default function FamilyTreeReports() {
 		doc.save(fileName);
 	};
 
-	if (loading) {
-		return <LoadingScreen message={intl.formatMessage({ id: 'reports.loading' })} />;
-	}
-
 	// Chart options
 	const barChartOptions = {
 		responsive: true,
@@ -563,7 +559,8 @@ export default function FamilyTreeReports() {
 	};
 
 	return (
-		<div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+		<div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+			{loading && <LoadingScreen message={intl.formatMessage({ id: 'reports.loading' })} />}
 			<div className="max-w-[1158px] mx-auto space-y-8 sm:space-y-12 lg:space-y-[74px]">
 				{/* Export Buttons */}
 				<div className="flex justify-end gap-3">

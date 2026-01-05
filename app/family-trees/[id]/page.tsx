@@ -28,6 +28,7 @@ import PassingPanel from '@/components/panels/PassingPanel';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
 import { FamilyMember } from '@/types';
+import { useIntl } from 'react-intl';
 
 // Mock data types (representing API responses)
 interface FamilyTree {
@@ -64,6 +65,7 @@ interface ChangeLog {
 }
 
 export default function FamilyTreeDashboard() {
+	const intl = useIntl();
 	const router = useRouter();
 	const params = useParams();
 	const familyTreeId = params.id as string;
@@ -307,13 +309,9 @@ export default function FamilyTreeDashboard() {
 		}
 	}, [activePanelType]);
 
-	if (loading) {
-		return <LoadingScreen message="Loading family tree data..." />;
-	}
-
 	if (!familyTree) {
 		return (
-			<div className="text-center py-12">
+			<div className="text-center py-12 relative">
 				<div className="bg-red-50 rounded-lg p-6 max-w-md mx-auto">
 					<h2 className="text-lg font-semibold text-red-800 mb-2">Family Tree Not Found</h2>
 					<p className="text-red-600 mb-4">
@@ -326,6 +324,7 @@ export default function FamilyTreeDashboard() {
 						Go to Dashboard
 					</button>
 				</div>
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'familyTreeDashboard.loading' })} />}
 			</div>
 		);
 	}
@@ -721,11 +720,11 @@ export default function FamilyTreeDashboard() {
 			>
 				{activePanelType === 'addMember' && (
 					<AddMemberPanel
-					mode="add"
-					familyTreeId={familyTreeId}
-					existingMembers={existingMembers}
-					onClose={() => setActivePanelType(null)}
-					onSuccess={() => {
+						mode="add"
+						familyTreeId={familyTreeId}
+						existingMembers={existingMembers}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
 							fetchStatistics();
 							fetchActivities();
 							fetchExistingMembers();

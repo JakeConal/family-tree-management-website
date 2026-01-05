@@ -313,14 +313,6 @@ export default function AchievementPanel({
 		}
 	};
 
-	if (loading) {
-		return (
-			<div className="w-full h-full">
-				<LoadingScreen message={intl.formatMessage({ id: 'panel.achievement.loadingMessage' })} />
-			</div>
-		);
-	}
-
 	const isViewMode = mode === 'view';
 	const isAddMode = mode === 'add';
 
@@ -339,288 +331,291 @@ export default function AchievementPanel({
 				</button>
 			</div>
 
-			{isViewMode ? (
-				/* View Mode */
-				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						<FormattedMessage id="panel.achievement.title" />
-					</h2>
-					<div className="space-y-6">
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.achievement.familyMember" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{achievement?.familyMember.fullName}
-							</div>
-						</div>
-
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+			<div className="relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.achievement.loadingMessage' })} />}
+				{isViewMode ? (
+					/* View Mode */
+					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+							<FormattedMessage id="panel.achievement.title" />
+						</h2>
+						<div className="space-y-6">
 							<div>
 								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-									<FormattedMessage id="panel.achievement.achievementType" />
+									<FormattedMessage id="panel.achievement.familyMember" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									{achievement?.achievementType.typeName}
+									{achievement?.familyMember.fullName}
 								</div>
 							</div>
+
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+								<div>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+										<FormattedMessage id="panel.achievement.achievementType" />
+									</label>
+									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+										{achievement?.achievementType.typeName}
+									</div>
+								</div>
+								<div>
+									<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+										<FormattedMessage id="panel.achievement.dateAchieved" />
+									</label>
+									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+										<FormattedDate value={new Date(achievement?.achieveDate || '')} />
+									</div>
+								</div>
+							</div>
+
 							<div>
-								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-									<FormattedMessage id="panel.achievement.dateAchieved" />
+								<label className="block text-base font-normal text-black mb-1.5 ml-1">
+									<FormattedMessage id="panel.achievement.titleLabel" />
+									<span className="text-[11.5px] text-black/50 ml-1">
+										<FormattedMessage id="common.optional" />
+									</span>
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									<FormattedDate value={new Date(achievement?.achieveDate || '')} />
+									{achievement?.title || intl.formatMessage({ id: 'panel.achievement.noTitle' })}
 								</div>
 							</div>
-						</div>
 
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">
-								<FormattedMessage id="panel.achievement.titleLabel" />
-								<span className="text-[11.5px] text-black/50 ml-1">
-									<FormattedMessage id="common.optional" />
-								</span>
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{achievement?.title || intl.formatMessage({ id: 'panel.achievement.noTitle' })}
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1">
+									<FormattedMessage id="panel.achievement.description" />
+									<span className="text-[11.5px] text-black/50 ml-1">
+										<FormattedMessage id="common.optional" />
+									</span>
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-5 py-3 text-xs text-black min-h-[100px]">
+									{achievement?.description || intl.formatMessage({ id: 'panel.achievement.noDescription' })}
+								</div>
 							</div>
-						</div>
 
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">
-								<FormattedMessage id="panel.achievement.description" />
-								<span className="text-[11.5px] text-black/50 ml-1">
-									<FormattedMessage id="common.optional" />
-								</span>
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-5 py-3 text-xs text-black min-h-[100px]">
-								{achievement?.description || intl.formatMessage({ id: 'panel.achievement.noDescription' })}
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-10">
+								<button
+									onClick={() => setShowDeleteModal(true)}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="common.delete" />
+								</button>
+								<button
+									onClick={() => onModeChange('edit')}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="common.edit" />
+								</button>
 							</div>
-						</div>
-
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10">
-							<button
-								onClick={() => setShowDeleteModal(true)}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="common.delete" />
-							</button>
-							<button
-								onClick={() => onModeChange('edit')}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="common.edit" />
-							</button>
 						</div>
 					</div>
-				</div>
-			) : (
-				/* Add/Edit Mode */
-				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						{isAddMode ? (
-							<FormattedMessage id="panel.achievement.addNew" />
-						) : (
-							<FormattedMessage id="panel.achievement.edit" />
-						)}
-					</h2>
-					<form onSubmit={handleSubmit} className="space-y-5">
-						{/* Family Member Selection */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.achievement.familyMember" />
-							</label>
-							<div className="relative">
-								<select
-									value={formData.familyMemberId}
-									onChange={(e) => {
-										const selectedId = e.target.value;
-										const selectedMember = familyMembers.find((member) => member.id.toString() === selectedId);
-
-										setFormData({
-											...formData,
-											familyMemberId: selectedId,
-										});
-										setSelectedMemberBirthDate(
-											selectedMember?.birthday ? new Date(selectedMember.birthday).toISOString().split('T')[0] : ''
-										);
-
-										if (selectedId) {
-											fetchMemberPassingRecord(selectedId);
-										} else {
-											setSelectedMemberPassingDate('');
-										}
-
-										handleFieldChange('familyMemberId');
-									}}
-									onBlur={() => validateField('familyMemberId', formData.familyMemberId)}
-									className={classNames(
-										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
-										}
-									)}
-									disabled={!isAddMode}
-								>
-									<option value="">
-										<FormattedMessage id="panel.achievement.selectMember" />
-									</option>
-									{familyMembers.map((member) => (
-										<option key={member.id} value={member.id}>
-											{member.fullName}
-										</option>
-									))}
-								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
-							{errors.familyMemberId && touched.familyMemberId && (
-								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
+				) : (
+					/* Add/Edit Mode */
+					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+							{isAddMode ? (
+								<FormattedMessage id="panel.achievement.addNew" />
+							) : (
+								<FormattedMessage id="panel.achievement.edit" />
 							)}
-						</div>
-
-						{/* Achievement Type and Date Row */}
-						<div className="grid grid-cols-2 gap-4">
-							{/* Achievement Type Selection */}
+						</h2>
+						<form onSubmit={handleSubmit} className="space-y-5">
+							{/* Family Member Selection */}
 							<div>
 								<label className="block text-[16px] font-normal text-black mb-2 required-label">
-									<FormattedMessage id="panel.achievement.achievementType" />
+									<FormattedMessage id="panel.achievement.familyMember" />
 								</label>
 								<div className="relative">
 									<select
-										value={formData.achievementTypeId}
+										value={formData.familyMemberId}
 										onChange={(e) => {
+											const selectedId = e.target.value;
+											const selectedMember = familyMembers.find((member) => member.id.toString() === selectedId);
+
 											setFormData({
 												...formData,
-												achievementTypeId: e.target.value,
+												familyMemberId: selectedId,
 											});
-											handleFieldChange('achievementTypeId');
+											setSelectedMemberBirthDate(
+												selectedMember?.birthday ? new Date(selectedMember.birthday).toISOString().split('T')[0] : ''
+											);
+
+											if (selectedId) {
+												fetchMemberPassingRecord(selectedId);
+											} else {
+												setSelectedMemberPassingDate('');
+											}
+
+											handleFieldChange('familyMemberId');
 										}}
-										onBlur={() => validateField('achievementTypeId', formData.achievementTypeId)}
+										onBlur={() => validateField('familyMemberId', formData.familyMemberId)}
 										className={classNames(
 											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
 											{
-												'border-red-500 bg-red-50': errors.achievementTypeId && touched.achievementTypeId,
+												'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
 											}
 										)}
+										disabled={!isAddMode}
 									>
 										<option value="">
-											<FormattedMessage id="panel.achievement.selectType" />
+											<FormattedMessage id="panel.achievement.selectMember" />
 										</option>
-										{achievementTypes.map((type) => (
-											<option key={type.id} value={type.id}>
-												{type.typeName}
+										{familyMembers.map((member) => (
+											<option key={member.id} value={member.id}>
+												{member.fullName}
 											</option>
 										))}
 									</select>
 									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 								</div>
-								{errors.achievementTypeId && touched.achievementTypeId && (
-									<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
+								{errors.familyMemberId && touched.familyMemberId && (
+									<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
 								)}
 							</div>
 
-							{/* Date Achieved */}
+							{/* Achievement Type and Date Row */}
+							<div className="grid grid-cols-2 gap-4">
+								{/* Achievement Type Selection */}
+								<div>
+									<label className="block text-[16px] font-normal text-black mb-2 required-label">
+										<FormattedMessage id="panel.achievement.achievementType" />
+									</label>
+									<div className="relative">
+										<select
+											value={formData.achievementTypeId}
+											onChange={(e) => {
+												setFormData({
+													...formData,
+													achievementTypeId: e.target.value,
+												});
+												handleFieldChange('achievementTypeId');
+											}}
+											onBlur={() => validateField('achievementTypeId', formData.achievementTypeId)}
+											className={classNames(
+												'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
+												{
+													'border-red-500 bg-red-50': errors.achievementTypeId && touched.achievementTypeId,
+												}
+											)}
+										>
+											<option value="">
+												<FormattedMessage id="panel.achievement.selectType" />
+											</option>
+											{achievementTypes.map((type) => (
+												<option key={type.id} value={type.id}>
+													{type.typeName}
+												</option>
+											))}
+										</select>
+										<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+									</div>
+									{errors.achievementTypeId && touched.achievementTypeId && (
+										<p className="mt-1 text-sm text-red-600">{errors.achievementTypeId}</p>
+									)}
+								</div>
+
+								{/* Date Achieved */}
+								<div>
+									<label className="block text-[16px] font-normal text-black mb-2 required-label">
+										<FormattedMessage id="panel.achievement.dateAchieved" />
+									</label>
+									<input
+										type="date"
+										value={formData.achieveDate}
+										onChange={(e) => {
+											setFormData({
+												...formData,
+												achieveDate: e.target.value,
+											});
+											handleFieldChange('achieveDate');
+										}}
+										onBlur={() => validateField('achieveDate', formData.achieveDate)}
+										className={classNames(
+											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+											{
+												'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
+											}
+										)}
+									/>
+								</div>
+							</div>
+
+							{/* Achievement Title */}
 							<div>
-								<label className="block text-[16px] font-normal text-black mb-2 required-label">
-									<FormattedMessage id="panel.achievement.dateAchieved" />
+								<label className="block text-[16px] font-normal text-black mb-2">
+									<FormattedMessage id="panel.achievement.titleLabel" />
+									<span className="text-[11.5px] text-black/50 ml-1">
+										<FormattedMessage id="common.optional" />
+									</span>
 								</label>
 								<input
-									type="date"
-									value={formData.achieveDate}
+									type="text"
+									value={formData.title}
 									onChange={(e) => {
 										setFormData({
 											...formData,
-											achieveDate: e.target.value,
+											title: e.target.value,
 										});
-										handleFieldChange('achieveDate');
+										handleFieldChange('title');
 									}}
-									onBlur={() => validateField('achieveDate', formData.achieveDate)}
-									className={classNames(
-										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.achieveDate && touched.achieveDate,
-										}
-									)}
+									placeholder={intl.formatMessage({ id: 'modal.recordAchievement.achievementTitlePlaceholder' })}
+									className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 								/>
 							</div>
-						</div>
 
-						{/* Achievement Title */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">
-								<FormattedMessage id="panel.achievement.titleLabel" />
-								<span className="text-[11.5px] text-black/50 ml-1">
-									<FormattedMessage id="common.optional" />
-								</span>
-							</label>
-							<input
-								type="text"
-								value={formData.title}
-								onChange={(e) => {
-									setFormData({
-										...formData,
-										title: e.target.value,
-									});
-									handleFieldChange('title');
-								}}
-								placeholder={intl.formatMessage({ id: 'modal.recordAchievement.achievementTitlePlaceholder' })}
-								className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
-							/>
-						</div>
-
-						{/* Description */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">
-								<FormattedMessage id="panel.achievement.description" />
-								<span className="text-[11.5px] text-black/50 ml-1">
-									<FormattedMessage id="common.optional" />
-								</span>
-							</label>
-							<textarea
-								value={formData.description}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										description: e.target.value,
-									})
-								}
-								placeholder={intl.formatMessage({ id: 'panel.achievement.descriptionPlaceholder' })}
-								rows={4}
-								className="w-full px-4 py-3 bg-[#f3f2f2] border border-black/50 rounded-[20px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
-							/>
-						</div>
-
-						{/* Error Message */}
-						{Object.keys(errors).length > 0 && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">
-									<FormattedMessage id="panel.achievement.validation.fillAllFields" />
-								</p>
+							{/* Description */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2">
+									<FormattedMessage id="panel.achievement.description" />
+									<span className="text-[11.5px] text-black/50 ml-1">
+										<FormattedMessage id="common.optional" />
+									</span>
+								</label>
+								<textarea
+									value={formData.description}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											description: e.target.value,
+										})
+									}
+									placeholder={intl.formatMessage({ id: 'panel.achievement.descriptionPlaceholder' })}
+									rows={4}
+									className="w-full px-4 py-3 bg-[#f3f2f2] border border-black/50 rounded-[20px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
+								/>
 							</div>
-						)}
 
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-6">
-							<button
-								type="button"
-								onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-								disabled={isSubmitting}
-							>
-								{isAddMode ? <FormattedMessage id="common.back" /> : <FormattedMessage id="common.cancel" />}
-							</button>
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
-							>
-								{isSubmitting ? <FormattedMessage id="common.saving" /> : <FormattedMessage id="common.save" />}
-							</button>
-						</div>
-					</form>
-				</div>
-			)}
+							{/* Error Message */}
+							{Object.keys(errors).length > 0 && (
+								<div className="bg-red-50 border border-red-200 rounded-lg p-3">
+									<p className="text-sm font-medium text-red-800">
+										<FormattedMessage id="panel.achievement.validation.fillAllFields" />
+									</p>
+								</div>
+							)}
+
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-6">
+								<button
+									type="button"
+									onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+									disabled={isSubmitting}
+								>
+									{isAddMode ? <FormattedMessage id="common.back" /> : <FormattedMessage id="common.cancel" />}
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									{isSubmitting ? <FormattedMessage id="common.saving" /> : <FormattedMessage id="common.save" />}
+								</button>
+							</div>
+						</form>
+					</div>
+				)}
+			</div>
 
 			{/* Delete Confirmation Modal */}
 			{showDeleteModal && (

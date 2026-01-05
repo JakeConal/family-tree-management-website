@@ -577,10 +577,6 @@ export default function FamilyTreePage() {
 		}
 	}, [treeBounds, hasInitialized]);
 
-	if (loading) {
-		return <LoadingScreen message="Loading family tree..." />;
-	}
-
 	if (error) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
@@ -589,7 +585,7 @@ export default function FamilyTreePage() {
 		);
 	}
 
-	if (!rootId || treeNodes.length === 0) {
+	if ((!rootId || treeNodes.length === 0) && !loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
 				<div className="text-lg">No family members found</div>
@@ -598,7 +594,8 @@ export default function FamilyTreePage() {
 	}
 
 	return (
-		<div className="flex h-full overflow-hidden bg-white">
+		<div className="flex h-full overflow-hidden bg-white relative">
+			{loading && <LoadingScreen message="Loading family tree..." />}
 			<div className="flex-1 flex flex-col overflow-y-auto p-3 sm:p-4">
 				<div className="w-full">
 					{/* Top Control Bar */}

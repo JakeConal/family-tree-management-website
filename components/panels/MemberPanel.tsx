@@ -542,15 +542,7 @@ export default function MemberPanel({
 		}
 	};
 
-	if (loading) {
-		return (
-			<div className="w-full h-full">
-				<LoadingScreen message={intl.formatMessage({ id: 'panel.member.loading' })} />
-			</div>
-		);
-	}
-
-	if (mode !== 'add' && !member) {
+	if (mode !== 'add' && !member && !loading) {
 		return (
 			<div className="w-full h-full flex items-center justify-center text-gray-500 bg-white">
 				<FormattedMessage id="panel.member.notFound" />
@@ -578,627 +570,195 @@ export default function MemberPanel({
 				</button>
 			</div>
 
-			{isViewMode ? (
-				/* View Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						<FormattedMessage id="panel.member.viewTitle" values={{ name: memberFormData.fullName }} />
-					</h2>
+			<div className="relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.member.loading' })} />}
+				{isViewMode ? (
+					/* View Mode */
+					<div className="flex-1 overflow-y-auto px-10 py-8">
+						<h2 className="text-[26px] font-normal text-black text-center mb-10">
+							<FormattedMessage id="panel.member.viewTitle" values={{ name: memberFormData.fullName }} />
+						</h2>
 
-					<div className="space-y-8">
-						{/* Personal Information Section */}
-						<section>
-							<div className="flex items-center mb-6">
-								<div className="w-5 h-5 mr-3">
-									<svg
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										className="w-full h-full"
-									>
-										<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-										<line x1="7" y1="8" x2="17" y2="8" />
-										<line x1="7" y1="12" x2="17" y2="12" />
-										<line x1="7" y1="16" x2="13" y2="16" />
-									</svg>
-								</div>
-								<h3 className="text-base font-normal text-black">
-									<FormattedMessage id="panel.member.personalInformation" />
-								</h3>
-							</div>
-
-							<div className="space-y-4">
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.fullName" />
-									</label>
-									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-										{memberFormData.fullName}
-									</div>
-								</div>
-
-								<div className="grid grid-cols-2 gap-6">
-									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">
-											<FormattedMessage id="panel.member.label.gender" />
-										</label>
-										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-											{memberFormData.gender === 'MALE' ? (
-												<FormattedMessage id="panel.member.male" />
-											) : memberFormData.gender === 'FEMALE' ? (
-												<FormattedMessage id="panel.member.female" />
-											) : (
-												<FormattedMessage id="panel.member.notAvailable" />
-											)}
-										</div>
-									</div>
-									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">
-											<FormattedMessage id="panel.member.label.birthDate" />
-										</label>
-										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-											<FormattedDate value={new Date(memberFormData.birthDate)} />
-										</div>
-									</div>
-								</div>
-
-								{/* Place of Origin */}
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.placeOfOrigin" />
-									</label>
-									<div className="space-y-4">
-										{placesOfOrigin.map((place, index) => (
-											<div key={place.id} className="space-y-3">
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">
-														<FormattedMessage id="panel.member.locationNumber" values={{ number: index + 1 }} />
-													</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{place.location || <FormattedMessage id="panel.member.notAvailable" />}
-													</div>
-												</div>
-												<div className="flex gap-4">
-													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.startDate" />
-														</label>
-														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{place.startDate ? (
-																new Date(place.startDate).toLocaleDateString()
-															) : (
-																<FormattedMessage id="panel.member.notAvailable" />
-															)}
-														</div>
-													</div>
-													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.endDate" />
-														</label>
-														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{place.endDate ? (
-																new Date(place.endDate).toLocaleDateString()
-															) : (
-																<FormattedMessage id="panel.member.notAvailable" />
-															)}
-														</div>
-													</div>
-												</div>
-											</div>
-										))}
-									</div>
-									<p className="text-xs text-black/50 mt-2">
-										<FormattedMessage id="panel.member.note.maxPlaces" />
-									</p>
-								</div>
-
-								{/* Occupation */}
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.occupation" />
-									</label>
-									<div className="space-y-4">
-										{occupations.map((occ, index) => (
-											<div key={occ.id} className="space-y-3">
-												<div>
-													<label className="block text-xs text-black/70 mb-1.5 ml-1">
-														<FormattedMessage id="panel.member.jobTitleNumber" values={{ number: index + 1 }} />
-													</label>
-													<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-														{occ.jobTitle || <FormattedMessage id="panel.member.notAvailable" />}
-													</div>
-												</div>
-												<div className="flex gap-4">
-													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.startDate" />
-														</label>
-														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{occ.startDate ? (
-																<FormattedDate value={new Date(occ.startDate)} />
-															) : (
-																<FormattedMessage id="panel.member.notAvailable" />
-															)}
-														</div>
-													</div>
-													<div className="flex-1">
-														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.endDate" />
-														</label>
-														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-															{occ.endDate ? (
-																<FormattedDate value={new Date(occ.endDate)} />
-															) : (
-																<FormattedMessage id="panel.member.notAvailable" />
-															)}
-														</div>
-													</div>
-												</div>
-											</div>
-										))}
-									</div>
-									<p className="text-xs text-black/50 mt-2">
-										<FormattedMessage id="panel.member.note.maxOccupations" />
-									</p>
-								</div>
-
-								{/* Address */}
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.address" />
-									</label>
-									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-										{memberFormData.address}
-									</div>
-								</div>
-
-								{/* Profile Picture */}
-								<div>
-									<div className="flex items-center mb-2">
-										<label className="text-base font-normal text-black mr-1.5">
-											<FormattedMessage id="panel.member.label.profilePicture" />
-										</label>
-										<span className="text-[11.5px] text-black/50">
-											<FormattedMessage id="common.optional" />
-										</span>
-									</div>
-									<div className="w-[100px] h-[100px] bg-gray-200 overflow-hidden border border-black/10">
-										{profilePicturePreview ? (
-											<Image
-												src={profilePicturePreview}
-												alt="Profile preview"
-												width={100}
-												height={100}
-												className="w-full h-full object-cover"
-											/>
-										) : (
-											<div className="w-full h-full flex items-center justify-center text-gray-400">
-												<FormattedMessage id="panel.member.noImage" />
-											</div>
-										)}
-									</div>
-								</div>
-							</div>
-						</section>
-
-						{/* Only show Family Connection section if not root person */}
-						{!member?.isRootPerson && (
-							<>
-								<div className="w-full h-px bg-black/20 my-10"></div>
-
-								{/* Family Connection Section */}
-								<section>
-									<div className="flex items-center mb-6">
-										<div className="w-5 h-5 mr-3">
-											<Heart className="w-full h-full text-black" strokeWidth={1.5} />
-										</div>
-										<h3 className="text-base font-normal text-black">
-											<FormattedMessage id="panel.member.familyConnection" />
-										</h3>
-									</div>
-
-									<div className="space-y-6">
-										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">
-												<FormattedMessage id="panel.member.label.relatedMember" />
-											</label>
-											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relatedMemberId ? (
-													existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)?.fullName || (
-														<FormattedMessage id="panel.common.notAvailable" />
-													)
-												) : (
-													<FormattedMessage id="panel.common.notAvailable" />
-												)}
-											</div>
-										</div>
-
-										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">
-												<FormattedMessage id="panel.member.label.relationship" />
-											</label>
-											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relationship === 'parent' ? (
-													<FormattedMessage id="panel.member.parent" />
-												) : memberFormData.relationship === 'spouse' ? (
-													<FormattedMessage id="panel.member.spouse" />
-												) : (
-													<FormattedMessage id="panel.common.notAvailable" />
-												)}
-											</div>
-										</div>
-
-										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1">
-												<FormattedMessage id="panel.member.label.relationshipDate" />
-											</label>
-											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-												{memberFormData.relationshipDate ? (
-													new Date(memberFormData.relationshipDate).toLocaleDateString()
-												) : (
-													<FormattedMessage id="panel.common.notAvailable" />
-												)}
-											</div>
-										</div>
-									</div>
-								</section>
-							</>
-						)}
-
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
-							<button
-								onClick={onClose}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="panel.common.back" />
-							</button>
-							{canEdit && (
-								<button
-									onClick={() => setMode('edit')}
-									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-								>
-									<FormattedMessage id="panel.common.edit" />
-								</button>
-							)}
-						</div>
-					</div>
-				</div>
-			) : (
-				/* Add/Edit Mode */
-				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{isAddMode ? (
-							<FormattedMessage id="panel.member.addTitle" />
-						) : (
-							<FormattedMessage id="panel.member.editTitle" values={{ name: memberFormData.fullName }} />
-						)}
-					</h2>
-
-					<form onSubmit={handleSubmit} className="space-y-8">
-						{/* Personal Information Section */}
-						<section>
-							<div className="flex items-center mb-6">
-								<div className="w-5 h-5 mr-3">
-									<svg
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										className="w-full h-full text-black"
-									>
-										<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-										<line x1="7" y1="8" x2="17" y2="8" />
-										<line x1="7" y1="12" x2="17" y2="12" />
-										<line x1="7" y1="16" x2="13" y2="16" />
-									</svg>
-								</div>
-								<h3 className="text-base font-normal text-black">
-									<FormattedMessage id="panel.member.personalInformation" />
-								</h3>
-							</div>
-
-							<div className="space-y-4">
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.fullName" />
-									</label>
-									<input
-										type="text"
-										value={memberFormData.fullName}
-										onChange={(e) => {
-											setMemberFormData({
-												...memberFormData,
-												fullName: e.target.value,
-											});
-										}}
-										className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-										required
-									/>
-									{validationErrors.fullName && (
-										<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.fullName}</p>
-									)}
-								</div>
-
-								<div className="grid grid-cols-2 gap-6">
-									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">
-											<FormattedMessage id="panel.member.label.gender" />
-										</label>
-										<select
-											value={memberFormData.gender}
-											onChange={(e) => {
-												setMemberFormData({
-													...memberFormData,
-													gender: e.target.value,
-												});
-											}}
-											className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
-											required
+						<div className="space-y-8">
+							{/* Personal Information Section */}
+							<section>
+								<div className="flex items-center mb-6">
+									<div className="w-5 h-5 mr-3">
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="w-full h-full"
 										>
-											<option value="">
-												<FormattedMessage id="panel.member.selectGender" />
-											</option>
-											<option value="MALE">
-												<FormattedMessage id="panel.member.male" />
-											</option>
-											<option value="FEMALE">
-												<FormattedMessage id="panel.member.female" />
-											</option>
-										</select>
-										{validationErrors.gender && (
-											<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.gender}</p>
-										)}
+											<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+											<line x1="7" y1="8" x2="17" y2="8" />
+											<line x1="7" y1="12" x2="17" y2="12" />
+											<line x1="7" y1="16" x2="13" y2="16" />
+										</svg>
 									</div>
-									<div>
-										<label className="block text-base font-normal text-black mb-1.5 ml-1">
-											<FormattedMessage id="panel.member.label.birthDate" />
-										</label>
-										<input
-											type="date"
-											value={memberFormData.birthDate}
-											onChange={(e) => {
-												setMemberFormData({
-													...memberFormData,
-													birthDate: e.target.value,
-												});
-											}}
-											className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-											required
-										/>
-										{validationErrors.birthDate && (
-											<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.birthDate}</p>
-										)}
-									</div>
+									<h3 className="text-base font-normal text-black">
+										<FormattedMessage id="panel.member.personalInformation" />
+									</h3>
 								</div>
 
-								{/* Place of Origin */}
-								<div>
-									<div className="flex justify-between items-center mb-1.5 ml-1">
-										<label className="text-base font-normal text-black">
+								<div className="space-y-4">
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.fullName" />
+										</label>
+										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+											{memberFormData.fullName}
+										</div>
+									</div>
+
+									<div className="grid grid-cols-2 gap-6">
+										<div>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.gender" />
+											</label>
+											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+												{memberFormData.gender === 'MALE' ? (
+													<FormattedMessage id="panel.member.male" />
+												) : memberFormData.gender === 'FEMALE' ? (
+													<FormattedMessage id="panel.member.female" />
+												) : (
+													<FormattedMessage id="panel.member.notAvailable" />
+												)}
+											</div>
+										</div>
+										<div>
+											<label className="block text-base font-normal text-black mb-1.5 ml-1">
+												<FormattedMessage id="panel.member.label.birthDate" />
+											</label>
+											<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+												<FormattedDate value={new Date(memberFormData.birthDate)} />
+											</div>
+										</div>
+									</div>
+
+									{/* Place of Origin */}
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
 											<FormattedMessage id="panel.member.label.placeOfOrigin" />
 										</label>
-										<button
-											type="button"
-											onClick={addPlaceOfOrigin}
-											disabled={placesOfOrigin.length >= 4}
-											className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
-										>
-											<FormattedMessage id="panel.member.addPlace" />
-										</button>
-									</div>
-									{validationErrors.placesOfOrigin && (
-										<p className="text-red-500 text-[10px] mb-2 ml-3">{validationErrors.placesOfOrigin}</p>
-									)}
-									<div className="space-y-4">
-										{placesOfOrigin.map((place, index) => (
-											<div key={place.id} className="relative border border-black/10 rounded-lg p-4 bg-white">
-												{placesOfOrigin.length > 1 && (
-													<button
-														type="button"
-														onClick={() => removePlaceOfOrigin(place.id)}
-														className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-													>
-														<X className="w-4 h-4" />
-													</button>
-												)}
-												<div className="space-y-3">
+										<div className="space-y-4">
+											{placesOfOrigin.map((place, index) => (
+												<div key={place.id} className="space-y-3">
 													<div>
 														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.label.origin" />
+															<FormattedMessage id="panel.member.locationNumber" values={{ number: index + 1 }} />
 														</label>
-														<div className="relative">
-															<select
-																value={place.location}
-																onChange={(e) => {
-																	const updated = [...placesOfOrigin];
-																	updated[index].location = e.target.value;
-																	setPlacesOfOrigin(updated);
-																}}
-																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 pr-10 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none cursor-pointer"
-																style={{
-																	backgroundImage:
-																		"url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")",
-																	backgroundRepeat: 'no-repeat',
-																	backgroundPosition: 'right 1rem center',
-																	backgroundSize: '1.25rem',
-																}}
-															>
-																<option value="">
-																	<FormattedMessage id="panel.member.selectPlaceOfOrigin" />
-																</option>
-																<ProvinceList />
-															</select>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{place.location || <FormattedMessage id="panel.member.notAvailable" />}
 														</div>
 													</div>
 													<div className="flex gap-4">
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.label.startDate" />
+																<FormattedMessage id="panel.member.startDate" />
 															</label>
-															<input
-																type="date"
-																value={place.startDate}
-																onChange={(e) => {
-																	const updated = [...placesOfOrigin];
-																	updated[index].startDate = e.target.value;
-																	setPlacesOfOrigin(updated);
-																}}
-																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-															/>
+															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+																{place.startDate ? (
+																	new Date(place.startDate).toLocaleDateString()
+																) : (
+																	<FormattedMessage id="panel.member.notAvailable" />
+																)}
+															</div>
 														</div>
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.label.endDate" />
+																<FormattedMessage id="panel.member.endDate" />
 															</label>
-															<input
-																type="date"
-																value={place.endDate}
-																onChange={(e) => {
-																	const updated = [...placesOfOrigin];
-																	updated[index].endDate = e.target.value;
-																	setPlacesOfOrigin(updated);
-																}}
-																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-															/>
+															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+																{place.endDate ? (
+																	new Date(place.endDate).toLocaleDateString()
+																) : (
+																	<FormattedMessage id="panel.member.notAvailable" />
+																)}
+															</div>
 														</div>
 													</div>
 												</div>
-											</div>
-										))}
+											))}
+										</div>
+										<p className="text-xs text-black/50 mt-2">
+											<FormattedMessage id="panel.member.note.maxPlaces" />
+										</p>
 									</div>
-									<p className="text-xs text-black/50 mt-2">
-										<FormattedMessage id="panel.member.note.maxPlaces" />
-									</p>
-								</div>
 
-								{/* Occupation */}
-								<div>
-									<div className="flex justify-between items-center mb-1.5 ml-1">
-										<label className="text-base font-normal text-black">
+									{/* Occupation */}
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
 											<FormattedMessage id="panel.member.label.occupation" />
 										</label>
-										<button
-											type="button"
-											onClick={addOccupation}
-											disabled={occupations.length >= 15}
-											className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
-										>
-											<FormattedMessage id="panel.member.addOccupation" />
-										</button>
-									</div>
-									{validationErrors.occupations && (
-										<p className="text-red-500 text-[10px] mb-2 ml-3">{validationErrors.occupations}</p>
-									)}
-									<div className="space-y-4">
-										{occupations.map((occ, index) => (
-											<div key={occ.id} className="relative border border-black/10 rounded-lg p-4 bg-white">
-												{occupations.length > 1 && (
-													<button
-														type="button"
-														onClick={() => removeOccupation(occ.id)}
-														className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-													>
-														<X className="w-4 h-4" />
-													</button>
-												)}
-												<div className="space-y-3">
+										<div className="space-y-4">
+											{occupations.map((occ, index) => (
+												<div key={occ.id} className="space-y-3">
 													<div>
 														<label className="block text-xs text-black/70 mb-1.5 ml-1">
-															<FormattedMessage id="panel.member.label.jobTitle" values={{ index: index + 1 }} />
+															<FormattedMessage id="panel.member.jobTitleNumber" values={{ number: index + 1 }} />
 														</label>
-														<input
-															type="text"
-															value={occ.jobTitle}
-															onChange={(e) => {
-																const updated = [...occupations];
-																updated[index].jobTitle = e.target.value;
-																setOccupations(updated);
-															}}
-															placeholder={intl.formatMessage({ id: 'panel.member.jobTitlePlaceholder' })}
-															className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-														/>
+														<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+															{occ.jobTitle || <FormattedMessage id="panel.member.notAvailable" />}
+														</div>
 													</div>
 													<div className="flex gap-4">
 														<div className="flex-1">
-															<label className="block text-xs text-black/70 mb-1.5 ml-1 required-label">
-																<FormattedMessage id="panel.member.label.startDate" />
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.startDate" />
 															</label>
-															<input
-																type="date"
-																value={occ.startDate}
-																onChange={(e) => {
-																	const updated = [...occupations];
-																	updated[index].startDate = e.target.value;
-																	setOccupations(updated);
-																}}
-																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-															/>
+															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+																{occ.startDate ? (
+																	<FormattedDate value={new Date(occ.startDate)} />
+																) : (
+																	<FormattedMessage id="panel.member.notAvailable" />
+																)}
+															</div>
 														</div>
 														<div className="flex-1">
 															<label className="block text-xs text-black/70 mb-1.5 ml-1">
-																<FormattedMessage id="panel.member.label.endDate" />
+																<FormattedMessage id="panel.member.endDate" />
 															</label>
-															<input
-																type="date"
-																value={occ.endDate}
-																onChange={(e) => {
-																	const updated = [...occupations];
-																	updated[index].endDate = e.target.value;
-																	setOccupations(updated);
-																}}
-																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-															/>
+															<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+																{occ.endDate ? (
+																	<FormattedDate value={new Date(occ.endDate)} />
+																) : (
+																	<FormattedMessage id="panel.member.notAvailable" />
+																)}
+															</div>
 														</div>
 													</div>
 												</div>
-											</div>
-										))}
+											))}
+										</div>
+										<p className="text-xs text-black/50 mt-2">
+											<FormattedMessage id="panel.member.note.maxOccupations" />
+										</p>
 									</div>
-									<p className="text-xs text-black/50 mt-2">
-										<FormattedMessage id="panel.member.note.maxOccupations" />
-									</p>
-								</div>
 
-								{/* Address */}
-								<div>
-									<label className="block text-base font-normal text-black mb-1.5 ml-1">
-										<FormattedMessage id="panel.member.label.address" />
-									</label>
-									<input
-										type="text"
-										value={memberFormData.address}
-										onChange={(e) => {
-											setMemberFormData({
-												...memberFormData,
-												address: e.target.value,
-											});
-										}}
-										placeholder={intl.formatMessage({ id: 'panel.member.addressPlaceholder' })}
-										className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
-										required
-									/>
-									{validationErrors.address && (
-										<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.address}</p>
-									)}
-								</div>
-
-								{/* Profile Picture */}
-								<div>
-									<div className="flex items-center mb-2">
-										<label className="text-base font-normal text-black mr-1.5">
-											<FormattedMessage id="panel.member.label.profilePicture" />
+									{/* Address */}
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.address" />
 										</label>
-										<span className="text-[11.5px] text-black/50">
-											<FormattedMessage id="common.optional" />
-										</span>
+										<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+											{memberFormData.address}
+										</div>
 									</div>
-									<div className="flex items-center space-x-6">
+
+									{/* Profile Picture */}
+									<div>
+										<div className="flex items-center mb-2">
+											<label className="text-base font-normal text-black mr-1.5">
+												<FormattedMessage id="panel.member.label.profilePicture" />
+											</label>
+											<span className="text-[11.5px] text-black/50">
+												<FormattedMessage id="common.optional" />
+											</span>
+										</div>
 										<div className="w-[100px] h-[100px] bg-gray-200 overflow-hidden border border-black/10">
 											{profilePicturePreview ? (
 												<Image
@@ -1210,246 +770,680 @@ export default function MemberPanel({
 												/>
 											) : (
 												<div className="w-full h-full flex items-center justify-center text-gray-400">
-													<Camera className="w-8 h-8" />
+													<FormattedMessage id="panel.member.noImage" />
 												</div>
 											)}
 										</div>
-										<label className="cursor-pointer bg-white border border-black/30 rounded-[10px] px-4 py-2 text-xs text-black hover:bg-gray-50 transition-colors">
-											<FormattedMessage id="panel.common.chooseFile" />
-											<input
-												type="file"
-												accept="image/jpeg,image/png,image/gif,image/webp"
-												onChange={handleFileUpload}
-												className="hidden"
-											/>
-										</label>
 									</div>
 								</div>
-							</div>
-						</section>
+							</section>
 
-						{/* Only show Family Connection section if not root person or in add mode with existing members */}
-						{((isAddMode && existingMembers.length > 0) || (!isAddMode && !member?.isRootPerson)) && (
-							<>
-								<div className="w-full h-px bg-black/20 my-10"></div>
+							{/* Only show Family Connection section if not root person */}
+							{!member?.isRootPerson && (
+								<>
+									<div className="w-full h-px bg-black/20 my-10"></div>
 
-								{/* Family Connection Section */}
-								<section>
-									<div className="flex items-center mb-6">
-										<div className="w-5 h-5 mr-3">
-											<Heart className="w-full h-full text-black" strokeWidth={1.5} />
+									{/* Family Connection Section */}
+									<section>
+										<div className="flex items-center mb-6">
+											<div className="w-5 h-5 mr-3">
+												<Heart className="w-full h-full text-black" strokeWidth={1.5} />
+											</div>
+											<h3 className="text-base font-normal text-black">
+												<FormattedMessage id="panel.member.familyConnection" />
+											</h3>
 										</div>
-										<h3 className="text-base font-normal text-black">
-											<FormattedMessage id="panel.member.familyConnection" />
-										</h3>
+
+										<div className="space-y-6">
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1">
+													<FormattedMessage id="panel.member.label.relatedMember" />
+												</label>
+												<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+													{memberFormData.relatedMemberId ? (
+														existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
+															?.fullName || <FormattedMessage id="panel.common.notAvailable" />
+													) : (
+														<FormattedMessage id="panel.common.notAvailable" />
+													)}
+												</div>
+											</div>
+
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1">
+													<FormattedMessage id="panel.member.label.relationship" />
+												</label>
+												<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+													{memberFormData.relationship === 'parent' ? (
+														<FormattedMessage id="panel.member.parent" />
+													) : memberFormData.relationship === 'spouse' ? (
+														<FormattedMessage id="panel.member.spouse" />
+													) : (
+														<FormattedMessage id="panel.common.notAvailable" />
+													)}
+												</div>
+											</div>
+
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1">
+													<FormattedMessage id="panel.member.label.relationshipDate" />
+												</label>
+												<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+													{memberFormData.relationshipDate ? (
+														new Date(memberFormData.relationshipDate).toLocaleDateString()
+													) : (
+														<FormattedMessage id="panel.common.notAvailable" />
+													)}
+												</div>
+											</div>
+										</div>
+									</section>
+								</>
+							)}
+
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
+								<button
+									onClick={onClose}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="panel.common.back" />
+								</button>
+								{canEdit && (
+									<button
+										onClick={() => setMode('edit')}
+										className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+									>
+										<FormattedMessage id="panel.common.edit" />
+									</button>
+								)}
+							</div>
+						</div>
+					</div>
+				) : (
+					/* Add/Edit Mode */
+					<div className="flex-1 overflow-y-auto px-10 py-8">
+						<h2 className="text-[26px] font-normal text-black text-center mb-10">
+							{isAddMode ? (
+								<FormattedMessage id="panel.member.addTitle" />
+							) : (
+								<FormattedMessage id="panel.member.editTitle" values={{ name: memberFormData.fullName }} />
+							)}
+						</h2>
+
+						<form onSubmit={handleSubmit} className="space-y-8">
+							{/* Personal Information Section */}
+							<section>
+								<div className="flex items-center mb-6">
+									<div className="w-5 h-5 mr-3">
+										<svg
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="w-full h-full text-black"
+										>
+											<rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+											<line x1="7" y1="8" x2="17" y2="8" />
+											<line x1="7" y1="12" x2="17" y2="12" />
+											<line x1="7" y1="16" x2="13" y2="16" />
+										</svg>
+									</div>
+									<h3 className="text-base font-normal text-black">
+										<FormattedMessage id="panel.member.personalInformation" />
+									</h3>
+								</div>
+
+								<div className="space-y-4">
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.fullName" />
+										</label>
+										<input
+											type="text"
+											value={memberFormData.fullName}
+											onChange={(e) => {
+												setMemberFormData({
+													...memberFormData,
+													fullName: e.target.value,
+												});
+											}}
+											className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+											required
+										/>
+										{validationErrors.fullName && (
+											<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.fullName}</p>
+										)}
 									</div>
 
-									<div className="space-y-6">
+									<div className="grid grid-cols-2 gap-6">
 										<div>
 											<label className="block text-base font-normal text-black mb-1.5 ml-1">
-												<FormattedMessage id="panel.member.relatedMember" />
+												<FormattedMessage id="panel.member.label.gender" />
 											</label>
 											<select
-												value={memberFormData.relatedMemberId}
+												value={memberFormData.gender}
 												onChange={(e) => {
 													setMemberFormData({
 														...memberFormData,
-														relatedMemberId: e.target.value,
+														gender: e.target.value,
 													});
 												}}
 												className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
 												required
 											>
 												<option value="">
-													<FormattedMessage id="panel.member.selectFamilyMember" />
+													<FormattedMessage id="panel.member.selectGender" />
 												</option>
-												{existingMembers
-													.filter((m) => (isAddMode ? true : m.id !== memberId))
-													.map((m) => (
-														<option key={m.id} value={m.id}>
-															{m.fullName}
-														</option>
-													))}
+												<option value="MALE">
+													<FormattedMessage id="panel.member.male" />
+												</option>
+												<option value="FEMALE">
+													<FormattedMessage id="panel.member.female" />
+												</option>
 											</select>
-											{validationErrors.relatedMemberId && (
-												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relatedMemberId}</p>
+											{validationErrors.gender && (
+												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.gender}</p>
 											)}
 										</div>
-
 										<div>
 											<label className="block text-base font-normal text-black mb-1.5 ml-1">
-												<FormattedMessage id="panel.member.label.relationship" />
-											</label>
-											<select
-												value={memberFormData.relationship}
-												onChange={(e) => {
-													setMemberFormData({
-														...memberFormData,
-														relationship: e.target.value,
-													});
-												}}
-												className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
-												required
-											>
-												<option value="">
-													<FormattedMessage id="panel.member.selectRelationship" />
-												</option>
-												<option value="parent">
-													<FormattedMessage id="panel.member.parent" />
-												</option>
-												<option value="spouse">
-													<FormattedMessage id="panel.member.spouse" />
-												</option>
-											</select>
-											{validationErrors.relationship && (
-												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationship}</p>
-											)}
-										</div>
-
-										<div>
-											<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-												<FormattedMessage id="panel.member.relationshipDate" />
+												<FormattedMessage id="panel.member.label.birthDate" />
 											</label>
 											<input
 												type="date"
-												value={memberFormData.relationshipDate}
+												value={memberFormData.birthDate}
 												onChange={(e) => {
 													setMemberFormData({
 														...memberFormData,
-														relationshipDate: e.target.value,
+														birthDate: e.target.value,
 													});
 												}}
 												className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
 												required
 											/>
-											{validationErrors.relationshipDate && (
-												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationshipDate}</p>
+											{validationErrors.birthDate && (
+												<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.birthDate}</p>
 											)}
-											<div className="flex items-start space-x-2 mt-2 ml-3">
-												<Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-												<p className="text-[10px] text-black/50">
-													{memberFormData.relationship === 'parent' ? (
-														<FormattedMessage id="panel.member.relationshipParentHint" />
-													) : memberFormData.relationship === 'spouse' ? (
-														<FormattedMessage id="panel.member.relationshipSpouseHint" />
-													) : (
-														<FormattedMessage id="panel.member.relationshipSelectHint" />
-													)}
-												</p>
-											</div>
 										</div>
+									</div>
 
-										{memberFormData.relationship === 'parent' && memberFormData.relatedMemberId && (
-											<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-												<div className="flex items-start space-x-3">
-													<AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-													<div>
-														<p className="text-xs text-blue-900 font-medium">
-															<FormattedMessage id="panel.member.parentRelationshipInfo" />
-														</p>
-														<p className="text-[10px] text-blue-700 mt-1">
-															<FormattedMessage
-																id="panel.member.parentRelationshipDetails"
-																values={{
-																	name:
-																		memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																	relatedName:
-																		existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																			?.fullName || '',
-																}}
-															/>
-														</p>
-													</div>
-												</div>
-											</div>
+									{/* Place of Origin */}
+									<div>
+										<div className="flex justify-between items-center mb-1.5 ml-1">
+											<label className="text-base font-normal text-black">
+												<FormattedMessage id="panel.member.label.placeOfOrigin" />
+											</label>
+											<button
+												type="button"
+												onClick={addPlaceOfOrigin}
+												disabled={placesOfOrigin.length >= 4}
+												className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
+											>
+												<FormattedMessage id="panel.member.addPlace" />
+											</button>
+										</div>
+										{validationErrors.placesOfOrigin && (
+											<p className="text-red-500 text-[10px] mb-2 ml-3">{validationErrors.placesOfOrigin}</p>
 										)}
-
-										{memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId && (
-											<div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
-												<div className="flex items-start space-x-3">
-													<Heart className="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" />
-													<div>
-														<p className="text-xs text-pink-900 font-medium">
-															<FormattedMessage id="panel.member.spouseRelationshipInfo" />
-														</p>
-														<p className="text-[10px] text-pink-700 mt-1">
-															<FormattedMessage
-																id="panel.member.spouseRelationshipDetails"
-																values={{
-																	name:
-																		memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																	relatedName:
-																		existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
-																			?.fullName || '',
-																}}
-															/>
-														</p>
+										<div className="space-y-4">
+											{placesOfOrigin.map((place, index) => (
+												<div key={place.id} className="relative border border-black/10 rounded-lg p-4 bg-white">
+													{placesOfOrigin.length > 1 && (
+														<button
+															type="button"
+															onClick={() => removePlaceOfOrigin(place.id)}
+															className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+														>
+															<X className="w-4 h-4" />
+														</button>
+													)}
+													<div className="space-y-3">
+														<div>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.label.origin" />
+															</label>
+															<div className="relative">
+																<select
+																	value={place.location}
+																	onChange={(e) => {
+																		const updated = [...placesOfOrigin];
+																		updated[index].location = e.target.value;
+																		setPlacesOfOrigin(updated);
+																	}}
+																	className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 pr-10 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none cursor-pointer"
+																	style={{
+																		backgroundImage:
+																			"url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")",
+																		backgroundRepeat: 'no-repeat',
+																		backgroundPosition: 'right 1rem center',
+																		backgroundSize: '1.25rem',
+																	}}
+																>
+																	<option value="">
+																		<FormattedMessage id="panel.member.selectPlaceOfOrigin" />
+																	</option>
+																	<ProvinceList />
+																</select>
+															</div>
+														</div>
+														<div className="flex gap-4">
+															<div className="flex-1">
+																<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																	<FormattedMessage id="panel.member.label.startDate" />
+																</label>
+																<input
+																	type="date"
+																	value={place.startDate}
+																	onChange={(e) => {
+																		const updated = [...placesOfOrigin];
+																		updated[index].startDate = e.target.value;
+																		setPlacesOfOrigin(updated);
+																	}}
+																	className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+																/>
+															</div>
+															<div className="flex-1">
+																<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																	<FormattedMessage id="panel.member.label.endDate" />
+																</label>
+																<input
+																	type="date"
+																	value={place.endDate}
+																	onChange={(e) => {
+																		const updated = [...placesOfOrigin];
+																		updated[index].endDate = e.target.value;
+																		setPlacesOfOrigin(updated);
+																	}}
+																	className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+																/>
+															</div>
+														</div>
 													</div>
 												</div>
-											</div>
+											))}
+										</div>
+										<p className="text-xs text-black/50 mt-2">
+											<FormattedMessage id="panel.member.note.maxPlaces" />
+										</p>
+									</div>
+
+									{/* Occupation */}
+									<div>
+										<div className="flex justify-between items-center mb-1.5 ml-1">
+											<label className="text-base font-normal text-black">
+												<FormattedMessage id="panel.member.label.occupation" />
+											</label>
+											<button
+												type="button"
+												onClick={addOccupation}
+												disabled={occupations.length >= 15}
+												className="text-[11.5px] text-blue-600 hover:text-blue-700 font-medium disabled:text-gray-400"
+											>
+												<FormattedMessage id="panel.member.addOccupation" />
+											</button>
+										</div>
+										{validationErrors.occupations && (
+											<p className="text-red-500 text-[10px] mb-2 ml-3">{validationErrors.occupations}</p>
+										)}
+										<div className="space-y-4">
+											{occupations.map((occ, index) => (
+												<div key={occ.id} className="relative border border-black/10 rounded-lg p-4 bg-white">
+													{occupations.length > 1 && (
+														<button
+															type="button"
+															onClick={() => removeOccupation(occ.id)}
+															className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+														>
+															<X className="w-4 h-4" />
+														</button>
+													)}
+													<div className="space-y-3">
+														<div>
+															<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																<FormattedMessage id="panel.member.label.jobTitle" values={{ index: index + 1 }} />
+															</label>
+															<input
+																type="text"
+																value={occ.jobTitle}
+																onChange={(e) => {
+																	const updated = [...occupations];
+																	updated[index].jobTitle = e.target.value;
+																	setOccupations(updated);
+																}}
+																placeholder={intl.formatMessage({ id: 'panel.member.jobTitlePlaceholder' })}
+																className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+															/>
+														</div>
+														<div className="flex gap-4">
+															<div className="flex-1">
+																<label className="block text-xs text-black/70 mb-1.5 ml-1 required-label">
+																	<FormattedMessage id="panel.member.label.startDate" />
+																</label>
+																<input
+																	type="date"
+																	value={occ.startDate}
+																	onChange={(e) => {
+																		const updated = [...occupations];
+																		updated[index].startDate = e.target.value;
+																		setOccupations(updated);
+																	}}
+																	className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+																/>
+															</div>
+															<div className="flex-1">
+																<label className="block text-xs text-black/70 mb-1.5 ml-1">
+																	<FormattedMessage id="panel.member.label.endDate" />
+																</label>
+																<input
+																	type="date"
+																	value={occ.endDate}
+																	onChange={(e) => {
+																		const updated = [...occupations];
+																		updated[index].endDate = e.target.value;
+																		setOccupations(updated);
+																	}}
+																	className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+																/>
+															</div>
+														</div>
+													</div>
+												</div>
+											))}
+										</div>
+										<p className="text-xs text-black/50 mt-2">
+											<FormattedMessage id="panel.member.note.maxOccupations" />
+										</p>
+									</div>
+
+									{/* Address */}
+									<div>
+										<label className="block text-base font-normal text-black mb-1.5 ml-1">
+											<FormattedMessage id="panel.member.label.address" />
+										</label>
+										<input
+											type="text"
+											value={memberFormData.address}
+											onChange={(e) => {
+												setMemberFormData({
+													...memberFormData,
+													address: e.target.value,
+												});
+											}}
+											placeholder={intl.formatMessage({ id: 'panel.member.addressPlaceholder' })}
+											className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+											required
+										/>
+										{validationErrors.address && (
+											<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.address}</p>
 										)}
 									</div>
-								</section>
-							</>
-						)}
 
-						{/* Confirmation Checkbox */}
-						<div className="flex items-start space-x-3 pt-6">
-							<input
-								type="checkbox"
-								id="confirm-accuracy"
-								checked={confirmAccuracy}
-								onChange={(e) => setConfirmAccuracy(e.target.checked)}
-								className="mt-1 h-4 w-4 text-black border-black/30 rounded focus:ring-black/20"
-							/>
-							<div>
-								<label htmlFor="confirm-accuracy" className="text-sm text-black font-medium">
-									<FormattedMessage id="panel.member.confirmAccuracy" />
-								</label>
-								<p className="text-[10px] text-black/40 mt-0.5">
-									<FormattedMessage id="panel.member.confirmAccuracyHint" />
-								</p>
+									{/* Profile Picture */}
+									<div>
+										<div className="flex items-center mb-2">
+											<label className="text-base font-normal text-black mr-1.5">
+												<FormattedMessage id="panel.member.label.profilePicture" />
+											</label>
+											<span className="text-[11.5px] text-black/50">
+												<FormattedMessage id="common.optional" />
+											</span>
+										</div>
+										<div className="flex items-center space-x-6">
+											<div className="w-[100px] h-[100px] bg-gray-200 overflow-hidden border border-black/10">
+												{profilePicturePreview ? (
+													<Image
+														src={profilePicturePreview}
+														alt="Profile preview"
+														width={100}
+														height={100}
+														className="w-full h-full object-cover"
+													/>
+												) : (
+													<div className="w-full h-full flex items-center justify-center text-gray-400">
+														<Camera className="w-8 h-8" />
+													</div>
+												)}
+											</div>
+											<label className="cursor-pointer bg-white border border-black/30 rounded-[10px] px-4 py-2 text-xs text-black hover:bg-gray-50 transition-colors">
+												<FormattedMessage id="panel.common.chooseFile" />
+												<input
+													type="file"
+													accept="image/jpeg,image/png,image/gif,image/webp"
+													onChange={handleFileUpload}
+													className="hidden"
+												/>
+											</label>
+										</div>
+									</div>
+								</div>
+							</section>
+
+							{/* Only show Family Connection section if not root person or in add mode with existing members */}
+							{((isAddMode && existingMembers.length > 0) || (!isAddMode && !member?.isRootPerson)) && (
+								<>
+									<div className="w-full h-px bg-black/20 my-10"></div>
+
+									{/* Family Connection Section */}
+									<section>
+										<div className="flex items-center mb-6">
+											<div className="w-5 h-5 mr-3">
+												<Heart className="w-full h-full text-black" strokeWidth={1.5} />
+											</div>
+											<h3 className="text-base font-normal text-black">
+												<FormattedMessage id="panel.member.familyConnection" />
+											</h3>
+										</div>
+
+										<div className="space-y-6">
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1">
+													<FormattedMessage id="panel.member.relatedMember" />
+												</label>
+												<select
+													value={memberFormData.relatedMemberId}
+													onChange={(e) => {
+														setMemberFormData({
+															...memberFormData,
+															relatedMemberId: e.target.value,
+														});
+													}}
+													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
+													required
+												>
+													<option value="">
+														<FormattedMessage id="panel.member.selectFamilyMember" />
+													</option>
+													{existingMembers
+														.filter((m) => (isAddMode ? true : m.id !== memberId))
+														.map((m) => (
+															<option key={m.id} value={m.id}>
+																{m.fullName}
+															</option>
+														))}
+												</select>
+												{validationErrors.relatedMemberId && (
+													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relatedMemberId}</p>
+												)}
+											</div>
+
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1">
+													<FormattedMessage id="panel.member.label.relationship" />
+												</label>
+												<select
+													value={memberFormData.relationship}
+													onChange={(e) => {
+														setMemberFormData({
+															...memberFormData,
+															relationship: e.target.value,
+														});
+													}}
+													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none appearance-none"
+													required
+												>
+													<option value="">
+														<FormattedMessage id="panel.member.selectRelationship" />
+													</option>
+													<option value="parent">
+														<FormattedMessage id="panel.member.parent" />
+													</option>
+													<option value="spouse">
+														<FormattedMessage id="panel.member.spouse" />
+													</option>
+												</select>
+												{validationErrors.relationship && (
+													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationship}</p>
+												)}
+											</div>
+
+											<div>
+												<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+													<FormattedMessage id="panel.member.relationshipDate" />
+												</label>
+												<input
+													type="date"
+													value={memberFormData.relationshipDate}
+													onChange={(e) => {
+														setMemberFormData({
+															...memberFormData,
+															relationshipDate: e.target.value,
+														});
+													}}
+													className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black focus:ring-1 focus:ring-black/30 outline-none"
+													required
+												/>
+												{validationErrors.relationshipDate && (
+													<p className="text-red-500 text-[10px] mt-1 ml-3">{validationErrors.relationshipDate}</p>
+												)}
+												<div className="flex items-start space-x-2 mt-2 ml-3">
+													<Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+													<p className="text-[10px] text-black/50">
+														{memberFormData.relationship === 'parent' ? (
+															<FormattedMessage id="panel.member.relationshipParentHint" />
+														) : memberFormData.relationship === 'spouse' ? (
+															<FormattedMessage id="panel.member.relationshipSpouseHint" />
+														) : (
+															<FormattedMessage id="panel.member.relationshipSelectHint" />
+														)}
+													</p>
+												</div>
+											</div>
+
+											{memberFormData.relationship === 'parent' && memberFormData.relatedMemberId && (
+												<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+													<div className="flex items-start space-x-3">
+														<AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+														<div>
+															<p className="text-xs text-blue-900 font-medium">
+																<FormattedMessage id="panel.member.parentRelationshipInfo" />
+															</p>
+															<p className="text-[10px] text-blue-700 mt-1">
+																<FormattedMessage
+																	id="panel.member.parentRelationshipDetails"
+																	values={{
+																		name:
+																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
+																		relatedName:
+																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
+																				?.fullName || '',
+																	}}
+																/>
+															</p>
+														</div>
+													</div>
+												</div>
+											)}
+
+											{memberFormData.relationship === 'spouse' && memberFormData.relatedMemberId && (
+												<div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+													<div className="flex items-start space-x-3">
+														<Heart className="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" />
+														<div>
+															<p className="text-xs text-pink-900 font-medium">
+																<FormattedMessage id="panel.member.spouseRelationshipInfo" />
+															</p>
+															<p className="text-[10px] text-pink-700 mt-1">
+																<FormattedMessage
+																	id="panel.member.spouseRelationshipDetails"
+																	values={{
+																		name:
+																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
+																		relatedName:
+																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
+																				?.fullName || '',
+																	}}
+																/>
+															</p>
+														</div>
+													</div>
+												</div>
+											)}
+										</div>
+									</section>
+								</>
+							)}
+
+							{/* Confirmation Checkbox */}
+							<div className="flex items-start space-x-3 pt-6">
+								<input
+									type="checkbox"
+									id="confirm-accuracy"
+									checked={confirmAccuracy}
+									onChange={(e) => setConfirmAccuracy(e.target.checked)}
+									className="mt-1 h-4 w-4 text-black border-black/30 rounded focus:ring-black/20"
+								/>
+								<div>
+									<label htmlFor="confirm-accuracy" className="text-sm text-black font-medium">
+										<FormattedMessage id="panel.member.confirmAccuracy" />
+									</label>
+									<p className="text-[10px] text-black/40 mt-0.5">
+										<FormattedMessage id="panel.member.confirmAccuracyHint" />
+									</p>
+								</div>
 							</div>
-						</div>
 
-						{/* General Error */}
-						{generalError && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
-								<Info className="w-4 h-4 text-red-600 mr-2" />
-								<p className="text-red-800 text-[11px]">{generalError}</p>
-							</div>
-						)}
+							{/* General Error */}
+							{generalError && (
+								<div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
+									<Info className="w-4 h-4 text-red-600 mr-2" />
+									<p className="text-red-800 text-[11px]">{generalError}</p>
+								</div>
+							)}
 
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
-							<button
-								type="button"
-								onClick={isEditMode ? () => setMode('view') : onClose}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								{isEditMode ? <FormattedMessage id="common.cancel" /> : <FormattedMessage id="common.back" />}
-							</button>
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="w-[150px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
-							>
-								{isSubmitting ? (
-									isAddMode ? (
-										<FormattedMessage id="panel.member.adding" />
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-10 pb-10">
+								<button
+									type="button"
+									onClick={isEditMode ? () => setMode('view') : onClose}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								>
+									{isEditMode ? <FormattedMessage id="common.cancel" /> : <FormattedMessage id="common.back" />}
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="w-[150px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									{isSubmitting ? (
+										isAddMode ? (
+											<FormattedMessage id="panel.member.adding" />
+										) : (
+											<FormattedMessage id="panel.member.updating" />
+										)
+									) : isAddMode ? (
+										<FormattedMessage id="panel.member.addMember" />
 									) : (
-										<FormattedMessage id="panel.member.updating" />
-									)
-								) : isAddMode ? (
-									<FormattedMessage id="panel.member.addMember" />
-								) : (
-									<FormattedMessage id="panel.member.updateMember" />
-								)}
-							</button>
-						</div>
-					</form>
-				</div>
-			)}
+										<FormattedMessage id="panel.member.updateMember" />
+									)}
+								</button>
+							</div>
+						</form>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

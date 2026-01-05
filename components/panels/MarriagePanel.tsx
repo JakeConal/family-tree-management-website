@@ -183,11 +183,7 @@ export default function MarriagePanel({
 		validateForm();
 	};
 
-	if (loading) {
-		return <LoadingScreen message={intl.formatMessage({ id: 'panel.marriage.loadingMessage' })} />;
-	}
-
-	if (!marriage) {
+	if (!loading && !marriage) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
 				<p className="text-gray-500">
@@ -216,7 +212,8 @@ export default function MarriagePanel({
 			</div>
 
 			{/* Form Content */}
-			<div className="flex-1 overflow-y-auto p-6">
+			<div className="flex-1 overflow-y-auto p-6 relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.marriage.loadingMessage' })} />}
 				<div className="space-y-6">
 					{/* Member 1 Field */}
 					<div>
@@ -224,7 +221,7 @@ export default function MarriagePanel({
 							<FormattedMessage id="panel.marriage.member1" />
 						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
-							<span className="text-[12px] text-black">{marriage.familyMember1.fullName}</span>
+							<span className="text-[12px] text-black">{marriage?.familyMember1.fullName}</span>
 						</div>
 					</div>
 
@@ -234,7 +231,7 @@ export default function MarriagePanel({
 							<FormattedMessage id="panel.marriage.member2" />
 						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
-							<span className="text-[12px] text-black">{marriage.familyMember2.fullName}</span>
+							<span className="text-[12px] text-black">{marriage?.familyMember2.fullName}</span>
 						</div>
 					</div>
 

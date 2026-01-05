@@ -51,12 +51,12 @@ export default function Home() {
 				<nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50">
 					<div className="max-w-7xl mx-auto px-6 lg:px-8">
 						<div className="grid grid-cols-3 items-center h-16">
-							<div className="flex items-center gap-2 col-span-1">
+							<Link href="/" className="flex items-center gap-2 col-span-1">
 								<Image src="/images/logo.png" alt="Family Tree Logo" width={24} height={24} className="w-6 h-6" />
 								<span className="text-lg font-semibold text-gray-900">
 									<FormattedMessage id="nav.familyTree" defaultMessage="Family Tree" />
 								</span>
-							</div>
+							</Link>
 							<div className="hidden md:flex items-center justify-center gap-8 col-span-1">
 								<a href="#features" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
 									<FormattedMessage id="nav.features" defaultMessage="Features" />

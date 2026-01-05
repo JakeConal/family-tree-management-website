@@ -35,7 +35,8 @@ export default function LifeEventsPage() {
 	const { openPanel, activePanel } = usePanel();
 	const intl = useIntl();
 
-	const [activeTab, setActiveTab] = useState<'achievement' | 'passing' | 'life-event'>('achievement');
+	const tabs = ['achievement', 'passing', 'lifeEvent'] as const;
+	const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
 	const [achievementTypes, setAchievementTypes] = useState<AchievementType[]>([]);
 	const [passingRecords, setPassingRecords] = useState<PassingRecord[]>([]);
@@ -130,7 +131,7 @@ export default function LifeEventsPage() {
 			fetchAchievementTypes();
 		} else if (activeTab === 'passing') {
 			fetchPassingRecords();
-		} else if (activeTab === 'life-event') {
+		} else if (activeTab === 'lifeEvent') {
 			fetchLifeEvents();
 		}
 	}, [activeTab, fetchAchievements, fetchAchievementTypes, fetchPassingRecords, fetchFamilyMembers, fetchLifeEvents]);
@@ -145,7 +146,7 @@ export default function LifeEventsPage() {
 			} else if (activeTab === 'passing') {
 				fetchPassingRecords();
 				fetchFamilyMembers();
-			} else if (activeTab === 'life-event') {
+			} else if (activeTab === 'lifeEvent') {
 				fetchLifeEvents();
 				fetchFamilyMembers();
 			}
@@ -373,10 +374,6 @@ export default function LifeEventsPage() {
 		});
 	};
 
-	if (loading) {
-		return <LoadingScreen message={intl.formatMessage({ id: 'lifeEvents.loading' })} />;
-	}
-
 	if (error) {
 		toast.error(intl.formatMessage({ id: 'errors.generic' }));
 		return null;
@@ -390,260 +387,271 @@ export default function LifeEventsPage() {
 					<div className="max-w-360 mx-auto">
 						{/* Tab Navigation */}
 						<div className="mb-6 sm:mb-8 lg:mb-13">
-							<TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+							<TabNavigation
+								tabs={['achievement', 'passing', 'lifeEvent']}
+								activeTab={activeTab}
+								onTabChange={setActiveTab}
+							/>
 						</div>
 
-						{/* Filters and Add Button */}
-						<div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 lg:mb-8">
-							{/* Year Filter */}
-							<div className="relative w-full sm:w-auto">
-								<select
-									value={selectedYear}
-									onChange={(e) => setSelectedYear(e.target.value)}
-									className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
-								>
-									<option value="all">
-										<FormattedMessage id="lifeEvents.filters.allYears" />
-									</option>
-									{availableYears.map((year) => (
-										<option key={year} value={year}>
-											{year}
-										</option>
-									))}
-								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
-							</div>
-
-							{/* Type Filter - Show for Achievement and Life Event tabs */}
-							{activeTab === 'achievement' && (
+						{/* Container */}
+						<div className="relative">
+							{/* Filters and Add Button */}
+							<div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 lg:mb-8">
+								{/* Year Filter */}
 								<div className="relative w-full sm:w-auto">
 									<select
-										value={selectedType}
-										onChange={(e) => setSelectedType(e.target.value)}
+										value={selectedYear}
+										onChange={(e) => setSelectedYear(e.target.value)}
 										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
 									>
 										<option value="all">
-											<FormattedMessage id="lifeEvents.filters.allTypes" />
+											<FormattedMessage id="lifeEvents.filters.allYears" />
 										</option>
-										{achievementTypes.map((type) => (
-											<option key={type.id} value={type.id}>
-												{type.typeName}
+										{availableYears.map((year) => (
+											<option key={year} value={year}>
+												{year}
 											</option>
 										))}
 									</select>
 									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
 								</div>
-							)}
-							{activeTab === 'life-event' && (
-								<div className="relative w-full sm:w-auto">
-									<select
-										value={selectedType}
-										onChange={(e) => setSelectedType(e.target.value)}
-										className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
+
+								{/* Type Filter - Show for Achievement and Life Event tabs */}
+								{activeTab === 'achievement' && (
+									<div className="relative w-full sm:w-auto">
+										<select
+											value={selectedType}
+											onChange={(e) => setSelectedType(e.target.value)}
+											className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
+										>
+											<option value="all">
+												<FormattedMessage id="lifeEvents.filters.allTypes" />
+											</option>
+											{achievementTypes.map((type) => (
+												<option key={type.id} value={type.id}>
+													{type.typeName}
+												</option>
+											))}
+										</select>
+										<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
+									</div>
+								)}
+								{activeTab === 'lifeEvent' && (
+									<div className="relative w-full sm:w-auto">
+										<select
+											value={selectedType}
+											onChange={(e) => setSelectedType(e.target.value)}
+											className="appearance-none bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 pr-10 sm:pr-12 text-sm sm:text-[16px] font-inter font-normal text-black focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all cursor-pointer h-10.75 w-full sm:w-auto"
+										>
+											<option value="all">
+												<FormattedMessage id="lifeEvents.filters.allTypes" />
+											</option>
+											<option value="Married">
+												<FormattedMessage id="lifeEvents.filters.married" />
+											</option>
+											<option value="Divorce">
+												<FormattedMessage id="lifeEvents.filters.divorce" />
+											</option>
+										</select>
+										<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
+									</div>
+								)}
+
+								{/* Spacer */}
+								<div className="flex-1" />
+
+								{/* Add Button - Changes based on active tab */}
+								{/* Hide Add Achievement and Add Divorce buttons for guests */}
+								{activeTab === 'achievement' && !isGuest && (
+									<button
+										onClick={() => handleOpenAchievementPanel()}
+										className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
 									>
-										<option value="all">
-											<FormattedMessage id="lifeEvents.filters.allTypes" />
-										</option>
-										<option value="Married">
-											<FormattedMessage id="lifeEvents.filters.married" />
-										</option>
-										<option value="Divorce">
-											<FormattedMessage id="lifeEvents.filters.divorce" />
-										</option>
-									</select>
-									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black pointer-events-none" />
-								</div>
+										<Plus className="w-3.75 h-3.75 text-black" />
+										<span className="whitespace-nowrap">
+											<FormattedMessage id="lifeEvents.actions.addAchievement" />
+										</span>
+									</button>
+								)}
+								{activeTab === 'passing' && !isGuest && (
+									<button
+										onClick={() => handleOpenPassingPanel()}
+										className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
+									>
+										<Plus className="w-3.75 h-3.75 text-black" />
+										<span className="whitespace-nowrap">
+											<FormattedMessage id="lifeEvents.actions.addPassing" />
+										</span>
+									</button>
+								)}
+								{activeTab === 'lifeEvent' && !isGuest && (
+									<button
+										onClick={() => handleOpenDivorcePanel()}
+										className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
+									>
+										<Plus className="w-3.75 h-3.75 text-black" />
+										<span className="whitespace-nowrap">
+											<FormattedMessage id="lifeEvents.actions.addDivorce" />
+										</span>
+									</button>
+								)}
+							</div>
+
+							{/* Content based on active tab */}
+							{activeTab === 'achievement' && (
+								<>
+									{sortedYears.length === 0 ? (
+										<div className="text-center py-12">
+											<p className="text-gray-500 text-lg">
+												<FormattedMessage id="lifeEvents.empty.noAchievements" />
+											</p>
+											<button onClick={() => handleOpenAchievementPanel()} className="mt-4 text-black hover:underline">
+												<FormattedMessage id="lifeEvents.empty.addFirstAchievement" />
+											</button>
+										</div>
+									) : (
+										<div className="space-y-8 sm:space-y-12 lg:space-y-16">
+											{sortedYears.map((year) => (
+												<div key={year}>
+													<YearSection year={parseInt(year)} />
+													<div
+														className={classNames('grid gap-11', {
+															'grid-cols-1': activePanel !== null,
+															'grid-cols-1 md:grid-cols-2': activePanel === null,
+														})}
+													>
+														{groupedAchievements[year].map((achievement) => (
+															<EventCard
+																key={achievement.id}
+																id={achievement.id}
+																title={
+																	achievement.title ||
+																	intl.formatMessage({ id: 'lifeEvents.cards.untitledAchievement' })
+																}
+																person={achievement.familyMember.fullName}
+																date={formatDate(achievement.achieveDate)}
+																description={achievement.description || ''}
+																type={achievement.achievementType.typeName}
+																onClick={handleOpenAchievementPanel}
+															/>
+														))}
+													</div>
+												</div>
+											))}
+										</div>
+									)}
+								</>
 							)}
 
-							{/* Spacer */}
-							<div className="flex-1" />
+							{activeTab === 'passing' && (
+								<>
+									{sortedPassingYears.length === 0 ? (
+										<div className="text-center py-12">
+											<p className="text-gray-500 text-lg">
+												<FormattedMessage id="lifeEvents.empty.noPassing" />
+											</p>
+											<button onClick={() => handleOpenPassingPanel()} className="mt-4 text-black hover:underline">
+												<FormattedMessage id="lifeEvents.empty.addFirstPassing" />
+											</button>
+										</div>
+									) : (
+										<div className="space-y-8 sm:space-y-12 lg:space-y-16">
+											{sortedPassingYears.map((year) => (
+												<div key={year}>
+													<YearSection year={parseInt(year)} />
+													<div
+														className={classNames('grid gap-11', {
+															'grid-cols-1': activePanel !== null,
+															'grid-cols-1 md:grid-cols-2': activePanel === null,
+														})}
+													>
+														{groupedPassingRecords[year].map((record) => (
+															<PassingCard
+																key={record.id}
+																id={record.id}
+																title={intl.formatMessage(
+																	{ id: 'lifeEvents.cards.passingOf' },
+																	{ name: record.familyMember.fullName }
+																)}
+																person={record.familyMember.fullName}
+																date={formatDate(record.dateOfPassing)}
+																buriedPlace={
+																	record.buriedPlaces.length > 0
+																		? record.buriedPlaces[0].location
+																		: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
+																}
+																description={
+																	record.causeOfDeath
+																		? intl.formatMessage(
+																				{ id: 'lifeEvents.cards.causes' },
+																				{ causes: record.causeOfDeath.causeName }
+																			)
+																		: intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })
+																}
+																onClick={handleOpenPassingPanel}
+															/>
+														))}
+													</div>
+												</div>
+											))}
+										</div>
+									)}
+								</>
+							)}
 
-							{/* Add Button - Changes based on active tab */}
-							{/* Hide Add Achievement and Add Divorce buttons for guests */}
-							{activeTab === 'achievement' && !isGuest && (
-								<button
-									onClick={() => handleOpenAchievementPanel()}
-									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
-								>
-									<Plus className="w-3.75 h-3.75 text-black" />
-									<span className="whitespace-nowrap">
-										<FormattedMessage id="lifeEvents.actions.addAchievement" />
-									</span>
-								</button>
+							{activeTab === 'lifeEvent' && (
+								<>
+									{sortedLifeEventYears.length === 0 ? (
+										<div className="text-center py-12">
+											<p className="text-gray-500 text-lg">
+												<FormattedMessage id="lifeEvents.empty.noLifeEvents" />
+											</p>
+											<button onClick={() => handleOpenDivorcePanel()} className="mt-4 text-black hover:underline">
+												<FormattedMessage id="lifeEvents.empty.addDivorceRecord" />
+											</button>
+										</div>
+									) : (
+										<div className="space-y-8 sm:space-y-12 lg:space-y-16">
+											{sortedLifeEventYears.map((year) => (
+												<div key={year}>
+													<YearSection year={parseInt(year)} />
+													<div
+														className={classNames('grid gap-11', {
+															'grid-cols-1': activePanel !== null,
+															'grid-cols-1 md:grid-cols-2': activePanel === null,
+														})}
+													>
+														{groupedLifeEvents[year].map((event) => (
+															<LifeEventCard
+																key={event.id}
+																id={event.relationshipId}
+																title={event.title}
+																date={formatDate(event.date)}
+																description={event.description}
+																type={event.type}
+																onClick={
+																	event.type === 'Married'
+																		? handleOpenMarriagePanel
+																		: event.type === 'Divorce'
+																			? handleOpenDivorcePanel
+																			: event.type === 'Birth Event'
+																				? handleOpenBirthPanel
+																				: undefined
+																}
+															/>
+														))}
+													</div>
+												</div>
+											))}
+										</div>
+									)}
+								</>
 							)}
-							{activeTab === 'passing' && !isGuest && (
-								<button
-									onClick={() => handleOpenPassingPanel()}
-									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
-								>
-									<Plus className="w-3.75 h-3.75 text-black" />
-									<span className="whitespace-nowrap">
-										<FormattedMessage id="lifeEvents.actions.addPassing" />
-									</span>
-								</button>
-							)}
-							{activeTab === 'life-event' && !isGuest && (
-								<button
-									onClick={() => handleOpenDivorcePanel()}
-									className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.5)] rounded-[20px] px-4 sm:px-5 py-2.5 text-sm sm:text-[16px] font-inter font-normal text-black hover:bg-gray-50 transition-all h-10.75 w-full sm:w-auto"
-								>
-									<Plus className="w-3.75 h-3.75 text-black" />
-									<span className="whitespace-nowrap">
-										<FormattedMessage id="lifeEvents.actions.addDivorce" />
-									</span>
-								</button>
-							)}
+
+							{/* Loading Screen Overlay */}
+							{loading && <LoadingScreen message={intl.formatMessage({ id: 'lifeEvents.loading' })} />}
 						</div>
-
-						{/* Content based on active tab */}
-						{activeTab === 'achievement' && (
-							<>
-								{sortedYears.length === 0 ? (
-									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">
-											<FormattedMessage id="lifeEvents.empty.noAchievements" />
-										</p>
-										<button onClick={() => handleOpenAchievementPanel()} className="mt-4 text-black hover:underline">
-											<FormattedMessage id="lifeEvents.empty.addFirstAchievement" />
-										</button>
-									</div>
-								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
-										{sortedYears.map((year) => (
-											<div key={year}>
-												<YearSection year={parseInt(year)} />
-												<div
-													className={classNames('grid gap-11', {
-														'grid-cols-1': activePanel !== null,
-														'grid-cols-1 md:grid-cols-2': activePanel === null,
-													})}
-												>
-													{groupedAchievements[year].map((achievement) => (
-														<EventCard
-															key={achievement.id}
-															id={achievement.id}
-															title={
-																achievement.title || intl.formatMessage({ id: 'lifeEvents.cards.untitledAchievement' })
-															}
-															person={achievement.familyMember.fullName}
-															date={formatDate(achievement.achieveDate)}
-															description={achievement.description || ''}
-															type={achievement.achievementType.typeName}
-															onClick={handleOpenAchievementPanel}
-														/>
-													))}
-												</div>
-											</div>
-										))}
-									</div>
-								)}
-							</>
-						)}
-
-						{activeTab === 'passing' && (
-							<>
-								{sortedPassingYears.length === 0 ? (
-									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">
-											<FormattedMessage id="lifeEvents.empty.noPassing" />
-										</p>
-										<button onClick={() => handleOpenPassingPanel()} className="mt-4 text-black hover:underline">
-											<FormattedMessage id="lifeEvents.empty.addFirstPassing" />
-										</button>
-									</div>
-								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
-										{sortedPassingYears.map((year) => (
-											<div key={year}>
-												<YearSection year={parseInt(year)} />
-												<div
-													className={classNames('grid gap-11', {
-														'grid-cols-1': activePanel !== null,
-														'grid-cols-1 md:grid-cols-2': activePanel === null,
-													})}
-												>
-													{groupedPassingRecords[year].map((record) => (
-														<PassingCard
-															key={record.id}
-															id={record.id}
-															title={intl.formatMessage(
-																{ id: 'lifeEvents.cards.passingOf' },
-																{ name: record.familyMember.fullName }
-															)}
-															person={record.familyMember.fullName}
-															date={formatDate(record.dateOfPassing)}
-															buriedPlace={
-																record.buriedPlaces.length > 0
-																	? record.buriedPlaces[0].location
-																	: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
-															}
-															description={
-																record.causeOfDeath
-																	? intl.formatMessage(
-																			{ id: 'lifeEvents.cards.causes' },
-																			{ causes: record.causeOfDeath.causeName }
-																		)
-																	: intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })
-															}
-															onClick={handleOpenPassingPanel}
-														/>
-													))}
-												</div>
-											</div>
-										))}
-									</div>
-								)}
-							</>
-						)}
-
-						{activeTab === 'life-event' && (
-							<>
-								{sortedLifeEventYears.length === 0 ? (
-									<div className="text-center py-12">
-										<p className="text-gray-500 text-lg">
-											<FormattedMessage id="lifeEvents.empty.noLifeEvents" />
-										</p>
-										<button onClick={() => handleOpenDivorcePanel()} className="mt-4 text-black hover:underline">
-											<FormattedMessage id="lifeEvents.empty.addDivorceRecord" />
-										</button>
-									</div>
-								) : (
-									<div className="space-y-8 sm:space-y-12 lg:space-y-16">
-										{sortedLifeEventYears.map((year) => (
-											<div key={year}>
-												<YearSection year={parseInt(year)} />
-												<div
-													className={classNames('grid gap-11', {
-														'grid-cols-1': activePanel !== null,
-														'grid-cols-1 md:grid-cols-2': activePanel === null,
-													})}
-												>
-													{groupedLifeEvents[year].map((event) => (
-														<LifeEventCard
-															key={event.id}
-															id={event.relationshipId}
-															title={event.title}
-															date={formatDate(event.date)}
-															description={event.description}
-															type={event.type}
-															onClick={
-																event.type === 'Married'
-																	? handleOpenMarriagePanel
-																	: event.type === 'Divorce'
-																		? handleOpenDivorcePanel
-																		: event.type === 'Birth Event'
-																			? handleOpenBirthPanel
-																			: undefined
-															}
-														/>
-													))}
-												</div>
-											</div>
-										))}
-									</div>
-								)}
-							</>
-						)}
 					</div>
 				</div>
 			</div>

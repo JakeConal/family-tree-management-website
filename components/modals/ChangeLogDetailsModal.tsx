@@ -572,7 +572,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 							(changeLog?.entityType === 'Achievement' || changeLog?.entityType === 'SpouseRelationship')
 						) {
 							return (
-								<div className="py-8">
+								<div className="py-8 relative">
 									<LoadingScreen message="Loading member information..." />
 								</div>
 							);

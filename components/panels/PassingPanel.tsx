@@ -365,14 +365,6 @@ export default function PassingPanel({
 		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	};
 
-	if (loading) {
-		return (
-			<div className="w-full h-full">
-				<LoadingScreen message={intl.formatMessage({ id: 'panel.passing.loadingMessage' })} />
-			</div>
-		);
-	}
-
 	const isViewMode = mode === 'view';
 	const isAddMode = mode === 'add';
 
@@ -391,321 +383,324 @@ export default function PassingPanel({
 				</button>
 			</div>
 
-			{isViewMode ? (
-				/* View Mode */
-				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						<FormattedMessage id="panel.passing.title" />
-					</h2>
+			<div className="relative">
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'panel.passing.loadingMessage' })} />}
+				{isViewMode ? (
+					/* View Mode */
+					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+							<FormattedMessage id="panel.passing.title" />
+						</h2>
 
-					<div className="space-y-6">
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.passing.familyMember" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{passingRecord?.familyMember.fullName}
+						<div className="space-y-6">
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.passing.familyMember" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									{passingRecord?.familyMember.fullName}
+								</div>
 							</div>
-						</div>
 
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.passing.dateOfPassing" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								<FormattedDate value={new Date(passingRecord?.dateOfPassing || '')} />
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.passing.dateOfPassing" />
+								</label>
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									<FormattedDate value={new Date(passingRecord?.dateOfPassing || '')} />
+								</div>
 							</div>
-						</div>
 
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.passing.causeOfPassing" />
-							</label>
-							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{passingRecord?.causeOfDeath?.causeName || intl.formatMessage({ id: 'panel.passing.notSpecified' })}
-							</div>
-						</div>
-
-						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.passing.burialPlaces" />
-							</label>
-							<div className="space-y-4">
-								{passingRecord?.buriedPlaces.map((place, index) => (
-									<div key={index} className="bg-[#dbeafe] border border-black/50 rounded-[15px] p-4 space-y-3">
-										<div>
-											<label className="block text-[11.584px] font-normal text-black mb-1.5">
-												<FormattedMessage id="panel.passing.location" />
-											</label>
-											<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
-												{place.location}
-											</div>
-										</div>
-										<div>
-											<label className="block text-[11.584px] font-normal text-black mb-1.5">
-												<FormattedMessage id="panel.passing.startDate" />
-											</label>
-											<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
-												{formatDate(place.startDate)}
-											</div>
-										</div>
-									</div>
-								))}
-							</div>
-						</div>
-
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-10">
-							<button
-								onClick={onClose}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="panel.passing.back" />
-							</button>
-							<button
-								onClick={() => onModeChange('edit')}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
-							>
-								<FormattedMessage id="panel.passing.edit" />
-							</button>
-						</div>
-					</div>
-				</div>
-			) : (
-				/* Add/Edit Mode */
-				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
-					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						<FormattedMessage id={isAddMode ? 'panel.passing.addRecord' : 'panel.passing.editRecord'} />
-					</h2>
-
-					<form onSubmit={handleSubmit} className="space-y-5">
-						{/* Family Member Selection */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.passing.familyMember" />
-							</label>
-							<div className="relative">
-								<select
-									value={formData.familyMemberId}
-									onChange={(e) => {
-										const selectedId = e.target.value;
-										const selectedMember = familyMembers.find((member) => member.id.toString() === selectedId);
-
-										setFormData({
-											...formData,
-											familyMemberId: selectedId,
-										});
-										setSelectedMemberBirthDate(
-											selectedMember?.birthday ? new Date(selectedMember.birthday).toISOString().split('T')[0] : ''
-										);
-										handleFieldChange('familyMemberId');
-									}}
-									onBlur={() => validateField('familyMemberId', formData.familyMemberId)}
-									className={classNames(
-										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
-										{
-											'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
-										}
-									)}
-									disabled={!isAddMode}
-								>
-									<option value="">
-										<FormattedMessage id="panel.passing.selectMember" />
-									</option>
-									{familyMembers.map((member) => (
-										<option key={member.id} value={member.id}>
-											{member.fullName}
-										</option>
-									))}
-								</select>
-								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-							</div>
-							{errors.familyMemberId && touched.familyMemberId && (
-								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
-							)}
-						</div>
-
-						{/* Date of Passing */}
-						<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.passing.dateOfPassing" />
-							</label>
-							<input
-								type="date"
-								value={formData.dateOfPassing}
-								onChange={(e) => {
-									setFormData({
-										...formData,
-										dateOfPassing: e.target.value,
-									});
-									handleFieldChange('dateOfPassing');
-								}}
-								onBlur={() => validateField('dateOfPassing', formData.dateOfPassing)}
-								className={classNames(
-									'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
-									{
-										'border-red-500 bg-red-50': errors.dateOfPassing && touched.dateOfPassing,
-									}
-								)}
-							/>
-							{errors.dateOfPassing && touched.dateOfPassing && (
-								<p className="mt-1 text-sm text-red-600">{errors.dateOfPassing}</p>
-							)}
-						</div>
-
-						{/* Cause of Passing */}
-						<div>
-							<div className="flex items-center justify-between mb-2">
-								<label className="block text-[16px] font-normal text-black required-label">
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
 									<FormattedMessage id="panel.passing.causeOfPassing" />
 								</label>
-								<button
-									type="button"
-									onClick={addCauseOfDeath}
-									disabled={formData.causesOfDeath.length >= 12}
-									className="flex items-center justify-center w-max h-6 bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-								>
-									<Plus className="w-3 h-3 mr-1" />
-									<span>
-										<FormattedMessage id="panel.passing.addCause" />
-									</span>
-								</button>
-							</div>
-							{formData.causesOfDeath.length > 0 && (
-								<div className="space-y-2">
-									{formData.causesOfDeath.map((cause, index) => (
-										<div key={index} className="relative flex items-center">
-											<input
-												type="text"
-												value={cause}
-												onChange={(e) => updateCauseOfDeath(index, e.target.value)}
-												placeholder={intl.formatMessage({ id: 'panel.passing.causeOfPassingPlaceholder' })}
-												className={`w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
-													formData.causesOfDeath.length > 1 ? 'pr-10' : ''
-												}`}
-											/>
-											{formData.causesOfDeath.length > 1 && (
-												<button
-													type="button"
-													onClick={() => removeCauseOfDeath(index)}
-													className="absolute right-3 text-red-500 hover:text-red-700 transition-colors"
-												>
-													<Trash2 className="w-4 h-4" />
-												</button>
-											)}
-										</div>
-									))}
+								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
+									{passingRecord?.causeOfDeath?.causeName || intl.formatMessage({ id: 'panel.passing.notSpecified' })}
 								</div>
-							)}
-							{errors.causesOfDeath && <p className="mt-2 text-sm text-red-600">{errors.causesOfDeath}</p>}
-						</div>
+							</div>
 
-						{/* Burial Places */}
-						<div>
-							<div className="flex items-center justify-between mb-2">
-								<label className="block text-[16px] font-normal text-black required-label">
+							<div>
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
 									<FormattedMessage id="panel.passing.burialPlaces" />
 								</label>
-								<button
-									type="button"
-									onClick={addBurialPlace}
-									disabled={formData.burialPlaces.length >= 3}
-									className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-								>
-									<Plus className="w-3 h-3 mr-1" />
-									<span>
-										<FormattedMessage id="panel.passing.addPlace" />
-									</span>
-								</button>
-							</div>
-							{formData.burialPlaces.length > 0 && (
 								<div className="space-y-4">
-									{formData.burialPlaces.map((place, index) => (
-										<div key={index} className="relative p-4 bg-[#dbeafe] border border-black/50 rounded-[15px]">
-											{formData.burialPlaces.length > 1 && (
-												<button
-													type="button"
-													onClick={() => removeBurialPlace(index)}
-													className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors"
-												>
-													<Trash2 className="w-4 h-4" />
-												</button>
-											)}
-
-											{/* Location */}
-											<div className="mb-3">
-												<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+									{passingRecord?.buriedPlaces.map((place, index) => (
+										<div key={index} className="bg-[#dbeafe] border border-black/50 rounded-[15px] p-4 space-y-3">
+											<div>
+												<label className="block text-[11.584px] font-normal text-black mb-1.5">
 													<FormattedMessage id="panel.passing.location" />
 												</label>
-												<input
-													type="text"
-													value={place.location}
-													onChange={(e) => updateBurialPlace(index, 'location', e.target.value)}
-													placeholder={intl.formatMessage({ id: 'panel.passing.locationPlaceholder' })}
-													className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
-												/>
+												<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
+													{place.location}
+												</div>
 											</div>
-
-											{/* Start Date */}
 											<div>
-												<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+												<label className="block text-[11.584px] font-normal text-black mb-1.5">
 													<FormattedMessage id="panel.passing.startDate" />
 												</label>
-												<input
-													type="date"
-													value={place.startDate}
-													onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
-													className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
-												/>
-												{errors[`burialPlaces_${index}_startDate`] && (
-													<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_startDate`]}</p>
-												)}
+												<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
+													{formatDate(place.startDate)}
+												</div>
 											</div>
 										</div>
 									))}
 								</div>
-							)}
-							{errors.burialPlaces && <p className="mt-2 text-sm text-red-600">{errors.burialPlaces}</p>}
-						</div>
-
-						{/* Error Message */}
-						{Object.keys(errors).length > 0 && (
-							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">
-									<FormattedMessage id="panel.passing.validation.fillAllFields" />
-								</p>
 							</div>
-						)}
 
-						{/* Footer Buttons */}
-						<div className="flex justify-center items-center space-x-4 pt-6">
-							<button
-								type="button"
-								onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
-								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
-								disabled={isSubmitting}
-							>
-								{isAddMode ? (
-									<FormattedMessage id="panel.passing.cancel" />
-								) : (
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-10">
+								<button
+									onClick={onClose}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+								>
 									<FormattedMessage id="panel.passing.back" />
-								)}
-							</button>
-							<button
-								type="submit"
-								disabled={isSubmitting}
-								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
-							>
-								{isSubmitting ? (
-									<FormattedMessage id="panel.passing.saving" />
-								) : (
-									<FormattedMessage id="panel.passing.save" />
-								)}
-							</button>
+								</button>
+								<button
+									onClick={() => onModeChange('edit')}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
+								>
+									<FormattedMessage id="panel.passing.edit" />
+								</button>
+							</div>
 						</div>
-					</form>
-				</div>
-			)}
+					</div>
+				) : (
+					/* Add/Edit Mode */
+					<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+						<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
+							<FormattedMessage id={isAddMode ? 'panel.passing.addRecord' : 'panel.passing.editRecord'} />
+						</h2>
+
+						<form onSubmit={handleSubmit} className="space-y-5">
+							{/* Family Member Selection */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.passing.familyMember" />
+								</label>
+								<div className="relative">
+									<select
+										value={formData.familyMemberId}
+										onChange={(e) => {
+											const selectedId = e.target.value;
+											const selectedMember = familyMembers.find((member) => member.id.toString() === selectedId);
+
+											setFormData({
+												...formData,
+												familyMemberId: selectedId,
+											});
+											setSelectedMemberBirthDate(
+												selectedMember?.birthday ? new Date(selectedMember.birthday).toISOString().split('T')[0] : ''
+											);
+											handleFieldChange('familyMemberId');
+										}}
+										onBlur={() => validateField('familyMemberId', formData.familyMemberId)}
+										className={classNames(
+											'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400',
+											{
+												'border-red-500 bg-red-50': errors.familyMemberId && touched.familyMemberId,
+											}
+										)}
+										disabled={!isAddMode}
+									>
+										<option value="">
+											<FormattedMessage id="panel.passing.selectMember" />
+										</option>
+										{familyMembers.map((member) => (
+											<option key={member.id} value={member.id}>
+												{member.fullName}
+											</option>
+										))}
+									</select>
+									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								</div>
+								{errors.familyMemberId && touched.familyMemberId && (
+									<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
+								)}
+							</div>
+
+							{/* Date of Passing */}
+							<div>
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.passing.dateOfPassing" />
+								</label>
+								<input
+									type="date"
+									value={formData.dateOfPassing}
+									onChange={(e) => {
+										setFormData({
+											...formData,
+											dateOfPassing: e.target.value,
+										});
+										handleFieldChange('dateOfPassing');
+									}}
+									onBlur={() => validateField('dateOfPassing', formData.dateOfPassing)}
+									className={classNames(
+										'w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400',
+										{
+											'border-red-500 bg-red-50': errors.dateOfPassing && touched.dateOfPassing,
+										}
+									)}
+								/>
+								{errors.dateOfPassing && touched.dateOfPassing && (
+									<p className="mt-1 text-sm text-red-600">{errors.dateOfPassing}</p>
+								)}
+							</div>
+
+							{/* Cause of Passing */}
+							<div>
+								<div className="flex items-center justify-between mb-2">
+									<label className="block text-[16px] font-normal text-black required-label">
+										<FormattedMessage id="panel.passing.causeOfPassing" />
+									</label>
+									<button
+										type="button"
+										onClick={addCauseOfDeath}
+										disabled={formData.causesOfDeath.length >= 12}
+										className="flex items-center justify-center w-max h-6 bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+									>
+										<Plus className="w-3 h-3 mr-1" />
+										<span>
+											<FormattedMessage id="panel.passing.addCause" />
+										</span>
+									</button>
+								</div>
+								{formData.causesOfDeath.length > 0 && (
+									<div className="space-y-2">
+										{formData.causesOfDeath.map((cause, index) => (
+											<div key={index} className="relative flex items-center">
+												<input
+													type="text"
+													value={cause}
+													onChange={(e) => updateCauseOfDeath(index, e.target.value)}
+													placeholder={intl.formatMessage({ id: 'panel.passing.causeOfPassingPlaceholder' })}
+													className={`w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
+														formData.causesOfDeath.length > 1 ? 'pr-10' : ''
+													}`}
+												/>
+												{formData.causesOfDeath.length > 1 && (
+													<button
+														type="button"
+														onClick={() => removeCauseOfDeath(index)}
+														className="absolute right-3 text-red-500 hover:text-red-700 transition-colors"
+													>
+														<Trash2 className="w-4 h-4" />
+													</button>
+												)}
+											</div>
+										))}
+									</div>
+								)}
+								{errors.causesOfDeath && <p className="mt-2 text-sm text-red-600">{errors.causesOfDeath}</p>}
+							</div>
+
+							{/* Burial Places */}
+							<div>
+								<div className="flex items-center justify-between mb-2">
+									<label className="block text-[16px] font-normal text-black required-label">
+										<FormattedMessage id="panel.passing.burialPlaces" />
+									</label>
+									<button
+										type="button"
+										onClick={addBurialPlace}
+										disabled={formData.burialPlaces.length >= 3}
+										className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+									>
+										<Plus className="w-3 h-3 mr-1" />
+										<span>
+											<FormattedMessage id="panel.passing.addPlace" />
+										</span>
+									</button>
+								</div>
+								{formData.burialPlaces.length > 0 && (
+									<div className="space-y-4">
+										{formData.burialPlaces.map((place, index) => (
+											<div key={index} className="relative p-4 bg-[#dbeafe] border border-black/50 rounded-[15px]">
+												{formData.burialPlaces.length > 1 && (
+													<button
+														type="button"
+														onClick={() => removeBurialPlace(index)}
+														className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition-colors"
+													>
+														<Trash2 className="w-4 h-4" />
+													</button>
+												)}
+
+												{/* Location */}
+												<div className="mb-3">
+													<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+														<FormattedMessage id="panel.passing.location" />
+													</label>
+													<input
+														type="text"
+														value={place.location}
+														onChange={(e) => updateBurialPlace(index, 'location', e.target.value)}
+														placeholder={intl.formatMessage({ id: 'panel.passing.locationPlaceholder' })}
+														className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
+													/>
+												</div>
+
+												{/* Start Date */}
+												<div>
+													<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+														<FormattedMessage id="panel.passing.startDate" />
+													</label>
+													<input
+														type="date"
+														value={place.startDate}
+														onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
+														className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+													/>
+													{errors[`burialPlaces_${index}_startDate`] && (
+														<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_startDate`]}</p>
+													)}
+												</div>
+											</div>
+										))}
+									</div>
+								)}
+								{errors.burialPlaces && <p className="mt-2 text-sm text-red-600">{errors.burialPlaces}</p>}
+							</div>
+
+							{/* Error Message */}
+							{Object.keys(errors).length > 0 && (
+								<div className="bg-red-50 border border-red-200 rounded-lg p-3">
+									<p className="text-sm font-medium text-red-800">
+										<FormattedMessage id="panel.passing.validation.fillAllFields" />
+									</p>
+								</div>
+							)}
+
+							{/* Footer Buttons */}
+							<div className="flex justify-center items-center space-x-4 pt-6">
+								<button
+									type="button"
+									onClick={() => (isAddMode ? onClose() : onModeChange('view'))}
+									className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+									disabled={isSubmitting}
+								>
+									{isAddMode ? (
+										<FormattedMessage id="panel.passing.cancel" />
+									) : (
+										<FormattedMessage id="panel.passing.back" />
+									)}
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
+								>
+									{isSubmitting ? (
+										<FormattedMessage id="panel.passing.saving" />
+									) : (
+										<FormattedMessage id="panel.passing.save" />
+									)}
+								</button>
+							</div>
+						</form>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
