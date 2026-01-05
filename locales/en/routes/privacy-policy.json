@@ -1,0 +1,55 @@
+{
+	"privacy": {
+		"title": "Privacy Policy",
+		"lastUpdated": "Last updated: January 5, 2026",
+		"introduction": {
+			"title": "Introduction",
+			"content": "Family Tree Management is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our family tree management platform."
+		},
+		"information": {
+			"title": "Information We Collect",
+			"personalInfo": {
+				"title": "Personal Information",
+				"content": "We collect information you provide directly to us, such as when you create an account, add family members, or contact us for support. This may include your name, email address, and any personal information about family members you choose to share."
+			},
+			"usageData": {
+				"title": "Usage Data",
+				"content": "We automatically collect certain information about your device and how you interact with our platform, including IP address, browser type, pages visited, and time spent on our site."
+			}
+		},
+		"use": {
+			"title": "How We Use Your Information",
+			"1": "To provide and maintain our family tree management services",
+			"2": "To communicate with you about your account and our services",
+			"3": "To improve our platform and develop new features",
+			"4": "To ensure the security and integrity of our services"
+		},
+		"sharing": {
+			"title": "Information Sharing",
+			"content": "We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy. We may share information in the following circumstances:",
+			"1": "With service providers who assist us in operating our platform",
+			"2": "When required by law or to protect our rights",
+			"3": "In connection with a business transfer or merger"
+		},
+		"security": {
+			"title": "Data Security",
+			"content": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is 100% secure."
+		},
+		"rights": {
+			"title": "Your Rights",
+			"content": "Depending on your location, you may have certain rights regarding your personal information, including the right to access, correct, delete, or restrict processing of your data. To exercise these rights, please contact us."
+		},
+		"cookies": {
+			"title": "Cookies",
+			"content": "We use cookies and similar technologies to enhance your experience on our platform. For more detailed information about our use of cookies, please see our Cookie Policy."
+		},
+		"changes": {
+			"title": "Changes to This Policy",
+			"content": "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the 'Last updated' date."
+		},
+		"contact": {
+			"title": "Contact Us",
+			"content": "If you have any questions about this Privacy Policy, please contact us at xuanduy@gmail.com"
+		}
+	}
+}

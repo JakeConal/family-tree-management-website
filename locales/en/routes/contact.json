@@ -1,0 +1,43 @@
+{
+	"contact": {
+		"title": "Contact Us",
+		"subtitle": "Have questions about Family Tree Management? We're here to help!",
+		"form": {
+			"title": "Send us a message",
+			"name": "Full Name",
+			"email": "Email Address",
+			"subject": "Subject",
+			"subject.placeholder": "Select a subject",
+			"subject.general": "General Inquiry",
+			"subject.support": "Technical Support",
+			"subject.billing": "Billing & Pricing",
+			"subject.partnership": "Partnership Opportunities",
+			"subject.other": "Other",
+			"message": "Message",
+			"submit": "Send Message"
+		},
+		"info": {
+			"title": "Get in touch",
+			"email": {
+				"title": "Email",
+				"description": "Send us an email and we'll respond within 24 hours."
+			},
+			"chat": {
+				"title": "Live Chat",
+				"description": "Chat with our support team for immediate assistance.",
+				"button": "Start Chat"
+			},
+			"docs": {
+				"title": "Documentation",
+				"description": "Find answers in our comprehensive documentation.",
+				"link": "View FAQ"
+			},
+			"hours": {
+				"title": "Support Hours",
+				"description": "Monday - Friday: 9:00 AM - 6:00 PM EST",
+				"weekend": "Weekend: 10:00 AM - 4:00 PM EST"
+			}
+		}
+	}
+}
+

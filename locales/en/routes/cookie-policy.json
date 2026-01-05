@@ -1,0 +1,45 @@
+{
+	"cookie": {
+		"title": "Cookie Policy",
+		"lastUpdated": "Last updated: January 5, 2026",
+		"what": {
+			"title": "What Are Cookies",
+			"content": "Cookies are small text files that are stored on your computer or mobile device when you visit our website. They help us provide you with a better browsing experience by remembering your preferences and understanding how you use our site."
+		},
+		"types": {
+			"title": "Types of Cookies We Use",
+			"essential": {
+				"title": "Essential Cookies",
+				"content": "These cookies are necessary for the website to function properly. They enable core functionality such as security, network management, and accessibility. You cannot opt out of these cookies."
+			},
+			"auth": {
+				"content": "We use NextAuth.js for authentication, which sets essential cookies to maintain your login session and ensure secure access to your account. These include session tokens, CSRF protection tokens, and callback URL storage."
+			},
+			"analytics": {
+				"title": "Analytics Cookies",
+				"content": "These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our website's performance."
+			},
+			"functional": {
+				"title": "Functional Cookies",
+				"content": "These cookies enable the website to provide enhanced functionality and personalization. They may be set by us or by third-party providers whose services we have added to our pages."
+			}
+		},
+		"thirdParty": {
+			"title": "Third-Party Cookies",
+			"content": "Some cookies may be set by third-party services that appear on our pages. We have no control over these cookies, and they are subject to the respective third party's privacy policy."
+		},
+		"manage": {
+			"title": "Managing Cookies",
+			"content": "You can control and manage cookies in various ways. Most web browsers automatically accept cookies, but you can modify your browser settings to decline cookies if you prefer. However, this may prevent you from taking full advantage of the website.",
+			"browsers": "You can usually find cookie settings in the 'Options' or 'Preferences' menu of your browser. You can also visit www.allaboutcookies.org for more information."
+		},
+		"changes": {
+			"title": "Changes to This Policy",
+			"content": "We may update this Cookie Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We will notify you of any material changes by posting the updated policy on this page."
+		},
+		"contact": {
+			"title": "Contact Us",
+			"content": "If you have any questions about our use of cookies, please contact us at xuanduy@gmail.com."
+		}
+	}
+}

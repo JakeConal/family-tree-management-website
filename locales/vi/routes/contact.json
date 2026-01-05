@@ -1,0 +1,43 @@
+{
+	"contact": {
+		"title": "Liên Hệ Chúng Tôi",
+		"subtitle": "Có câu hỏi về Family Tree Management? Chúng tôi luôn sẵn sàng giúp đỡ!",
+		"form": {
+			"title": "Gửi tin nhắn cho chúng tôi",
+			"name": "Họ và Tên",
+			"email": "Địa Chỉ Email",
+			"subject": "Chủ Đề",
+			"subject.placeholder": "Chọn chủ đề",
+			"subject.general": "Thắc Mắc Chung",
+			"subject.support": "Hỗ Trợ Kỹ Thuật",
+			"subject.billing": "Thanh Toán & Giá",
+			"subject.partnership": "Cơ Hội Hợp Tác",
+			"subject.other": "Khác",
+			"message": "Tin Nhắn",
+			"submit": "Gửi Tin Nhắn"
+		},
+		"info": {
+			"title": "Liên hệ",
+			"email": {
+				"title": "Email",
+				"description": "Gửi email cho chúng tôi và chúng tôi sẽ trả lời trong vòng 24 giờ."
+			},
+			"chat": {
+				"title": "Trò Chuyện Trực Tiếp",
+				"description": "Trò chuyện với đội ngũ hỗ trợ của chúng tôi để được hỗ trợ ngay lập tức.",
+				"button": "Bắt Đầu Trò Chuyện"
+			},
+			"docs": {
+				"title": "Tài Liệu",
+				"description": "Tìm câu trả lời trong tài liệu toàn diện của chúng tôi.",
+				"link": "Xem FAQ"
+			},
+			"hours": {
+				"title": "Giờ Hỗ Trợ",
+				"description": "Thứ Hai - Thứ Sáu: 9:00 SÁNG - 6:00 CHIỀU EST",
+				"weekend": "Cuối tuần: 10:00 SÁNG - 4:00 CHIỀU EST"
+			}
+		}
+	}
+}
+

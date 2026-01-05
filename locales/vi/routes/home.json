@@ -81,13 +81,11 @@
 			},
 			"features": {
 				"title": "Tính Năng",
-				"member": "Thành Viên",
-				"blog": "Blog"
+				"member": "Thành Viên"
 			},
 			"about": {
 				"title": "Về Chúng Tôi",
-				"contact": "Liên Hệ",
-				"community": "Cộng Đồng"
+				"contact": "Liên Hệ"
 			},
 			"copyright": "© 2025 Quản Lý Cây Gia Phả. Bảo lưu mọi quyền.",
 			"privacyPolicy": "Chính sách bảo mật",

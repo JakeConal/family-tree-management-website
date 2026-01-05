@@ -1,0 +1,55 @@
+{
+	"terms": {
+		"title": "Điều Khoản Dịch Vụ",
+		"lastUpdated": "Cập nhật lần cuối: 5 tháng 1, 2026",
+		"acceptance": {
+			"title": "Chấp Nhận Điều Khoản",
+			"content": "Bằng cách truy cập và sử dụng Family Tree Management ('Dịch vụ'), bạn chấp nhận và đồng ý bị ràng buộc bởi các điều khoản và quy định của thỏa thuận này. Nếu bạn không đồng ý tuân thủ các điều khoản trên, vui lòng không sử dụng dịch vụ này."
+		},
+		"description": {
+			"title": "Mô Tả Dịch Vụ",
+			"content": "Family Tree Management cung cấp một nền tảng để tạo, quản lý và chia sẻ cây gia đình. Dịch vụ của chúng tôi bao gồm các công cụ để thêm thành viên gia đình, xây dựng mối quan hệ, theo dõi thành tựu và tạo báo cáo."
+		},
+		"accounts": {
+			"title": "Tài Khoản Người Dùng",
+			"content": "Để sử dụng một số tính năng của dịch vụ của chúng tôi, bạn phải đăng ký tài khoản. Bạn chịu trách nhiệm duy trì tính bảo mật của thông tin đăng nhập tài khoản của mình và tất cả các hoạt động xảy ra dưới tài khoản của bạn."
+		},
+		"content": {
+			"title": "Nội Dung Người Dùng",
+			"responsibility": "Bạn hoàn toàn chịu trách nhiệm về nội dung bạn tải lên, đăng tải hoặc chia sẻ thông qua dịch vụ của chúng tôi. Bạn giữ quyền sở hữu nội dung của mình, nhưng bạn cấp cho chúng tôi giấy phép để sử dụng, lưu trữ và hiển thị nó khi cần thiết để cung cấp dịch vụ của chúng tôi.",
+			"guidelines": "Bạn đồng ý không tải lên nội dung bất hợp pháp, có hại, xúc phạm hoặc vi phạm quyền của người khác. Chúng tôi có quyền xóa bất kỳ nội dung nào vi phạm các điều khoản này."
+		},
+		"privacy": {
+			"title": "Quyền Riêng Tư",
+			"content": "Quyền riêng tư của bạn rất quan trọng đối với chúng tôi. Vui lòng xem Chính sách Bảo mật của chúng tôi, cũng chi phối việc sử dụng dịch vụ của bạn, để hiểu các thực tiễn của chúng tôi."
+		},
+		"prohibited": {
+			"title": "Các Việc Sử Dụng Bị Cấm",
+			"content": "Bạn không được sử dụng dịch vụ của chúng tôi cho bất kỳ mục đích bất hợp pháp nào hoặc khuyến khích người khác thực hiện các hành động bất hợp pháp. Điều này bao gồm, nhưng không giới hạn ở:",
+			"1": "Vi phạm bất kỳ luật hoặc quy định áp dụng nào",
+			"2": "Vi phạm quyền sở hữu trí tuệ",
+			"3": "Quấy rối, lăng mạ hoặc làm hại người khác",
+			"4": "Cố gắng truy cập trái phép vào các hệ thống của chúng tôi"
+		},
+		"termination": {
+			"title": "Chấm Dứt",
+			"content": "Chúng tôi có thể chấm dứt hoặc tạm ngừng tài khoản và quyền truy cập của bạn vào dịch vụ ngay lập tức, mà không cần thông báo trước hoặc bồi thường, vì bất kỳ lý do nào, bao gồm vi phạm các Điều khoản này."
+		},
+		"disclaimer": {
+			"title": "Tuyên Bố Từ Chối Trách Nhiệm",
+			"content": "Dịch vụ được cung cấp trên cơ sở 'như hiện tại' và 'như có sẵn'. Chúng tôi không đưa ra bất kỳ bảo đảm nào, rõ ràng hoặc ngụ ý, và bằng cách này chúng tôi từ chối tất cả các bảo đảm bao gồm khả năng bán được, phù hợp cho một mục đích cụ thể và không vi phạm."
+		},
+		"limitation": {
+			"title": "Giới Hạn Trách Nhiệm",
+			"content": "Trong bất kỳ trường hợp nào, Family Tree Management sẽ không chịu trách nhiệm về bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt, hậu quả hoặc trừng phạt nào phát sinh từ hoặc liên quan đến việc sử dụng dịch vụ của bạn."
+		},
+		"changes": {
+			"title": "Thay Đổi Điều Khoản",
+			"content": "Chúng tôi có quyền sửa đổi các điều khoản này bất cứ lúc nào. Chúng tôi sẽ thông báo cho người dùng về bất kỳ thay đổi nào bằng cách cập nhật ngày 'Cập nhật lần cuối' và đăng các điều khoản mới trên trang này."
+		},
+		"contact": {
+			"title": "Thông Tin Liên Hệ",
+			"content": "Nếu bạn có bất kỳ câu hỏi nào về các Điều Khoản Dịch Vụ này, vui lòng liên hệ với chúng tôi tại xuanduy@gmail.com"
+		}
+	}
+}

@@ -1,0 +1,55 @@
+{
+	"privacy": {
+		"title": "Chính sách Bảo mật",
+		"lastUpdated": "Cập nhật lần cuối: 5 tháng 1, 2026",
+		"introduction": {
+			"title": "Giới thiệu",
+			"content": "Family Tree Management cam kết bảo vệ quyền riêng tư của bạn. Chính sách Bảo mật này giải thích cách chúng tôi thu thập, sử dụng, tiết lộ và bảo vệ thông tin của bạn khi bạn sử dụng nền tảng quản lý cây gia đình của chúng tôi."
+		},
+		"information": {
+			"title": "Thông tin Chúng tôi Thu thập",
+			"personalInfo": {
+				"title": "Thông tin Cá nhân",
+				"content": "Chúng tôi thu thập thông tin bạn cung cấp trực tiếp cho chúng tôi, chẳng hạn như khi bạn tạo tài khoản, thêm thành viên gia đình hoặc liên hệ với chúng tôi để được hỗ trợ. Điều này có thể bao gồm tên, địa chỉ email của bạn và bất kỳ thông tin cá nhân nào về các thành viên gia đình mà bạn chọn chia sẻ."
+			},
+			"usageData": {
+				"title": "Dữ liệu Sử dụng",
+				"content": "Chúng tôi tự động thu thập một số thông tin nhất định về thiết bị của bạn và cách bạn tương tác với nền tảng của chúng tôi, bao gồm địa chỉ IP, loại trình duyệt, các trang đã truy cập và thời gian dành trên trang web của chúng tôi."
+			}
+		},
+		"use": {
+			"title": "Cách Chúng tôi Sử dụng Thông tin của Bạn",
+			"1": "Để cung cấp và duy trì dịch vụ quản lý cây gia đình của chúng tôi",
+			"2": "Để giao tiếp với bạn về tài khoản và dịch vụ của bạn",
+			"3": "Để cải thiện nền tảng của chúng tôi và phát triển các tính năng mới",
+			"4": "Để đảm bảo an ninh và tính toàn vẹn của dịch vụ của chúng tôi"
+		},
+		"sharing": {
+			"title": "Chia sẻ Thông tin",
+			"content": "Chúng tôi không bán, trao đổi hoặc chuyển nhượng thông tin cá nhân của bạn cho bên thứ ba mà không có sự đồng ý của bạn, ngoại trừ như được mô tả trong chính sách này. Chúng tôi có thể chia sẻ thông tin trong các trường hợp sau:",
+			"1": "Với các nhà cung cấp dịch vụ giúp chúng tôi vận hành nền tảng của mình",
+			"2": "Khi được yêu cầu bởi pháp luật hoặc để bảo vệ quyền của chúng tôi",
+			"3": "Trong kết nối với việc chuyển nhượng hoặc sáp nhập doanh nghiệp"
+		},
+		"security": {
+			"title": "Bảo mật Dữ liệu",
+			"content": "Chúng tôi thực hiện các biện pháp kỹ thuật và tổ chức phù hợp để bảo vệ thông tin cá nhân của bạn khỏi truy cập trái phép, thay đổi, tiết lộ hoặc phá hủy. Tuy nhiên, không có phương pháp truyền tải qua internet nào an toàn 100%."
+		},
+		"rights": {
+			"title": "Quyền của Bạn",
+			"content": "Tùy thuộc vào vị trí của bạn, bạn có thể có một số quyền nhất định liên quan đến thông tin cá nhân của mình, bao gồm quyền truy cập, sửa đổi, xóa hoặc hạn chế xử lý dữ liệu của bạn. Để thực hiện các quyền này, vui lòng liên hệ với chúng tôi."
+		},
+		"cookies": {
+			"title": "Cookie",
+			"content": "Chúng tôi sử dụng cookie và các công nghệ tương tự để nâng cao trải nghiệm của bạn trên nền tảng của chúng tôi. Để biết thông tin chi tiết hơn về việc sử dụng cookie của chúng tôi, vui lòng xem Chính sách Cookie của chúng tôi."
+		},
+		"changes": {
+			"title": "Thay đổi Chính sách Này",
+			"content": "Chúng tôi có thể cập nhật Chính sách Bảo mật này theo thời gian. Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi nào bằng cách đăng chính sách mới trên trang này và cập nhật ngày 'Cập nhật lần cuối'."
+		},
+		"contact": {
+			"title": "Liên hệ Chúng tôi",
+			"content": "Nếu bạn có bất kỳ câu hỏi nào về Chính sách Bảo mật này, vui lòng liên hệ với chúng tôi tại xuanduy@gmail.com."
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"cookie": {
+		"title": "Chính sách Cookie",
+		"lastUpdated": "Cập nhật lần cuối: 5 tháng 1, 2026",
+		"what": {
+			"title": "Cookie là gì",
+			"content": "Cookie là các tệp văn bản nhỏ được lưu trữ trên máy tính hoặc thiết bị di động của bạn khi bạn truy cập trang web của chúng tôi. Chúng giúp chúng tôi cung cấp cho bạn trải nghiệm duyệt web tốt hơn bằng cách ghi nhớ sở thích của bạn và hiểu cách bạn sử dụng trang web của chúng tôi."
+		},
+		"types": {
+			"title": "Các Loại Cookie Chúng tôi Sử dụng",
+			"essential": {
+				"title": "Cookie Cần thiết",
+				"content": "Những cookie này là cần thiết để trang web hoạt động đúng cách. Chúng cho phép chức năng cốt lõi như bảo mật, quản lý mạng và khả năng truy cập. Bạn không thể từ chối những cookie này."
+			},
+			"auth": {
+				"content": "Chúng tôi sử dụng NextAuth.js để xác thực, thiết lập cookie cần thiết để duy trì phiên đăng nhập của bạn và đảm bảo truy cập an toàn vào tài khoản của bạn. Chúng bao gồm mã thông báo phiên, mã thông báo bảo vệ CSRF và lưu trữ URL gọi lại."
+			},
+			"analytics": {
+				"title": "Cookie Phân tích",
+				"content": "Những cookie này giúp chúng tôi hiểu cách khách truy cập tương tác với trang web của chúng tôi bằng cách thu thập và báo cáo thông tin một cách ẩn danh. Điều này giúp chúng tôi cải thiện hiệu suất trang web."
+			},
+			"functional": {
+				"title": "Cookie Chức năng",
+				"content": "Những cookie này cho phép trang web cung cấp chức năng nâng cao và cá nhân hóa. Chúng có thể được đặt bởi chúng tôi hoặc bởi các nhà cung cấp bên thứ ba mà chúng tôi đã thêm dịch vụ của họ vào các trang của chúng tôi."
+			}
+		},
+		"thirdParty": {
+			"title": "Cookie Bên Thứ Ba",
+			"content": "Một số cookie có thể được đặt bởi các dịch vụ bên thứ ba xuất hiện trên các trang của chúng tôi. Chúng tôi không kiểm soát những cookie này, và chúng phải tuân theo chính sách bảo mật của bên thứ ba tương ứng."
+		},
+		"manage": {
+			"title": "Quản lý Cookie",
+			"content": "Bạn có thể kiểm soát và quản lý cookie theo nhiều cách khác nhau. Hầu hết các trình duyệt web tự động chấp nhận cookie, nhưng bạn có thể sửa đổi cài đặt trình duyệt của mình để từ chối cookie nếu bạn muốn. Tuy nhiên, điều này có thể ngăn bạn tận dụng đầy đủ trang web.",
+			"browsers": "Bạn thường có thể tìm cài đặt cookie trong menu 'Tùy chọn' hoặc 'Sở thích' của trình duyệt. Bạn cũng có thể truy cập www.allaboutcookies.org để biết thêm thông tin."
+		},
+		"changes": {
+			"title": "Thay đổi Chính sách Này",
+			"content": "Chúng tôi có thể cập nhật Chính sách Cookie này theo thời gian để phản ánh các thay đổi trong thực tiễn của chúng tôi hoặc vì các lý do vận hành, pháp lý hoặc quy định khác. Chúng tôi sẽ thông báo cho bạn về bất kỳ thay đổi quan trọng nào bằng cách đăng chính sách cập nhật trên trang này."
+		},
+		"contact": {
+			"title": "Liên hệ Chúng tôi",
+			"content": "Nếu bạn có bất kỳ câu hỏi nào về việc sử dụng cookie của chúng tôi, vui lòng liên hệ với chúng tôi tại xuanduy@gmail.com."
+		}
+	}
+}

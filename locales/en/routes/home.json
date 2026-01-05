@@ -81,13 +81,11 @@
 			},
 			"features": {
 				"title": "Features",
-				"member": "Member",
-				"blog": "Blog"
+				"member": "Member"
 			},
 			"about": {
 				"title": "About",
-				"contact": "Contact",
-				"community": "Community"
+				"contact": "Contact"
 			},
 			"copyright": "© 2025 Family Tree Management. All rights reserved.",
 			"privacyPolicy": "Privacy policy",
