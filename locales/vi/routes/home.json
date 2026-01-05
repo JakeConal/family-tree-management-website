@@ -50,18 +50,18 @@
 			"description": "Chỉ vài bước để bắt đầu xây dựng cây gia phả",
 			"step1": {
 				"number": "01",
-				"title": "Tạo Tài Khoản",
-				"description": "Đăng ký miễn phí chỉ trong vài giây."
+				"title": "Tạo Cây Gia Phả",
+				"description": "Bắt đầu bằng cách tạo cây gia phả để tổ chức và lưu giữ lịch sử gia đình bạn."
 			},
 			"step2": {
 				"number": "02",
 				"title": "Thêm Thành Viên",
-				"description": "Nhập thông tin về các thành viên gia đình."
+				"description": "Thêm các thành viên gia đình vào cây bằng cách nhập chi tiết của họ trong biểu mẫu dễ dàng của chúng tôi."
 			},
 			"step3": {
 				"number": "03",
-				"title": "Xây Dựng Kết Nối",
-				"description": "Liên kết các mối quan hệ để xây dựng cây gia phả."
+				"title": "Chia Sẻ Mã Truy Cập",
+				"description": "Tạo mã truy cập và chia sẻ với các thành viên gia đình để mời họ đóng góp."
 			}
 		},
 		"cta": {
