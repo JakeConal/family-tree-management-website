@@ -9,7 +9,7 @@ type GradientTextProps = React.ComponentProps<'span'> & {
 	text: string;
 	gradient?: string;
 	neon?: boolean;
-	transition?: Record<string, any>;
+	transition?: Record<string, unknown>;
 };
 
 function GradientText({
@@ -20,20 +20,17 @@ function GradientText({
 	transition = { duration: 3, repeat: Infinity, ease: 'linear' },
 	...props
 }: GradientTextProps) {
-	const baseStyle: React.CSSProperties = {
+	const animationStyle = {
 		backgroundImage: gradient,
+		backgroundPositionX: ['0%', '200%'],
 	};
 
 	return (
 		<span data-slot="gradient-text" className={cn('relative inline-block', className)} {...props}>
 			<motion.span
 				className="m-0 text-transparent bg-clip-text bg-[length:200%_100%]"
-				style={
-					{
-						...baseStyle,
-						backgroundPositionX: ['0%', '200%'],
-					} as any
-				}
+				// @ts-expect-error - Framer Motion types are complex, but this works at runtime
+				style={animationStyle}
 				transition={transition}
 			>
 				{text}
@@ -42,12 +39,8 @@ function GradientText({
 			{neon && (
 				<motion.span
 					className="m-0 absolute top-0 left-0 text-transparent bg-clip-text blur-[8px] mix-blend-plus-lighter bg-[length:200%_100%]"
-					style={
-						{
-							...baseStyle,
-							backgroundPositionX: ['0%', '200%'],
-						} as any
-					}
+					// @ts-expect-error - Framer Motion types are complex, but this works at runtime
+					style={animationStyle}
 					transition={transition}
 				>
 					{text}
