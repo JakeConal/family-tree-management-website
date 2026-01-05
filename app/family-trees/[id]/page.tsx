@@ -1,5 +1,6 @@
 'use client';
 
+import classNames from 'classnames';
 import {
 	Users,
 	Heart,
@@ -16,33 +17,57 @@ import {
 } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
-import PanelRenderer from '@/components/PanelRenderer';
+import AchievementPanel from '@/components/panels/AchievementPanel';
+import AddMemberPanel from '@/components/panels/MemberPanel';
+import PassingPanel from '@/components/panels/PassingPanel';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
-import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
-import { FamilyMember, FamilyTree, FamilyStatistics, ChangeLog } from '@/types';
+import { FamilyMember } from '@/types';
 
-const getUserName = (log: ChangeLog) => {
-	// Return user name if available, otherwise fallback to email or 'Unknown User'
-	if (log.user) {
-		return log.user.name || log.user.email || 'Unknown User';
-	}
-	return log.userId ? 'Unknown User' : 'Unknown User';
-};
+// Mock data types (representing API responses)
+interface FamilyTree {
+	id: number;
+	familyName: string;
+	origin: string | null;
+	establishYear: number | null;
+	createdAt: string;
+	treeOwner: {
+		fullName: string;
+	};
+}
+
+interface FamilyStatistics {
+	totalGenerations: number;
+	totalMembers: number;
+	livingMembers: number;
+	memberGrowth: { count: number; percentage: number };
+	deathTrend: { count: number; percentage: number };
+	marriageTrend: { marriages: number; divorces: number };
+	achievementGrowth: { count: number; percentage: number };
+}
+
+interface ChangeLog {
+	id: number;
+	entityType: string;
+	entityId: number;
+	action: string;
+	userId: string | null;
+	familyTreeId: number;
+	oldValues: string | null;
+	newValues: string | null;
+	createdAt: string;
+}
 
 export default function FamilyTreeDashboard() {
 	const router = useRouter();
 	const params = useParams();
 	const familyTreeId = params.id as string;
 	const { isGuest } = useGuestSession();
-	const { openPanel } = usePanel();
-	const intl = useIntl();
 
 	// State for API data
 	const [familyTree, setFamilyTree] = useState<FamilyTree | null>(null);
@@ -56,7 +81,7 @@ export default function FamilyTreeDashboard() {
 	const [isAllChangeLogsModalOpen, setIsAllChangeLogsModalOpen] = useState(false);
 
 	// Panel state
-	// Removed - now managed globally via usePanel hook
+	const [activePanelType, setActivePanelType] = useState<'addMember' | 'achievement' | 'passing' | null>(null);
 
 	// Fetch real dashboard data
 	useEffect(() => {
@@ -105,16 +130,9 @@ export default function FamilyTreeDashboard() {
 				const marriagesCount = recentLogs.filter(
 					(log) => log.entityType === 'SpouseRelationship' && log.action === 'CREATE'
 				).length;
-				const divorcesCount = recentLogs.filter((log) => {
-					if (log.entityType !== 'SpouseRelationship' || log.action !== 'UPDATE') return false;
-					try {
-						const oldValues = log.oldValues ? JSON.parse(log.oldValues) : {};
-						const newValues = log.newValues ? JSON.parse(log.newValues) : {};
-						return oldValues.divorceDate === null && newValues.divorceDate !== null;
-					} catch {
-						return false;
-					}
-				}).length;
+				const divorcesCount = recentLogs.filter(
+					(log) => log.entityType === 'SpouseRelationship' && log.action === 'DELETE'
+				).length;
 				const achievementGrowthCount = recentLogs.filter(
 					(log) => log.entityType === 'Achievement' && log.action === 'CREATE'
 				).length;
@@ -224,16 +242,9 @@ export default function FamilyTreeDashboard() {
 			const marriagesCount = recentLogs.filter(
 				(log) => log.entityType === 'SpouseRelationship' && log.action === 'CREATE'
 			).length;
-			const divorcesCount = recentLogs.filter((log) => {
-				if (log.entityType !== 'SpouseRelationship' || log.action !== 'UPDATE') return false;
-				try {
-					const oldValues = log.oldValues ? JSON.parse(log.oldValues) : {};
-					const newValues = log.newValues ? JSON.parse(log.newValues) : {};
-					return oldValues.divorceDate === null && newValues.divorceDate !== null;
-				} catch {
-					return false;
-				}
-			}).length;
+			const divorcesCount = recentLogs.filter(
+				(log) => log.entityType === 'SpouseRelationship' && log.action === 'DELETE'
+			).length;
 			const achievementGrowthCount = recentLogs.filter(
 				(log) => log.entityType === 'Achievement' && log.action === 'CREATE'
 			).length;
@@ -278,11 +289,6 @@ export default function FamilyTreeDashboard() {
 
 		try {
 			const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
-			console.log('Fetched activities - Total logs:', logs.length);
-			console.log(
-				'SpouseRelationship logs:',
-				logs.filter((log: ChangeLog) => log.entityType === 'SpouseRelationship')
-			);
 			setChangeLogs(logs);
 		} catch (error) {
 			console.error('Error fetching change logs:', error);
@@ -290,36 +296,34 @@ export default function FamilyTreeDashboard() {
 		}
 	};
 
-	// Refresh all dashboard data after panel actions
-	const refreshDashboardData = async () => {
-		try {
-			console.log('Refreshing dashboard data...');
-			await Promise.all([fetchFamilyTreeData(), fetchStatistics(), fetchActivities(), fetchExistingMembers()]);
-			console.log('Dashboard data refreshed successfully');
-		} catch (error) {
-			console.error('Error refreshing dashboard data:', error);
+	// Refresh data when panel closes
+	useEffect(() => {
+		// When panel closes (activePanelType becomes null), refresh the data
+		if (activePanelType === null) {
+			fetchFamilyTreeData();
+			fetchStatistics();
+			fetchActivities();
+			fetchExistingMembers();
 		}
-	};
+	}, [activePanelType]);
 
 	if (loading) {
-		return <LoadingScreen message={intl.formatMessage({ id: 'familyTreeDashboard.loading' })} />;
+		return <LoadingScreen message="Loading family tree data..." />;
 	}
 
 	if (!familyTree) {
 		return (
 			<div className="text-center py-12">
 				<div className="bg-red-50 rounded-lg p-6 max-w-md mx-auto">
-					<h2 className="text-lg font-semibold text-red-800 mb-2">
-						<FormattedMessage id="familyTreeDashboard.notFound.title" />
-					</h2>
+					<h2 className="text-lg font-semibold text-red-800 mb-2">Family Tree Not Found</h2>
 					<p className="text-red-600 mb-4">
-						<FormattedMessage id="familyTreeDashboard.notFound.message" />
+						The family tree you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
 					</p>
 					<button
 						onClick={() => router.push('/dashboard')}
 						className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
 					>
-						<FormattedMessage id="familyTreeDashboard.notFound.goToDashboard" />
+						Go to Dashboard
 					</button>
 				</div>
 			</div>
@@ -350,48 +354,32 @@ export default function FamilyTreeDashboard() {
 						// Ignore parsing errors
 					}
 					if (newValues && newValues.parentId) {
-						message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.birthRecorded' });
+						message = 'Birth recorded';
 					} else {
-						message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.newMemberAdded' });
+						message = 'New family member added';
 					}
 				} else if (action === 'update') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.memberUpdated' });
+					message = 'Family member information updated';
 				} else if (action === 'delete') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.memberRemoved' });
+					message = 'Family member removed';
 				}
 				break;
 			case 'PassingRecord':
-				message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.passingAdded' });
+				message = 'Passing record added';
 				break;
 			case 'Achievement':
-				message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.achievementRecorded' });
+				message = 'Achievement recorded';
 				break;
 			case 'SpouseRelationship':
 				if (action === 'create') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.marriageRecorded' });
-				} else if (action === 'update') {
-					// Check if this is a divorce (divorceDate was added)
-					let oldValues = null;
-					let newValues = null;
-					try {
-						oldValues = log.oldValues ? JSON.parse(log.oldValues) : null;
-						newValues = log.newValues ? JSON.parse(log.newValues) : null;
-					} catch {
-						// Ignore parsing errors
-					}
-
-					if (newValues && newValues.divorceDate && (!oldValues || !oldValues.divorceDate)) {
-						message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.divorceRecorded' });
-					}
+					message = 'Marriage recorded';
 				} else if (action === 'delete') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.marriageRemoved' });
-				} else if (action === 'delete') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.divorceRecorded' });
+					message = 'Divorce recorded';
 				}
 				break;
 			case 'FamilyTree':
 				if (action === 'update') {
-					message = intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.treeUpdated' });
+					message = 'Family tree information updated';
 				}
 				break;
 			default:
@@ -406,17 +394,14 @@ export default function FamilyTreeDashboard() {
 		const now = new Date();
 		const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
 
-		if (diffInMinutes < 1) return intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.justNow' });
-		if (diffInMinutes < 60)
-			return intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.minutesAgo' }, { count: diffInMinutes });
+		if (diffInMinutes < 1) return 'Just now';
+		if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
 
 		const diffInHours = Math.floor(diffInMinutes / 60);
-		if (diffInHours < 24)
-			return intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.hoursAgo' }, { count: diffInHours });
+		if (diffInHours < 24) return `${diffInHours} hours ago`;
 
 		const diffInDays = Math.floor(diffInHours / 24);
-		if (diffInDays < 7)
-			return intl.formatMessage({ id: 'familyTreeDashboard.recentChanges.daysAgo' }, { count: diffInDays });
+		if (diffInDays < 7) return `${diffInDays} days ago`;
 
 		return date.toLocaleDateString();
 	};
@@ -427,16 +412,19 @@ export default function FamilyTreeDashboard() {
 			<div className="flex-1 overflow-y-auto p-4 lg:p-8">
 				<div className="space-y-8">
 					{/* Overview Section */}
-					<div className="flex gap-4 sm:gap-6 flex-col xl:flex-row">
+					<div
+						className={classNames(
+							'flex gap-4 sm:gap-6',
+							activePanelType !== null ? 'flex-col' : 'flex-col xl:flex-row'
+						)}
+					>
 						{/* Family Information Overview Box */}
-						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-4 sm:p-6 relative min-h-62">
+						<div className="flex-1 bg-[#f4f4f5] rounded-[20px] p-4 sm:p-6 relative min-h-[248px]">
 							<div className="flex items-center gap-3 mb-6">
 								<div className="bg-white p-2 rounded-[10px] shadow-sm">
 									<Info className="w-5 h-5 text-black" />
 								</div>
-								<h2 className="font-inter font-bold text-[15px] text-black">
-									<FormattedMessage id="familyTreeDashboard.overview.title" />
-								</h2>
+								<h2 className="font-inter font-bold text-[15px] text-black">Family Information Overview</h2>
 								{!isGuest && (
 									<button
 										onClick={() => setIsEditFamilyTreeModalOpen(true)}
@@ -450,70 +438,61 @@ export default function FamilyTreeDashboard() {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 mb-8 ml-2">
 								<div className="flex items-center gap-3">
 									<Users className="w-4 h-4 text-black" />
-									<span className="font-inter font-bold text-[15px] text-black">
-										<FormattedMessage id="familyTreeDashboard.overview.familyName" />
-									</span>
+									<span className="font-inter font-bold text-[15px] text-black">Family Name:</span>
 									<span className="font-inter font-normal text-[#827f7f] text-[15px]">{familyTree.familyName}</span>
 								</div>
 								<div className="flex items-center gap-3">
 									<MapPin className="w-4 h-4 text-black" />
-									<span className="font-inter font-bold text-[15px] text-black">
-										<FormattedMessage id="familyTreeDashboard.overview.origin" />
-									</span>
+									<span className="font-inter font-bold text-[15px] text-black">Origin:</span>
 									<span className="font-inter font-normal text-[#827f7f] text-[15px]">
-										{familyTree.origin || intl.formatMessage({ id: 'familyTreeDashboard.overview.notSpecified' })}
+										{familyTree.origin || 'Not specified'}
 									</span>
 								</div>
 								<div className="flex items-center gap-3">
 									<Calendar className="w-4 h-4 text-black" />
-									<span className="font-inter font-bold text-[15px] text-black">
-										<FormattedMessage id="familyTreeDashboard.overview.established" />
-									</span>
+									<span className="font-inter font-bold text-[15px] text-black">Established:</span>
 									<span className="font-inter font-normal text-[#827f7f] text-[15px]">
 										{familyTree.establishYear}{' '}
-										{calculateAge(familyTree.establishYear) &&
-											`(${calculateAge(familyTree.establishYear)} ${intl.formatMessage({ id: 'familyTreeDashboard.overview.years' })})`}{' '}
+										{calculateAge(familyTree.establishYear) && `(${calculateAge(familyTree.establishYear)} years)`}
 									</span>
 								</div>
 							</div>
+
 							{/* Stat Boxes */}
 							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
 								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-									<p className="font-inter font-medium text-[11.6px] text-black mb-1">
-										<FormattedMessage id="familyTreeDashboard.overview.totalGenerations" />
-									</p>
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">Total generations</p>
 									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalGenerations}</p>
 								</div>
 								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-									<p className="font-inter font-medium text-[11.6px] text-black mb-1">
-										<FormattedMessage id="familyTreeDashboard.overview.totalMembers" />
-									</p>
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">All Members</p>
 									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.totalMembers}</p>
 								</div>
 								<div className="bg-white rounded-[15px] p-3 text-center shadow-sm border border-gray-100">
-									<p className="font-inter font-medium text-[11.6px] text-black mb-1">
-										<FormattedMessage id="familyTreeDashboard.overview.livingMembers" />
-									</p>
+									<p className="font-inter font-medium text-[11.6px] text-black mb-1">Living Members</p>
 									<p className="font-inter font-medium text-[17.5px] text-black">{statistics?.livingMembers}</p>
 								</div>
 							</div>
 						</div>
 
 						{/* Trends Grid */}
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full xl:w-117">
+						<div
+							className={classNames(
+								'grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full',
+								activePanelType === null ? 'xl:w-[468px]' : ''
+							)}
+						>
 							{/* Member Growth */}
 							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
-									<p className="font-roboto font-normal text-[12px] text-black">
-										<FormattedMessage id="familyTreeDashboard.trends.memberGrowth" />
-									</p>
+									<p className="font-roboto font-normal text-[12px] text-black">Member growth</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
 										<Users className="w-5 h-5 text-black" />
 									</div>
 								</div>
 								<div>
 									<p className="font-roboto font-semibold text-[16px] text-black">
-										+{statistics?.memberGrowth.count} <FormattedMessage id="familyTreeDashboard.trends.member" />
+										+{statistics?.memberGrowth.count} Member
 									</p>
 									<div className="flex items-center gap-1">
 										<span className="font-inter font-light text-[12px] text-black">
@@ -527,16 +506,14 @@ export default function FamilyTreeDashboard() {
 							{/* Death Trend */}
 							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
-									<p className="font-roboto font-normal text-[12px] text-black">
-										<FormattedMessage id="familyTreeDashboard.trends.deathTrend" />
-									</p>
+									<p className="font-roboto font-normal text-[12px] text-black">Death Trend</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
 										<Skull className="w-5 h-5 text-black" />
 									</div>
 								</div>
 								<div>
 									<p className="font-roboto font-semibold text-[16px] text-black">
-										+{statistics?.deathTrend.count} <FormattedMessage id="familyTreeDashboard.trends.death" />
+										+{statistics?.deathTrend.count} Death
 									</p>
 								</div>
 							</div>
@@ -544,19 +521,17 @@ export default function FamilyTreeDashboard() {
 							{/* Marriage Trend */}
 							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
-									<p className="font-roboto font-normal text-[14px] text-black">
-										<FormattedMessage id="familyTreeDashboard.trends.marriageTrend" />
-									</p>
+									<p className="font-roboto font-normal text-[14px] text-black">Marriage Trend</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
 										<Heart className="w-5 h-5 text-black" />
 									</div>
 								</div>
 								<div>
 									<p className="font-roboto font-semibold text-[16px] text-black">
-										+{statistics?.marriageTrend.marriages} <FormattedMessage id="familyTreeDashboard.trends.married" />
+										+{statistics?.marriageTrend.marriages} Married
 									</p>
 									<p className="font-roboto font-semibold text-[16px] text-black">
-										+{statistics?.marriageTrend.divorces} <FormattedMessage id="familyTreeDashboard.trends.divorced" />
+										+{statistics?.marriageTrend.divorces} Divorced
 									</p>
 								</div>
 							</div>
@@ -564,17 +539,14 @@ export default function FamilyTreeDashboard() {
 							{/* Achievement Growth */}
 							<div className="bg-[#f4f4f5] rounded-[20px] p-4 flex flex-col justify-between">
 								<div className="flex justify-between items-start">
-									<p className="font-roboto font-normal text-[14px] text-black">
-										<FormattedMessage id="familyTreeDashboard.trends.achievementGrowth" />
-									</p>
+									<p className="font-roboto font-normal text-[14px] text-black">Achievement Growth</p>
 									<div className="bg-[#d4d4d8] p-2 rounded-[10px]">
 										<Trophy className="w-5 h-5 text-black" />
 									</div>
 								</div>
 								<div>
 									<p className="font-roboto font-semibold text-[16px] text-black">
-										+{statistics?.achievementGrowth.count}{' '}
-										<FormattedMessage id="familyTreeDashboard.trends.achievements" />
+										+{statistics?.achievementGrowth.count} Achievements
 									</p>
 									<div className="flex items-center gap-1">
 										<span className="font-inter font-light text-[12px] text-black">
@@ -591,66 +563,49 @@ export default function FamilyTreeDashboard() {
 				{/* Quick Action Section - Hide for guests */}
 				{!isGuest && (
 					<div className="space-y-4">
-						<h2 className="font-inter font-bold text-base sm:text-[18px] pt-4 text-black">
-							<FormattedMessage id="familyTreeDashboard.quickAction.title" />
-						</h2>
-						<div className="grid gap-3 sm:gap-4 lg:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+						<h2 className="font-inter font-bold text-base sm:text-[18px] pt-4 text-black">Quick Action</h2>
+						<div
+							className={classNames(
+								'grid gap-3 sm:gap-4 lg:gap-6',
+								activePanelType !== null ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+							)}
+						>
 							<button
-								onClick={async () => {
-									await fetchExistingMembers();
-									openPanel('member', {
-										mode: 'add',
-										familyTreeId,
-										existingMembers,
-									});
+								onClick={() => {
+									setActivePanelType('addMember');
+									fetchExistingMembers();
 								}}
-								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<UserPlus className="w-5 h-5 text-black" />
-								<span className="font-roboto font-semibold text-[16px] text-black">
-									<FormattedMessage id="familyTreeDashboard.quickAction.addMember" />
-								</span>
+								<span className="font-roboto font-semibold text-[16px] text-black">Add Member</span>
 							</button>
 							<button
-								onClick={async () => {
-									await fetchExistingMembers();
-									openPanel('achievement', {
-										mode: 'add',
-										familyTreeId,
-										familyMembers: existingMembers,
-									});
+								onClick={() => {
+									setActivePanelType('achievement');
+									fetchExistingMembers();
 								}}
-								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<Trophy className="w-5 h-5 text-black" />
-								<span className="font-roboto font-semibold text-[16px] text-black">
-									<FormattedMessage id="familyTreeDashboard.quickAction.recordAchievement" />
-								</span>
+								<span className="font-roboto font-semibold text-[16px] text-black">Record Achievement</span>
 							</button>
 							<button
-								onClick={async () => {
-									await fetchExistingMembers();
-									openPanel('passing', {
-										mode: 'add',
-										familyTreeId,
-										familyMembers: existingMembers,
-									});
+								onClick={() => {
+									setActivePanelType('passing');
+									fetchExistingMembers();
 								}}
-								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<Skull className="w-5 h-5 text-black" />
-								<span className="font-roboto font-semibold text-[16px] text-black">
-									<FormattedMessage id="familyTreeDashboard.quickAction.recordPassing" />
-								</span>
+								<span className="font-roboto font-semibold text-[16px] text-black">Record Passing</span>
 							</button>
 							<button
 								onClick={() => router.push(`/family-trees/${familyTreeId}/tree`)}
-								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
+								className="h-[56px] bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
 							>
 								<TreePine className="w-5 h-5 text-black" />
-								<span className="font-roboto font-semibold text-[16px] text-black">
-									<FormattedMessage id="familyTreeDashboard.quickAction.viewFamilyTree" />
-								</span>
+								<span className="font-roboto font-semibold text-[16px] text-black">View Family Tree</span>
 							</button>
 						</div>
 					</div>
@@ -660,23 +615,19 @@ export default function FamilyTreeDashboard() {
 				{!isGuest && (
 					<div className="space-y-4 pt-4">
 						<div className="flex items-center justify-between">
-							<h2 className="font-inter font-bold text-[18px] text-black">
-								<FormattedMessage id="familyTreeDashboard.recentChanges.title" />
-							</h2>
+							<h2 className="font-inter font-bold text-[18px] text-black">Recent Changes</h2>
 							<button
 								onClick={() => setIsAllChangeLogsModalOpen(true)}
 								className="px-4 py-2 bg-[#1f2937] text-white rounded-[10px] font-normal text-sm hover:bg-[#111827] transition-colors"
 							>
-								<FormattedMessage id="familyTreeDashboard.recentChanges.seeAll" />
+								See All
 							</button>
 						</div>
 
 						<div className="space-y-4">
 							{changeLogs.length === 0 ? (
 								<div className="text-center py-8 text-gray-500 bg-[#f4f4f5] rounded-[20px]">
-									<p>
-										<FormattedMessage id="familyTreeDashboard.recentChanges.noChanges" />
-									</p>
+									<p>No major changes recorded yet.</p>
 								</div>
 							) : (
 								changeLogs
@@ -690,18 +641,18 @@ export default function FamilyTreeDashboard() {
 										return message ? (
 											<div
 												key={log.id}
-												className="h-25 flex items-center justify-between px-6 bg-[#f4f4f5] rounded-[20px]"
+												className="h-[100px] flex items-center justify-between px-6 bg-[#f4f4f5] rounded-[20px]"
 											>
 												<div className="flex items-center gap-4 flex-1">
-													<div className="w-12.5 h-12.5 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center shrink-0">
+													<div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-300 flex items-center justify-center flex-shrink-0">
 														<Users className="w-6 h-6 text-gray-500" />
 													</div>
-													<div className="flex-1 text-black">
-														<p className="font-inter font-medium text-[18px] mb-1">{getUserName(log)}</p>
-														<p className="font-inter font-light text-[18px] ">{message}</p>
+													<div className="flex-1">
+														<p className="font-inter font-medium text-[18px] text-black mb-1">System</p>
+														<p className="font-inter font-light text-[18px] text-black">{message}</p>
 													</div>
 												</div>
-												<div className="flex items-center gap-2 shrink-0">
+												<div className="flex items-center gap-2 flex-shrink-0">
 													<Clock className="w-5 h-5 text-black" />
 													<span className="font-inter font-light text-[18px] text-black whitespace-nowrap">
 														{formatChangeLogTimestamp(log.createdAt)}
@@ -751,8 +702,78 @@ export default function FamilyTreeDashboard() {
 				/>
 			</div>
 
-			{/* Panel Renderer */}
-			<PanelRenderer />
+			{/* Backdrop for mobile */}
+			{activePanelType !== null && (
+				<div
+					className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+					onClick={() => setActivePanelType(null)}
+				/>
+			)}
+
+			{/* Panel Sidebar */}
+			<aside
+				className={classNames(
+					'transition-all duration-300 ease-in-out border-l border-gray-100 bg-white overflow-hidden shrink-0 h-full',
+					activePanelType !== null
+						? 'fixed md:relative inset-y-0 right-0 md:right-auto z-50 w-full md:w-[600px]'
+						: 'w-0'
+				)}
+			>
+				{activePanelType === 'addMember' && (
+					<AddMemberPanel
+					mode="add"
+					familyTreeId={familyTreeId}
+					existingMembers={existingMembers}
+					onClose={() => setActivePanelType(null)}
+					onSuccess={() => {
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+
+				{activePanelType === 'achievement' && (
+					<AchievementPanel
+						mode="add"
+						familyTreeId={familyTreeId}
+						familyMembers={existingMembers}
+						onModeChange={() => {
+							// Not needed for add mode
+						}}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
+							// Refresh data after recording achievement
+							fetchFamilyTreeData();
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+
+				{activePanelType === 'passing' && (
+					<PassingPanel
+						mode="add"
+						familyTreeId={familyTreeId}
+						familyMembers={existingMembers}
+						onModeChange={() => {
+							// Not needed for add mode
+						}}
+						onClose={() => setActivePanelType(null)}
+						onSuccess={() => {
+							// Refresh data after recording passing
+							fetchFamilyTreeData();
+							fetchStatistics();
+							fetchActivities();
+							fetchExistingMembers();
+							setActivePanelType(null);
+						}}
+					/>
+				)}
+			</aside>
 		</div>
 	);
 }
