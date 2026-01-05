@@ -20,7 +20,8 @@ export default function GuestBanner() {
 					<p className="text-sm text-blue-800">
 						<strong>
 							<FormattedMessage id="guest.banner.title" defaultMessage="Guest Mode:" />
-						</strong>{' '}
+						</strong>
+						&nbsp;
 						<FormattedMessage
 							id="guest.banner.description"
 							defaultMessage="You are viewing as a guest. You can only edit your own profile ({name})."

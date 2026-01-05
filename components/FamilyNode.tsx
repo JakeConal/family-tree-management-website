@@ -1,5 +1,5 @@
 import { FamilyMember } from '@prisma/client';
-import { Skull } from 'lucide-react';
+import { Cake, Skull } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import type { ExtNode } from 'relatives-tree/lib/types';
@@ -104,7 +104,9 @@ export default function FamilyNode({ member, style, onClick }: FamilyNodeProps) 
 			{member.birthday && (
 				<div className="text-center text-xs text-gray-700">
 					<div className="flex items-center justify-center gap-1">
-						<span>🎂</span>
+						<span>
+							<Cake className="w-3 h-3 inline-block mb-0.5 text-gray-700" />
+						</span>
 						<span className="font-nunito font-semibold text-xs">{formatDate(member.birthday)}</span>
 					</div>
 				</div>

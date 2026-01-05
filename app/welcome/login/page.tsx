@@ -200,7 +200,8 @@ export default function LoginPage() {
 
 					{/* Sign Up Link */}
 					<p className="text-center mt-6 text-gray-600">
-						<FormattedMessage id="login.noAccount" defaultMessage="Don't have an account?" />{' '}
+						<FormattedMessage id="login.noAccount" defaultMessage="Don't have an account?" />
+						&nbsp;
 						<Link href="/signup" className="font-semibold text-gray-900 hover:underline">
 							<FormattedMessage id="login.createAccount" defaultMessage="Create one" />
 						</Link>

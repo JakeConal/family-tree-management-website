@@ -1,4 +1,5 @@
 import { FamilyMember } from '@prisma/client';
+import { Cake } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
@@ -61,7 +62,9 @@ export default function ExSpouseCard({ member, style, onClick }: ExSpouseCardPro
 			{member.birthday && (
 				<div className="text-center text-xs text-gray-700 leading-none">
 					<div className="flex items-center justify-center gap-0.5">
-						<span className="text-2xs">🎂</span>
+						<span className="text-2xs">
+							<Cake className="w-2 h-2 inline-block mb-0.5 text-gray-700" />
+						</span>
 						<span className="font-nunito font-semibold text-xs">{formatDate(member.birthday)}</span>
 					</div>
 				</div>

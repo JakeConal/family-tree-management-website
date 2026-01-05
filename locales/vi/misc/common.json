@@ -1,6 +1,7 @@
 {
 	"common": {
 		"loading": "Đang tải...",
+		"create": "Tạo",
 		"save": "Lưu",
 		"cancel": "Hủy",
 		"delete": "Xóa",
