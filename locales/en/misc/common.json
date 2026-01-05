@@ -1,6 +1,7 @@
 {
 	"common": {
 		"loading": "Loading...",
+		"familyHeader": "{name}'s Family",
 		"create": "Create",
 		"save": "Save",
 		"cancel": "Cancel",
