@@ -426,10 +426,10 @@ export async function POST(request: NextRequest) {
 			try {
 				const occupations = JSON.parse(occupationsData);
 				for (const occ of occupations) {
-					if (occ.title && occ.startDate) {
+					if (occ.jobTitle && occ.startDate) {
 						await prisma.occupation.create({
 							data: {
-								jobTitle: occ.title,
+								jobTitle: occ.jobTitle,
 								startDate: new Date(occ.startDate),
 								endDate: occ.endDate ? new Date(occ.endDate) : null,
 								familyMemberId: familyMember.id,
@@ -806,10 +806,10 @@ export async function PUT(request: NextRequest) {
 				// Add new occupations
 				const occupations = JSON.parse(occupationsData);
 				for (const occ of occupations) {
-					if (occ.title && occ.startDate) {
+					if (occ.jobTitle && occ.startDate) {
 						await prisma.occupation.create({
 							data: {
-								jobTitle: occ.title || occ.jobTitle,
+								jobTitle: occ.jobTitle,
 								startDate: new Date(occ.startDate),
 								endDate: occ.endDate ? new Date(occ.endDate) : null,
 								familyMemberId: parseInt(memberId),

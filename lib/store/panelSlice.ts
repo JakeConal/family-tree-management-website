@@ -28,14 +28,12 @@ export interface PanelProps {
 		achievementId?: number;
 		familyTreeId: string;
 		familyMembers: FamilyMember[];
-		onSuccess?: () => void | Promise<void>;
 	};
 	passing?: {
 		mode: 'add' | 'view' | 'edit';
 		passingRecordId?: number;
 		familyTreeId: string;
 		familyMembers: FamilyMember[];
-		onSuccess?: () => void | Promise<void>;
 	};
 	birth?: {
 		mode: 'view' | 'edit';

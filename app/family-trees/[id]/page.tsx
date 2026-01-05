@@ -618,7 +618,6 @@ export default function FamilyTreeDashboard() {
 										mode: 'add',
 										familyTreeId,
 										familyMembers: existingMembers,
-										onSuccess: refreshDashboardData,
 									});
 								}}
 								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
@@ -635,7 +634,6 @@ export default function FamilyTreeDashboard() {
 										mode: 'add',
 										familyTreeId,
 										familyMembers: existingMembers,
-										onSuccess: refreshDashboardData,
 									});
 								}}
 								className="h-14 bg-[#f4f4f5] rounded-[10px] flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors"
