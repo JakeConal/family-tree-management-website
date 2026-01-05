@@ -1322,11 +1322,11 @@ export default function MemberPanel({
 													<Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
 													<p className="text-[10px] text-black/50">
 														{memberFormData.relationship === 'parent' ? (
-															<FormattedMessage id="panel.member.relationshipParentHint" />
+															<FormattedMessage id="panel.member.parentRelationshipHint" />
 														) : memberFormData.relationship === 'spouse' ? (
-															<FormattedMessage id="panel.member.relationshipSpouseHint" />
+															<FormattedMessage id="panel.member.spouseRelationshipHint" />
 														) : (
-															<FormattedMessage id="panel.member.relationshipSelectHint" />
+															<FormattedMessage id="panel.member.selectRelationshipHint" />
 														)}
 													</p>
 												</div>
@@ -1344,9 +1344,9 @@ export default function MemberPanel({
 																<FormattedMessage
 																	id="panel.member.parentRelationshipDetails"
 																	values={{
-																		name:
+																		memberName:
 																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																		relatedName:
+																		parentName:
 																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
 																				?.fullName || '',
 																	}}
@@ -1369,9 +1369,9 @@ export default function MemberPanel({
 																<FormattedMessage
 																	id="panel.member.spouseRelationshipDetails"
 																	values={{
-																		name:
+																		memberName:
 																			memberFormData.fullName || intl.formatMessage({ id: 'panel.member.thisPerson' }),
-																		relatedName:
+																		spouseName:
 																			existingMembers.find((m) => m.id.toString() === memberFormData.relatedMemberId)
 																				?.fullName || '',
 																	}}
