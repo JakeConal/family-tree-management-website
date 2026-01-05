@@ -38,6 +38,15 @@
 				"achievementDateAfterBirth": "Ngày đạt thành tích phải sau ngày sinh",
 				"achievementDateBeforePassing": "Ngày đạt thành tích phải trước ngày mất",
 				"fillAllFields": "Vui lòng điền tất cả các trường bắt buộc"
+			},
+			"messages": {
+				"createSuccess": "Thêm thành tích thành công!",
+				"updateSuccess": "Cập nhật thành tích thành công!",
+				"deleteSuccess": "Xóa thành tích thành công!",
+				"createError": "Không thể thêm thành tích",
+				"updateError": "Không thể cập nhật thành tích",
+				"deleteError": "Không thể xóa thành tích",
+				"loadError": "Không thể tải thành tích"
 			}
 		},
 		"birth": {
@@ -106,6 +115,7 @@
 				"placesOfOriginStartDateAfterBirth": "Ngày bắt đầu quê quán phải sau ngày sinh",
 				"placesOfOriginPreviousEndDate": "Quê quán trước đó phải có ngày kết thúc",
 				"placesOfOriginDateOrder": "Ngày bắt đầu phải sau ngày kết thúc của quê quán trước đó",
+				"occupationsRequired": "Ít nhất một nghề nghiệp là bắt buộc",
 				"occupationsStartDateAfterBirth": "Ngày bắt đầu nghề nghiệp phải sau ngày sinh",
 				"occupationsPreviousEndDate": "Nghề nghiệp trước đó phải có ngày kết thúc",
 				"occupationsDateOrder": "Ngày bắt đầu phải sau ngày kết thúc của nghề nghiệp trước đó"
@@ -138,6 +148,11 @@
 				"divorceDateRequired": "Ngày ly hôn là bắt buộc",
 				"divorceDateAfterMarriage": "Ngày ly hôn phải sau ngày kết hôn",
 				"fillAllFields": "Vui lòng điền tất cả các trường bắt buộc"
+			},
+			"messages": {
+				"relationshipNotFound": "Không tim thấy mối quan hệ đã chọn",
+				"createSuccess": "Hồ sơ ly hôn được tạo thành công",
+				"createError": "Không thể tạo hồ sơ ly hôn. Vui lòng thử lại."
 			}
 		},
 		"marriage": {
