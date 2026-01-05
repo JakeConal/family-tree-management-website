@@ -86,7 +86,10 @@ export default function PassingPanel({
 			setFormData({
 				familyMemberId: data.familyMember.id.toString(),
 				dateOfPassing: data.dateOfPassing ? new Date(data.dateOfPassing).toISOString().split('T')[0] : '',
-				causesOfDeath: data.causeOfDeath && data.causeOfDeath.length > 0 ? data.causeOfDeath.map((c: { causeName: string }) => c.causeName) : [''],
+				causesOfDeath:
+					data.causeOfDeath && data.causeOfDeath.length > 0
+						? data.causeOfDeath.map((c: { causeName: string }) => c.causeName)
+						: [''],
 				burialPlaces:
 					data.buriedPlaces.length > 0
 						? data.buriedPlaces.map((place: BurialPlace) => ({

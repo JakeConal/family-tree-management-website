@@ -171,7 +171,7 @@ export async function PUT(
 		// Store old data for logging
 		const oldData = {
 			dateOfPassing: existingRecord.dateOfPassing,
-			causeOfDeath: existingRecord.causeOfDeath.map(c => c.causeName),
+			causeOfDeath: existingRecord.causeOfDeath.map((c) => c.causeName),
 			burialPlacesCount: existingRecord.buriedPlaces.length,
 		};
 
@@ -352,7 +352,7 @@ export async function DELETE(
 		const oldData = {
 			familyMemberName: existingRecord.familyMember.fullName,
 			dateOfPassing: existingRecord.dateOfPassing,
-			causeOfDeath: existingRecord.causeOfDeath.map(c => c.causeName),
+			causeOfDeath: existingRecord.causeOfDeath.map((c) => c.causeName),
 		};
 
 		// Delete the passing record (burial places will be cascade deleted)
