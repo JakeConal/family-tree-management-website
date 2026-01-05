@@ -23,7 +23,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 	const handleGenerate = async () => {
 		if (!selectedMemberId) {
-			toast.error('Vui lòng chọn thành viên');
+			toast.error('Please select a member');
 			return;
 		}
 
@@ -43,17 +43,17 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 			const data = await response.json();
 
 			if (!response.ok) {
-				toast.error(data.error || 'Không thể tạo mã truy cập');
+				toast.error(data.error || 'Unable to generate access code');
 				setIsGenerating(false);
 				return;
 			}
 
 			setAccessCode(data.accessCode);
 			setExpiresAt(data.expiresAt);
-			toast.success('Mã truy cập đã được tạo thành công!');
+			toast.success('Access code generated successfully!');
 		} catch (error) {
 			console.error('Error generating access code:', error);
-			toast.error('Đã xảy ra lỗi khi tạo mã');
+			toast.error('An error occurred while generating code');
 		} finally {
 			setIsGenerating(false);
 		}
@@ -63,11 +63,11 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 		try {
 			await navigator.clipboard.writeText(accessCode);
 			setCopied(true);
-			toast.success('Đã sao chép mã truy cập!');
+			toast.success('Access code copied!');
 			setTimeout(() => setCopied(false), 2000);
 		} catch (error) {
 			console.error('Error copying to clipboard:', error);
-			toast.error('Không thể sao chép');
+			toast.error('Unable to copy');
 		}
 	};
 
@@ -105,21 +105,21 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 				{/* Header */}
 				<div className="mb-6">
-					<h2 className="text-2xl font-bold text-gray-900 mb-2">Mời Khách Chỉnh Sửa</h2>
+					<h2 className="text-2xl font-bold text-gray-900 mb-2">Invite Guest to Edit</h2>
 					<p className="text-sm text-gray-600">
-						Tạo mã truy cập để cho phép thành viên gia đình xem cây gia phả và chỉnh sửa hồ sơ của họ
+						Generate an access code to allow family members to view the family tree and edit their own profile
 					</p>
 				</div>
 
 				{isGenerating ? (
 					<div className="py-8">
-						<LoadingScreen message="Đang tạo mã truy cập..." />
+						<LoadingScreen message="Generating access code..." />
 					</div>
 				) : accessCode ? (
 					/* Display generated code */
 					<div className="space-y-4">
 						<div className="bg-green-50 border border-green-200 rounded-lg p-4">
-							<p className="text-sm font-medium text-green-800 mb-2">Mã truy cập đã được tạo!</p>
+							<p className="text-sm font-medium text-green-800 mb-2">Access code generated!</p>
 							<div className="bg-white rounded-lg p-3 font-mono text-sm break-all border border-green-300">
 								{accessCode}
 							</div>
@@ -132,21 +132,21 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 							{copied ? (
 								<>
 									<Check className="w-5 h-5" />
-									<span>Đã sao chép!</span>
+									<span>Copied!</span>
 								</>
 							) : (
 								<>
 									<Copy className="w-5 h-5" />
-									<span>Sao chép mã</span>
+									<span>Copy Code</span>
 								</>
 							)}
 						</button>
 
 						<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
 							<p className="text-sm text-yellow-800">
-								<strong>Lưu ý:</strong> Mã này sẽ hết hạn sau 48 giờ
+								<strong>Note:</strong> This code will expire after 48 hours
 							</p>
-							{expiresAt && <p className="text-xs text-yellow-700 mt-1">Hết hạn vào: {formatExpiryDate(expiresAt)}</p>}
+							{expiresAt && <p className="text-xs text-yellow-700 mt-1">Expires at: {formatExpiryDate(expiresAt)}</p>}
 						</div>
 
 						<button
@@ -161,7 +161,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 					<div className="space-y-4">
 						<div>
 							<label htmlFor="member-select" className="block text-sm font-medium text-gray-900 mb-2">
-								Chọn thành viên
+								Select Member
 							</label>
 							<select
 								id="member-select"
@@ -169,10 +169,10 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 								onChange={(e) => setSelectedMemberId(e.target.value)}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
 							>
-								<option value="">-- Chọn thành viên --</option>
+								<option value="">-- Select Member --</option>
 								{familyMembers.map((member) => (
 									<option key={member.id} value={member.id}>
-										{member.fullName} {member.generation ? `(Đời ${member.generation})` : ''}
+										{member.fullName} {member.generation ? `(Generation ${member.generation})` : ''}
 									</option>
 								))}
 							</select>
@@ -180,8 +180,8 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<p className="text-sm text-blue-800">
-								<strong>Thông tin:</strong> Thành viên được chọn sẽ có thể xem toàn bộ cây gia phả nhưng chỉ có thể
-								chỉnh sửa hồ sơ của chính họ.
+								<strong>Info:</strong> The selected member will be able to view the entire family tree but can only
+								edit their own profile.
 							</p>
 						</div>
 
@@ -190,14 +190,14 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 								onClick={handleClose}
 								className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
 							>
-								Hủy
+								Cancel
 							</button>
 							<button
 								onClick={handleGenerate}
 								disabled={!selectedMemberId}
 								className="flex-1 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Tạo mã
+								Generate Code
 							</button>
 						</div>
 					</div>

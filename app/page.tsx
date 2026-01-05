@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -18,6 +18,7 @@ export default function Home() {
 	const { status } = useSession();
 	const router = useRouter();
 	const intl = useIntl();
+	const [hoveredStep, setHoveredStep] = useState<number | null>(null);
 
 	useEffect(() => {
 		if (status === 'authenticated') {
@@ -394,22 +395,46 @@ export default function Home() {
 							</p>
 						</div>
 						<div className="grid lg:grid-cols-2 gap-12 items-center">
-							{/* Form Preview */}
+							{/* Image Preview */}
 							<div className="order-2 lg:order-1">
-								<div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-									<Image
-										src="/images/Add Member Form - 1.png"
-										alt="Add Member Form"
-										width={600}
-										height={800}
-										className="w-full h-auto"
-									/>
+								<div className="transition-all duration-500 h-[600px] flex items-center justify-center">
+									{(hoveredStep === null || hoveredStep === 1) && (
+										<Image
+											src="/images/Create Account.png"
+											alt="Create Account"
+											width={1000}
+											height={600}
+											className="w-full h-full object-contain transition-opacity duration-500"
+										/>
+									)}
+									{hoveredStep === 2 && (
+										<Image
+											src="/images/Add Member.png"
+											alt="Add Member"
+											width={600}
+											height={800}
+											className="w-full h-full object-contain transition-opacity duration-500"
+										/>
+									)}
+									{hoveredStep === 3 && (
+										<Image
+											src="/images/Invite Guest to Edit.png"
+											alt="Build Connections"
+											width={1200}
+											height={675}
+											className="w-full h-full object-contain transition-opacity duration-500"
+										/>
+									)}
 								</div>
 							</div>
 
 							{/* Steps */}
 							<div className="order-1 lg:order-2 space-y-8">
-								<div>
+								<div
+									className="cursor-pointer p-6 rounded-xl transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
+									onMouseEnter={() => setHoveredStep(1)}
+									onMouseLeave={() => setHoveredStep(null)}
+								>
 									<div className="text-4xl font-bold text-gray-900 mb-2">
 										<FormattedMessage id="home.howItWorks.step1.number" defaultMessage="01" />
 									</div>
@@ -419,12 +444,16 @@ export default function Home() {
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step1.description"
-											defaultMessage="Sign up for free in just a few seconds."
+											defaultMessage="Sign up for free in just a few seconds and start your journey."
 										/>
 									</p>
 								</div>
 
-								<div>
+								<div
+									className="cursor-pointer p-6 rounded-xl transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
+									onMouseEnter={() => setHoveredStep(2)}
+									onMouseLeave={() => setHoveredStep(null)}
+								>
 									<div className="text-4xl font-bold text-gray-900 mb-2">
 										<FormattedMessage id="home.howItWorks.step2.number" defaultMessage="02" />
 									</div>
@@ -434,12 +463,16 @@ export default function Home() {
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step2.description"
-											defaultMessage="Enter information about your family members."
+											defaultMessage="Enter detailed information about your family members with our easy-to-use form."
 										/>
 									</p>
 								</div>
 
-								<div>
+								<div
+									className="cursor-pointer p-6 rounded-xl transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
+									onMouseEnter={() => setHoveredStep(3)}
+									onMouseLeave={() => setHoveredStep(null)}
+								>
 									<div className="text-4xl font-bold text-gray-900 mb-2">
 										<FormattedMessage id="home.howItWorks.step3.number" defaultMessage="03" />
 									</div>
@@ -449,7 +482,7 @@ export default function Home() {
 									<p className="text-gray-600 leading-relaxed">
 										<FormattedMessage
 											id="home.howItWorks.step3.description"
-											defaultMessage="Link relationships to build your family tree."
+											defaultMessage="Link family relationships and watch your family tree come to life."
 										/>
 									</p>
 								</div>
