@@ -252,9 +252,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		};
 
 		// Handle spouse relationship logic based on parentId changes
-		const newParentId = parentId ? parseInt(parentId) : null;
+		// const newParentId = parentId ? parseInt(parentId) : null;
 		const oldParentId = existingMember.parentId;
-		const parentIdChanged = newParentId !== oldParentId;
+		// const parentIdChanged = newParentId !== oldParentId;
 
 		// Get current spouse relationships
 		const currentSpouseRel =

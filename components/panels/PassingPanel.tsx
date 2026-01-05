@@ -105,7 +105,7 @@ export default function PassingPanel({
 		} finally {
 			setLoading(false);
 		}
-	}, [passingRecordId, familyTreeId, familyMembers]);
+	}, [passingRecordId, familyTreeId, familyMembers, intl]);
 
 	useEffect(() => {
 		if (mode !== 'add' && passingRecordId) {

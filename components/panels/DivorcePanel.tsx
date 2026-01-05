@@ -94,7 +94,7 @@ export default function DivorcePanel({
 		} finally {
 			setLoading(false);
 		}
-	}, [divorceId, familyTreeId]);
+	}, [divorceId, familyTreeId, intl]);
 
 	useEffect(() => {
 		fetchMarriages();
@@ -260,12 +260,6 @@ export default function DivorcePanel({
 		} finally {
 			setIsSubmitting(false);
 		}
-	};
-
-	const formatDate = (dateString: string | Date | null) => {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 	};
 
 	const getSpouseName = (relationshipId: number) => {

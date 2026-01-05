@@ -3,7 +3,6 @@
 import { Search, Eye, Pencil, KeyRound, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -114,7 +113,7 @@ const MemberControls = ({
 					</span>
 					<input
 						type="date"
-						placeholder="Birth Date From"
+						placeholder={intl.formatMessage({ id: 'memberList.controls.birthDateFromPlaceholder' })}
 						value={birthDateRange.from}
 						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, from: e.target.value })}
 						className="flex-1 sm:flex-none bg-white h-10.75 px-3 sm:px-4 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
@@ -128,7 +127,7 @@ const MemberControls = ({
 					</span>
 					<input
 						type="date"
-						placeholder="Birth Date To"
+						placeholder={intl.formatMessage({ id: 'memberList.controls.birthDateToPlaceholder' })}
 						value={birthDateRange.to}
 						onChange={(e) => onBirthDateRangeChange({ ...birthDateRange, to: e.target.value })}
 						className="flex-1 sm:flex-none bg-white h-10.75 px-3 sm:px-4 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 outline-none"
@@ -142,7 +141,9 @@ const MemberControls = ({
 						onChange={(e) => onParentChange(e.target.value)}
 						className="appearance-none bg-white h-10.75 w-full sm:w-auto px-4 sm:px-6 pr-10 rounded-[20px] text-sm sm:text-[16px] font-inter text-black border-none focus:ring-2 focus:ring-green-500 cursor-pointer outline-none sm:min-w-45"
 					>
-						<option value=""> All Parents </option>
+						<option value="">
+							<FormattedMessage id="memberList.controls.allParents" />
+						</option>
 						{parents.map((parent) => (
 							<option key={parent.id} value={parent.id.toString()}>
 								{parent.fullName}
@@ -222,16 +223,22 @@ const MemberTable = ({
 								</div>
 							</td>
 							<td className="px-6 py-4 font-playfair text-[16px] text-black text-center">
-								{member.birthday
-									? new Date(member.birthday).toLocaleDateString('en-GB', {
-											day: 'numeric',
-											month: 'short',
-											year: 'numeric',
-										})
-									: '-'}
+								{member.birthday ? (
+									new Date(member.birthday).toLocaleDateString('en-GB', {
+										day: 'numeric',
+										month: 'short',
+										year: 'numeric',
+									})
+								) : (
+									<FormattedMessage id="memberList.common.dash" />
+								)}
 							</td>
-							<td className="px-6 py-4 font-playfair text-[16px] text-black text-center">F{member.generation}</td>
-							<td className="px-6 py-4 font-playfair text-[16px] text-black">{member.parent?.fullName || '-'}</td>
+							<td className="px-6 py-4 font-playfair text-[16px] text-black text-center">
+								<FormattedMessage id="memberList.common.generationPrefix" values={{ number: member.generation }} />
+							</td>
+							<td className="px-6 py-4 font-playfair text-[16px] text-black">
+								{member.parent?.fullName || <FormattedMessage id="memberList.common.dash" />}
+							</td>
 							<td className="px-6 py-4">
 								<div className="flex items-center justify-center gap-3">
 									<button
@@ -432,7 +439,7 @@ export default function MemberListPage() {
 						</button>
 						<div className="flex items-center gap-2">
 							<span className="w-8 h-8 flex items-center justify-center bg-green-600 text-white rounded-full text-sm font-medium">
-								1
+								{1}
 							</span>
 						</div>
 						<button className="p-2 hover:bg-gray-100 rounded-full disabled:opacity-50" disabled>

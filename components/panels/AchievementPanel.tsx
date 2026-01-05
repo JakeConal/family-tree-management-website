@@ -287,12 +287,6 @@ export default function AchievementPanel({
 		}
 	};
 
-	const formatDate = (dateString: string | Date | null) => {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-	};
-
 	const handleDelete = async () => {
 		if (!achievementId) return;
 

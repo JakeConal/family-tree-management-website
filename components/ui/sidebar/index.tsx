@@ -39,6 +39,16 @@ export function Sidebar() {
 		return match ? parseInt(match[1]) : null;
 	};
 
+	const initial = useMemo(() => {
+		if (session?.user?.name) {
+			return session.user.name.charAt(0);
+		} else if (session?.user?.email) {
+			return session.user.email.charAt(0);
+		} else {
+			return 'U';
+		}
+	}, [session]);
+
 	const activeFamilyTreeId = getFamilyTreeIdFromPath();
 
 	const navigationItems = useMemo<NavigationItem[]>(() => {
@@ -98,7 +108,9 @@ export function Sidebar() {
 				>
 					<a href="/dashboard" className="flex items-center">
 						<Image src="/images/logo.png" alt="Family Tree Logo" width={42} height={41} className="mr-1.25" />
-						<span className="font-playfair font-bold text-[23.908px] text-black">Family Tree</span>
+						<span className="font-playfair font-bold text-[23.908px] text-black">
+							<FormattedMessage id="nav.familyTree" />
+						</span>
 					</a>
 				</button>
 
@@ -200,9 +212,7 @@ export function Sidebar() {
 									<Image src={session.user.image} alt="Profile" fill className="object-cover" />
 								) : (
 									<div className="w-full h-full bg-green-100 flex items-center justify-center">
-										<span className="text-sm font-bold text-green-700">
-											{session?.user?.name?.charAt(0) || session?.user?.email?.charAt(0) || 'U'}
-										</span>
+										<span className="text-sm font-bold text-green-700">{initial}</span>
 									</div>
 								)}
 							</div>

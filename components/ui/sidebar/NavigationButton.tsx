@@ -34,7 +34,7 @@ export function NavigationButton({ name, href, icon: Icon, isActive, disabled = 
 					'text-black hover:bg-gray-200': !disabled && !isActive,
 				}
 			)}
-			title={disabled ? 'Coming soon' : undefined}
+			title={name}
 		>
 			<a href={href} className="flex items-center w-full">
 				<Icon
