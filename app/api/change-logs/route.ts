@@ -63,13 +63,54 @@ export async function GET(request: NextRequest) {
 			take: 100, // Limit to last 100 changes
 		});
 
-		console.log(`[CHANGELOG API] Found ${changeLogs.length} change logs for family tree ${treeId}`);
-		console.log(
-			`[CHANGELOG API] SpouseRelationship logs:`,
-			changeLogs.filter((log) => log.entityType === 'SpouseRelationship')
+		// Enrich change logs with family member names
+		const enrichedLogs = await Promise.all(
+			changeLogs.map(async (log) => {
+				let familyMemberName = undefined;
+
+				// If entityType is FamilyMember, get the member's name
+				if (log.entityType === 'FamilyMember') {
+					try {
+						const member = await prisma.familyMember.findUnique({
+							where: { id: log.entityId },
+							select: { fullName: true },
+						});
+						if (member) {
+							familyMemberName = member.fullName;
+						}
+					} catch {
+						// Ignore errors when fetching member name
+					}
+				} else {
+					// For other entity types, try to extract from newValues or oldValues
+					try {
+						const newValues = log.newValues ? JSON.parse(log.newValues) : null;
+						const oldValues = log.oldValues ? JSON.parse(log.oldValues) : null;
+
+						if (newValues?.familyMemberName) {
+							familyMemberName = newValues.familyMemberName;
+						} else if (oldValues?.familyMemberName) {
+							familyMemberName = oldValues.familyMemberName;
+						}
+					} catch {
+						// Ignore JSON parsing errors
+					}
+				}
+
+				return {
+					...log,
+					familyMemberName: familyMemberName || undefined,
+				};
+			})
 		);
 
-		return NextResponse.json(changeLogs);
+		console.log(`[CHANGELOG API] Found ${enrichedLogs.length} change logs for family tree ${treeId}`);
+		console.log(
+			`[CHANGELOG API] SpouseRelationship logs:`,
+			enrichedLogs.filter((log) => log.entityType === 'SpouseRelationship')
+		);
+
+		return NextResponse.json(enrichedLogs);
 	} catch (error) {
 		console.error('Error fetching change logs:', error);
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

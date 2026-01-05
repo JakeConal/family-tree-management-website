@@ -16,6 +16,7 @@ export interface ChangeLog {
 		name: string | null;
 		email: string | null;
 	} | null;
+	familyMemberName?: string;
 }
 
 export interface ChangeDetail {

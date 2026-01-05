@@ -260,7 +260,14 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 											{/* User Info */}
 											<div className="flex-1">
 												<p className="font-inter font-medium text-[18px] text-black mb-1">{getUserName(log)}</p>
-												<p className="font-inter font-light text-[18px] text-black">{message}</p>
+												<div className="space-y-1">
+													<p className="font-inter font-light text-[16px] text-black">{message}</p>
+													{log.familyMemberName && (
+														<p className="font-inter font-light text-[14px] text-gray-600">
+															Affected: <span className="font-medium text-black">{log.familyMemberName}</span>
+														</p>
+													)}
+												</div>
 											</div>
 										</div>
 
