@@ -174,6 +174,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		// Verify the user has access to this family member
 		const existingMember = await prisma.familyMember.findFirst({
 			where: whereClause,
+			include: {
+				spouse1: true,
+				spouse2: true,
+			},
 		});
 
 		if (!existingMember) {
@@ -244,7 +248,186 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			address: existingMember.address,
 			generation: existingMember.generation,
 			isAdopted: existingMember.isAdopted,
+			parentId: existingMember.parentId,
 		};
+
+		// Handle spouse relationship logic based on parentId changes
+		const newParentId = parentId ? parseInt(parentId) : null;
+		const oldParentId = existingMember.parentId;
+		const parentIdChanged = newParentId !== oldParentId;
+
+		// Get current spouse relationships
+		const currentSpouseRel =
+			existingMember.spouse1.length > 0
+				? existingMember.spouse1[0]
+				: existingMember.spouse2.length > 0
+					? existingMember.spouse2[0]
+					: null;
+
+		// Get old spouse ID to potentially delete their record
+		let oldSpouseId: number | null = null;
+		if (currentSpouseRel) {
+			// Determine which spouse is the "other" person
+			oldSpouseId =
+				existingMember.spouse1.length > 0 ? currentSpouseRel.familyMember2Id : currentSpouseRel.familyMember1Id;
+		}
+
+		// Check if member has spouse (divorced or not)
+		const hasSpouse = currentSpouseRel !== null;
+		const isDivorced = currentSpouseRel?.divorceDate !== null;
+		const isMarried = hasSpouse && !isDivorced;
+
+		// Track if we need to delete old spouse relationship
+		let shouldDeleteOldSpouseRel = false;
+		let shouldDeleteOldSpouseMember = false;
+
+		if (spouseId) {
+			const newSpouseId = parseInt(spouseId);
+
+			// Get information about the new spouse
+			const newSpouseMember = await prisma.familyMember.findUnique({
+				where: { id: newSpouseId },
+				include: {
+					spouse1: true,
+					spouse2: true,
+				},
+			});
+
+			if (!newSpouseMember) {
+				return NextResponse.json({ error: 'Spouse member not found' }, { status: 404 });
+			}
+
+			const newSpouseRel =
+				newSpouseMember.spouse1.length > 0
+					? newSpouseMember.spouse1[0]
+					: newSpouseMember.spouse2.length > 0
+						? newSpouseMember.spouse2[0]
+						: null;
+			const newSpouseHasRelationship = newSpouseRel !== null;
+			const newSpouseIsDivorced = newSpouseRel?.divorceDate !== null;
+
+			// Always delete old spouse relationship when changing spouses
+			if (hasSpouse) {
+				shouldDeleteOldSpouseRel = true;
+
+				// Apply rules for additional cleanup (deleting old spouse member)
+				// Rule 1: Member has non-null parentID and is in spouse relationship
+				if (oldParentId !== null && hasSpouse) {
+					// Check if other person has non-null parentID AND (not in spouse table OR is divorced)
+					if (newSpouseMember.parentId === null) {
+						return NextResponse.json(
+							{
+								error: 'Cannot create spouse relationship. The target member must have a parent.',
+							},
+							{ status: 400 }
+						);
+					}
+					if (newSpouseHasRelationship && !newSpouseIsDivorced) {
+						return NextResponse.json(
+							{
+								error: 'Cannot create spouse relationship. The target member is already married.',
+							},
+							{ status: 400 }
+						);
+					}
+
+					// Mark for deletion - delete the spouse member too
+					shouldDeleteOldSpouseMember = true;
+				}
+				// Rule 2: Member has spouse relationship (not divorced) with null parentID
+				else if (oldParentId === null && isMarried) {
+					// Check if other person has non-null parentID AND (not in spouse table OR is divorced)
+					if (newSpouseMember.parentId === null) {
+						return NextResponse.json(
+							{
+								error: 'Cannot create spouse relationship. The target member must have a parent.',
+							},
+							{ status: 400 }
+						);
+					}
+					if (newSpouseHasRelationship && !newSpouseIsDivorced) {
+						return NextResponse.json(
+							{
+								error: 'Cannot create spouse relationship. The target member is already married.',
+							},
+							{ status: 400 }
+						);
+					}
+
+					// For Rule 2, only delete the spouse relationship (keep the member)
+					// shouldDeleteOldSpouseMember remains false
+				}
+				// Rule 3: Member is a former spouse (divorced)
+				else if (isDivorced) {
+					// Only need to check that other person has non-null parentID
+					if (newSpouseMember.parentId === null) {
+						return NextResponse.json(
+							{
+								error: 'Cannot create spouse relationship. The target member must have a parent.',
+							},
+							{ status: 400 }
+						);
+					}
+
+					// For Rule 3, only delete the spouse relationship (keep the member)
+					// shouldDeleteOldSpouseMember remains false
+				}
+			}
+		}
+
+		// Delete old spouse relationship and member if needed (before creating new member update)
+		if (shouldDeleteOldSpouseRel && currentSpouseRel) {
+			await prisma.spouseRelationship.delete({
+				where: { id: currentSpouseRel.id },
+			});
+
+			// Delete old spouse member if Rule 1 applies
+			if (shouldDeleteOldSpouseMember && oldSpouseId) {
+				try {
+					// First, update any children to point to the current member as their parent
+					await prisma.familyMember.updateMany({
+						where: { parentId: oldSpouseId },
+						data: { parentId: memberId },
+					});
+
+					// Delete all related records before deleting the member
+					await prisma.$transaction([
+						// Delete achievements
+						prisma.achievement.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+						// Delete occupations
+						prisma.occupation.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+						// Delete passing records
+						prisma.passingRecord.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+						// Delete causes of death
+						prisma.causeOfDeath.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+						// Delete birth places
+						prisma.familyMember_has_PlaceOfOrigin.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+						// Delete guest editors
+						prisma.guestEditor.deleteMany({
+							where: { familyMemberId: oldSpouseId },
+						}),
+					]);
+
+					// Finally, delete the member
+					await prisma.familyMember.delete({
+						where: { id: oldSpouseId },
+					});
+				} catch (error) {
+					console.error('Failed to delete old spouse member:', error);
+					// Continue execution even if deletion fails
+				}
+			}
+		}
 
 		// Update the family member
 		const updatedMember = await prisma.familyMember.update({
@@ -317,7 +500,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			const spouseIdNum = parseInt(spouseId);
 			const marriageDateObj = marriageDate ? new Date(marriageDate) : new Date();
 
-			// Check if there's an existing spouse relationship
+			// Check if there's an existing spouse relationship (after potential deletion above)
 			const existingSpouseRelationship = await prisma.spouseRelationship.findFirst({
 				where: {
 					OR: [
@@ -328,7 +511,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 			});
 
 			if (existingSpouseRelationship) {
-				// Update existing relationship
+				// Update existing relationship (only update marriage date if relationship still exists)
 				await prisma.spouseRelationship.update({
 					where: { id: existingSpouseRelationship.id },
 					data: {
@@ -336,7 +519,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 					},
 				});
 			} else {
-				// Create new relationship
+				// Create new relationship (either first time or after deletion)
 				const spouseRelationship = await prisma.spouseRelationship.create({
 					data: {
 						familyMember1Id: memberId,
