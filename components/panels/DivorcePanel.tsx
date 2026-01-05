@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { ChevronDown, ChevronLeft, Calendar, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronLeft, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -390,7 +390,7 @@ export default function DivorcePanel({
 										</option>
 									))}
 								</select>
-								<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.member1Id && touched.member1Id && <p className="mt-1 text-sm text-red-600">{errors.member1Id}</p>}
 						</div>
