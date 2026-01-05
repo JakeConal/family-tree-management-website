@@ -10,7 +10,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Footer from '@/components/Footer';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { GradientText } from '@/components/ui/gradient-text';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
 import { RippleButton } from '@/components/ui/ripple-button';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
@@ -98,13 +97,12 @@ export default function Home() {
 						<div className="text-center mb-8">
 							<div className="inline-block mb-6">
 								<span className="px-4 py-2 text-sm border border-gray-400 rounded-full bg-white/50 backdrop-blur-sm">
-									<GradientText
-										text={intl.formatMessage({
+									<span className="font-medium text-pink-600">
+										{intl.formatMessage({
 											id: 'home.hero.badge',
 											defaultMessage: 'Build Your Family Legacy Today',
 										})}
-										className="font-medium"
-									/>
+									</span>
 								</span>
 							</div>
 							<TextGenerateEffect
