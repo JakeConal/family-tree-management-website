@@ -26,7 +26,9 @@
 		"updating": "Đang cập nhật...",
 		"optional": "(tùy chọn)",
 		"undo": "Hoàn tác",
-		"cannotUndo": "Hành động này không thể hoàn tác."
+		"cannotUndo": "Hành động này không thể hoàn tác.",
+		"zoomIn": "Phóng to",
+		"zoomOut": "Thu nhỏ"
 	},
 	"nav": {
 		"features": "Tính Năng",
@@ -47,6 +49,7 @@
 	},
 	"error": {
 		"generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+		"message": "Lỗi: {message}",
 		"networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối.",
 		"unauthorized": "Bạn không được phép thực hiện hành động này.",
 		"notFound": "Không tìm thấy tài nguyên được yêu cầu.",

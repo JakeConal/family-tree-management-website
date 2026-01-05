@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
 interface Marriage {
@@ -63,43 +64,42 @@ export default function MarriagePanel({
 
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/family-trees/${familyTreeId}/life-events/${relationshipId}`);
-			if (res.ok) {
-				const data = await res.json();
-				setMarriage(data);
+			const data = await FamilyTreeService.getLifeEvent(familyTreeId, relationshipId);
+			setMarriage(data);
 
-				// Populate form data
-				setFormData({
-					marriageDate: new Date(data.marriageDate).toISOString().split('T')[0],
-				});
+			// Populate form data
+			setFormData({
+				marriageDate: new Date(data.marriageDate).toISOString().split('T')[0],
+			});
 
-				// Set member birth dates
-				const member1 = familyMembers.find((m) => m.id === data.familyMember1.id);
-				const member2 = familyMembers.find((m) => m.id === data.familyMember2.id);
+			// Set member birth dates
+			const member1 = familyMembers.find((m) => m.id === data.familyMember1.id);
+			const member2 = familyMembers.find((m) => m.id === data.familyMember2.id);
 
-				if (member1?.birthday) {
-					setMember1BirthDate(new Date(member1.birthday).toISOString().split('T')[0]);
-				}
-				if (member2?.birthday) {
-					setMember2BirthDate(new Date(member2.birthday).toISOString().split('T')[0]);
-				}
-			} else {
-				const error = await res.json();
-				toast.error(error.error || intl.formatMessage({ id: 'common.generic' }));
-				onClose();
+			if (member1?.birthday) {
+				setMember1BirthDate(new Date(member1.birthday).toISOString().split('T')[0]);
+			}
+			if (member2?.birthday) {
+				setMember2BirthDate(new Date(member2.birthday).toISOString().split('T')[0]);
 			}
 		} catch (error) {
 			console.error('Error fetching marriage:', error);
-			toast.error(intl.formatMessage({ id: 'common.generic' }));
-			onClose();
+			setMarriage(null);
 		} finally {
 			setLoading(false);
 		}
-	}, [relationshipId, familyTreeId, familyMembers, onClose, intl]);
+	}, [relationshipId, familyTreeId, familyMembers]);
 
 	useEffect(() => {
 		fetchMarriage();
 	}, [fetchMarriage]);
+
+	useEffect(() => {
+		if (!loading && !marriage && relationshipId) {
+			toast.error(intl.formatMessage({ id: 'common.generic' }));
+			onClose();
+		}
+	}, [loading, marriage, relationshipId, intl, onClose]);
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};

@@ -52,17 +52,16 @@ export default function FamilyTreeReports() {
 	const [loading, setLoading] = useState(true);
 	const [members, setMembers] = useState<FamilyMemberWithDetails[]>([]);
 
-	const totalMembers = useMemo(() => members.length, [members]);
-	const currentMembers = useMemo(
-		() => members.filter((m: FamilyMemberWithDetails) => !m.passingRecords || m.passingRecords.length === 0).length,
+	const { totalMembers, currentMembers, totalAchievements, generations } = useMemo(
+		() => ({
+			totalMembers: members.length,
+			currentMembers: members.filter((m: FamilyMemberWithDetails) => !m.passingRecords || m.passingRecords.length === 0)
+				.length,
+			totalAchievements: members.flatMap((member: FamilyMemberWithDetails) => member.achievements || []).length,
+			generations: Math.max(...members.map((m: FamilyMemberWithDetails) => parseInt(String(m.generation)) || 1), 1),
+		}),
 		[members]
 	);
-	const totalAchievements = useMemo(() => {
-		return members.flatMap((member: FamilyMemberWithDetails) => member.achievements || []).length;
-	}, [members]);
-	const generations = useMemo(() => {
-		return Math.max(...members.map((m: FamilyMemberWithDetails) => parseInt(String(m.generation)) || 1), 1);
-	}, [members]);
 
 	// Chart data
 	const [memberChangesData, setMemberChangesData] = useState<ChartData | null>(null);

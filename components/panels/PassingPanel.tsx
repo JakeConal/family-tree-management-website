@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
 interface BurialPlace {
@@ -72,40 +73,37 @@ export default function PassingPanel({
 
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/family-trees/${familyTreeId}/passing-records/${passingRecordId}`);
-			if (res.ok) {
-				const data = await res.json();
-				setPassingRecord(data);
+			const data = await FamilyTreeService.getPassingRecord(familyTreeId, passingRecordId);
+			setPassingRecord(data);
 
-				// Populate form data
-				setFormData({
-					familyMemberId: data.familyMember.id.toString(),
-					dateOfPassing: data.dateOfPassing ? new Date(data.dateOfPassing).toISOString().split('T')[0] : '',
-					causesOfDeath: data.causeOfDeath ? [data.causeOfDeath.causeName] : [''],
-					burialPlaces:
-						data.buriedPlaces.length > 0
-							? data.buriedPlaces.map((place: BurialPlace) => ({
-									id: place.id,
-									location: place.location,
-									startDate: place.startDate ? new Date(place.startDate).toISOString().split('T')[0] : '',
-									endDate: place.endDate ? new Date(place.endDate).toISOString().split('T')[0] : '',
-								}))
-							: [{ location: '', startDate: '' }],
-				});
+			// Populate form data
+			setFormData({
+				familyMemberId: data.familyMember.id.toString(),
+				dateOfPassing: data.dateOfPassing ? new Date(data.dateOfPassing).toISOString().split('T')[0] : '',
+				causesOfDeath: data.causeOfDeath ? [data.causeOfDeath.causeName] : [''],
+				burialPlaces:
+					data.buriedPlaces.length > 0
+						? data.buriedPlaces.map((place: BurialPlace) => ({
+								id: place.id,
+								location: place.location,
+								startDate: place.startDate ? new Date(place.startDate).toISOString().split('T')[0] : '',
+								endDate: place.endDate ? new Date(place.endDate).toISOString().split('T')[0] : '',
+							}))
+						: [{ location: '', startDate: '' }],
+			});
 
-				// Set member birth date for validation
-				const member = familyMembers.find((m) => m.id === data.familyMember.id);
-				if (member?.birthday) {
-					setSelectedMemberBirthDate(new Date(member.birthday).toISOString().split('T')[0]);
-				}
+			// Set member birth date for validation
+			const member = familyMembers.find((m) => m.id === data.familyMember.id);
+			if (member?.birthday) {
+				setSelectedMemberBirthDate(new Date(member.birthday).toISOString().split('T')[0]);
 			}
 		} catch (error) {
 			console.error('Error fetching passing record:', error);
-			toast.error(intl.formatMessage({ id: 'panel.passing.messages.loadError' }));
+			setPassingRecord(null);
 		} finally {
 			setLoading(false);
 		}
-	}, [passingRecordId, familyTreeId, familyMembers, intl]);
+	}, [passingRecordId, familyTreeId, familyMembers]);
 
 	useEffect(() => {
 		if (mode !== 'add' && passingRecordId) {
@@ -121,6 +119,12 @@ export default function PassingPanel({
 			setPassingRecord(null);
 		}
 	}, [mode, passingRecordId, fetchPassingRecord]);
+
+	useEffect(() => {
+		if (!loading && !passingRecord && mode !== 'add' && passingRecordId) {
+			toast.error(intl.formatMessage({ id: 'panel.passing.messages.loadError' }));
+		}
+	}, [loading, passingRecord, mode, passingRecordId, intl]);
 
 	const validateField = (field: string, value: string) => {
 		const newErrors = { ...errors };

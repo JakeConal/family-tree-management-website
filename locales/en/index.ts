@@ -3,10 +3,12 @@ import modal from '@/locales/en/misc/modal.json';
 import panel from '@/locales/en/misc/panel.json';
 import sidebar from '@/locales/en/misc/sidebar.json';
 import account from '@/locales/en/routes/account.json';
+import contact from '@/locales/en/routes/contact.json';
 import cookiePolicy from '@/locales/en/routes/cookie-policy.json';
 import dashboard from '@/locales/en/routes/dashboard.json';
 import familyTree from '@/locales/en/routes/familyTree.json';
 import familyTreeDashboard from '@/locales/en/routes/familyTreeDashboard.json';
+import faq from '@/locales/en/routes/faq.json';
 import home from '@/locales/en/routes/home.json';
 import lifeEvents from '@/locales/en/routes/lifeEvents.json';
 import login from '@/locales/en/routes/login.json';
@@ -18,8 +20,6 @@ import settings from '@/locales/en/routes/settings.json';
 import termsOfService from '@/locales/en/routes/terms-of-service.json';
 import treeView from '@/locales/en/routes/treeView.json';
 import welcome from '@/locales/en/routes/welcome.json';
-import faq from '@/locales/en/routes/faq.json';
-import contact from '@/locales/en/routes/contact.json';
 
 const en = {
 	...common,

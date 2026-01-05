@@ -7,35 +7,43 @@ export default function FAQ() {
 	const faqs = [
 		{
 			question: 'What is Family Tree Management?',
-			answer: 'Family Tree Management is a comprehensive platform that helps you build, visualize, and preserve your family tree for future generations. It provides tools to add family members, create relationships, track achievements, and generate detailed reports.',
+			answer:
+				'Family Tree Management is a comprehensive platform that helps you build, visualize, and preserve your family tree for future generations. It provides tools to add family members, create relationships, track achievements, and generate detailed reports.',
 		},
 		{
 			question: 'How do I get started?',
-			answer: 'Getting started is easy! Simply sign up for a free account, add your immediate family members, and start building connections. Our intuitive interface guides you through each step of creating your family tree.',
+			answer:
+				'Getting started is easy! Simply sign up for a free account, add your immediate family members, and start building connections. Our intuitive interface guides you through each step of creating your family tree.',
 		},
 		{
 			question: 'Is my family data secure?',
-			answer: 'Yes, we take data security very seriously. All your family information is encrypted and stored securely. You have full control over who can view your family tree through our privacy settings.',
+			answer:
+				'Yes, we take data security very seriously. All your family information is encrypted and stored securely. You have full control over who can view your family tree through our privacy settings.',
 		},
 		{
 			question: 'Can I share my family tree with others?',
-			answer: 'Absolutely! You can generate access codes to share your family tree with relatives, or make it publicly viewable. We also offer guest editing capabilities for collaborative family tree building.',
+			answer:
+				'Absolutely! You can generate access codes to share your family tree with relatives, or make it publicly viewable. We also offer guest editing capabilities for collaborative family tree building.',
 		},
 		{
 			question: 'What features are included in the free plan?',
-			answer: 'Our free plan includes unlimited family members, basic tree visualization, achievement tracking, and the ability to generate reports. Premium features include advanced analytics and export options.',
+			answer:
+				'Our free plan includes unlimited family members, basic tree visualization, achievement tracking, and the ability to generate reports. Premium features include advanced analytics and export options.',
 		},
 		{
 			question: 'How do I add photos and documents?',
-			answer: "You can upload photos and documents directly to each family member's profile. We support various file formats and store them securely in the cloud.",
+			answer:
+				"You can upload photos and documents directly to each family member's profile. We support various file formats and store them securely in the cloud.",
 		},
 		{
 			question: 'Can I export my family tree data?',
-			answer: 'Yes, premium users can export their family tree data in various formats including PDF reports, GEDCOM files, and image formats for sharing or backup purposes.',
+			answer:
+				'Yes, premium users can export their family tree data in various formats including PDF reports, GEDCOM files, and image formats for sharing or backup purposes.',
 		},
 		{
 			question: 'Is there a mobile app?',
-			answer: 'Currently, Family Tree Management is available as a web application that works seamlessly on all devices including mobile phones and tablets through your browser.',
+			answer:
+				'Currently, Family Tree Management is available as a web application that works seamlessly on all devices including mobile phones and tablets through your browser.',
 		},
 	];
 
@@ -55,12 +63,8 @@ export default function FAQ() {
 				<div className="space-y-6">
 					{faqs.map((faq, index) => (
 						<div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
-							<h3 className="text-xl font-semibold text-gray-900 mb-3">
-								{faq.question}
-							</h3>
-							<p className="text-gray-700 leading-relaxed">
-								{faq.answer}
-							</p>
+							<h3 className="text-xl font-semibold text-gray-900 mb-3">{faq.question}</h3>
+							<p className="text-gray-700 leading-relaxed">{faq.answer}</p>
 						</div>
 					))}
 				</div>

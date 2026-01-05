@@ -102,36 +102,32 @@ export default function AchievementPanel({
 
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/family-trees/${familyTreeId}/achievements/${achievementId}`);
-			if (res.ok) {
-				const data = await res.json();
-				setAchievement(data);
+			const data = await FamilyTreeService.getAchievementById(familyTreeId, achievementId);
+			setAchievement(data);
+			// Populate form data
+			setFormData({
+				familyMemberId: data.familyMember.id.toString(),
+				achievementTypeId: data.achievementType.id.toString(),
+				achieveDate: data.achieveDate ? new Date(data.achieveDate).toISOString().split('T')[0] : '',
+				title: data.title || '',
+				description: data.description || '',
+			});
 
-				// Populate form data
-				setFormData({
-					familyMemberId: data.familyMember.id.toString(),
-					achievementTypeId: data.achievementType.id.toString(),
-					achieveDate: data.achieveDate ? new Date(data.achieveDate).toISOString().split('T')[0] : '',
-					title: data.title || '',
-					description: data.description || '',
-				});
-
-				// Set member birth date for validation
-				const member = familyMembers.find((m) => m.id === data.familyMember.id);
-				if (member?.birthday) {
-					setSelectedMemberBirthDate(new Date(member.birthday).toISOString().split('T')[0]);
-				}
-
-				// Fetch member passing record for date validation
-				fetchMemberPassingRecord(data.familyMember.id.toString());
+			// Set member birth date for validation
+			const member = familyMembers.find((m) => m.id === data.familyMember.id);
+			if (member?.birthday) {
+				setSelectedMemberBirthDate(new Date(member.birthday).toISOString().split('T')[0]);
 			}
+
+			// Fetch member passing record for date validation
+			fetchMemberPassingRecord(data.familyMember.id.toString());
 		} catch (error) {
 			console.error('Error fetching achievement:', error);
-			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			setAchievement(null);
 		} finally {
 			setLoading(false);
 		}
-	}, [achievementId, familyTreeId, familyMembers, fetchMemberPassingRecord, intl]);
+	}, [achievementId, familyTreeId, familyMembers, fetchMemberPassingRecord]);
 
 	useEffect(() => {
 		fetchAchievementTypes();
@@ -149,6 +145,13 @@ export default function AchievementPanel({
 			setAchievement(null);
 		}
 	}, [mode, achievementId, fetchAchievementTypes, fetchAchievement]);
+
+	useEffect(() => {
+		if (!loading && !achievement && mode !== 'add' && achievementId) {
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			onClose();
+		}
+	}, [loading, achievement, mode, achievementId, intl, onClose]);
 
 	const validateField = (field: string, value: string) => {
 		const newErrors = { ...errors };

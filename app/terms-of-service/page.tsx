@@ -19,10 +19,7 @@ export default function TermsOfService() {
 
 				<div className="prose prose-gray max-w-none">
 					<p className="text-gray-600 mb-6">
-						<FormattedMessage
-							id="terms.lastUpdated"
-							defaultMessage="Last updated: January 5, 2026"
-						/>
+						<FormattedMessage id="terms.lastUpdated" defaultMessage="Last updated: January 5, 2026" />
 					</p>
 
 					<section className="mb-8">
@@ -109,16 +106,10 @@ export default function TermsOfService() {
 								/>
 							</li>
 							<li>
-								<FormattedMessage
-									id="terms.prohibited.2"
-									defaultMessage="Infringing on intellectual property rights"
-								/>
+								<FormattedMessage id="terms.prohibited.2" defaultMessage="Infringing on intellectual property rights" />
 							</li>
 							<li>
-								<FormattedMessage
-									id="terms.prohibited.3"
-									defaultMessage="Harassing, abusing, or harming others"
-								/>
+								<FormattedMessage id="terms.prohibited.3" defaultMessage="Harassing, abusing, or harming others" />
 							</li>
 							<li>
 								<FormattedMessage

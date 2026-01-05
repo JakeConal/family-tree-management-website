@@ -8,13 +8,12 @@ import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import Footer from '@/components/Footer';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { GradientText } from '@/components/ui/gradient-text';
 import { InteractiveGridPattern } from '@/components/ui/interactive-grid-pattern';
 import { RippleButton } from '@/components/ui/ripple-button';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
-
-import Footer from '@/components/Footer';
 
 export default function Home() {
 	const { status } = useSession();

@@ -212,6 +212,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			{/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
 			<title>Family Tree Management</title>
 			<body
 				className={classNames(

@@ -580,7 +580,9 @@ export default function FamilyTreePage() {
 	if (error) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-red-500 text-lg">Error: {error}</div>
+				<div className="text-red-500 text-lg">
+					<FormattedMessage id="common.error" values={{ message: error }} />
+				</div>
 			</div>
 		);
 	}
@@ -588,14 +590,16 @@ export default function FamilyTreePage() {
 	if ((!rootId || treeNodes.length === 0) && !loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen">
-				<div className="text-lg">No family members found</div>
+				<div className="text-lg">
+					<FormattedMessage id="treeView.noMembers" />
+				</div>
 			</div>
 		);
 	}
 
 	return (
 		<div className="flex h-full overflow-hidden bg-white relative">
-			{loading && <LoadingScreen message="Loading family tree..." />}
+			{loading && <LoadingScreen message={intl.formatMessage({ id: 'treeView.loading' })} />}
 			<div className="flex-1 flex flex-col overflow-y-auto p-3 sm:p-4">
 				<div className="w-full">
 					{/* Top Control Bar */}
@@ -629,8 +633,12 @@ export default function FamilyTreePage() {
 								className="bg-white hover:bg-gray-50 border border-gray-200 text-black rounded-full px-4 sm:px-6 py-2 text-xs sm:text-sm font-inter font-medium flex items-center gap-2 transition-all shadow-sm whitespace-nowrap"
 							>
 								<Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-								<span className="hidden sm:inline">Add Member</span>
-								<span className="sm:hidden">Add</span>
+								<span className="hidden sm:inline">
+									<FormattedMessage id="treeView.controls.addMember" />
+								</span>
+								<span className="sm:hidden">
+									<FormattedMessage id="treeView.controls.add" />
+								</span>
 							</button>
 						</div>
 
@@ -639,7 +647,7 @@ export default function FamilyTreePage() {
 							<button
 								onClick={() => zoomFunctions?.zoomOut()}
 								className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-								title="Zoom Out"
+								title={intl.formatMessage({ id: 'common.zoomOut' })}
 							>
 								<Minus className="w-4 h-4 text-black" />
 							</button>
@@ -649,7 +657,7 @@ export default function FamilyTreePage() {
 							<button
 								onClick={() => zoomFunctions?.zoomIn()}
 								className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-								title="Zoom In"
+								title={intl.formatMessage({ id: 'common.zoomIn' })}
 							>
 								<Plus className="w-4 h-4 text-black" />
 							</button>
@@ -803,7 +811,13 @@ export default function FamilyTreePage() {
 															{/* Ex-Spouse Badge */}
 															<div className="bg-gray-900 text-white px-2 py-1 rounded-full text-center">
 																<span className="font-nunito font-semibold text-xs">
-																	{spouse.gender === 'MALE' ? 'Ex-Husband' : 'Ex-Wife'}
+																	<FormattedMessage
+																		id={
+																			spouse.gender === 'MALE'
+																				? 'treeView.exSpouse.exHusband'
+																				: 'treeView.exSpouse.exWife'
+																		}
+																	/>
 																</span>
 															</div>
 														</div>
@@ -895,14 +909,19 @@ export default function FamilyTreePage() {
 																<div className="text-center">
 																	<div className="bg-gray-900 text-white px-3 py-2 rounded-full">
 																		<span className="font-nunito font-bold text-lg">
-																			{divorcedSpouses.length} Ex-Spouses
+																			<FormattedMessage
+																				id="treeView.exSpouse.multiple"
+																				values={{ count: divorcedSpouses.length }}
+																			/>
 																		</span>
 																	</div>
 																</div>
 
 																{/* Click to view text */}
 																<div className="text-center text-xs text-gray-700">
-																	<span className="font-nunito font-semibold">Click to view</span>
+																	<span className="font-nunito font-semibold">
+																		<FormattedMessage id="treeView.exSpouse.clickToView" />
+																	</span>
 																</div>
 															</div>
 														</div>
@@ -1112,23 +1131,31 @@ export default function FamilyTreePage() {
 					<div className="mt-3 flex flex-wrap items-center justify-center gap-2 sm:gap-4 bg-white rounded-[20px] py-2 px-3 sm:px-4 shadow-sm border border-gray-100 text-xs">
 						<div className="flex items-center gap-2">
 							<div className="w-6 h-0.5 bg-gray-600 rounded-full"></div>
-							<span className="text-xs font-inter font-medium text-black">Child - Parent</span>
+							<span className="text-xs font-inter font-medium text-black">
+								<FormattedMessage id="treeView.legend.childParent" />
+							</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<svg className="w-6 h-0.5" viewBox="0 0 32 2" fill="none">
 								<line x1="0" y1="1" x2="32" y2="1" stroke="gray" strokeWidth="2" strokeDasharray="4,4" />
 							</svg>
-							<span className="text-xs font-inter font-medium text-black">Former Spouse</span>
+							<span className="text-xs font-inter font-medium text-black">
+								<FormattedMessage id="treeView.legend.formerSpouse" />
+							</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<Plus className="w-3 h-3 text-black" />
-							<span className="text-xs font-inter font-medium text-black">Current Spouse</span>
+							<span className="text-xs font-inter font-medium text-black">
+								<FormattedMessage id="treeView.legend.currentSpouse" />
+							</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<div className="bg-white p-1 rounded-full shadow-sm border border-gray-200">
 								<Skull className="w-3 h-3 text-black" />
 							</div>
-							<span className="text-xs font-inter font-medium text-black">Passed away</span>
+							<span className="text-xs font-inter font-medium text-black">
+								<FormattedMessage id="treeView.legend.passedAway" />
+							</span>
 						</div>
 					</div>
 				</div>

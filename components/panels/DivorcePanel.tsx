@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
 interface SpouseRelationship {
@@ -76,25 +77,22 @@ export default function DivorcePanel({
 
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/family-trees/${familyTreeId}/life-events/${divorceId}`);
-			if (res.ok) {
-				const data = await res.json();
-				setRelationship(data);
+			const data = await FamilyTreeService.getLifeEvent(familyTreeId, divorceId);
+			setRelationship(data);
 
-				// Populate form data
-				setFormData({
-					member1Id: data.familyMember1.id.toString(),
-					member2Id: data.id.toString(), // Use relationship id for member2Id in view mode
-					divorceDate: data.divorceDate ? new Date(data.divorceDate).toISOString().split('T')[0] : '',
-				});
-			}
+			// Populate form data
+			setFormData({
+				member1Id: data.familyMember1.id.toString(),
+				member2Id: data.id.toString(), // Use relationship id for member2Id in view mode
+				divorceDate: data.divorceDate ? new Date(data.divorceDate).toISOString().split('T')[0] : '',
+			});
 		} catch (error) {
 			console.error('Error fetching divorce:', error);
-			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			setRelationship(null);
 		} finally {
 			setLoading(false);
 		}
-	}, [divorceId, familyTreeId, intl]);
+	}, [divorceId, familyTreeId]);
 
 	useEffect(() => {
 		fetchMarriages();
@@ -110,6 +108,12 @@ export default function DivorcePanel({
 			setRelationship(null);
 		}
 	}, [mode, divorceId, fetchMarriages, fetchDivorce]);
+
+	useEffect(() => {
+		if (!loading && !relationship && mode !== 'add' && divorceId) {
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
+		}
+	}, [loading, relationship, mode, divorceId, intl]);
 
 	// Filter spouses when member1 changes
 	useEffect(() => {

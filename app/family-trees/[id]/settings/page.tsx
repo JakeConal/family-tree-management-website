@@ -66,33 +66,22 @@ export default function FamilyTreeSettings() {
 
 		setSaving(true);
 		try {
-			const response = await fetch(`/api/family-trees/${familyTreeId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					familyName: familyName.trim(),
-					origin: origin.trim() || null,
-					establishYear: establishYear ? parseInt(establishYear) : null,
-				}),
+			const updatedData = await FamilyTreeService.update(familyTreeId, {
+				familyName: familyName.trim(),
+				origin: origin.trim() || null,
+				establishYear: establishYear ? parseInt(establishYear) : null,
 			});
 
-			if (!response.ok) {
-				throw new Error('Failed to update family tree');
-			}
-
-			const updatedData = await response.json();
 			setFamilyTree(updatedData);
 
 			// Trigger sidebar refresh to update family tree name
 			triggerFamilyTreesRefresh();
 
 			// Show success message
-			toast.success('Family tree updated successfully!');
+			toast.success(intl.formatMessage({ id: 'settings.messages.updateSuccess' }));
 		} catch (error) {
 			console.error('Error updating family tree:', error);
-			toast.error('Failed to update family tree. Please try again.');
+			toast.error(intl.formatMessage({ id: 'settings.messages.updateFailed' }));
 		} finally {
 			setSaving(false);
 		}
@@ -103,18 +92,12 @@ export default function FamilyTreeSettings() {
 
 		setDeleting(true);
 		try {
-			const response = await fetch(`/api/family-trees/${familyTreeId}`, {
-				method: 'DELETE',
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to delete family tree');
-			}
+			await FamilyTreeService.delete(familyTreeId);
 
 			// Trigger sidebar refresh to remove deleted tree
 			triggerFamilyTreesRefresh();
 
-			toast.success('Family tree deleted successfully');
+			toast.success(intl.formatMessage({ id: 'settings.messages.deleteSuccess' }));
 
 			// Redirect to dashboard after successful deletion
 			setTimeout(() => {
@@ -122,7 +105,7 @@ export default function FamilyTreeSettings() {
 			}, 500);
 		} catch (error) {
 			console.error('Error deleting family tree:', error);
-			toast.error('Failed to delete family tree. Please try again.');
+			toast.error(intl.formatMessage({ id: 'settings.messages.deleteFailed' }));
 			setDeleting(false);
 			setShowDeleteConfirm(false);
 		}
@@ -131,17 +114,19 @@ export default function FamilyTreeSettings() {
 	if (!familyTree) {
 		return (
 			<div className="text-center py-12 relative">
-				{loading && <LoadingScreen message="Loading settings..." />}
+				{loading && <LoadingScreen message={intl.formatMessage({ id: 'settings.loading' })} />}
 				<div className="bg-red-50 rounded-lg p-6 max-w-md mx-auto">
-					<h2 className="text-lg font-semibold text-red-800 mb-2">Family Tree Not Found</h2>
+					<h2 className="text-lg font-semibold text-red-800 mb-2">
+						<FormattedMessage id="settings.notFound.title" />
+					</h2>
 					<p className="text-red-600 mb-4">
-						The family tree you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+						<FormattedMessage id="settings.notFound.message" />
 					</p>
 					<button
 						onClick={() => router.push('/dashboard')}
 						className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
 					>
-						Go to Dashboard
+						<FormattedMessage id="settings.notFound.goToDashboard" />
 					</button>
 				</div>
 			</div>
@@ -150,39 +135,49 @@ export default function FamilyTreeSettings() {
 
 	return (
 		<div className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
-			{loading && <LoadingScreen message="Loading settings..." />}
+			{loading && <LoadingScreen message={intl.formatMessage({ id: 'settings.loading' })} />}
 			<div className="max-w-5xl border-2 border-[rgba(0,0,0,0.30)] rounded-lg p-6">
 				{/* Header */}
-				<h2 className="font-roboto font-normal text-[23.788px] text-black mb-8">Family Information</h2>
+				<h2 className="font-roboto font-normal text-[23.788px] text-black mb-8">
+					<FormattedMessage id="settings.familyInfo.title" />
+				</h2>
 
 				{/* Family Name Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Family Name</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
+						<FormattedMessage id="settings.familyInfo.familyName" />
+					</label>
 					<input
 						type="text"
 						value={familyName}
 						onChange={(e) => setFamilyName(e.target.value)}
 						className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-						placeholder="Enter family name"
+						placeholder={intl.formatMessage({ id: 'settings.familyInfo.familyNamePlaceholder' })}
 					/>
 				</div>
 
 				{/* Origin Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Origin</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
+						<FormattedMessage id="settings.familyInfo.origin" />
+					</label>
 					<select
 						value={origin}
 						onChange={(e) => setOrigin(e.target.value)}
 						className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
 					>
-						<option value="">Select place of origin</option>
+						<option value="">
+							<FormattedMessage id="settings.familyInfo.originPlaceholder" />
+						</option>
 						<ProvinceList />
 					</select>
 				</div>
 
 				{/* Established Year Field */}
 				<div className="mb-8">
-					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">Established</label>
+					<label className="block font-inter font-normal text-[21.252px] text-black mb-3">
+						<FormattedMessage id="settings.familyInfo.established" />
+					</label>
 					<input
 						type="text"
 						value={establishYear}
@@ -192,22 +187,24 @@ export default function FamilyTreeSettings() {
 							setEstablishYear(value);
 						}}
 						className="w-full h-[51.02px] bg-[#f3f2f2] border-[1.458px] border-[rgba(0,0,0,0.5)] rounded-[43.731px] px-10 font-roboto text-[17.492px] text-black focus:outline-none focus:border-gray-700"
-						placeholder="Enter establishment year"
+						placeholder={intl.formatMessage({ id: 'settings.familyInfo.establishedPlaceholder' })}
 					/>
 				</div>
 
 				{/* Guest Invitations Section */}
 				<div className="mt-12 pt-8 border-t border-gray-300">
-					<h3 className="font-roboto font-normal text-[21.252px] text-black mb-4">Guest Access</h3>
+					<h3 className="font-roboto font-normal text-[21.252px] text-black mb-4">
+						<FormattedMessage id="settings.guestAccess.title" />
+					</h3>
 					<p className="text-gray-600 mb-4 text-sm">
-						Invite family members to view the tree and edit their own profile by generating access codes.
+						<FormattedMessage id="settings.guestAccess.description" />
 					</p>
 					<button
 						onClick={() => setShowInviteModal(true)}
 						className="h-10 px-6 bg-blue-600 text-white rounded-[10px] font-roboto font-bold text-[14px] hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
 					>
 						<UserPlus className="w-4 h-4" />
-						Invite Guest Editor
+						<FormattedMessage id="settings.guestAccess.inviteGuest" />
 					</button>
 				</div>
 
@@ -221,10 +218,10 @@ export default function FamilyTreeSettings() {
 						{saving ? (
 							<>
 								<Loader2 className="w-4 h-4 animate-spin" />
-								Saving...
+								<FormattedMessage id="settings.actions.saving" />
 							</>
 						) : (
-							'Save Changes'
+							<FormattedMessage id="settings.actions.saveChanges" />
 						)}
 					</button>
 					<button
@@ -235,10 +232,10 @@ export default function FamilyTreeSettings() {
 						{deleting ? (
 							<>
 								<Loader2 className="w-4 h-4 animate-spin" />
-								Deleting...
+								<FormattedMessage id="settings.actions.deleting" />
 							</>
 						) : (
-							'Delete Family Tree'
+							<FormattedMessage id="settings.actions.deleteFamilyTree" />
 						)}
 					</button>
 				</div>
@@ -249,10 +246,10 @@ export default function FamilyTreeSettings() {
 				isOpen={showDeleteConfirm}
 				onClose={() => setShowDeleteConfirm(false)}
 				onConfirm={handleDeleteFamilyTree}
-				title="Delete Family Tree"
-				message={`Are you sure you want to delete "${familyTree?.familyName}"?\n\nThis action cannot be undone and will delete all associated members, relationships, and records.`}
-				confirmText="Delete"
-				cancelText="Cancel"
+				title={intl.formatMessage({ id: 'settings.delete.confirmTitle' })}
+				message={intl.formatMessage({ id: 'settings.delete.confirmMessage' }, { name: familyTree?.familyName || '' })}
+				confirmText={intl.formatMessage({ id: 'settings.delete.deleteButton' })}
+				cancelText={intl.formatMessage({ id: 'settings.delete.cancelButton' })}
 				confirmButtonClass="bg-red-600 hover:bg-red-700"
 				isLoading={deleting}
 			/>

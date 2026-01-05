@@ -13,6 +13,7 @@ import PanelRenderer from '@/components/PanelRenderer';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
+import { FamilyTreeService } from '@/lib/services';
 import {
 	Achievement,
 	PassingRecord,
@@ -52,14 +53,11 @@ export default function LifeEventsPage() {
 	const fetchAchievements = useCallback(async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(`/api/family-trees/${familyTreeId}/achievements`).then((res) => {
-				if (!res.ok) throw new Error('Failed to fetch achievements');
-				return res.json();
-			});
+			const data = await FamilyTreeService.getAchievements(familyTreeId);
 			setAchievements(data);
+			setError('');
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
-			toast.error('Failed to load achievements');
 		} finally {
 			setLoading(false);
 		}
@@ -67,10 +65,7 @@ export default function LifeEventsPage() {
 
 	const fetchAchievementTypes = useCallback(async () => {
 		try {
-			const types = await fetch(`/api/family-trees/${familyTreeId}/achievement-types`).then((res) => {
-				if (!res.ok) throw new Error('Failed to fetch achievement types');
-				return res.json();
-			});
+			const types = await FamilyTreeService.getAchievementTypes(familyTreeId);
 			setAchievementTypes(types);
 		} catch (err) {
 			console.error('Failed to fetch achievement types:', err);
@@ -80,14 +75,11 @@ export default function LifeEventsPage() {
 	const fetchPassingRecords = useCallback(async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(`/api/family-trees/${familyTreeId}/passing-records`).then((res) => {
-				if (!res.ok) throw new Error('Failed to fetch passing records');
-				return res.json();
-			});
+			const data = await FamilyTreeService.getPassingRecords(familyTreeId);
 			setPassingRecords(data);
+			setError('');
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
-			toast.error('Failed to load passing records');
 		} finally {
 			setLoading(false);
 		}
@@ -95,28 +87,21 @@ export default function LifeEventsPage() {
 
 	const fetchFamilyMembers = useCallback(async () => {
 		try {
-			const data = await fetch(`/api/family-trees/${familyTreeId}/members`).then((res) => {
-				if (!res.ok) throw new Error('Failed to fetch family members');
-				return res.json();
-			});
+			const data = await FamilyTreeService.getMembers(familyTreeId);
 			setFamilyMembers(data);
 		} catch (err) {
 			console.error('Failed to fetch family members:', err);
-			toast.error('Failed to load family members');
 		}
 	}, [familyTreeId]);
 
 	const fetchLifeEvents = useCallback(async () => {
 		try {
 			setLoading(true);
-			const data = await fetch(`/api/family-trees/${familyTreeId}/life-events`).then((res) => {
-				if (!res.ok) throw new Error('Failed to fetch life events');
-				return res.json();
-			});
+			const data = await FamilyTreeService.getLifeEvents(familyTreeId);
 			setSpouseRelationships(data);
+			setError('');
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'An error occurred');
-			toast.error('Failed to load life events');
 		} finally {
 			setLoading(false);
 		}
@@ -152,6 +137,13 @@ export default function LifeEventsPage() {
 			}
 		}
 	}, [activePanel, activeTab, fetchAchievements, fetchPassingRecords, fetchLifeEvents, fetchFamilyMembers]);
+
+	// Handle errors with intl
+	useEffect(() => {
+		if (error) {
+			toast.error(intl.formatMessage({ id: 'errors.generic' }));
+		}
+	}, [error, intl]);
 
 	// Filter achievements
 	const filteredAchievements = achievements.filter((achievement) => {
@@ -373,11 +365,6 @@ export default function LifeEventsPage() {
 			familyMembers,
 		});
 	};
-
-	if (error) {
-		toast.error(intl.formatMessage({ id: 'errors.generic' }));
-		return null;
-	}
 
 	return (
 		<div className="flex h-full overflow-hidden bg-white">

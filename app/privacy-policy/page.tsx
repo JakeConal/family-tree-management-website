@@ -19,10 +19,7 @@ export default function PrivacyPolicy() {
 
 				<div className="prose prose-gray max-w-none">
 					<p className="text-gray-600 mb-6">
-						<FormattedMessage
-							id="privacy.lastUpdated"
-							defaultMessage="Last updated: January 5, 2026"
-						/>
+						<FormattedMessage id="privacy.lastUpdated" defaultMessage="Last updated: January 5, 2026" />
 					</p>
 
 					<section className="mb-8">

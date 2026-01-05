@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
+import { FamilyTreeService } from '@/lib/services';
 import { FamilyMember } from '@/types';
 
 interface BirthRecord {
@@ -61,43 +62,42 @@ export default function BirthPanel({
 
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/family-trees/${familyTreeId}/birth-records/${childMemberId}`);
-			// const data = await FamilyTreeService.getBirthRecords(familyTreeId, childMemberId);
-			if (res.ok) {
-				const data = await res.json();
-				setBirthRecord(data);
+			const data = await FamilyTreeService.getBirthRecord(familyTreeId, childMemberId);
+			setBirthRecord(data);
 
-				// Populate form data
-				setFormData({
-					birthDate: data.birthDate ? new Date(data.birthDate).toISOString().split('T')[0] : '',
-				});
+			// Populate form data
+			setFormData({
+				birthDate: data.birthDate ? new Date(data.birthDate).toISOString().split('T')[0] : '',
+			});
 
-				// Set child birth date for validation
-				const childMember = familyMembers.find((m) => m.id === data.child.id);
-				if (childMember?.birthday) {
-					setSelectedChildBirthDate(new Date(childMember.birthday).toISOString().split('T')[0]);
-				}
+			// Set child birth date for validation
+			const childMember = familyMembers.find((m) => m.id === data.child.id);
+			if (childMember?.birthday) {
+				setSelectedChildBirthDate(new Date(childMember.birthday).toISOString().split('T')[0]);
+			}
 
-				// Set parent birth date
-				if (data.parent?.birthday) {
-					setParentBirthDate(new Date(data.parent.birthday).toISOString().split('T')[0]);
-				}
-			} else {
-				toast.error(intl.formatMessage({ id: 'error.generic' }));
-				onClose();
+			// Set parent birth date
+			if (data.parent?.birthday) {
+				setParentBirthDate(new Date(data.parent.birthday).toISOString().split('T')[0]);
 			}
 		} catch (error) {
 			console.error('Error fetching birth record:', error);
-			toast.error(intl.formatMessage({ id: 'error.generic' }));
-			onClose();
+			setBirthRecord(null);
 		} finally {
 			setLoading(false);
 		}
-	}, [childMemberId, familyTreeId, familyMembers, onClose, intl]);
+	}, [childMemberId, familyTreeId, familyMembers]);
 
 	useEffect(() => {
 		fetchBirthRecord();
 	}, [fetchBirthRecord]);
+
+	useEffect(() => {
+		if (!loading && !birthRecord && childMemberId) {
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			onClose();
+		}
+	}, [loading, birthRecord, childMemberId, intl, onClose]);
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
