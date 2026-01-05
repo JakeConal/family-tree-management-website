@@ -28,7 +28,12 @@ export default function GenerateAccessCodePanel({
 	const abortControllerRef = useRef<AbortController | null>(null);
 
 	useEffect(() => {
-		// Only generate once when component mounts
+		// Reset state when memberId changes
+		setAccessCode('');
+		hasGeneratedRef.current = false;
+		isGeneratingRef.current = false;
+
+		// Only generate once per member
 		if (hasGeneratedRef.current || isGeneratingRef.current) {
 			return;
 		}
@@ -84,7 +89,7 @@ export default function GenerateAccessCodePanel({
 
 		generateAccessCode();
 
-		// Cleanup: cancel request if component unmounts
+		// Cleanup: cancel request if component unmounts or memberId changes
 		return () => {
 			if (abortControllerRef.current) {
 				abortControllerRef.current.abort();
@@ -93,7 +98,7 @@ export default function GenerateAccessCodePanel({
 			isGeneratingRef.current = false;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []); // Empty dependency array - only run once on mount
+	}, [memberId]); // Re-run when memberId changes
 
 	const handleCopy = async () => {
 		try {
