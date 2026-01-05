@@ -237,6 +237,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			});
 		});
 
+		// Check if passing record was created successfully
+		if (!passingRecord) {
+			throw new Error('Failed to create passing record');
+		}
+
 		// Log the passing record creation
 		await logChange('PassingRecord', passingRecord.id, 'CREATE', familyTreeId, sessionData.user.id, null, {
 			familyMemberName: passingRecord.familyMember.fullName,
