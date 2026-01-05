@@ -2,6 +2,7 @@ import { FamilyMember } from '@prisma/client';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface ExtendedFamilyMember extends FamilyMember {
 	hasProfilePicture?: boolean;
@@ -23,11 +24,13 @@ export default function DivorcedSpousesModal({
 	memberName,
 	onSpouseClick,
 }: DivorcedSpousesModalProps) {
+	const intl = useIntl();
+
 	if (!isOpen) return null;
 
 	const formatDate = (date: Date | null | undefined) => {
-		if (!date) return 'Unknown';
-		return new Intl.DateTimeFormat('en-US', {
+		if (!date) return intl.formatMessage({ id: 'modal.divorcedSpouses.unknown' });
+		return new Intl.DateTimeFormat(intl.locale, {
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric',
@@ -47,8 +50,14 @@ export default function DivorcedSpousesModal({
 			>
 				{/* Header */}
 				<div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-					<h2 className="text-xl font-nunito font-black text-gray-900">Former Spouses of {getFirstName(memberName)}</h2>
-					<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors" aria-label="Close">
+					<h2 className="text-xl font-nunito font-black text-gray-900">
+						<FormattedMessage id="modal.divorcedSpouses.titleOf" values={{ name: getFirstName(memberName) }} />
+					</h2>
+					<button
+						onClick={onClose}
+						className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+						aria-label={intl.formatMessage({ id: 'modal.divorcedSpouses.close' })}
+					>
 						<X className="w-5 h-5 text-gray-600" />
 					</button>
 				</div>
@@ -56,7 +65,9 @@ export default function DivorcedSpousesModal({
 				{/* Content */}
 				<div className="px-6 py-4 overflow-y-auto max-h-[calc(80vh-80px)]">
 					{spouses.length === 0 ? (
-						<div className="text-center py-8 text-gray-500">No divorced spouses found</div>
+						<div className="text-center py-8 text-gray-500">
+							<FormattedMessage id="modal.divorcedSpouses.noSpouses" />
+						</div>
 					) : (
 						<div className="space-y-3">
 							{spouses.map((spouse) => (
@@ -71,7 +82,7 @@ export default function DivorcedSpousesModal({
 									}}
 								>
 									{/* Profile Picture */}
-									<div className="flex-shrink-0">
+									<div className="shrink-0">
 										<div className="w-16 h-16 rounded-xl bg-white shadow-sm overflow-hidden flex items-center justify-center border-2 border-gray-100">
 											{spouse.hasProfilePicture ? (
 												<Image
@@ -95,16 +106,27 @@ export default function DivorcedSpousesModal({
 										<h3 className="font-nunito font-black text-lg text-gray-900 truncate">{spouse.fullName}</h3>
 										<div className="flex items-center gap-2 mt-1">
 											<span className="text-xs font-inter font-semibold text-gray-600">
-												{spouse.gender === 'MALE' ? 'Ex-Husband' : 'Ex-Wife'}
+												<FormattedMessage
+													id={
+														spouse.gender === 'MALE'
+															? 'modal.divorcedSpouses.exHusband'
+															: 'modal.divorcedSpouses.exWife'
+													}
+												/>
 											</span>
 										</div>
 										{spouse.divorceDate && (
-											<div className="text-xs text-gray-600 mt-1">Divorced: {formatDate(spouse.divorceDate)}</div>
+											<div className="text-xs text-gray-600 mt-1">
+												<FormattedMessage
+													id="modal.divorcedSpouses.divorced"
+													values={{ date: formatDate(spouse.divorceDate) }}
+												/>
+											</div>
 										)}
 									</div>
 
 									{/* Arrow */}
-									<div className="flex-shrink-0">
+									<div className="shrink-0">
 										<svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 										</svg>

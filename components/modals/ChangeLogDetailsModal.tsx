@@ -3,6 +3,7 @@
 import classNames from 'classnames';
 import { X, Clock, User, FileText, Trophy, Briefcase, Heart, Skull } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import {
@@ -19,6 +20,7 @@ import {
 import { ChangeLogDetailsModalProps } from '@/types/ui';
 
 export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: ChangeLogDetailsModalProps) {
+	const intl = useIntl();
 	const [relatedMembers, setRelatedMembers] = useState<{
 		[key: number]: { fullName: string };
 	}>({});
@@ -129,14 +131,14 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 		if (action === 'CREATE' && newData) {
 			changes.push({
-				field: 'Name',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.name' }),
 				oldValue: null,
 				newValue: newData.fullName,
 				type: 'text',
 			});
 			if (newData.birthday) {
 				changes.push({
-					field: 'Birthday',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.birthday' }),
 					oldValue: null,
 					newValue: new Date(newData.birthday).toLocaleDateString(),
 					type: 'date',
@@ -144,7 +146,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.gender) {
 				changes.push({
-					field: 'Gender',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.gender' }),
 					oldValue: null,
 					newValue: newData.gender,
 					type: 'text',
@@ -152,7 +154,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.address) {
 				changes.push({
-					field: 'Address',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.address' }),
 					oldValue: null,
 					newValue: newData.address,
 					type: 'text',
@@ -160,7 +162,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.generation) {
 				changes.push({
-					field: 'Generation',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.generation' }),
 					oldValue: null,
 					newValue: String(newData.generation),
 					type: 'text',
@@ -168,21 +170,39 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.isAdopted !== undefined) {
 				changes.push({
-					field: 'Adopted',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.adopted' }),
 					oldValue: null,
-					newValue: newData.isAdopted ? 'Yes' : 'No',
+					newValue: newData.isAdopted
+						? intl.formatMessage({ id: 'modal.changeLogDetails.values.yes' })
+						: intl.formatMessage({ id: 'modal.changeLogDetails.values.no' }),
 					type: 'boolean',
 				});
 			}
 		} else if (action === 'UPDATE') {
 			const fields = [
-				{ key: 'fullName', label: 'Name', type: 'text' },
-				{ key: 'birthday', label: 'Birthday', type: 'date' },
-				{ key: 'gender', label: 'Gender', type: 'text' },
-				{ key: 'address', label: 'Address', type: 'text' },
-				{ key: 'generation', label: 'Generation', type: 'text' },
-				{ key: 'isAdopted', label: 'Adopted', type: 'boolean' },
-				{ key: 'profilePicture', label: 'Profile Picture', type: 'text' },
+				{ key: 'fullName', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.name' }), type: 'text' },
+				{
+					key: 'birthday',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.birthday' }),
+					type: 'date',
+				},
+				{ key: 'gender', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.gender' }), type: 'text' },
+				{ key: 'address', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.address' }), type: 'text' },
+				{
+					key: 'generation',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.generation' }),
+					type: 'text',
+				},
+				{
+					key: 'isAdopted',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.adopted' }),
+					type: 'boolean',
+				},
+				{
+					key: 'profilePicture',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.profilePicture' }),
+					type: 'text',
+				},
 			];
 
 			fields.forEach(({ key, label, type }) => {
@@ -192,8 +212,14 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 					if (type === 'date' && oldValue) oldValue = new Date(oldValue as string).toLocaleDateString();
 					if (type === 'date' && newValue) newValue = new Date(newValue as string).toLocaleDateString();
-					if (type === 'boolean' && oldValue !== undefined) oldValue = oldValue ? 'Yes' : 'No';
-					if (type === 'boolean' && newValue !== undefined) newValue = newValue ? 'Yes' : 'No';
+					if (type === 'boolean' && oldValue !== undefined)
+						oldValue = oldValue
+							? intl.formatMessage({ id: 'modal.changeLogDetails.values.yes' })
+							: intl.formatMessage({ id: 'modal.changeLogDetails.values.no' });
+					if (type === 'boolean' && newValue !== undefined)
+						newValue = newValue
+							? intl.formatMessage({ id: 'modal.changeLogDetails.values.yes' })
+							: intl.formatMessage({ id: 'modal.changeLogDetails.values.no' });
 
 					changes.push({
 						field: label,
@@ -217,23 +243,24 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 		if (action === 'CREATE' && newData) {
 			// Add member information first - use the name stored directly in the change log
-			const memberName = newData.familyMemberName || 'Unknown Member';
+			const memberName =
+				newData.familyMemberName || intl.formatMessage({ id: 'modal.changeLogDetails.values.unknownMember' });
 			changes.push({
-				field: 'Family Member',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.familyMember' }),
 				oldValue: null,
 				newValue: memberName,
 				type: 'text',
 			});
 
 			changes.push({
-				field: 'Title',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.title' }),
 				oldValue: null,
 				newValue: newData.title,
 				type: 'text',
 			});
 			if (newData.achieveDate) {
 				changes.push({
-					field: 'Achievement Date',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.achievementDate' }),
 					oldValue: null,
 					newValue: new Date(newData.achieveDate).toLocaleDateString(),
 					type: 'date',
@@ -241,7 +268,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.description) {
 				changes.push({
-					field: 'Description',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.description' }),
 					oldValue: null,
 					newValue: newData.description,
 					type: 'text',
@@ -249,9 +276,17 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 		} else if (action === 'UPDATE') {
 			const fields = [
-				{ key: 'title', label: 'Title', type: 'text' },
-				{ key: 'achieveDate', label: 'Achievement Date', type: 'date' },
-				{ key: 'description', label: 'Description', type: 'text' },
+				{ key: 'title', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.title' }), type: 'text' },
+				{
+					key: 'achieveDate',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.achievementDate' }),
+					type: 'date',
+				},
+				{
+					key: 'description',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.description' }),
+					type: 'text',
+				},
 			];
 
 			fields.forEach(({ key, label, type }) => {
@@ -286,25 +321,26 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			// Add member information first
 			const member1Id = newData.familyMember1Id;
 			const member2Id = newData.familyMember2Id;
-			const member1Name = member1Id ? relatedMembers[member1Id]?.fullName || `Member #${member1Id}` : 'Unknown';
-			const member2Name = member2Id ? relatedMembers[member2Id]?.fullName || `Member #${member2Id}` : 'Unknown';
+			const unknownText = intl.formatMessage({ id: 'modal.changeLogDetails.values.unknown' });
+			const member1Name = member1Id ? relatedMembers[member1Id]?.fullName || `Member #${member1Id}` : unknownText;
+			const member2Name = member2Id ? relatedMembers[member2Id]?.fullName || `Member #${member2Id}` : unknownText;
 			changes.push({
-				field: 'Partner 1',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.partner1' }),
 				oldValue: null,
 				newValue: member1Name,
 				type: 'text',
 			});
 			changes.push({
-				field: 'Partner 2',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.partner2' }),
 				oldValue: null,
 				newValue: member2Name,
 				type: 'text',
 			});
 
 			changes.push({
-				field: 'Marriage Date',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.marriageDate' }),
 				oldValue: null,
-				newValue: newData.marriageDate ? new Date(newData.marriageDate).toLocaleDateString() : 'Unknown',
+				newValue: newData.marriageDate ? new Date(newData.marriageDate).toLocaleDateString() : unknownText,
 				type: 'date',
 			});
 		}
@@ -321,14 +357,14 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 		if (action === 'CREATE' && newData) {
 			changes.push({
-				field: 'Job Title',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.jobTitle' }),
 				oldValue: null,
 				newValue: newData.jobTitle,
 				type: 'text',
 			});
 			if (newData.startDate) {
 				changes.push({
-					field: 'Start Date',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.startDate' }),
 					oldValue: null,
 					newValue: new Date(newData.startDate).toLocaleDateString(),
 					type: 'date',
@@ -336,7 +372,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 			if (newData.endDate) {
 				changes.push({
-					field: 'End Date',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.endDate' }),
 					oldValue: null,
 					newValue: new Date(newData.endDate).toLocaleDateString(),
 					type: 'date',
@@ -344,9 +380,13 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			}
 		} else if (action === 'UPDATE') {
 			const fields = [
-				{ key: 'jobTitle', label: 'Job Title', type: 'text' },
-				{ key: 'startDate', label: 'Start Date', type: 'date' },
-				{ key: 'endDate', label: 'End Date', type: 'date' },
+				{ key: 'jobTitle', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.jobTitle' }), type: 'text' },
+				{
+					key: 'startDate',
+					label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.startDate' }),
+					type: 'date',
+				},
+				{ key: 'endDate', label: intl.formatMessage({ id: 'modal.changeLogDetails.fields.endDate' }), type: 'date' },
 			];
 
 			fields.forEach(({ key, label, type }) => {
@@ -379,9 +419,10 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 		if (action === 'CREATE' && newData) {
 			// Add member information first - use the name stored directly in the change log
-			const memberName = newData.familyMemberName || 'Unknown Member';
+			const memberName =
+				newData.familyMemberName || intl.formatMessage({ id: 'modal.changeLogDetails.values.unknownMember' });
 			changes.push({
-				field: 'Family Member',
+				field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.familyMember' }),
 				oldValue: null,
 				newValue: memberName,
 				type: 'text',
@@ -389,17 +430,18 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 
 			if (newData.dateOfPassing || newData.passingDate) {
 				const passingDate = newData.dateOfPassing || newData.passingDate;
+				const unknownText = intl.formatMessage({ id: 'modal.changeLogDetails.values.unknown' });
 				changes.push({
-					field: 'Date of Passing',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.dateOfPassing' }),
 					oldValue: null,
-					newValue: passingDate ? new Date(passingDate).toLocaleDateString() : 'Unknown',
+					newValue: passingDate ? new Date(passingDate).toLocaleDateString() : unknownText,
 					type: 'date',
 				});
 			}
 
 			if (newData.causeOfDeath && Array.isArray(newData.causeOfDeath)) {
 				changes.push({
-					field: 'Cause of Death',
+					field: intl.formatMessage({ id: 'modal.changeLogDetails.fields.causeOfDeath' }),
 					oldValue: null,
 					newValue: Array.isArray(newData.causeOfDeath) ? newData.causeOfDeath.join(', ') : newData.causeOfDeath,
 					type: 'text',
@@ -409,13 +451,13 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 			if (newData.burialPlaces && Array.isArray(newData.burialPlaces)) {
 				newData.burialPlaces.forEach((place: BurialPlace, index: number) => {
 					changes.push({
-						field: `Burial Place ${index + 1} - Location`,
+						field: `${intl.formatMessage({ id: 'modal.changeLogDetails.fields.burialPlace' })} ${index + 1} - ${intl.formatMessage({ id: 'modal.changeLogDetails.fields.location' })}`,
 						oldValue: null,
 						newValue: place.location,
 						type: 'text',
 					});
 					changes.push({
-						field: `Burial Place ${index + 1} - Start Date`,
+						field: `${intl.formatMessage({ id: 'modal.changeLogDetails.fields.burialPlace' })} ${index + 1} - ${intl.formatMessage({ id: 'modal.changeLogDetails.fields.startDate' })}`,
 						oldValue: null,
 						newValue: new Date(place.startDate!).toLocaleDateString(),
 						type: 'date',
@@ -500,16 +542,26 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Header */}
-				<div className="px-8 pt-6 pb-4 flex-shrink-0 border-b border-gray-200">
+				<div className="px-8 pt-6 pb-4 shrink-0 border-b border-gray-200">
 					<div className="flex items-center justify-between mb-4">
 						<div className="flex items-center gap-3">
 							<div className={classNames('p-2 rounded-full', getActionColor(changeLog?.action || ''))}>
 								{getEntityIcon(changeLog?.entityType || '')}
 							</div>
 							<div>
-								<h2 className="text-[26px] font-normal text-black">Change Log Details</h2>
+								<h2 className="text-[26px] font-normal text-black">
+									<FormattedMessage id="modal.changeLogDetails.title" />
+								</h2>
 								<p className="text-[16px] font-light text-black/70 mt-1">
-									{changeLog?.entityType} {changeLog?.action.toLowerCase()}d
+									<FormattedMessage
+										id="modal.changeLogDetails.subtitle"
+										values={{
+											entityType: changeLog?.entityType,
+											action: changeLog?.action
+												? intl.formatMessage({ id: `modal.changeLogDetails.actions.${changeLog.action.toLowerCase()}` })
+												: '',
+										}}
+									/>
 								</p>
 							</div>
 						</div>
@@ -524,19 +576,25 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 					{/* Basic Information */}
 					<div className="grid grid-cols-2 gap-6">
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Entity Type</label>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								<FormattedMessage id="modal.changeLogDetails.entityType" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 text-[14px] text-black">
 								{changeLog?.entityType}
 							</div>
 						</div>
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Entity ID</label>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								<FormattedMessage id="modal.changeLogDetails.entityId" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 text-[14px] text-black">
 								{changeLog?.entityId}
 							</div>
 						</div>
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Action</label>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								<FormattedMessage id="modal.changeLogDetails.action" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2">
 								<span
 									className={`inline-flex px-3 py-1 text-[12px] font-medium rounded-full ${getActionColor(
@@ -548,7 +606,9 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 							</div>
 						</div>
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Timestamp</label>
+							<label className="block text-[16px] font-normal text-black mb-2">
+								<FormattedMessage id="modal.changeLogDetails.timestamp" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[20px] px-4 py-2 flex items-center gap-2">
 								<Clock className="w-4 h-4 text-black/50" />
 								<p className="text-[14px] text-black">
@@ -573,7 +633,7 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 						) {
 							return (
 								<div className="py-8 relative">
-									<LoadingScreen message="Loading member information..." />
+									<LoadingScreen message={intl.formatMessage({ id: 'modal.changeLogDetails.loadingMembers' })} />
 								</div>
 							);
 						}
@@ -582,21 +642,30 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 							return (
 								<div className="text-center py-8">
 									<FileText className="w-12 h-12 text-black/30 mx-auto mb-4" />
-									<p className="text-[16px] font-normal text-black/70">No detailed change data available</p>
+									<p className="text-[16px] font-normal text-black/70">
+										<FormattedMessage id="modal.changeLogDetails.noData" />
+									</p>
 								</div>
 							);
 						}
 
+						const getSectionTitleKey = (action: string) => {
+							switch (action) {
+								case 'CREATE':
+									return 'modal.changeLogDetails.sectionTitles.addedInformation';
+								case 'UPDATE':
+									return 'modal.changeLogDetails.sectionTitles.changesMade';
+								case 'DELETE':
+									return 'modal.changeLogDetails.sectionTitles.removedInformation';
+								default:
+									return 'modal.changeLogDetails.sectionTitles.details';
+							}
+						};
+
 						return (
 							<div>
 								<label className="block text-[18px] font-normal text-black mb-4">
-									{changeLog?.action === 'CREATE'
-										? 'Added Information'
-										: changeLog?.action === 'UPDATE'
-											? 'Changes Made'
-											: changeLog?.action === 'DELETE'
-												? 'Removed Information'
-												: 'Details'}
+									<FormattedMessage id={getSectionTitleKey(changeLog?.action || '')} />
 								</label>
 								<div className="space-y-4">
 									{changes.map((change, index) => (
@@ -605,17 +674,17 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 												<span className="text-[16px] font-medium text-black">{change.field}</span>
 												{change.oldValue !== null && change.newValue !== null && (
 													<span className="text-[12px] text-blue-600 bg-blue-100 px-3 py-1 rounded-full font-medium">
-														Updated
+														<FormattedMessage id="modal.changeLogDetails.badges.updated" />
 													</span>
 												)}
 												{change.oldValue === null && change.newValue !== null && (
 													<span className="text-[12px] text-green-600 bg-green-100 px-3 py-1 rounded-full font-medium">
-														Added
+														<FormattedMessage id="modal.changeLogDetails.badges.added" />
 													</span>
 												)}
 												{change.oldValue !== null && change.newValue === null && (
 													<span className="text-[12px] text-red-600 bg-red-100 px-3 py-1 rounded-full font-medium">
-														Removed
+														<FormattedMessage id="modal.changeLogDetails.badges.removed" />
 													</span>
 												)}
 											</div>
@@ -623,9 +692,15 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 											<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 												{change.oldValue !== null && (
 													<div className="bg-red-50 border border-red-200 rounded-[15px] p-3">
-														<p className="text-[12px] text-red-600 font-medium mb-1">Before</p>
+														<p className="text-[12px] text-red-600 font-medium mb-1">
+															<FormattedMessage id="modal.changeLogDetails.comparison.before" />
+														</p>
 														<p className="text-[14px] text-red-800">
-															{change.oldValue || <span className="italic text-gray-500">Empty</span>}
+															{change.oldValue || (
+																<span className="italic text-gray-500">
+																	<FormattedMessage id="modal.changeLogDetails.values.empty" />
+																</span>
+															)}
 														</p>
 													</div>
 												)}
@@ -633,10 +708,20 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 												{change.newValue !== null && (
 													<div className="bg-green-50 border border-green-200 rounded-[15px] p-3">
 														<p className="text-[12px] text-green-600 font-medium mb-1">
-															{change.oldValue !== null ? 'After' : 'Value'}
+															<FormattedMessage
+																id={
+																	change.oldValue !== null
+																		? 'modal.changeLogDetails.comparison.after'
+																		: 'modal.changeLogDetails.comparison.value'
+																}
+															/>
 														</p>
 														<p className="text-[14px] text-green-800">
-															{change.newValue || <span className="italic text-gray-500">Empty</span>}
+															{change.newValue || (
+																<span className="italic text-gray-500">
+																	<FormattedMessage id="modal.changeLogDetails.values.empty" />
+																</span>
+															)}
 														</p>
 													</div>
 												)}
@@ -652,12 +737,14 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 					{(changeLog?.oldValues || changeLog?.newValues) && (
 						<details className="mt-6">
 							<summary className="text-[14px] font-normal text-black/70 cursor-pointer hover:text-black">
-								Raw JSON Data (Technical Details)
+								<FormattedMessage id="modal.changeLogDetails.rawJson.summary" />
 							</summary>
 							<div className="mt-3 space-y-3">
 								{changeLog?.oldValues && (
 									<div>
-										<label className="text-[12px] font-medium text-black/50 mb-1 block">Previous Values (JSON)</label>
+										<label className="text-[12px] font-medium text-black/50 mb-1 block">
+											<FormattedMessage id="modal.changeLogDetails.rawJson.previousValues" />
+										</label>
 										<div className="bg-[#f3f2f2] border border-black/30 rounded-[15px] p-3">
 											<pre className="text-[12px] text-black whitespace-pre-wrap font-mono overflow-x-auto">
 												{formatJSON(changeLog.oldValues)}
@@ -667,7 +754,9 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 								)}
 								{changeLog?.newValues && (
 									<div>
-										<label className="text-[12px] font-medium text-black/50 mb-1 block">New Values (JSON)</label>
+										<label className="text-[12px] font-medium text-black/50 mb-1 block">
+											<FormattedMessage id="modal.changeLogDetails.rawJson.newValues" />
+										</label>
 										<div className="bg-[#f3f2f2] border border-black/30 rounded-[15px] p-3">
 											<pre className="text-[12px] text-black whitespace-pre-wrap font-mono overflow-x-auto">
 												{formatJSON(changeLog.newValues)}
@@ -681,12 +770,12 @@ export default function ChangeLogDetailsModal({ isOpen, onClose, changeLog }: Ch
 				</div>
 
 				{/* Footer */}
-				<div className="flex justify-end px-8 py-6 border-t border-gray-200 flex-shrink-0">
+				<div className="flex justify-end px-8 py-6 border-t border-gray-200 shrink-0">
 					<button
 						onClick={onClose}
-						className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
+						className="w-23.75 h-10 border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 					>
-						Close
+						<FormattedMessage id="modal.changeLogDetails.close" />
 					</button>
 				</div>
 			</div>

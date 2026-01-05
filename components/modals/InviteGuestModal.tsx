@@ -3,6 +3,7 @@
 import { Check, Copy, X } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -15,6 +16,7 @@ interface InviteGuestModalProps {
 }
 
 export default function InviteGuestModal({ isOpen, onClose, familyTreeId, familyMembers }: InviteGuestModalProps) {
+	const intl = useIntl();
 	const [selectedMemberId, setSelectedMemberId] = useState<string>('');
 	const [accessCode, setAccessCode] = useState<string>('');
 	const [isGenerating, setIsGenerating] = useState(false);
@@ -23,7 +25,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 	const handleGenerate = async () => {
 		if (!selectedMemberId) {
-			toast.error('Please select a member');
+			toast.error(intl.formatMessage({ id: 'modal.inviteGuest.selectMember' }));
 			return;
 		}
 
@@ -43,17 +45,17 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 			const data = await response.json();
 
 			if (!response.ok) {
-				toast.error(data.error || 'Unable to generate access code');
+				toast.error(data.error || intl.formatMessage({ id: 'modal.inviteGuest.generatedError' }));
 				setIsGenerating(false);
 				return;
 			}
 
 			setAccessCode(data.accessCode);
 			setExpiresAt(data.expiresAt);
-			toast.success('Access code generated successfully!');
+			toast.success(intl.formatMessage({ id: 'modal.inviteGuest.generatedSuccess' }));
 		} catch (error) {
 			console.error('Error generating access code:', error);
-			toast.error('An error occurred while generating code');
+			toast.error(intl.formatMessage({ id: 'modal.inviteGuest.errorOccurred' }));
 		} finally {
 			setIsGenerating(false);
 		}
@@ -63,11 +65,11 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 		try {
 			await navigator.clipboard.writeText(accessCode);
 			setCopied(true);
-			toast.success('Access code copied!');
+			toast.success(intl.formatMessage({ id: 'modal.inviteGuest.copySuccess' }));
 			setTimeout(() => setCopied(false), 2000);
 		} catch (error) {
 			console.error('Error copying to clipboard:', error);
-			toast.error('Unable to copy');
+			toast.error(intl.formatMessage({ id: 'modal.inviteGuest.copyError' }));
 		}
 	};
 
@@ -81,7 +83,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 	const formatExpiryDate = (isoString: string) => {
 		const date = new Date(isoString);
-		return date.toLocaleString('vi-VN', {
+		return date.toLocaleString(intl.locale, {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric',
@@ -105,21 +107,25 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 				{/* Header */}
 				<div className="mb-6">
-					<h2 className="text-2xl font-bold text-gray-900 mb-2">Invite Guest to Edit</h2>
+					<h2 className="text-2xl font-bold text-gray-900 mb-2">
+						<FormattedMessage id="modal.inviteGuest.title" />
+					</h2>
 					<p className="text-sm text-gray-600">
-						Generate an access code to allow family members to view the family tree and edit their own profile
+						<FormattedMessage id="modal.inviteGuest.subtitle" />
 					</p>
 				</div>
 
 				{isGenerating ? (
 					<div className="py-8">
-						<LoadingScreen message="Generating access code..." />
+						<LoadingScreen message={intl.formatMessage({ id: 'modal.inviteGuest.generating' })} />
 					</div>
 				) : accessCode ? (
 					/* Display generated code */
 					<div className="space-y-4">
 						<div className="bg-green-50 border border-green-200 rounded-lg p-4">
-							<p className="text-sm font-medium text-green-800 mb-2">Access code generated!</p>
+							<p className="text-sm font-medium text-green-800 mb-2">
+								<FormattedMessage id="modal.inviteGuest.codeGenerated" />
+							</p>
 							<div className="bg-white rounded-lg p-3 font-mono text-sm break-all border border-green-300">
 								{accessCode}
 							</div>
@@ -132,28 +138,39 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 							{copied ? (
 								<>
 									<Check className="w-5 h-5" />
-									<span>Copied!</span>
+									<span>
+										<FormattedMessage id="modal.inviteGuest.copied" />
+									</span>
 								</>
 							) : (
 								<>
 									<Copy className="w-5 h-5" />
-									<span>Copy Code</span>
+									<span>
+										<FormattedMessage id="modal.inviteGuest.copyCode" />
+									</span>
 								</>
 							)}
 						</button>
 
 						<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
 							<p className="text-sm text-yellow-800">
-								<strong>Note:</strong> This code will expire after 48 hours
+								<strong>
+									<FormattedMessage id="modal.inviteGuest.noteLabel" />
+								</strong>{' '}
+								<FormattedMessage id="modal.inviteGuest.expiryNote" />
 							</p>
-							{expiresAt && <p className="text-xs text-yellow-700 mt-1">Expires at: {formatExpiryDate(expiresAt)}</p>}
+							{expiresAt && (
+								<p className="text-xs text-yellow-700 mt-1">
+									<FormattedMessage id="modal.inviteGuest.expiresAt" values={{ date: formatExpiryDate(expiresAt) }} />
+								</p>
+							)}
 						</div>
 
 						<button
 							onClick={handleClose}
 							className="w-full py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
 						>
-							Đóng
+							<FormattedMessage id="modal.inviteGuest.close" />
 						</button>
 					</div>
 				) : (
@@ -161,7 +178,7 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 					<div className="space-y-4">
 						<div>
 							<label htmlFor="member-select" className="block text-sm font-medium text-gray-900 mb-2">
-								Select Member
+								<FormattedMessage id="modal.inviteGuest.selectMemberDropdown" />
 							</label>
 							<select
 								id="member-select"
@@ -169,10 +186,15 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 								onChange={(e) => setSelectedMemberId(e.target.value)}
 								className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
 							>
-								<option value="">-- Select Member --</option>
+								<option value="">
+									<FormattedMessage id="modal.inviteGuest.selectMemberPlaceholder" />
+								</option>
 								{familyMembers.map((member) => (
 									<option key={member.id} value={member.id}>
-										{member.fullName} {member.generation ? `(Generation ${member.generation})` : ''}
+										{member.fullName}{' '}
+										{member.generation
+											? `(${intl.formatMessage({ id: 'modal.inviteGuest.generation' }, { number: member.generation })})`
+											: ''}
 									</option>
 								))}
 							</select>
@@ -180,8 +202,10 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 
 						<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 							<p className="text-sm text-blue-800">
-								<strong>Info:</strong> The selected member will be able to view the entire family tree but can only edit
-								their own profile.
+								<strong>
+									<FormattedMessage id="modal.inviteGuest.infoLabel" />
+								</strong>{' '}
+								<FormattedMessage id="modal.inviteGuest.infoText" />
 							</p>
 						</div>
 
@@ -190,14 +214,14 @@ export default function InviteGuestModal({ isOpen, onClose, familyTreeId, family
 								onClick={handleClose}
 								className="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
 							>
-								Cancel
+								<FormattedMessage id="modal.inviteGuest.cancel" />
 							</button>
 							<button
 								onClick={handleGenerate}
 								disabled={!selectedMemberId}
 								className="flex-1 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Generate Code
+								<FormattedMessage id="modal.inviteGuest.generate" />
 							</button>
 						</div>
 					</div>

@@ -8,7 +8,7 @@
 		},
 		"password": {
 			"label": "Mật khẩu",
-			"placeholder": "mậtkhẩucủabạn"
+			"placeholder": "Mật khẩu của bạn"
 		},
 		"signIn": "Đăng Nhập",
 		"signingIn": "Đang đăng nhập...",

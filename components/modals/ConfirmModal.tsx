@@ -1,6 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface ConfirmModalProps {
 	isOpen: boolean;
@@ -23,14 +24,16 @@ export default function ConfirmModal({
 	onConfirm,
 	title,
 	message,
-	confirmText = 'Confirm',
-	cancelText = 'Cancel',
+	confirmText,
+	cancelText,
 	confirmButtonClass = 'bg-red-600 hover:bg-red-700',
 	isLoading = false,
 	requirePassword = false,
 	password = '',
 	onPasswordChange,
 }: ConfirmModalProps) {
+	const intl = useIntl();
+
 	if (!isOpen) return null;
 
 	const handleConfirm = () => {
@@ -64,7 +67,7 @@ export default function ConfirmModal({
 				{requirePassword && (
 					<div className="mb-6">
 						<label htmlFor="delete-password" className="block text-sm font-medium text-gray-700 mb-2">
-							Enter your password to confirm
+							<FormattedMessage id="modal.confirm.passwordLabel" />
 						</label>
 						<input
 							id="delete-password"
@@ -72,7 +75,7 @@ export default function ConfirmModal({
 							value={password}
 							onChange={(e) => onPasswordChange?.(e.target.value)}
 							className="w-full px-4 py-2 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-							placeholder="Your password"
+							placeholder={intl.formatMessage({ id: 'modal.confirm.passwordPlaceholder' })}
 							disabled={isLoading}
 						/>
 					</div>
@@ -85,14 +88,16 @@ export default function ConfirmModal({
 						disabled={isLoading}
 						className="px-6 py-2 bg-gray-200 text-gray-800 rounded-[10px] font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{cancelText}
+						{cancelText ?? intl.formatMessage({ id: 'modal.confirm.cancel' })}
 					</button>
 					<button
 						onClick={handleConfirm}
 						disabled={isLoading || (requirePassword && !password.trim())}
 						className={`px-6 py-2 text-white rounded-[10px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${confirmButtonClass}`}
 					>
-						{isLoading ? 'Processing...' : confirmText}
+						{isLoading
+							? intl.formatMessage({ id: 'modal.confirm.processing' })
+							: (confirmText ?? intl.formatMessage({ id: 'modal.confirm.confirm' }))}
 					</button>
 				</div>
 			</div>

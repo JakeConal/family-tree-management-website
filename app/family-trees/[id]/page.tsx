@@ -15,7 +15,7 @@ import {
 	Clock,
 } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
@@ -52,8 +52,16 @@ export default function FamilyTreeDashboard() {
 	const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] = useState(false);
 	const [isAllChangeLogsModalOpen, setIsAllChangeLogsModalOpen] = useState(false);
 
-	// Panel state
-	// Removed - now managed globally via usePanel hook
+	// Fetch existing family members for the modal dropdown
+	const fetchExistingMembers = useCallback(async () => {
+		if (!familyTreeId) return;
+		try {
+			const members = await FamilyTreeService.getMembers(familyTreeId);
+			setExistingMembers(members);
+		} catch (error) {
+			console.error('Error fetching existing members:', error);
+		}
+	}, [familyTreeId]);
 
 	// Fetch real dashboard data
 	useEffect(() => {
@@ -157,138 +165,13 @@ export default function FamilyTreeDashboard() {
 
 	// Fetch existing family members when page loads
 	useEffect(() => {
-		if (familyTreeId) {
-			fetchExistingMembers();
-		}
-	}, [familyTreeId]);
+		fetchExistingMembers();
+	}, [familyTreeId, fetchExistingMembers]);
 
 	const calculateAge = (establishYear?: number | null) => {
 		if (!establishYear) return null;
 		const currentYear = new Date().getFullYear();
 		return currentYear - establishYear;
-	};
-
-	// Fetch existing family members for the modal dropdown
-	const fetchExistingMembers = async () => {
-		try {
-			const members = await FamilyTreeService.getMembers(familyTreeId);
-			setExistingMembers(members);
-		} catch (error) {
-			console.error('Error fetching existing members:', error);
-		}
-	};
-
-	// Fetch all dashboard data
-	const fetchFamilyTreeData = async () => {
-		try {
-			const familyTreeData = await FamilyTreeService.getById(familyTreeId);
-			setFamilyTree(familyTreeData);
-		} catch (error) {
-			console.error('Error fetching family tree:', error);
-		}
-	};
-
-	const fetchStatistics = async () => {
-		try {
-			// Fetch family members for statistics
-			const members = await FamilyMemberService.getAll({ familyTreeId });
-
-			// Calculate statistics from real data
-			const totalMembers = members.length;
-			const livingMembers = members.filter(
-				(member: FamilyMember) => !member.passingRecords || member.passingRecords.length === 0
-			).length;
-			const totalGenerations = Math.max(
-				...members.map((member: FamilyMember) => (member.generation ? parseInt(member.generation.toString()) : 1)),
-				1
-			);
-
-			// Fetch change logs to calculate trends
-			const changeLogs: ChangeLog[] = await ChangeLogService.getByFamilyTreeId(familyTreeId);
-
-			// Calculate trends from change logs (last 30 days)
-			const thirtyDaysAgo = new Date();
-			thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-			const recentLogs = changeLogs.filter((log) => new Date(log.createdAt) >= thirtyDaysAgo);
-
-			const memberGrowthCount = recentLogs.filter(
-				(log) => log.entityType === 'FamilyMember' && log.action === 'CREATE'
-			).length;
-			const deathTrendCount = recentLogs.filter(
-				(log) => log.entityType === 'PassingRecord' && log.action === 'CREATE'
-			).length;
-			const marriagesCount = recentLogs.filter(
-				(log) => log.entityType === 'SpouseRelationship' && log.action === 'CREATE'
-			).length;
-			const divorcesCount = recentLogs.filter(
-				(log) => log.entityType === 'SpouseRelationship' && log.action === 'DELETE'
-			).length;
-			const achievementGrowthCount = recentLogs.filter(
-				(log) => log.entityType === 'Achievement' && log.action === 'CREATE'
-			).length;
-
-			// For percentages, we need previous period data. For simplicity, use total as base
-			const memberGrowthPercentage = totalMembers > 0 ? Math.round((memberGrowthCount / totalMembers) * 100) : 0;
-			const deathTrendPercentage = totalMembers > 0 ? Math.round((deathTrendCount / totalMembers) * 100) : 0;
-			const achievementGrowthPercentage =
-				totalMembers > 0 ? Math.round((achievementGrowthCount / totalMembers) * 100) : 0;
-
-			const statistics: FamilyStatistics = {
-				totalGenerations,
-				totalMembers,
-				livingMembers,
-				memberGrowth: {
-					count: memberGrowthCount,
-					percentage: memberGrowthPercentage,
-				},
-				deathTrend: {
-					count: deathTrendCount,
-					percentage: deathTrendPercentage,
-				},
-				marriageTrend: { marriages: marriagesCount, divorces: divorcesCount },
-				achievementGrowth: {
-					count: achievementGrowthCount,
-					percentage: achievementGrowthPercentage,
-				},
-			};
-
-			setStatistics(statistics);
-		} catch (error) {
-			console.error('Error fetching statistics:', error);
-		}
-	};
-
-	const fetchActivities = async () => {
-		// Skip fetching change logs for guests
-		if (isGuest) {
-			setChangeLogs([]);
-			return;
-		}
-
-		try {
-			const logs = await ChangeLogService.getByFamilyTreeId(familyTreeId);
-			console.log('Fetched activities - Total logs:', logs.length);
-			console.log(
-				'SpouseRelationship logs:',
-				logs.filter((log: ChangeLog) => log.entityType === 'SpouseRelationship')
-			);
-			setChangeLogs(logs);
-		} catch (error) {
-			console.error('Error fetching change logs:', error);
-			setChangeLogs([]);
-		}
-	};
-
-	// Refresh all dashboard data after panel actions
-	const refreshDashboardData = async () => {
-		try {
-			console.log('Refreshing dashboard data...');
-			await Promise.all([fetchFamilyTreeData(), fetchStatistics(), fetchActivities(), fetchExistingMembers()]);
-			console.log('Dashboard data refreshed successfully');
-		} catch (error) {
-			console.error('Error refreshing dashboard data:', error);
-		}
 	};
 
 	if (!familyTree && !loading) {

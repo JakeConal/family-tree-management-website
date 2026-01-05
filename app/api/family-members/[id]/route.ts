@@ -469,7 +469,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 		}
 
 		// Update the family member
-		const updateData: any = {
+		const updateData: Record<string, unknown> = {
 			fullName: fullName.trim(),
 			gender: validatedGender,
 			birthday: birthday ? new Date(birthday) : null,

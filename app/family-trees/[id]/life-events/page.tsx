@@ -565,7 +565,7 @@ export default function LifeEventsPage() {
 																		: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
 																}
 																description={
-																	record.causeOfDeath?.causeName 
+																	record.causeOfDeath?.causeName
 																		? `Cause: ${record.causeOfDeath.causeName}`
 																		: `Cause: ${intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })}`
 																}

@@ -1,9 +1,11 @@
 {
 	"modal": {
 		"allChangeLogs": {
-			"title": "Nhật Ký Thay Đổi",
+			"title": "Tất Cả Thay Đổi",
 			"filter": "Lọc",
 			"all": "Tất Cả",
+			"month": "Tháng",
+			"year": "Năm",
 			"january": "Tháng Một",
 			"february": "Tháng Hai",
 			"march": "Tháng Ba",
@@ -16,26 +18,46 @@
 			"october": "Tháng Mười",
 			"november": "Tháng Mười Một",
 			"december": "Tháng Mười Hai",
+			"loading": "Đang tải nhật ký thay đổi...",
+			"noLogs": "Không tìm thấy nhật ký thay đổi.",
 			"noChanges": "Không tìm thấy thay đổi",
 			"noChangesDescription": "Không có nhật ký thay đổi để hiển thị",
+			"birthRecorded": "Đã ghi nhận sinh",
+			"addedNewMember": "Đã thêm thành viên mới",
+			"familyMemberUpdated": "Đã cập nhật thông tin thành viên",
+			"familyMemberRemoved": "Đã xóa thành viên",
+			"passingRecordAdded": "Đã thêm hồ sơ qua đời",
+			"achievementRecorded": "Đã ghi nhận thành tích",
+			"marriageRecorded": "Đã ghi nhận kết hôn",
+			"divorceRecorded": "Đã ghi nhận ly hôn",
+			"marriageUpdated": "Đã cập nhật thông tin hôn nhân",
+			"marriageDeleted": "Đã xóa quan hệ hôn nhân",
+			"familyTreeUpdated": "Đã cập nhật thông tin gia phả",
+			"affectedLabel": "Ảnh hưởng: {name}",
 			"back": "Quay lại"
 		},
 		"changeLogDetails": {
 			"title": "Chi Tiết Nhật Ký Thay Đổi",
+			"subtitle": "{entityType} {action}",
 			"entityType": "Loại Thực Thể",
+			"entityId": "ID Thực Thể",
 			"entityTypes": {
 				"familyMember": "Thành Viên Gia Đình",
 				"achievement": "Thành Tích",
 				"divorce": "Ly Hôn",
 				"passingRecord": "Hồ Sơ Mất",
 				"birthPlace": "Nơi Sinh",
-				"occupation": "Nghề Nghiệp"
+				"occupation": "Nghề Nghiệp",
+				"spouseRelationship": "Quan Hệ Vợ Chồng"
 			},
 			"action": "Hành Động",
 			"actions": {
 				"create": "Đã Tạo",
+				"created": "đã tạo",
 				"update": "Đã Cập Nhật",
-				"delete": "Đã Xóa"
+				"updated": "đã cập nhật",
+				"delete": "Đã Xóa",
+				"deleted": "đã xóa"
 			},
 			"changedBy": "Thay Đổi Bởi",
 			"timestamp": "Thời Gian",
@@ -44,42 +66,125 @@
 			"oldValue": "Giá Trị Cũ",
 			"newValue": "Giá Trị Mới",
 			"back": "Quay lại",
-			"close": "Đóng"
+			"close": "Đóng",
+			"loadingMembers": "Đang tải thông tin thành viên...",
+			"noData": "Không có dữ liệu thay đổi chi tiết",
+			"sectionTitles": {
+				"addedInformation": "Thông Tin Đã Thêm",
+				"changesMade": "Thay Đổi Đã Thực Hiện",
+				"removedInformation": "Thông Tin Đã Xóa",
+				"details": "Chi Tiết"
+			},
+			"badges": {
+				"updated": "Đã Cập Nhật",
+				"added": "Đã Thêm",
+				"removed": "Đã Xóa"
+			},
+			"comparison": {
+				"before": "Trước",
+				"after": "Sau",
+				"value": "Giá Trị"
+			},
+			"fields": {
+				"name": "Tên",
+				"birthday": "Ngày Sinh",
+				"gender": "Giới Tính",
+				"address": "Địa Chỉ",
+				"generation": "Thế Hệ",
+				"adopted": "Nhận Nuôi",
+				"profilePicture": "Ảnh Đại Diện",
+				"familyMember": "Thành Viên Gia Đình",
+				"title": "Tiêu Đề",
+				"achievementDate": "Ngày Đạt Thành Tích",
+				"description": "Mô Tả",
+				"partner1": "Đối Tác 1",
+				"partner2": "Đối Tác 2",
+				"marriageDate": "Ngày Kết Hôn",
+				"jobTitle": "Chức Danh Công Việc",
+				"startDate": "Ngày Bắt Đầu",
+				"endDate": "Ngày Kết Thúc",
+				"dateOfPassing": "Ngày Qua Đời",
+				"causeOfDeath": "Nguyên Nhân Tử Vong",
+				"burialPlace": "Nơi An táng",
+				"location": "Vị Trí"
+			},
+			"values": {
+				"yes": "Có",
+				"no": "Không",
+				"empty": "Trống",
+				"unknown": "Không Rõ",
+				"unknownMember": "Thành Viên Không Rõ"
+			},
+			"rawJson": {
+				"summary": "Dữ Liệu JSON Thô (Chi Tiết Kỹ Thuật)",
+				"previousValues": "Giá Trị Trước (JSON)",
+				"newValues": "Giá Trị Mới (JSON)"
+			}
 		},
 		"confirm": {
 			"back": "Quay lại",
 			"cancel": "Hủy",
-			"confirm": "Xác Nhận"
+			"confirm": "Xác Nhận",
+			"processing": "Đang xử lý...",
+			"passwordLabel": "Nhập mật khẩu của bạn để xác nhận",
+			"passwordPlaceholder": "Mật khẩu của bạn"
 		},
 		"divorcedSpouses": {
 			"title": "Cựu Vợ/Chồng",
+			"titleOf": "Cựu Vợ/Chồng của {name}",
 			"exHusband": "Cựu Chồng",
 			"exWife": "Cựu Vợ",
 			"marriageDate": "Ngày Kết Hôn",
 			"divorceDate": "Ngày Ly Hôn",
+			"divorced": "Đã ly hôn: {date}",
+			"noSpouses": "Không tìm thấy cựu vợ/chồng",
+			"unknown": "Không Rõ",
 			"back": "Quay lại",
 			"close": "Đóng"
 		},
 		"generateAccessCode": {
 			"title": "Chia Sẻ Quyền Truy Cập",
+			"subtitle": "Mã truy cập cho {memberName}",
 			"generating": "Đang tạo mã truy cập...",
 			"generatedSuccess": "Mã truy cập đã được tạo thành công!",
+			"foundExisting": "Mã truy cập còn hạn đã được tìm thấy",
 			"generatedError": "Không thể tạo mã truy cập",
+			"errorOccurred": "Đã xảy ra lỗi khi tạo mã",
+			"description1": "Mời mọi người vào cây gia phả này bằng Mã Truy Cập.",
+			"description2": "Họ có thể xem hoặc chỉnh sửa dựa trên quyền bạn chọn bên dưới.",
 			"accessCode": "Mã Truy Cập",
 			"expiresIn": "Hết hạn sau 48 giờ",
+			"permissionNote": "Bất kỳ ai có mã này đều có thể xem toàn bộ cây gia phả và chỉ chỉnh sửa hồ sơ cá nhân của họ.",
+			"copyToClipboard": "Sao chép vào bảng tạm",
 			"copySuccess": "Đã sao chép mã truy cập!",
+			"copyError": "Không thể sao chép",
 			"done": "Xong",
 			"back": "Quay lại"
 		},
 		"inviteGuest": {
 			"title": "Mời Khách Chỉnh Sửa",
+			"subtitle": "Tạo mã truy cập để cho phép thành viên gia đình xem cây gia phả và chỉnh sửa hồ sơ của họ",
 			"selectMember": "Vui lòng chọn thành viên",
-			"selectMemberDropdown": "Chọn thành viên",
-			"selectMemberPlaceholder": "-- Chọn thành viên --",
-			"generate": "Tạo mã",
+			"selectMemberDropdown": "Chọn Thành Viên",
+			"selectMemberPlaceholder": "-- Chọn Thành Viên --",
+			"generation": "Thế hệ {number}",
+			"generating": "Đang tạo mã truy cập...",
+			"codeGenerated": "Mã truy cập đã được tạo!",
+			"copied": "Đã sao chép!",
+			"copyCode": "Sao Chép Mã",
+			"noteLabel": "Lưu ý:",
+			"expiryNote": "Mã này sẽ hết hạn sau 48 giờ",
+			"expiresAt": "Hết hạn lúc: {date}",
+			"infoLabel": "Thông tin:",
+			"infoText": "Thành viên được chọn sẽ có thể xem toàn bộ cây gia phả nhưng chỉ có thể chỉnh sửa hồ sơ của họ.",
+			"generate": "Tạo Mã",
 			"cancel": "Hủy",
 			"close": "Đóng",
-			"copySuccess": "Đã sao chép mã truy cập!"
+			"copySuccess": "Đã sao chép mã truy cập!",
+			"copyError": "Không thể sao chép",
+			"generatedSuccess": "Mã truy cập đã được tạo thành công!",
+			"generatedError": "Không thể tạo mã truy cập",
+			"errorOccurred": "Đã xảy ra lỗi khi tạo mã"
 		},
 		"changeLog": {
 			"title": "Lịch Sử Thay Đổi",
