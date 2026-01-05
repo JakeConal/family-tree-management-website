@@ -291,16 +291,16 @@ export default function FamilyTreeReports() {
 	const processAchievementCategories = (achievements: Achievement[]) => {
 		const categoryCounts: { [key: string]: number } = {};
 		const categoryColors: { [key: string]: string } = {
-			Graduations: '#e0f2fe',
-			Career: '#f3e8ff',
-			Sport: '#fef9c3',
-			Health: '#ffe4e6',
-			Artistic: '#bae6fd',
-			Environment: '#ecfccb',
-			Community: '#dbeafe',
-			Finance: '#ffedd5',
-			Skills: '#fae8ff',
-			Travel: '#ccfbf1',
+			Graduations: '#3b82f6',
+			Career: '#8b5cf6',
+			Sport: '#eab308',
+			Health: '#ef4444',
+			Artistic: '#06b6d4',
+			Environment: '#84cc16',
+			Community: '#0ea5e9',
+			Finance: '#f97316',
+			Skills: '#a855f7',
+			Travel: '#14b8a6',
 		};
 
 		achievements.forEach((achievement) => {
