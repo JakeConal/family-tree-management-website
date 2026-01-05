@@ -565,8 +565,8 @@ export default function LifeEventsPage() {
 																		: intl.formatMessage({ id: 'lifeEvents.cards.notSpecified' })
 																}
 																description={
-																	record.causeOfDeath?.causeName 
-																		? `Cause: ${record.causeOfDeath.causeName}`
+																	record.causeOfDeath && record.causeOfDeath.length > 0
+																		? `Cause: ${record.causeOfDeath.map(c => c.causeName).join(', ')}`
 																		: `Cause: ${intl.formatMessage({ id: 'lifeEvents.cards.causeNotSpecified' })}`
 																}
 																onClick={handleOpenPassingPanel}

@@ -111,7 +111,7 @@ model PassingRecord {
   createdAt      DateTime      @default(now())
   familyMemberId Int
   buriedPlaces   BuriedPlace[]
-  causeOfDeath   CauseOfDeath?
+  causeOfDeath   CauseOfDeath[]
   familyMember   FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
 
   @@index([familyMemberId], map: "PassingRecord_familyMemberId_fkey")
@@ -121,7 +121,7 @@ model PassingRecord {
 model CauseOfDeath {
   id              Int           @id @default(autoincrement())
   causeName       String        @db.VarChar(225)
-  passingRecordId Int           @unique
+  passingRecordId Int
   familyMemberId  Int
   familyMember    FamilyMember  @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
   passingRecord   PassingRecord @relation(fields: [passingRecordId], references: [id], onDelete: Cascade)

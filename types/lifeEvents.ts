@@ -36,7 +36,7 @@ export interface PassingRecord {
 	causeOfDeath: {
 		id: number;
 		causeName: string;
-	} | null;
+	}[];
 	buriedPlaces: {
 		id: number;
 		location: string;

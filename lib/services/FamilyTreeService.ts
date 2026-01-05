@@ -125,7 +125,7 @@ class FamilyTreeService {
 		data: {
 			familyMemberId: number;
 			passingDate: string;
-			causeOfDeath?: string;
+			causeOfDeath?: string[];
 			placeOfDeath?: string;
 		}
 	) {

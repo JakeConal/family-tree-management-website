@@ -27,7 +27,7 @@ interface PassingRecord {
 	causeOfDeath: {
 		id: number;
 		causeName: string;
-	} | null;
+	}[];
 	buriedPlaces: BurialPlace[];
 }
 
@@ -86,7 +86,7 @@ export default function PassingPanel({
 			setFormData({
 				familyMemberId: data.familyMember.id.toString(),
 				dateOfPassing: data.dateOfPassing ? new Date(data.dateOfPassing).toISOString().split('T')[0] : '',
-				causesOfDeath: data.causeOfDeath ? [data.causeOfDeath.causeName] : [''],
+				causesOfDeath: data.causeOfDeath && data.causeOfDeath.length > 0 ? data.causeOfDeath.map((c: { causeName: string }) => c.causeName) : [''],
 				burialPlaces:
 					data.buriedPlaces.length > 0
 						? data.buriedPlaces.map((place: BurialPlace) => ({
@@ -410,7 +410,9 @@ export default function PassingPanel({
 									<FormattedMessage id="panel.passing.causeOfPassing" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									{passingRecord?.causeOfDeath?.causeName || intl.formatMessage({ id: 'panel.passing.notSpecified' })}
+									{passingRecord?.causeOfDeath && passingRecord.causeOfDeath.length > 0
+										? passingRecord.causeOfDeath.map((c: { causeName: string }) => c.causeName).join(', ')
+										: intl.formatMessage({ id: 'panel.passing.notSpecified' })}
 								</div>
 							</div>
 

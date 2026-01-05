@@ -171,7 +171,7 @@ export async function PUT(
 		// Store old data for logging
 		const oldData = {
 			dateOfPassing: existingRecord.dateOfPassing,
-			causeOfDeath: existingRecord.causeOfDeath?.causeName,
+			causeOfDeath: existingRecord.causeOfDeath.map(c => c.causeName),
 			burialPlacesCount: existingRecord.buriedPlaces.length,
 		};
 
@@ -189,30 +189,28 @@ export async function PUT(
 
 			// Handle cause of death
 			if (causesOfDeath && causesOfDeath.length > 0) {
-				const primaryCause = causesOfDeath[0];
-
-				// Delete existing cause of death if it exists
-				if (existingRecord.causeOfDeath) {
-					await tx.causeOfDeath.delete({
-						where: {
-							id: existingRecord.causeOfDeath.id,
-						},
-					});
-				}
-
-				// Create new cause of death
-				await tx.causeOfDeath.create({
-					data: {
-						causeName: primaryCause,
-						familyMemberId: existingRecord.familyMemberId,
+				// Delete existing causes of death
+				await tx.causeOfDeath.deleteMany({
+					where: {
 						passingRecordId: recordId,
 					},
 				});
-			} else if (existingRecord.causeOfDeath) {
-				// If no cause of death provided, delete the existing one
-				await tx.causeOfDeath.delete({
+
+				// Create new causes of death
+				for (const cause of causesOfDeath) {
+					await tx.causeOfDeath.create({
+						data: {
+							causeName: cause,
+							familyMemberId: existingRecord.familyMemberId,
+							passingRecordId: recordId,
+						},
+					});
+				}
+			} else {
+				// If no cause of death provided, delete all existing ones
+				await tx.causeOfDeath.deleteMany({
 					where: {
-						id: existingRecord.causeOfDeath.id,
+						passingRecordId: recordId,
 					},
 				});
 			}
@@ -246,7 +244,7 @@ export async function PUT(
 		// Log the update
 		await logChange('PassingRecord', updatedRecord.id, 'UPDATE', familyTreeId, sessionData.user.id, oldData, {
 			dateOfPassing: updatedRecord.dateOfPassing,
-			causeOfDeath: causesOfDeath && causesOfDeath.length > 0 ? causesOfDeath[0] : null,
+			causeOfDeath: causesOfDeath,
 		});
 
 		// Fetch the complete updated record
@@ -354,7 +352,7 @@ export async function DELETE(
 		const oldData = {
 			familyMemberName: existingRecord.familyMember.fullName,
 			dateOfPassing: existingRecord.dateOfPassing,
-			causeOfDeath: existingRecord.causeOfDeath?.causeName,
+			causeOfDeath: existingRecord.causeOfDeath.map(c => c.causeName),
 		};
 
 		// Delete the passing record (burial places will be cascade deleted)
