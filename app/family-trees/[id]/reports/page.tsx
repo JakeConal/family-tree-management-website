@@ -299,9 +299,8 @@ export default function FamilyTreeReports() {
 			Environment: '#10B981',
 			Community: '#6366F1',
 			Financial: '#F59E0B',
-			SkillDevelopment: '#EC4899',
 			Travel: '#14B8A6',
-			Other: '#6B7280',
+			Other: '#EC4899',
 			Academic: '#2563EB',
 
 		};
