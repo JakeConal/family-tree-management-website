@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
-import PanelRenderer from '@/components/PanelRenderer';
 import { TabNavigation, EventCard, PassingCard, YearSection, LifeEventCard } from '@/components/ui/life-events';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
@@ -642,9 +641,6 @@ export default function LifeEventsPage() {
 					</div>
 				</div>
 			</div>
-
-			{/* Panel Renderer */}
-			<PanelRenderer />
 		</div>
 	);
 }

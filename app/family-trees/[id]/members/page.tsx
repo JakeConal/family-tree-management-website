@@ -7,7 +7,6 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import GenerateAccessCodePanel from '@/components/modals/GenerateAccessCodeModal';
-import PanelRenderer from '@/components/PanelRenderer';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService } from '@/lib/services';
@@ -448,9 +447,6 @@ export default function MemberListPage() {
 					</div>
 				</div>
 			</div>
-
-			{/* Panel Renderer */}
-			<PanelRenderer />
 
 			{/* Access Code Modal */}
 			{panelState?.type === 'accessCode' && (

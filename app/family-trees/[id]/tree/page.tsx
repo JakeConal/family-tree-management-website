@@ -11,11 +11,7 @@ import type { Node, ExtNode } from 'relatives-tree/lib/types';
 
 import FamilyNode from '@/components/FamilyNode';
 import LoadingScreen from '@/components/LoadingScreen';
-import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
 import DivorcedSpousesModal from '@/components/modals/DivorcedSpousesModal';
-import RecordAchievementModal from '@/components/modals/RecordAchievementModal';
-import RecordPassingModal from '@/components/modals/RecordPassingModal';
-import PanelRenderer from '@/components/PanelRenderer';
 import { usePanel } from '@/lib/hooks/usePanel';
 import FamilyMemberService from '@/lib/services/FamilyMemberService';
 import { ExtendedFamilyMember } from '@/types';
@@ -34,9 +30,6 @@ export default function FamilyTreePage() {
 	const [error, setError] = useState<string>('');
 
 	// Modal states
-	const [showAchievementModal, setShowAchievementModal] = useState(false);
-	const [showPassingModal, setShowPassingModal] = useState(false);
-	const [showChangeLogModal, setShowChangeLogModal] = useState(false);
 	const [showDivorcedSpousesModal, setShowDivorcedSpousesModal] = useState(false);
 	const [selectedDivorcedSpouses, setSelectedDivorcedSpouses] = useState<ExtendedFamilyMember[]>([]);
 	const [selectedDivorcedMemberName, setSelectedDivorcedMemberName] = useState<string>('');
@@ -1160,31 +1153,6 @@ export default function FamilyTreePage() {
 					</div>
 				</div>
 			</div>
-
-			{/* Panel Renderer */}
-			<PanelRenderer />
-			<RecordAchievementModal
-				isOpen={showAchievementModal}
-				onClose={() => setShowAchievementModal(false)}
-				familyTreeId={familyTreeId}
-				existingMembers={members}
-				onAchievementRecorded={fetchFamilyMembers}
-			/>
-
-			<RecordPassingModal
-				isOpen={showPassingModal}
-				onClose={() => setShowPassingModal(false)}
-				familyTreeId={familyTreeId}
-				existingMembers={members}
-				onPassingRecorded={fetchFamilyMembers}
-			/>
-
-			<ChangeLogDetailsModal
-				isOpen={showChangeLogModal}
-				onClose={() => setShowChangeLogModal(false)}
-				changeLog={null}
-			/>
-
 			<DivorcedSpousesModal
 				isOpen={showDivorcedSpousesModal}
 				onClose={() => {

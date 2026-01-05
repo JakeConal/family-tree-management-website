@@ -379,8 +379,8 @@ export default function AchievementPanel({
 							</div>
 
 							<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
-								<FormattedMessage id="panel.achievement.titleLabel" />
+								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+									<FormattedMessage id="panel.achievement.titleLabel" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 									{achievement?.title || intl.formatMessage({ id: 'panel.achievement.noTitle' })}
@@ -549,8 +549,8 @@ export default function AchievementPanel({
 
 							{/* Achievement Title */}
 							<div>
-							<label className="block text-[16px] font-normal text-black mb-2 required-label">
-								<FormattedMessage id="panel.achievement.titleLabel" />
+								<label className="block text-[16px] font-normal text-black mb-2 required-label">
+									<FormattedMessage id="panel.achievement.titleLabel" />
 								</label>
 								<input
 									type="text"
@@ -562,7 +562,7 @@ export default function AchievementPanel({
 										});
 										handleFieldChange('title');
 									}}
-									placeholder={intl.formatMessage({ id: 'modal.recordAchievement.achievementTitlePlaceholder' })}
+									placeholder={intl.formatMessage({ id: 'panel.achievement.titlePlaceholder' })}
 									className="w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 								/>
 							</div>

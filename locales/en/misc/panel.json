@@ -14,6 +14,7 @@
 			"achievementType": "Achievement Type",
 			"dateAchieved": "Date Achieved",
 			"titleLabel": "Title",
+			"titlePlaceholder": "e.g. Master's Degree in Computer Science",
 			"description": "Description",
 			"descriptionPlaceholder": "Describe the achievement...",
 			"noTitle": "No title",

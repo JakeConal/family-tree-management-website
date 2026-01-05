@@ -21,7 +21,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LoadingScreen from '@/components/LoadingScreen';
 import AllChangeLogsModal from '@/components/modals/AllChangeLogsModal';
 import ChangeLogDetailsModal from '@/components/modals/ChangeLogDetailsModal';
-import EditFamilyTreeModal from '@/components/modals/EditFamilyTreeModal';
 import { useGuestSession } from '@/lib/hooks/useGuestSession';
 import { usePanel } from '@/lib/hooks/usePanel';
 import { FamilyTreeService, FamilyMemberService, ChangeLogService } from '@/lib/services';
@@ -51,7 +50,6 @@ export default function FamilyTreeDashboard() {
 	const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
 	const [selectedChangeLog, setSelectedChangeLog] = useState<ChangeLog | null>(null);
 	const [isChangeLogDetailsModalOpen, setIsChangeLogDetailsModalOpen] = useState(false);
-	const [isEditFamilyTreeModalOpen, setIsEditFamilyTreeModalOpen] = useState(false);
 	const [isAllChangeLogsModalOpen, setIsAllChangeLogsModalOpen] = useState(false);
 
 	// Panel state
@@ -421,8 +419,8 @@ export default function FamilyTreeDashboard() {
 								</h2>
 								{!isGuest && (
 									<button
-										onClick={() => setIsEditFamilyTreeModalOpen(true)}
-										className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors"
+										onClick={() => router.push(`/family-trees/${familyTreeId}/settings`)}
+										className="ml-auto p-1 hover:bg-white/50 rounded-lg transition-colors cursor-pointer"
 									>
 										<Pencil className="w-4 h-4 text-gray-500" />
 									</button>
@@ -701,19 +699,6 @@ export default function FamilyTreeDashboard() {
 						isOpen={isChangeLogDetailsModalOpen}
 						onClose={() => setIsChangeLogDetailsModalOpen(false)}
 						changeLog={selectedChangeLog}
-					/>
-				)}
-
-				{/* Edit Family Tree Modal */}
-				{isEditFamilyTreeModalOpen && familyTree && (
-					<EditFamilyTreeModal
-						isOpen={isEditFamilyTreeModalOpen}
-						onClose={() => setIsEditFamilyTreeModalOpen(false)}
-						familyTree={familyTree}
-						onFamilyTreeUpdated={() => {
-							// Refresh family tree data after update
-							fetchFamilyTreeData();
-						}}
 					/>
 				)}
 
