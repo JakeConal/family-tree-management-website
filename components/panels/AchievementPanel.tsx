@@ -379,11 +379,8 @@ export default function AchievementPanel({
 							</div>
 
 							<div>
-								<label className="block text-base font-normal text-black mb-1.5 ml-1">
-									<FormattedMessage id="panel.achievement.titleLabel" />
-									<span className="text-[11.5px] text-black/50 ml-1">
-										<FormattedMessage id="common.optional" />
-									</span>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.achievement.titleLabel" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 									{achievement?.title || intl.formatMessage({ id: 'panel.achievement.noTitle' })}
@@ -552,11 +549,8 @@ export default function AchievementPanel({
 
 							{/* Achievement Title */}
 							<div>
-								<label className="block text-[16px] font-normal text-black mb-2">
-									<FormattedMessage id="panel.achievement.titleLabel" />
-									<span className="text-[11.5px] text-black/50 ml-1">
-										<FormattedMessage id="common.optional" />
-									</span>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.achievement.titleLabel" />
 								</label>
 								<input
 									type="text"
