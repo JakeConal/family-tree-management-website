@@ -1,13 +1,15 @@
 'use client';
 
 import { X, Calendar, ChevronDown, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { ChangeLogService } from '@/lib/services';
 import { ChangeLog } from '@/types/changelog';
 import { AllChangeLogsModalProps } from '@/types/ui';
 
 export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLogClick }: AllChangeLogsModalProps) {
+	const intl = useIntl();
 	const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [selectedMonth, setSelectedMonth] = useState<string>('');
@@ -53,25 +55,25 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 						// Ignore parsing errors
 					}
 					if (newValues && newValues.parentId) {
-						message = 'Birth recorded';
+						message = intl.formatMessage({ id: 'modal.allChangeLogs.birthRecorded' });
 					} else {
-						message = 'Added new member';
+						message = intl.formatMessage({ id: 'modal.allChangeLogs.addedNewMember' });
 					}
 				} else if (action === 'update') {
-					message = 'Family member information updated';
+					message = intl.formatMessage({ id: 'modal.allChangeLogs.familyMemberUpdated' });
 				} else if (action === 'delete') {
-					message = 'Family member removed';
+					message = intl.formatMessage({ id: 'modal.allChangeLogs.familyMemberRemoved' });
 				}
 				break;
 			case 'PassingRecord':
-				message = 'Passing record added';
+				message = intl.formatMessage({ id: 'modal.allChangeLogs.passingRecordAdded' });
 				break;
 			case 'Achievement':
-				message = 'Achievement recorded';
+				message = intl.formatMessage({ id: 'modal.allChangeLogs.achievementRecorded' });
 				break;
 			case 'SpouseRelationship':
 				if (action === 'create') {
-					message = 'Marriage recorded';
+					message = intl.formatMessage({ id: 'modal.allChangeLogs.marriageRecorded' });
 				} else if (action === 'update') {
 					// Check if this is a divorce (divorceDate was added)
 					let oldValues = null;
@@ -86,17 +88,17 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 					console.log(`SpouseRelationship UPDATE - oldValues:`, oldValues, 'newValues:', newValues);
 
 					if (newValues && newValues.divorceDate && (!oldValues || !oldValues.divorceDate)) {
-						message = 'Divorce recorded';
+						message = intl.formatMessage({ id: 'modal.allChangeLogs.divorceRecorded' });
 					} else {
-						message = 'Marriage information updated';
+						message = intl.formatMessage({ id: 'modal.allChangeLogs.marriageUpdated' });
 					}
 				} else if (action === 'delete') {
-					message = 'Marriage relationship deleted';
+					message = intl.formatMessage({ id: 'modal.allChangeLogs.marriageDeleted' });
 				}
 				break;
 			case 'FamilyTree':
 				if (action === 'update') {
-					message = 'Family tree information updated';
+					message = intl.formatMessage({ id: 'modal.allChangeLogs.familyTreeUpdated' });
 				}
 				break;
 			default:
@@ -108,19 +110,6 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 		}
 
 		return message;
-	};
-
-	const formatChangeLogTimestamp = (timestamp: string) => {
-		const date = new Date(timestamp);
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		// const hours = String(date.getHours()).padStart(2, '0');
-		const minutes = String(date.getMinutes()).padStart(2, '0');
-		const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
-		const displayHours = date.getHours() % 12 || 12;
-
-		return `${year}-${month}-${day} ${displayHours}:${minutes} ${ampm}`;
 	};
 
 	const getUserName = (log: ChangeLog) => {
@@ -153,20 +142,23 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 	// Generate month and year options
 	const currentYear = new Date().getFullYear();
 	const years = Array.from({ length: 10 }, (_, i) => currentYear - i);
-	const months = [
-		{ value: '01', label: 'January' },
-		{ value: '02', label: 'February' },
-		{ value: '03', label: 'March' },
-		{ value: '04', label: 'April' },
-		{ value: '05', label: 'May' },
-		{ value: '06', label: 'June' },
-		{ value: '07', label: 'July' },
-		{ value: '08', label: 'August' },
-		{ value: '09', label: 'September' },
-		{ value: '10', label: 'October' },
-		{ value: '11', label: 'November' },
-		{ value: '12', label: 'December' },
-	];
+	const months = useMemo(
+		() => [
+			{ value: '01', label: intl.formatMessage({ id: 'modal.allChangeLogs.january' }) },
+			{ value: '02', label: intl.formatMessage({ id: 'modal.allChangeLogs.february' }) },
+			{ value: '03', label: intl.formatMessage({ id: 'modal.allChangeLogs.march' }) },
+			{ value: '04', label: intl.formatMessage({ id: 'modal.allChangeLogs.april' }) },
+			{ value: '05', label: intl.formatMessage({ id: 'modal.allChangeLogs.may' }) },
+			{ value: '06', label: intl.formatMessage({ id: 'modal.allChangeLogs.june' }) },
+			{ value: '07', label: intl.formatMessage({ id: 'modal.allChangeLogs.july' }) },
+			{ value: '08', label: intl.formatMessage({ id: 'modal.allChangeLogs.august' }) },
+			{ value: '09', label: intl.formatMessage({ id: 'modal.allChangeLogs.september' }) },
+			{ value: '10', label: intl.formatMessage({ id: 'modal.allChangeLogs.october' }) },
+			{ value: '11', label: intl.formatMessage({ id: 'modal.allChangeLogs.november' }) },
+			{ value: '12', label: intl.formatMessage({ id: 'modal.allChangeLogs.december' }) },
+		],
+		[intl]
+	);
 
 	if (!isOpen) return null;
 
@@ -183,7 +175,9 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 				{/* Header */}
 				<div className="px-8 pt-6 pb-4 flex-shrink-0 border-b border-gray-200">
 					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-[26px] font-normal text-black text-center flex-1">All Changes</h2>
+						<h2 className="text-[26px] font-normal text-black text-center flex-1">
+							<FormattedMessage id="modal.allChangeLogs.title" />
+						</h2>
 						<button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
 							<X className="w-6 h-6 text-black" />
 						</button>
@@ -197,7 +191,9 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 								onChange={(e) => setSelectedMonth(e.target.value)}
 								className="w-[138px] h-[40px] px-4 pr-10 bg-white border border-black rounded-[20px] text-[18px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400"
 							>
-								<option value="">Month</option>
+								<option value="">
+									<FormattedMessage id="modal.allChangeLogs.month" />
+								</option>
 								{months.map((month) => (
 									<option key={month.value} value={month.value}>
 										{month.label}
@@ -213,7 +209,9 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 								onChange={(e) => setSelectedYear(e.target.value)}
 								className="w-[134px] h-[40px] px-4 pr-10 bg-white border border-black rounded-[20px] text-[18px] text-black appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-400"
 							>
-								<option value="">Year</option>
+								<option value="">
+									<FormattedMessage id="modal.allChangeLogs.year" />
+								</option>
 								{years.map((year) => (
 									<option key={year} value={String(year)}>
 										{year}
@@ -229,11 +227,15 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 				<div className="flex-1 overflow-y-auto px-[28px] py-6">
 					{loading ? (
 						<div className="text-center py-12">
-							<p className="text-gray-500">Loading change logs...</p>
+							<p className="text-gray-500">
+								<FormattedMessage id="modal.allChangeLogs.loading" />
+							</p>
 						</div>
 					) : filteredLogs.length === 0 ? (
 						<div className="text-center py-12">
-							<p className="text-gray-500">No change logs found.</p>
+							<p className="text-gray-500">
+								<FormattedMessage id="modal.allChangeLogs.noLogs" />
+							</p>
 						</div>
 					) : (
 						<div className="space-y-0">
@@ -264,7 +266,12 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 													<p className="font-inter font-light text-[16px] text-black">{message}</p>
 													{log.familyMemberName && (
 														<p className="font-inter font-light text-[14px] text-gray-600">
-															Affected: <span className="font-medium text-black">{log.familyMemberName}</span>
+															<FormattedMessage
+																id="modal.allChangeLogs.affectedLabel"
+																values={{
+																	name: <span className="font-medium text-black">{log.familyMemberName}</span>,
+																}}
+															/>
 														</p>
 													)}
 												</div>
@@ -273,9 +280,17 @@ export default function AllChangeLogsModal({ isOpen, onClose, familyTreeId, onLo
 
 										{/* Timestamp */}
 										<div className="flex items-center gap-2 px-6">
-											<Calendar className="w-5 h-5 text-black flex-shrink-0" />
+											<Calendar className="w-5 h-5 text-black shrink-0" />
 											<span className="font-inter font-light text-[18px] text-black whitespace-nowrap">
-												{formatChangeLogTimestamp(log.createdAt)}
+												<FormattedDate
+													value={new Date(log.createdAt)}
+													year="numeric"
+													month="2-digit"
+													day="2-digit"
+													hour="2-digit"
+													minute="2-digit"
+													hour12
+												/>
 											</span>
 										</div>
 									</div>

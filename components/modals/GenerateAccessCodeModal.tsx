@@ -3,6 +3,7 @@
 import { Copy } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 
@@ -19,6 +20,7 @@ export default function GenerateAccessCodePanel({
 	memberId,
 	memberName,
 }: GenerateAccessCodePanelProps) {
+	const intl = useIntl();
 	const [accessCode, setAccessCode] = useState<string>('');
 	const [isGenerating, setIsGenerating] = useState(false);
 	const hasGeneratedRef = useRef(false);
@@ -54,7 +56,7 @@ export default function GenerateAccessCodePanel({
 				const data = await response.json();
 
 				if (!response.ok) {
-					toast.error(data.error || 'Không thể tạo mã truy cập');
+					toast.error(data.error || intl.formatMessage({ id: 'modal.generateAccessCode.generatedError' }));
 					onClose();
 					return;
 				}
@@ -62,9 +64,9 @@ export default function GenerateAccessCodePanel({
 				setAccessCode(data.accessCode);
 				// Show different message based on whether it's a new code or existing one
 				if (data.isNew) {
-					toast.success('Mã truy cập đã được tạo thành công!');
+					toast.success(intl.formatMessage({ id: 'modal.generateAccessCode.generatedSuccess' }));
 				} else {
-					toast.success('Mã truy cập còn hạn đã được tìm thấy');
+					toast.success(intl.formatMessage({ id: 'modal.generateAccessCode.foundExisting' }));
 				}
 			} catch (error: unknown) {
 				// Ignore abort errors
@@ -72,7 +74,7 @@ export default function GenerateAccessCodePanel({
 					return;
 				}
 				console.error('Error generating access code:', error);
-				toast.error('Đã xảy ra lỗi khi tạo mã');
+				toast.error(intl.formatMessage({ id: 'modal.generateAccessCode.errorOccurred' }));
 				onClose();
 			} finally {
 				setIsGenerating(false);
@@ -96,10 +98,10 @@ export default function GenerateAccessCodePanel({
 	const handleCopy = async () => {
 		try {
 			await navigator.clipboard.writeText(accessCode);
-			toast.success('Đã sao chép mã truy cập!');
+			toast.success(intl.formatMessage({ id: 'modal.generateAccessCode.copySuccess' }));
 		} catch (error) {
 			console.error('Error copying to clipboard:', error);
-			toast.error('Không thể sao chép');
+			toast.error(intl.formatMessage({ id: 'modal.generateAccessCode.copyError' }));
 		}
 	};
 
@@ -114,14 +116,18 @@ export default function GenerateAccessCodePanel({
 					disabled={isGenerating}
 				>
 					<span className="font-light">&lt;</span>
-					<span className="font-normal ml-1">Back</span>
+					<span className="font-normal ml-1">
+						<FormattedMessage id="modal.generateAccessCode.back" />
+					</span>
 				</button>
 
 				{/* Title */}
-				<h2 className="font-roboto font-semibold text-[20px] leading-[28px] text-black mb-2">Share Access</h2>
+				<h2 className="font-roboto font-semibold text-[20px] leading-[28px] text-black mb-2">
+					<FormattedMessage id="modal.generateAccessCode.title" />
+				</h2>
 				{/* Member Name */}
 				<p className="font-roboto font-normal text-sm text-black/70 mb-[23px]">
-					Access code for <span className="font-medium text-black">{memberName}</span>
+					<FormattedMessage id="modal.generateAccessCode.subtitle" values={{ memberName }} />
 				</p>
 			</div>
 
@@ -129,19 +135,25 @@ export default function GenerateAccessCodePanel({
 			<div className="flex-1 px-8 pb-8">
 				{isGenerating ? (
 					<div className="flex items-center justify-center h-64 relative">
-						<LoadingScreen message="Đang tạo mã truy cập..." />
+						<LoadingScreen message={intl.formatMessage({ id: 'modal.generateAccessCode.generating' })} />
 					</div>
 				) : accessCode ? (
 					<div className="relative">
 						{/* Description */}
 						<div className="font-roboto font-normal text-base text-black leading-[24px] mb-[50px]">
-							<p className="mb-0">Invite people to this family tree using an Access Code.</p>
-							<p>They can view or edit based on the permission you choose below.</p>
+							<p className="mb-0">
+								<FormattedMessage id="modal.generateAccessCode.description1" />
+							</p>
+							<p>
+								<FormattedMessage id="modal.generateAccessCode.description2" />
+							</p>
 						</div>
 
 						{/* Access Code Section */}
 						<div className="mb-[24px]">
-							<label className="block font-inter font-normal text-base text-black mb-3">Access Code</label>
+							<label className="block font-inter font-normal text-base text-black mb-3">
+								<FormattedMessage id="modal.generateAccessCode.accessCode" />
+							</label>
 							<div className="bg-[#f3f2f2] h-[50px] w-full px-4 flex items-center justify-between group relative">
 								<span className="font-playfair font-normal text-base text-black absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
 									{accessCode}
@@ -149,18 +161,20 @@ export default function GenerateAccessCodePanel({
 								<button
 									onClick={handleCopy}
 									className="ml-auto p-2 hover:bg-gray-300 rounded transition-colors opacity-70 group-hover:opacity-100 z-10"
-									title="Copy to clipboard"
+									title={intl.formatMessage({ id: 'modal.generateAccessCode.copyToClipboard' })}
 								>
 									<Copy className="w-4 h-4 text-black" />
 								</button>
 							</div>
-							<p className="mt-2 font-roboto font-normal text-xs text-black/60 leading-[16px]">Expires in 48 hours</p>
+							<p className="mt-2 font-roboto font-normal text-xs text-black/60 leading-[16px]">
+								<FormattedMessage id="modal.generateAccessCode.expiresIn" />
+							</p>
 						</div>
 
 						{/* Permission Note */}
 						<div className="mb-8">
 							<p className="font-roboto font-normal text-base text-black leading-[24px]">
-								Anyone with this code can view entire the family tree and edit only their own personal profile.
+								<FormattedMessage id="modal.generateAccessCode.permissionNote" />
 							</p>
 						</div>
 
@@ -170,7 +184,7 @@ export default function GenerateAccessCodePanel({
 								onClick={onClose}
 								className="bg-[#1f2937] h-[40px] w-[123px] rounded-[10px] text-white font-roboto font-normal text-sm leading-[20px] hover:bg-[#374151] transition-colors flex items-center justify-center"
 							>
-								Done
+								<FormattedMessage id="modal.generateAccessCode.done" />
 							</button>
 						</div>
 					</div>

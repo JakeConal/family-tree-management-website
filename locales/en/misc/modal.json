@@ -1,9 +1,11 @@
 {
 	"modal": {
 		"allChangeLogs": {
-			"title": "Change Logs",
+			"title": "All Changes",
 			"filter": "Filter",
 			"all": "All",
+			"month": "Month",
+			"year": "Year",
 			"january": "January",
 			"february": "February",
 			"march": "March",
@@ -16,26 +18,46 @@
 			"october": "October",
 			"november": "November",
 			"december": "December",
+			"loading": "Loading change logs...",
+			"noLogs": "No change logs found.",
 			"noChanges": "No changes found",
 			"noChangesDescription": "There are no change logs to display",
+			"birthRecorded": "Birth recorded",
+			"addedNewMember": "Added new member",
+			"familyMemberUpdated": "Family member information updated",
+			"familyMemberRemoved": "Family member removed",
+			"passingRecordAdded": "Passing record added",
+			"achievementRecorded": "Achievement recorded",
+			"marriageRecorded": "Marriage recorded",
+			"divorceRecorded": "Divorce recorded",
+			"marriageUpdated": "Marriage information updated",
+			"marriageDeleted": "Marriage relationship deleted",
+			"familyTreeUpdated": "Family tree information updated",
+			"affectedLabel": "Affected: {name}",
 			"back": "Back"
 		},
 		"changeLogDetails": {
 			"title": "Change Log Details",
+			"subtitle": "{entityType} {action}",
 			"entityType": "Entity Type",
+			"entityId": "Entity ID",
 			"entityTypes": {
 				"familyMember": "Family Member",
 				"achievement": "Achievement",
 				"divorce": "Divorce",
 				"passingRecord": "Passing Record",
 				"birthPlace": "Birth Place",
-				"occupation": "Occupation"
+				"occupation": "Occupation",
+				"spouseRelationship": "Spouse Relationship"
 			},
 			"action": "Action",
 			"actions": {
 				"create": "Created",
+				"created": "created",
 				"update": "Updated",
-				"delete": "Deleted"
+				"updated": "updated",
+				"delete": "Deleted",
+				"deleted": "deleted"
 			},
 			"changedBy": "Changed By",
 			"timestamp": "Timestamp",
@@ -44,42 +66,125 @@
 			"oldValue": "Old Value",
 			"newValue": "New Value",
 			"back": "Back",
-			"close": "Close"
+			"close": "Close",
+			"loadingMembers": "Loading member information...",
+			"noData": "No detailed change data available",
+			"sectionTitles": {
+				"addedInformation": "Added Information",
+				"changesMade": "Changes Made",
+				"removedInformation": "Removed Information",
+				"details": "Details"
+			},
+			"badges": {
+				"updated": "Updated",
+				"added": "Added",
+				"removed": "Removed"
+			},
+			"comparison": {
+				"before": "Before",
+				"after": "After",
+				"value": "Value"
+			},
+			"fields": {
+				"name": "Name",
+				"birthday": "Birthday",
+				"gender": "Gender",
+				"address": "Address",
+				"generation": "Generation",
+				"adopted": "Adopted",
+				"profilePicture": "Profile Picture",
+				"familyMember": "Family Member",
+				"title": "Title",
+				"achievementDate": "Achievement Date",
+				"description": "Description",
+				"partner1": "Partner 1",
+				"partner2": "Partner 2",
+				"marriageDate": "Marriage Date",
+				"jobTitle": "Job Title",
+				"startDate": "Start Date",
+				"endDate": "End Date",
+				"dateOfPassing": "Date of Passing",
+				"causeOfDeath": "Cause of Death",
+				"burialPlace": "Burial Place",
+				"location": "Location"
+			},
+			"values": {
+				"yes": "Yes",
+				"no": "No",
+				"empty": "Empty",
+				"unknown": "Unknown",
+				"unknownMember": "Unknown Member"
+			},
+			"rawJson": {
+				"summary": "Raw JSON Data (Technical Details)",
+				"previousValues": "Previous Values (JSON)",
+				"newValues": "New Values (JSON)"
+			}
 		},
 		"confirm": {
 			"back": "Back",
 			"cancel": "Cancel",
-			"confirm": "Confirm"
+			"confirm": "Confirm",
+			"processing": "Processing...",
+			"passwordLabel": "Enter your password to confirm",
+			"passwordPlaceholder": "Your password"
 		},
 		"divorcedSpouses": {
 			"title": "Former Spouses",
+			"titleOf": "Former Spouses of {name}",
 			"exHusband": "Ex-Husband",
 			"exWife": "Ex-Wife",
 			"marriageDate": "Marriage Date",
 			"divorceDate": "Divorce Date",
+			"divorced": "Divorced: {date}",
+			"noSpouses": "No divorced spouses found",
+			"unknown": "Unknown",
 			"back": "Back",
 			"close": "Close"
 		},
 		"generateAccessCode": {
 			"title": "Share Access",
+			"subtitle": "Access code for {memberName}",
 			"generating": "Generating access code...",
 			"generatedSuccess": "Access code generated successfully!",
+			"foundExisting": "Found existing valid access code",
 			"generatedError": "Unable to generate access code",
+			"errorOccurred": "An error occurred while generating code",
+			"description1": "Invite people to this family tree using an Access Code.",
+			"description2": "They can view or edit based on the permission you choose below.",
 			"accessCode": "Access Code",
 			"expiresIn": "Expires in 48 hours",
+			"permissionNote": "Anyone with this code can view entire the family tree and edit only their own personal profile.",
+			"copyToClipboard": "Copy to clipboard",
 			"copySuccess": "Access code copied!",
+			"copyError": "Unable to copy",
 			"done": "Done",
 			"back": "Back"
 		},
 		"inviteGuest": {
 			"title": "Invite Guest to Edit",
+			"subtitle": "Generate an access code to allow family members to view the family tree and edit their own profile",
 			"selectMember": "Please select a member",
-			"selectMemberDropdown": "Select member",
-			"selectMemberPlaceholder": "-- Select member --",
-			"generate": "Generate",
+			"selectMemberDropdown": "Select Member",
+			"selectMemberPlaceholder": "-- Select Member --",
+			"generation": "Generation {number}",
+			"generating": "Generating access code...",
+			"codeGenerated": "Access code generated!",
+			"copied": "Copied!",
+			"copyCode": "Copy Code",
+			"noteLabel": "Note:",
+			"expiryNote": "This code will expire after 48 hours",
+			"expiresAt": "Expires at: {date}",
+			"infoLabel": "Info:",
+			"infoText": "The selected member will be able to view the entire family tree but can only edit their own profile.",
+			"generate": "Generate Code",
 			"cancel": "Cancel",
 			"close": "Close",
-			"copySuccess": "Access code copied!"
+			"copySuccess": "Access code copied!",
+			"copyError": "Unable to copy",
+			"generatedSuccess": "Access code generated successfully!",
+			"generatedError": "Unable to generate access code",
+			"errorOccurred": "An error occurred while generating code"
 		},
 		"changeLog": {
 			"title": "Change History",
