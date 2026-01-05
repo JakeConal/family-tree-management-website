@@ -257,13 +257,16 @@ const MemberTable = ({
 											<Pencil className="w-5 h-5" />
 										</button>
 									)}
-									<button
-										onClick={() => onGenerateAccessCode(member.id, member.fullName)}
-										className="p-1.5 hover:bg-purple-50 text-purple-600 rounded-lg transition-colors"
-										title={intl.formatMessage({ id: 'memberList.table.generateAccessCode' })}
-									>
-										<KeyRound className="w-5 h-5" />
-									</button>
+									{/* Only show generate access code button if not guest */}
+									{!isGuest && (
+										<button
+											onClick={() => onGenerateAccessCode(member.id, member.fullName)}
+											className="p-1.5 hover:bg-purple-50 text-purple-600 rounded-lg transition-colors"
+											title={intl.formatMessage({ id: 'memberList.table.generateAccessCode' })}
+										>
+											<KeyRound className="w-5 h-5" />
+										</button>
+									)}
 								</div>
 							</td>
 						</tr>
