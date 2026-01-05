@@ -1,0 +1,24 @@
+{
+	"memberList": {
+		"loading": "Đang tải thành viên...",
+		"controls": {
+			"allGeneration": "Tất Cả Thế Hệ",
+			"searchByName": "Tìm theo tên",
+			"from": "Từ",
+			"to": "Đến",
+			"allParents": "Tất Cả Cha/Mẹ"
+		},
+		"table": {
+			"no": "STT",
+			"fullName": "Họ Tên",
+			"birthDate": "Ngày Sinh",
+			"genNo": "Đời",
+			"parent": "Cha/Mẹ",
+			"action": "Thao Tác",
+			"viewDetails": "Xem Chi Tiết",
+			"editMember": "Sửa Thành Viên",
+			"generateAccessCode": "Tạo Mã Truy Cập Khách",
+			"noMembers": "Không tìm thấy thành viên phù hợp với tiêu chí."
+		}
+	}
+}

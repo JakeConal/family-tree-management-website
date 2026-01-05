@@ -1,0 +1,73 @@
+{
+	"login": {
+		"title": "Sign in",
+		"subtitle": "Welcome back",
+		"email": {
+			"label": "Email",
+			"placeholder": "youremail@email.com"
+		},
+		"password": {
+			"label": "Password",
+			"placeholder": "********"
+		},
+		"signIn": "Sign In",
+		"signingIn": "Signing In...",
+		"orContinueWith": "Or continue with",
+		"continueWithGoogle": "Continue with Google",
+		"signingInWithGoogle": "Signing in...",
+		"noAccount": "Don't have an account?",
+		"createAccount": "Create one",
+		"error": {
+			"invalidCredentials": "Invalid email or password",
+			"generic": "An error occurred. Please try again.",
+			"googleLogin": "An error occurred with Google login. Please try again."
+		}
+	},
+	"guestLogin": {
+		"title": "Access Code",
+		"subtitle": "Enter the code provided by your family tree owner",
+		"accessCode": {
+			"label": "Access Code",
+			"placeholder": "Enter your 45-character access code",
+			"hint": "The code is exactly 45 characters long"
+		},
+		"verifying": "Verifying...",
+		"submit": "Access Family Tree",
+		"helpText": "Don't have an access code?{br}Contact your family tree owner to get one.",
+		"welcomeMessage": "Welcome {name}!",
+		"error": {
+			"invalidCode": "Invalid access code",
+			"loginFailed": "Login failed. Please try again."
+		}
+	},
+	"signup": {
+		"title": "Create Account",
+		"subtitle": "Start building your Family Tree",
+		"fullName": {
+			"label": "Full Name",
+			"placeholder": "yourname"
+		},
+		"email": {
+			"label": "Email",
+			"placeholder": "youremail@email.com"
+		},
+		"password": {
+			"label": "Password"
+		},
+		"confirmPassword": {
+			"label": "Confirm Password"
+		},
+		"createAccount": "Create Account",
+		"creatingAccount": "Creating Account...",
+		"orContinueWith": "Or continue with",
+		"continueWithGoogle": "Continue with Google",
+		"haveAccount": "Already have an account?",
+		"signIn": "Sign in",
+		"success": "Account created successfully!",
+		"error": {
+			"passwordMismatch": "Passwords do not match!",
+			"failed": "Registration failed",
+			"generic": "An error occurred during registration"
+		}
+	}
+}

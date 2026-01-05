@@ -1,4 +1,5 @@
-import type { Locale } from './config';
+import type { Locale } from '@/lib/i18n/config';
+import { messages } from '@/lib/i18n/config';
 
 type NestedMessages = {
 	[key: string]: string | NestedMessages;
@@ -27,13 +28,6 @@ function flattenMessages(nestedMessages: NestedMessages, prefix = ''): Record<st
 }
 
 export async function loadMessages(locale: Locale) {
-	try {
-		const messages = await import(`@/locales/${locale}.json`);
-		return flattenMessages(messages.default);
-	} catch (error) {
-		console.error(`Failed to load messages for locale: ${locale}`, error);
-		// Fallback to English if the requested locale fails to load
-		const fallback = await import('@/locales/en.json');
-		return flattenMessages(fallback.default);
-	}
+	locale = locale in messages ? locale : 'en';
+	return flattenMessages(messages[locale]);
 }

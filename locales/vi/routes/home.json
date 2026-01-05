@@ -1,0 +1,98 @@
+{
+	"home": {
+		"hero": {
+			"badge": "Xây Dựng Di Sản Gia Đình Ngay Hôm Nay",
+			"title": "Lưu Giữ Câu Chuyện Gia Đình Bạn",
+			"subtitle": "Dễ dàng xây dựng, xem và lưu giữ cây gia phả của bạn cho các thế hệ tương lai. Kết nối với nguồn gốc và tôn vinh hành trình độc đáo của gia đình bạn.",
+			"startForFree": "Bắt đầu miễn phí",
+			"explore": "Khám phá"
+		},
+		"features": {
+			"title": "Tính Năng",
+			"subtitle": "Công cụ mạnh mẽ để kể chuyện gia đình",
+			"description": "Khám phá các tính năng toàn diện của nền tảng cây gia phả",
+			"dashboard": {
+				"title": "Bảng Điều Khiển",
+				"description": "Nhận cái nhìn tổng quan rõ ràng về tất cả thông tin quan trọng ở một nơi"
+			},
+			"achievementList": {
+				"title": "Danh Sách Thành Tích",
+				"description": "Theo dõi thành tích với hồ sơ chi tiết, có tổ chức"
+			},
+			"report": {
+				"title": "Báo Cáo",
+				"description": "Hình dung tiến trình thông qua biểu đồ phân tích dễ đọc"
+			}
+		},
+		"additionalFeatures": {
+			"title": "Tính Năng Bổ Sung",
+			"subtitle": "Dệt nên bức tranh câu chuyện bền vững của gia đình bạn",
+			"interactiveTree": {
+				"title": "Cây Gia Phả Tương Tác",
+				"description": "Trực quan hóa các kết nối gia đình với sơ đồ cây đẹp, dễ điều hướng."
+			},
+			"memberManagement": {
+				"title": "Quản Lý Thành Viên",
+				"description": "Thêm và tổ chức các thành viên gia đình với hồ sơ và ảnh chi tiết."
+			},
+			"achievementTracking": {
+				"title": "Theo Dõi Thành Tích",
+				"description": "Ghi lại và kỷ niệm các mốc quan trọng trong gia đình."
+			},
+			"detailedReports": {
+				"title": "Báo Cáo Chi Tiết",
+				"description": "Tạo báo cáo và thống kê toàn diện về lịch sử gia đình."
+			}
+		},
+		"howItWorks": {
+			"title": "Cách Hoạt Động",
+			"subtitle": "Đơn Giản & Nhanh Chóng",
+			"description": "Chỉ vài bước để bắt đầu xây dựng cây gia phả",
+			"step1": {
+				"number": "01",
+				"title": "Tạo Tài Khoản",
+				"description": "Đăng ký miễn phí chỉ trong vài giây."
+			},
+			"step2": {
+				"number": "02",
+				"title": "Thêm Thành Viên",
+				"description": "Nhập thông tin về các thành viên gia đình."
+			},
+			"step3": {
+				"number": "03",
+				"title": "Xây Dựng Kết Nối",
+				"description": "Liên kết các mối quan hệ để xây dựng cây gia phả."
+			}
+		},
+		"cta": {
+			"title": "Câu Chuyện Gia Đình Đang Chờ Bạn",
+			"subtitle": "Bắt đầu ghi lại hành trình độc đáo của gia đình ngay hôm nay và tạo di sản lâu dài",
+			"startForFree": "Bắt đầu miễn phí",
+			"signIn": "Đăng nhập"
+		},
+		"footer": {
+			"tagline": "Lưu Giữ Di Sản",
+			"description": "Cây Gia Phả giúp bạn xây dựng, trực quan hóa và lưu giữ cây gia phả cho các thế hệ tương lai. Công cụ di sản được thiết kế để giúp bạn kết nối với nguồn gốc và tôn vinh hành trình độc đáo của gia đình.",
+			"product": {
+				"title": "Sản Phẩm",
+				"home": "Trang Chủ",
+				"guide": "Hướng Dẫn",
+				"faq": "Câu Hỏi Thường Gặp"
+			},
+			"features": {
+				"title": "Tính Năng",
+				"member": "Thành Viên",
+				"blog": "Blog"
+			},
+			"about": {
+				"title": "Về Chúng Tôi",
+				"contact": "Liên Hệ",
+				"community": "Cộng Đồng"
+			},
+			"copyright": "© 2025 Quản Lý Cây Gia Phả. Bảo lưu mọi quyền.",
+			"privacyPolicy": "Chính sách bảo mật",
+			"cookiePolicy": "Chính sách cookie",
+			"termsOfService": "Điều khoản dịch vụ"
+		}
+	}
+}

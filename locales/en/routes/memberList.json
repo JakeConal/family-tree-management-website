@@ -1,0 +1,24 @@
+{
+	"memberList": {
+		"loading": "Loading members...",
+		"controls": {
+			"allGeneration": "All Generation",
+			"searchByName": "Search by name",
+			"from": "From",
+			"to": "To",
+			"allParents": "All Parents"
+		},
+		"table": {
+			"no": "No.",
+			"fullName": "Full Name",
+			"birthDate": "Birth Date",
+			"genNo": "Gen. No.",
+			"parent": "Parent",
+			"action": "Action",
+			"viewDetails": "View Details",
+			"editMember": "Edit Member",
+			"generateAccessCode": "Generate Guest Access Code",
+			"noMembers": "No members found matching your criteria."
+		}
+	}
+}

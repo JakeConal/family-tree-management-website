@@ -1,0 +1,53 @@
+{
+	"common": {
+		"loading": "Đang tải...",
+		"save": "Lưu",
+		"cancel": "Hủy",
+		"delete": "Xóa",
+		"edit": "Sửa",
+		"add": "Thêm",
+		"back": "Quay lại",
+		"next": "Tiếp theo",
+		"previous": "Trước",
+		"submit": "Gửi",
+		"close": "Đóng",
+		"confirm": "Xác nhận",
+		"search": "Tìm kiếm",
+		"filter": "Lọc",
+		"export": "Xuất",
+		"import": "Nhập",
+		"saveChanges": "Lưu Thay Đổi",
+		"deleteAccount": "Xóa Tài Khoản",
+		"updatePassword": "Cập Nhật Mật Khẩu",
+		"saving": "Đang lưu...",
+		"deleting": "Đang xóa...",
+		"updating": "Đang cập nhật...",
+		"optional": "(tùy chọn)",
+		"undo": "Hoàn tác",
+		"cannotUndo": "Hành động này không thể hoàn tác."
+	},
+	"nav": {
+		"features": "Tính Năng",
+		"howItWorks": "Cách Hoạt Động",
+		"signIn": "Đăng nhập",
+		"startForFree": "Bắt đầu miễn phí",
+		"familyTree": "Cây Gia Phả",
+		"backToHome": "Quay Về Trang Chủ"
+	},
+	"validation": {
+		"required": "Trường này là bắt buộc",
+		"invalidEmail": "Địa chỉ email không hợp lệ",
+		"invalidDate": "Ngày không hợp lệ",
+		"minLength": "Phải có ít nhất {min} ký tự",
+		"maxLength": "Không được vượt quá {max} ký tự",
+		"mustBeAfter": "Phải sau {date}",
+		"mustBeBefore": "Phải trước {date}"
+	},
+	"error": {
+		"generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
+		"networkError": "Lỗi mạng. Vui lòng kiểm tra kết nối.",
+		"unauthorized": "Bạn không được phép thực hiện hành động này.",
+		"notFound": "Không tìm thấy tài nguyên được yêu cầu.",
+		"serverError": "Lỗi máy chủ. Vui lòng thử lại sau."
+	}
+}

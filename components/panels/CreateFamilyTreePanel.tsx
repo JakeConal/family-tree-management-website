@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { triggerFamilyTreesRefresh } from '@/lib/useFamilyTrees';
 
@@ -30,6 +31,8 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 	useSession();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
+
+	const intl = useIntl();
 
 	// Validation state
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -73,7 +76,10 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 				(p) => p.location && p.startDate && rootPersonData.birthDate && p.startDate <= rootPersonData.birthDate
 			);
 			if (invalidBirthDatePlaces.length > 0) {
-				newErrors.placesOfOrigin = 'Place of origin start date must be after the birth date';
+				// newErrors.placesOfOrigin = 'Place of origin start date must be after the birth date';
+				newErrors.placesOfOrigin = intl.formatMessage({
+					id: 'panel.createFamilyTree.validation.placesOfOriginStartDateAfterBirth',
+				});
 			} else {
 				// Check consecutive places date constraints
 				for (let i = 1; i < placesOfOrigin.length; i++) {
@@ -82,10 +88,14 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 					if (currentPlace.location && currentPlace.startDate) {
 						if (!previousPlace.endDate) {
-							newErrors.placesOfOrigin = 'Previous place of origin must have an end date';
+							newErrors.placesOfOrigin = intl.formatMessage({
+								id: 'panel.createFamilyTree.validation.placesOfOriginEndDate',
+							});
 							break;
 						} else if (currentPlace.startDate <= previousPlace.endDate) {
-							newErrors.placesOfOrigin = 'Start date must be after the end date of the previous place of origin';
+							newErrors.placesOfOrigin = intl.formatMessage({
+								id: 'panel.createFamilyTree.validation.placesOfOriginDateOrder',
+							});
 							break;
 						}
 					}
@@ -114,14 +124,18 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 		const hasValidOccupation = occupations.some((o) => o.title.trim());
 
 		if (!hasValidOccupation) {
-			newErrors.occupations = 'At least one occupation is required';
+			newErrors.occupations = intl.formatMessage({
+				id: 'panel.createFamilyTree.validation.occupationsRequired',
+			});
 		} else {
 			// Check that start dates are after birth date
 			const invalidBirthDateOccupations = occupations.filter(
 				(o) => o.title.trim() && o.startDate && rootPersonData.birthDate && o.startDate <= rootPersonData.birthDate
 			);
 			if (invalidBirthDateOccupations.length > 0) {
-				newErrors.occupations = 'Occupation start date must be after the birth date';
+				newErrors.occupations = intl.formatMessage({
+					id: 'panel.createFamilyTree.validation.occupationsStartDateAfterBirth',
+				});
 			} else {
 				// Check consecutive occupations date constraints
 				for (let i = 1; i < occupations.length; i++) {
@@ -130,10 +144,14 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 					if (currentOccupation.title.trim() && currentOccupation.startDate) {
 						if (!previousOccupation.endDate) {
-							newErrors.occupations = 'Previous occupation must have an end date';
+							newErrors.occupations = intl.formatMessage({
+								id: 'panel.createFamilyTree.validation.occupationsPreviousEndDate',
+							});
 							break;
 						} else if (currentOccupation.startDate <= previousOccupation.endDate) {
-							newErrors.occupations = 'Start date must be after the end date of the previous occupation';
+							newErrors.occupations = intl.formatMessage({
+								id: 'panel.createFamilyTree.validation.occupationsDateOrder',
+							});
 							break;
 						}
 					}
@@ -210,7 +228,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 		setFormValidationError('');
 
 		if (!confirmAccuracy) {
-			setGeneralError('Please confirm that the information is accurate.');
+			setGeneralError(intl.formatMessage({ id: 'panel.createFamilyTree.messages.confirmAccuracy' }));
 			return;
 		}
 
@@ -218,7 +236,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 		const isOccupationsValid = validateOccupations();
 
 		if (!isPlacesValid || !isOccupationsValid) {
-			setFormValidationError('Please check your information');
+			setFormValidationError(intl.formatMessage({ id: 'panel.createFamilyTree.messages.checkInformation' }));
 			return;
 		}
 
@@ -248,7 +266,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 			onClose();
 			router.refresh();
 		} catch (error: unknown) {
-			setGeneralError(error instanceof Error ? error.message : 'An unknown error occurred');
+			setGeneralError(error instanceof Error ? error.message : intl.formatMessage({ id: 'error.generic' }));
 		} finally {
 			setIsLoading(false);
 		}
@@ -263,9 +281,13 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 					className="absolute left-4 lg:left-6 top-4 lg:top-6 flex items-center text-black hover:opacity-70 transition-opacity"
 				>
 					<span className="text-xl font-light mr-2">{'<'}</span>
-					<span className="font-medium">Back</span>
+					<span className="font-medium">
+						<FormattedMessage id="common.back" />
+					</span>
 				</button>
-				<h1 className="text-[20px] lg:text-[26px] font-bold mt-8 text-black text-center">Create New Family Tree</h1>
+				<h1 className="text-[20px] lg:text-[26px] font-bold mt-8 text-black text-center">
+					<FormattedMessage id="panel.createFamilyTree.title" />
+				</h1>
 			</div>
 
 			<form onSubmit={handleSubmit} className="px-4 lg:px-12 pb-12 flex-1">
@@ -275,15 +297,19 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 						<div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
 							<Users className="w-4 h-4 text-white" />
 						</div>
-						<h2 className="text-lg font-bold text-black">Family Information</h2>
+						<h2 className="text-lg font-bold text-black">
+							<FormattedMessage id="panel.createFamilyTree.familyInformation" />
+						</h2>
 					</div>
 
 					<div className="space-y-4">
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">Family Name *</label>
+							<label className="block text-base font-medium mb-1 text-black">
+								<FormattedMessage id="panel.createFamilyTree.familyName" /> *
+							</label>
 							<input
 								type="text"
-								placeholder="e.g., The Hunter Family"
+								placeholder={intl.formatMessage({ id: 'panel.createFamilyTree.familyNamePlaceholder' })}
 								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 focus:outline-none text-black placeholder:text-black/40"
 								value={familyData.familyName}
 								onChange={(e) => setFamilyData({ ...familyData, familyName: e.target.value })}
@@ -292,63 +318,70 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 						</div>
 
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">Origin *</label>
-						<div className="relative">
-							<select
-								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 pr-10 focus:outline-none text-black appearance-none cursor-pointer"
-								value={familyData.origin}
-								onChange={(e) => setFamilyData({ ...familyData, origin: e.target.value })}
-								style={{
-									backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
-									backgroundRepeat: 'no-repeat',
-									backgroundPosition: 'right 1rem center',
-									backgroundSize: '1.25rem'
-								}}
-								required
-							>
-								<option value="">Select place of origin</option>
-								<option value="An Giang">An Giang</option>
-								<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
-								<option value="Bac Giang">Bac Giang</option>
-								<option value="Bac Ninh">Bac Ninh</option>
-								<option value="Binh Duong">Binh Duong</option>
-								<option value="Binh Dinh">Binh Dinh</option>
-								<option value="Binh Phuoc">Binh Phuoc</option>
-								<option value="Binh Thuan">Binh Thuan</option>
-								<option value="Ca Mau">Ca Mau</option>
-								<option value="Dak Lak">Dak Lak</option>
-								<option value="Dak Nong">Dak Nong</option>
-								<option value="Dong Nai">Dong Nai</option>
-								<option value="Dong Thap">Dong Thap</option>
-								<option value="Gia Lai">Gia Lai</option>
-								<option value="Ha Giang">Ha Giang</option>
-								<option value="Ha Nam">Ha Nam</option>
-								<option value="Ha Tinh">Ha Tinh</option>
-								<option value="Khanh Hoa">Khanh Hoa</option>
-								<option value="Kien Giang">Kien Giang</option>
-								<option value="Lam Dong">Lam Dong</option>
-								<option value="Lao Cai">Lao Cai</option>
-								<option value="Long An">Long An</option>
-								<option value="Nam Dinh">Nam Dinh</option>
-								<option value="Nghe An">Nghe An</option>
-								<option value="Ninh Binh">Ninh Binh</option>
-								<option value="Phu Tho">Phu Tho</option>
-								<option value="Quang Nam">Quang Nam</option>
-								<option value="Hanoi">Hanoi</option>
-								<option value="Ho Chi Minh City">Ho Chi Minh City</option>
-								<option value="Hai Phong">Hai Phong</option>
-								<option value="Da Nang">Da Nang</option>
-								<option value="Can Tho">Can Tho</option>
-								<option value="Hue">Hue</option>
-							</select>
+							<label className="block text-base font-medium mb-1 text-black">
+								<FormattedMessage id="panel.createFamilyTree.origin" /> *
+							</label>
+							<div className="relative">
+								<select
+									className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 pr-10 focus:outline-none text-black appearance-none cursor-pointer"
+									value={familyData.origin}
+									onChange={(e) => setFamilyData({ ...familyData, origin: e.target.value })}
+									style={{
+										backgroundImage:
+											"url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")",
+										backgroundRepeat: 'no-repeat',
+										backgroundPosition: 'right 1rem center',
+										backgroundSize: '1.25rem',
+									}}
+									required
+								>
+									<option value="">
+										<FormattedMessage id="panel.createFamilyTree.selectOrigin" />
+									</option>
+									<option value="An Giang">An Giang</option>
+									<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
+									<option value="Bac Giang">Bac Giang</option>
+									<option value="Bac Ninh">Bac Ninh</option>
+									<option value="Binh Duong">Binh Duong</option>
+									<option value="Binh Dinh">Binh Dinh</option>
+									<option value="Binh Phuoc">Binh Phuoc</option>
+									<option value="Binh Thuan">Binh Thuan</option>
+									<option value="Ca Mau">Ca Mau</option>
+									<option value="Dak Lak">Dak Lak</option>
+									<option value="Dak Nong">Dak Nong</option>
+									<option value="Dong Nai">Dong Nai</option>
+									<option value="Dong Thap">Dong Thap</option>
+									<option value="Gia Lai">Gia Lai</option>
+									<option value="Ha Giang">Ha Giang</option>
+									<option value="Ha Nam">Ha Nam</option>
+									<option value="Ha Tinh">Ha Tinh</option>
+									<option value="Khanh Hoa">Khanh Hoa</option>
+									<option value="Kien Giang">Kien Giang</option>
+									<option value="Lam Dong">Lam Dong</option>
+									<option value="Lao Cai">Lao Cai</option>
+									<option value="Long An">Long An</option>
+									<option value="Nam Dinh">Nam Dinh</option>
+									<option value="Nghe An">Nghe An</option>
+									<option value="Ninh Binh">Ninh Binh</option>
+									<option value="Phu Tho">Phu Tho</option>
+									<option value="Quang Nam">Quang Nam</option>
+									<option value="Hanoi">Hanoi</option>
+									<option value="Ho Chi Minh City">Ho Chi Minh City</option>
+									<option value="Hai Phong">Hai Phong</option>
+									<option value="Da Nang">Da Nang</option>
+									<option value="Can Tho">Can Tho</option>
+									<option value="Hue">Hue</option>
+								</select>
+							</div>
 						</div>
-				</div>
 
-				<div>
-					<label className="block text-base font-medium mb-1 text-black">Establish year *</label>
+						<div>
+							<label className="block text-base font-medium mb-1 text-black">
+								<FormattedMessage id="panel.createFamilyTree.establishYear" /> *
+							</label>
 							<input
 								type="text"
-								placeholder="e.g., 1945"
+								placeholder={intl.formatMessage({ id: 'panel.createFamilyTree.establishYearPlaceholder' })}
 								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 focus:outline-none text-black placeholder:text-black/40"
 								value={familyData.establishYear}
 								onChange={(e) =>
@@ -367,21 +400,27 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 				{/* Root Person Section */}
 				<div className="mb-8">
-					<h2 className="text-lg font-bold mb-6 text-black">Family Header (Root Person)</h2>
+					<h2 className="text-lg font-bold mb-6 text-black">
+						<FormattedMessage id="panel.createFamilyTree.rootPersonHeader" />
+					</h2>
 
 					<div className="flex items-center gap-2 mb-6">
 						<div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
 							<Info className="w-4 h-4 text-white" />
 						</div>
-						<h3 className="text-lg font-bold text-black">Personal Information</h3>
+						<h3 className="text-lg font-bold text-black">
+							<FormattedMessage id="panel.createFamilyTree.personalInformation" />
+						</h3>
 					</div>
 
 					<div className="space-y-4">
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">Full Name *</label>
+							<label className="block text-base font-medium mb-1 text-black required-label">
+								<FormattedMessage id="panel.createFamilyTree.fullName" />
+							</label>
 							<input
 								type="text"
-								placeholder="Enter full name"
+								placeholder={intl.formatMessage({ id: 'panel.createFamilyTree.fullNamePlaceholder' })}
 								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 focus:outline-none text-black placeholder:text-black/40"
 								value={rootPersonData.fullName}
 								onChange={(e) =>
@@ -396,7 +435,9 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 
 						<div className="grid grid-cols-2 gap-4">
 							<div>
-								<label className="block text-base font-medium mb-1 text-black">Gender *</label>
+								<label className="block text-base font-medium mb-1 text-black required-label">
+									<FormattedMessage id="panel.createFamilyTree.gender" />
+								</label>
 								<div className="relative">
 									<select
 										className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 appearance-none focus:outline-none text-black"
@@ -410,20 +451,22 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										required
 									>
 										<option value="" className="text-black/40">
-											Select gender
+											<FormattedMessage id="panel.createFamilyTree.selectGender" />
 										</option>
 										<option value="MALE" className="text-black">
-											Male
+											<FormattedMessage id="common.male" />
 										</option>
 										<option value="FEMALE" className="text-black">
-											Female
+											<FormattedMessage id="common.female" />
 										</option>
 									</select>
 									<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-black" />
 								</div>
 							</div>
 							<div>
-								<label className="block text-base font-medium mb-1 text-black">Birth Date *</label>
+								<label className="block text-base font-medium mb-1 text-black required-label">
+									<FormattedMessage id="panel.createFamilyTree.birthDate" />
+								</label>
 								<div className="relative">
 									<input
 										type="date"
@@ -444,21 +487,25 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 						{/* Places of Origin */}
 						<div>
 							<div className="flex justify-between items-center mb-2">
-								<label className="text-base font-medium text-black">Place of Origin *</label>
+								<label className="text-base font-medium text-black required-label">
+									<FormattedMessage id="panel.createFamilyTree.origin" />
+								</label>
 								<button
 									type="button"
 									onClick={handleAddPlace}
 									className="flex items-center gap-1 text-xs bg-white border border-black rounded-full px-3 py-1 hover:bg-gray-50 text-black font-medium"
 								>
 									<Plus className="w-3 h-3" />
-									Add Place
+									<FormattedMessage id="panel.createFamilyTree.addPlace" />
 								</button>
 							</div>
 							<div className="space-y-4">
 								{placesOfOrigin.map((place, index) => (
 									<div key={place.id} className="bg-[#dbeafe] border border-black/50 rounded-[15px] p-4">
 										<div className="mb-3 flex justify-between items-center">
-											<label className="block text-[11px] font-bold text-black">Origin {index + 1} *</label>
+											<label className="block text-[11px] font-bold text-black required-label">
+												<FormattedMessage id="panel.createFamilyTree.origin" /> {index + 1}
+											</label>
 											{index > 0 && (
 												<button
 													type="button"
@@ -471,26 +518,29 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										</div>
 										<div className="relative">
 											<select
-											className="w-full bg-[#eff6ff] mb-2 border border-black/50 rounded-[30px] h-[33px] px-4 pr-10 text-[11px] focus:outline-none text-black appearance-none cursor-pointer"
-											value={place.location}
-											onChange={(e) => {
-												const newPlaces = [...placesOfOrigin];
-												newPlaces[index].location = e.target.value;
-												setPlacesOfOrigin(newPlaces);
-												setErrors((prev) => ({
-													...prev,
-													placesOfOrigin: '',
-												}));
-											}}
-											style={{
-												backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
-												backgroundRepeat: 'no-repeat',
-												backgroundPosition: 'right 1rem center',
-												backgroundSize: '1.25rem'
+												className="w-full bg-[#eff6ff] mb-2 border border-black/50 rounded-[30px] h-[33px] px-4 pr-10 text-[11px] focus:outline-none text-black appearance-none cursor-pointer"
+												value={place.location}
+												onChange={(e) => {
+													const newPlaces = [...placesOfOrigin];
+													newPlaces[index].location = e.target.value;
+													setPlacesOfOrigin(newPlaces);
+													setErrors((prev) => ({
+														...prev,
+														placesOfOrigin: '',
+													}));
+												}}
+												style={{
+													backgroundImage:
+														"url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e\")",
+													backgroundRepeat: 'no-repeat',
+													backgroundPosition: 'right 1rem center',
+													backgroundSize: '1.25rem',
 												}}
 												required
 											>
-												<option value="">Select place of origin</option>
+												<option value="">
+													<FormattedMessage id="panel.createFamilyTree.selectOrigin" />
+												</option>
 												<option value="An Giang">An Giang</option>
 												<option value="Ba Ria – Vung Tau">Ba Ria – Vung Tau</option>
 												<option value="Bac Giang">Bac Giang</option>
@@ -528,7 +578,9 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										</div>
 										<div className="grid grid-cols-2 gap-4">
 											<div>
-												<label className="block text-[11px] font-bold mb-1 text-black">Start Date *</label>
+												<label className="block text-[11px] font-bold mb-1 text-black required-label">
+													<FormattedMessage id="panel.createFamilyTree.startDate" />
+												</label>
 												<div className="relative">
 													<input
 														type="date"
@@ -549,7 +601,10 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 											</div>
 											<div>
 												<label className="block text-[11px] font-bold mb-1 text-black">
-													End Date <span className="text-gray-600 font-normal">(optional)</span>
+													<FormattedMessage id="panel.createFamilyTree.endDate" />
+													<span className="text-gray-600 font-normal ml-1">
+														<FormattedMessage id="common.optional" />
+													</span>
 												</label>
 												<div className="relative">
 													<input
@@ -572,28 +627,34 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 									</div>
 								))}
 							</div>
-							<p className="text-[12px] text-gray-700 mt-2 font-medium">Maximum 4 places of origin per person</p>
+							<p className="text-[12px] text-gray-700 mt-2 font-medium">
+								<FormattedMessage id="panel.createFamilyTree.maxPlaces" />
+							</p>
 							{errors.placesOfOrigin && <p className="text-red-600 text-xs mt-1 font-bold">{errors.placesOfOrigin}</p>}
 						</div>
 
 						{/* Occupations */}
 						<div>
 							<div className="flex justify-between items-center mb-2">
-								<label className="text-base font-medium text-black">Occupation *</label>
+								<label className="text-base font-medium text-black required-label">
+									<FormattedMessage id="panel.createFamilyTree.occupation" />
+								</label>
 								<button
 									type="button"
 									onClick={handleAddOccupation}
 									className="flex items-center gap-1 text-xs bg-white border border-black rounded-full px-3 py-1 hover:bg-gray-50 text-black font-medium"
 								>
 									<Plus className="w-3 h-3" />
-									Add Occupation
+									<FormattedMessage id="panel.createFamilyTree.addOccupation" />
 								</button>
 							</div>
 							<div className="space-y-4">
 								{occupations.map((occ, index) => (
 									<div key={occ.id} className="bg-[#dbeafe] border border-black/50 rounded-[15px] p-4">
 										<div className="mb-3 flex justify-between items-center">
-											<label className="block text-[11px] font-bold text-black">Job {index + 1} *</label>
+											<label className="block text-[11px] font-bold text-black required-label">
+												<FormattedMessage id="panel.createFamilyTree.job" /> {index + 1}
+											</label>
 											{index > 0 && (
 												<button
 													type="button"
@@ -606,7 +667,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										</div>
 										<input
 											type="text"
-											placeholder="e.g., Software Engineer"
+											placeholder={intl.formatMessage({ id: 'panel.createFamilyTree.jobPlaceholder' })}
 											className="w-full bg-[#eff6ff] mb-2 border border-black/50 rounded-[30px] h-[33px] px-4 text-[11px] focus:outline-none text-black placeholder:text-black/40"
 											value={occ.title}
 											onChange={(e) => {
@@ -619,7 +680,9 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 										/>
 										<div className="grid grid-cols-2 gap-4">
 											<div>
-												<label className="block text-[11px] font-bold mb-1 text-black">Start Date *</label>
+												<label className="block text-[11px] font-bold mb-1 text-black required-label">
+													<FormattedMessage id="panel.createFamilyTree.startDate" />
+												</label>
 												<div className="relative">
 													<input
 														type="date"
@@ -640,7 +703,10 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 											</div>
 											<div>
 												<label className="block text-[11px] font-bold mb-1 text-black">
-													End Date <span className="text-gray-600 font-normal">(optional)</span>
+													<FormattedMessage id="panel.createFamilyTree.endDate" />
+													<span className="text-gray-600 font-normal ml-1">
+														<FormattedMessage id="common.optional" />
+													</span>
 												</label>
 												<div className="relative">
 													<input
@@ -663,15 +729,19 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 									</div>
 								))}
 							</div>
-							<p className="text-[12px] text-gray-700 mt-2 font-medium">Maximum 15 occupations per person</p>
+							<p className="text-[12px] text-gray-700 mt-2 font-medium">
+								<FormattedMessage id="panel.createFamilyTree.maxOccupations" />
+							</p>
 							{errors.occupations && <p className="text-red-600 text-xs mt-1 font-bold">{errors.occupations}</p>}
 						</div>
 
 						<div>
-							<label className="block text-base font-medium mb-1 text-black">Address *</label>
+							<label className="block text-base font-medium mb-1 text-black required-label">
+								<FormattedMessage id="panel.createFamilyTree.address" />
+							</label>
 							<input
 								type="text"
-								placeholder="Enter full address"
+								placeholder={intl.formatMessage({ id: 'panel.createFamilyTree.addressPlaceholder' })}
 								className="w-full bg-[#f3f2f2] border border-black/50 rounded-[30px] h-[35px] px-4 focus:outline-none text-black placeholder:text-black/40"
 								value={rootPersonData.address}
 								onChange={(e) =>
@@ -687,8 +757,12 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 						{/* Profile Picture */}
 						<div>
 							<div className="flex items-center gap-2 mb-2">
-								<label className="text-base font-medium text-black">Profile Picture</label>
-								<span className="text-[11px] text-gray-600">(optional)</span>
+								<label className="text-base font-medium text-black">
+									<FormattedMessage id="panel.createFamilyTree.profilePicture" />
+								</label>
+								<span className="text-[11px] text-gray-600">
+									<FormattedMessage id="common.optional" />
+								</span>
 							</div>
 							<div className="flex items-end gap-4">
 								<div className="w-[100px] h-[100px] bg-[#f3f2f2] border-2 border-dashed border-black/20 rounded-lg flex items-center justify-center overflow-hidden relative group">
@@ -709,7 +783,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 									className="bg-[#1f1f1f] text-white text-[11px] font-medium px-4 py-1.5 rounded-[10px] hover:bg-black transition-colors"
 									onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
 								>
-									Upload
+									<FormattedMessage id="panel.createFamilyTree.upload" />
 								</button>
 							</div>
 						</div>
@@ -726,7 +800,7 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 							onChange={(e) => setConfirmAccuracy(e.target.checked)}
 						/>
 						<span className="text-sm font-medium text-black">
-							I confirm that all information provided is accurate and truthful
+							<FormattedMessage id="panel.createFamilyTree.confirmAccuracy" />
 						</span>
 					</label>
 
@@ -735,10 +809,11 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 							<Info className="w-5 h-5 text-black" />
 						</div>
 						<div>
-							<p className="font-bold text-sm mb-1 text-black">Important</p>
+							<p className="font-bold text-sm mb-1 text-black">
+								<FormattedMessage id="panel.createFamilyTree.importantTitle" />
+							</p>
 							<p className="text-xs leading-relaxed text-black font-medium">
-								Once a family member is added, their record becomes permanent and cannot be deleted from the system.
-								Please ensure all information is accurate before submitting.
+								<FormattedMessage id="panel.createFamilyTree.importantMessage" />
 							</p>
 						</div>
 					</div>
@@ -753,14 +828,14 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 							onClick={onClose}
 							className="px-8 py-2 bg-white border border-black rounded-[10px] text-sm font-bold text-black hover:bg-gray-50 transition-colors"
 						>
-							Cancel
+							<FormattedMessage id="common.cancel" />
 						</button>
 						<button
 							type="submit"
 							disabled={isLoading}
 							className="px-8 py-2 bg-[#1f2937] text-white rounded-[10px] text-sm font-bold hover:bg-[#111827] transition-colors disabled:opacity-50"
 						>
-							{isLoading ? 'Creating...' : 'Create'}
+							{isLoading ? <FormattedMessage id="common.creating" /> : <FormattedMessage id="common.create" />}
 						</button>
 					</div>
 				</div>
@@ -768,5 +843,3 @@ export default function CreateFamilyTreePanel({ onClose }: CreateFamilyTreePanel
 		</div>
 	);
 }
-
-

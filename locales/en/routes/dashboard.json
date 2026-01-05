@@ -1,0 +1,25 @@
+{
+	"dashboard": {
+		"title": "Dashboard",
+		"welcome": "Welcome back, {name}!",
+		"emptyState": {
+			"title": "Welcome to Family Tree",
+			"subtitle": "Start building your family legacy by creating your first family tree",
+			"cta": "Create your first family tree"
+		},
+		"cards": {
+			"familyTrees": {
+				"title": "Family Trees",
+				"description": "Create and manage your family trees"
+			},
+			"members": {
+				"title": "Members",
+				"description": "Add and organize family members"
+			},
+			"achievements": {
+				"title": "Achievements",
+				"description": "Track family achievements and milestones"
+			}
+		}
+	}
+}

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ChevronDown, ChevronLeft, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -48,6 +49,7 @@ export default function PassingPanel({
 	onClose,
 	onSuccess,
 }: PassingPanelProps) {
+	const intl = useIntl();
 	const [passingRecord, setPassingRecord] = useState<PassingRecord | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,7 +101,7 @@ export default function PassingPanel({
 			}
 		} catch (error) {
 			console.error('Error fetching passing record:', error);
-			toast.error('Failed to load passing record');
+			toast.error(intl.formatMessage({ id: 'panel.passing.messages.loadError' }));
 		} finally {
 			setLoading(false);
 		}
@@ -126,14 +128,14 @@ export default function PassingPanel({
 		switch (field) {
 			case 'familyMemberId':
 				if (!value) {
-					newErrors.familyMemberId = 'Family member is required';
+					newErrors.familyMemberId = intl.formatMessage({ id: 'panel.passing.validation.familyMemberRequired' });
 				} else {
 					delete newErrors.familyMemberId;
 				}
 				break;
 			case 'dateOfPassing':
 				if (!value) {
-					newErrors.dateOfPassing = 'Date of passing is required';
+					newErrors.dateOfPassing = intl.formatMessage({ id: 'panel.passing.validation.dateOfPassingRequired' });
 				} else {
 					delete newErrors.dateOfPassing;
 				}
@@ -148,7 +150,7 @@ export default function PassingPanel({
 		const hasValidCause = formData.causesOfDeath.some((cause) => cause.trim() !== '');
 
 		if (!hasValidCause) {
-			newErrors.causesOfDeath = 'At least one cause of passing is required';
+			newErrors.causesOfDeath = intl.formatMessage({ id: 'panel.passing.validation.causeOfPassingRequired' });
 		} else {
 			delete newErrors.causesOfDeath;
 		}
@@ -162,7 +164,7 @@ export default function PassingPanel({
 		const hasValidPlace = formData.burialPlaces.some((place) => place.location.trim() !== '' && place.startDate !== '');
 
 		if (!hasValidPlace) {
-			newErrors.burialPlaces = 'At least one burial place with location and start date is required';
+			newErrors.burialPlaces = intl.formatMessage({ id: 'panel.passing.validation.burialPlacesRequired' });
 		} else {
 			delete newErrors.burialPlaces;
 		}
@@ -177,7 +179,7 @@ export default function PassingPanel({
 
 		// Validate date of passing is after birth date
 		if (formData.dateOfPassing && selectedMemberBirthDate && formData.dateOfPassing <= selectedMemberBirthDate) {
-			newErrors.dateOfPassing = 'Date of passing must be after the birth date';
+			newErrors.dateOfPassing = intl.formatMessage({ id: 'panel.passing.validation.passingDateAfterBirth' });
 			hasDateErrors = true;
 		} else {
 			delete newErrors.dateOfPassing;
@@ -186,7 +188,9 @@ export default function PassingPanel({
 		// Validate burial dates
 		formData.burialPlaces.forEach((place, index) => {
 			if (place.startDate && formData.dateOfPassing && place.startDate < formData.dateOfPassing) {
-				newErrors[`burialPlaces_${index}_startDate`] = `Burial start date must be on or after the date of passing`;
+				newErrors[`burialPlaces_${index}_startDate`] = intl.formatMessage({
+					id: 'panel.passing.validation.burialStartDateAfterPassing',
+				});
 				hasDateErrors = true;
 			} else {
 				delete newErrors[`burialPlaces_${index}_startDate`];
@@ -327,16 +331,29 @@ export default function PassingPanel({
 			});
 
 			if (response.ok) {
-				toast.success(mode === 'add' ? 'Passing record created successfully!' : 'Passing record updated successfully!');
+				toast.success(
+					intl.formatMessage({
+						id: mode === 'add' ? 'panel.passing.messages.createSuccess' : 'panel.passing.messages.updateSuccess',
+					})
+				);
 				onSuccess();
 				onClose();
 			} else {
 				const error = await response.json();
-				toast.error(error.error || `Failed to ${mode === 'add' ? 'create' : 'update'} passing record`);
+				toast.error(
+					error.error ||
+						intl.formatMessage({
+							id: mode === 'add' ? 'panel.passing.messages.createError' : 'panel.passing.messages.updateError',
+						})
+				);
 			}
 		} catch (error) {
 			console.error('Error saving passing record:', error);
-			toast.error(`Failed to ${mode === 'add' ? 'create' : 'update'} passing record`);
+			toast.error(
+				intl.formatMessage({
+					id: mode === 'add' ? 'panel.passing.messages.createError' : 'panel.passing.messages.updateError',
+				})
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -351,7 +368,7 @@ export default function PassingPanel({
 	if (loading) {
 		return (
 			<div className="w-full h-full">
-				<LoadingScreen message="Loading passing record..." />
+				<LoadingScreen message={intl.formatMessage({ id: 'panel.passing.loadingMessage' })} />
 			</div>
 		);
 	}
@@ -368,7 +385,9 @@ export default function PassingPanel({
 					className="flex items-center text-black font-normal text-sm sm:text-base hover:opacity-70 transition-opacity"
 				>
 					<ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-					<span className="font-['Inter']">Back</span>
+					<span className="font-['Inter']">
+						<FormattedMessage id="panel.passing.back" />
+					</span>
 				</button>
 			</div>
 
@@ -376,44 +395,56 @@ export default function PassingPanel({
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						Passing Record Details
+						<FormattedMessage id="panel.passing.title" />
 					</h2>
 
 					<div className="space-y-6">
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Family Member *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.passing.familyMember" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 								{passingRecord?.familyMember.fullName}
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Date of Passing *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.passing.dateOfPassing" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{formatDate(passingRecord?.dateOfPassing || '')}
+								<FormattedDate value={new Date(passingRecord?.dateOfPassing || '')} />
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Cause of Passing *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.passing.causeOfPassing" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{passingRecord?.causeOfDeath?.causeName || 'Not specified'}
+								{passingRecord?.causeOfDeath?.causeName || intl.formatMessage({ id: 'panel.passing.notSpecified' })}
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Burial Places *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.passing.burialPlaces" />
+							</label>
 							<div className="space-y-4">
 								{passingRecord?.buriedPlaces.map((place, index) => (
 									<div key={index} className="bg-[#dbeafe] border border-black/50 rounded-[15px] p-4 space-y-3">
 										<div>
-											<label className="block text-[11.584px] font-normal text-black mb-1.5">Location *</label>
+											<label className="block text-[11.584px] font-normal text-black mb-1.5">
+												<FormattedMessage id="panel.passing.location" />
+											</label>
 											<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
 												{place.location}
 											</div>
 										</div>
 										<div>
-											<label className="block text-[11.584px] font-normal text-black mb-1.5">Start Date *</label>
+											<label className="block text-[11.584px] font-normal text-black mb-1.5">
+												<FormattedMessage id="panel.passing.startDate" />
+											</label>
 											<div className="bg-[#eff6ff] border border-black/50 rounded-[29px] px-4 py-2 text-[11.584px] text-black">
 												{formatDate(place.startDate)}
 											</div>
@@ -429,13 +460,13 @@ export default function PassingPanel({
 								onClick={onClose}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								Back
+								<FormattedMessage id="panel.passing.back" />
 							</button>
 							<button
 								onClick={() => onModeChange('edit')}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
 							>
-								Edit
+								<FormattedMessage id="panel.passing.edit" />
 							</button>
 						</div>
 					</div>
@@ -444,13 +475,15 @@ export default function PassingPanel({
 				/* Add/Edit Mode */
 				<div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
 					<h2 className="text-xl sm:text-2xl lg:text-[26px] font-normal text-black text-center mb-6 sm:mb-8 lg:mb-10">
-						{isAddMode ? 'Add Passing Record' : 'Edit Passing Record'}
+						<FormattedMessage id={isAddMode ? 'panel.passing.addRecord' : 'panel.passing.editRecord'} />
 					</h2>
 
 					<form onSubmit={handleSubmit} className="space-y-5">
 						{/* Family Member Selection */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Family Member *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.passing.familyMember" />
+							</label>
 							<div className="relative">
 								<select
 									value={formData.familyMemberId}
@@ -476,7 +509,9 @@ export default function PassingPanel({
 									)}
 									disabled={!isAddMode}
 								>
-									<option value="">Select member</option>
+									<option value="">
+										<FormattedMessage id="panel.passing.selectMember" />
+									</option>
 									{familyMembers.map((member) => (
 										<option key={member.id} value={member.id}>
 											{member.fullName}
@@ -492,7 +527,9 @@ export default function PassingPanel({
 
 						{/* Date of Passing */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Date Of Passing *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.passing.dateOfPassing" />
+							</label>
 							<input
 								type="date"
 								value={formData.dateOfPassing}
@@ -519,15 +556,19 @@ export default function PassingPanel({
 						{/* Cause of Passing */}
 						<div>
 							<div className="flex items-center justify-between mb-2">
-								<label className="block text-[16px] font-normal text-black">Cause Of Passing *</label>
+								<label className="block text-[16px] font-normal text-black required-label">
+									<FormattedMessage id="panel.passing.causeOfPassing" />
+								</label>
 								<button
 									type="button"
 									onClick={addCauseOfDeath}
 									disabled={formData.causesOfDeath.length >= 12}
-									className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+									className="flex items-center justify-center w-max h-6 bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 								>
 									<Plus className="w-3 h-3 mr-1" />
-									<span>Add Cause</span>
+									<span>
+										<FormattedMessage id="panel.passing.addCause" />
+									</span>
 								</button>
 							</div>
 							{formData.causesOfDeath.length > 0 && (
@@ -538,7 +579,7 @@ export default function PassingPanel({
 												type="text"
 												value={cause}
 												onChange={(e) => updateCauseOfDeath(index, e.target.value)}
-												placeholder="e.g. old age"
+												placeholder={intl.formatMessage({ id: 'panel.passing.causeOfPassingPlaceholder' })}
 												className={`w-full h-[35px] px-4 bg-[#f3f2f2] border border-black/50 rounded-[30px] text-[12px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400 ${
 													formData.causesOfDeath.length > 1 ? 'pr-10' : ''
 												}`}
@@ -562,7 +603,9 @@ export default function PassingPanel({
 						{/* Burial Places */}
 						<div>
 							<div className="flex items-center justify-between mb-2">
-								<label className="block text-[16px] font-normal text-black">Burial Places *</label>
+								<label className="block text-[16px] font-normal text-black required-label">
+									<FormattedMessage id="panel.passing.burialPlaces" />
+								</label>
 								<button
 									type="button"
 									onClick={addBurialPlace}
@@ -570,7 +613,9 @@ export default function PassingPanel({
 									className="flex items-center justify-center w-[92px] h-[24px] bg-white border border-black/50 rounded-[20px] text-[12px] text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 								>
 									<Plus className="w-3 h-3 mr-1" />
-									<span>Add Place</span>
+									<span>
+										<FormattedMessage id="panel.passing.addPlace" />
+									</span>
 								</button>
 							</div>
 							{formData.burialPlaces.length > 0 && (
@@ -589,19 +634,23 @@ export default function PassingPanel({
 
 											{/* Location */}
 											<div className="mb-3">
-												<label className="block text-[11.584px] font-normal text-black mb-1.5">Location *</label>
+												<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+													<FormattedMessage id="panel.passing.location" />
+												</label>
 												<input
 													type="text"
 													value={place.location}
 													onChange={(e) => updateBurialPlace(index, 'location', e.target.value)}
-													placeholder="Enter location"
+													placeholder={intl.formatMessage({ id: 'panel.passing.locationPlaceholder' })}
 													className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-gray-400"
 												/>
 											</div>
 
 											{/* Start Date */}
 											<div>
-												<label className="block text-[11.584px] font-normal text-black mb-1.5">Start Date *</label>
+												<label className="block text-[11.584px] font-normal text-black mb-1.5 required-label">
+													<FormattedMessage id="panel.passing.startDate" />
+												</label>
 												<input
 													type="date"
 													value={place.startDate}
@@ -622,7 +671,9 @@ export default function PassingPanel({
 						{/* Error Message */}
 						{Object.keys(errors).length > 0 && (
 							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">Please fill in all required fields</p>
+								<p className="text-sm font-medium text-red-800">
+									<FormattedMessage id="panel.passing.validation.fillAllFields" />
+								</p>
 							</div>
 						)}
 
@@ -634,14 +685,22 @@ export default function PassingPanel({
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 								disabled={isSubmitting}
 							>
-								{isAddMode ? 'Cancel' : 'Back'}
+								{isAddMode ? (
+									<FormattedMessage id="panel.passing.cancel" />
+								) : (
+									<FormattedMessage id="panel.passing.back" />
+								)}
 							</button>
 							<button
 								type="submit"
 								disabled={isSubmitting}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
 							>
-								{isSubmitting ? 'Saving...' : 'Save'}
+								{isSubmitting ? (
+									<FormattedMessage id="panel.passing.saving" />
+								) : (
+									<FormattedMessage id="panel.passing.save" />
+								)}
 							</button>
 						</div>
 					</form>

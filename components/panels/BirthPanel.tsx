@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ChevronLeft, Baby } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -39,6 +40,7 @@ export default function BirthPanel({
 	onClose,
 	onSuccess,
 }: BirthPanelProps) {
+	const intl = useIntl();
 	const [birthRecord, setBirthRecord] = useState<BirthRecord | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,6 +62,7 @@ export default function BirthPanel({
 		setLoading(true);
 		try {
 			const res = await fetch(`/api/family-trees/${familyTreeId}/birth-records/${childMemberId}`);
+			// const data = await FamilyTreeService.getBirthRecords(familyTreeId, childMemberId);
 			if (res.ok) {
 				const data = await res.json();
 				setBirthRecord(data);
@@ -80,18 +83,17 @@ export default function BirthPanel({
 					setParentBirthDate(new Date(data.parent.birthday).toISOString().split('T')[0]);
 				}
 			} else {
-				const error = await res.json();
-				toast.error(error.error || 'Failed to load birth information');
+				toast.error(intl.formatMessage({ id: 'error.generic' }));
 				onClose();
 			}
 		} catch (error) {
 			console.error('Error fetching birth record:', error);
-			toast.error('Failed to load birth information');
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
 			onClose();
 		} finally {
 			setLoading(false);
 		}
-	}, [childMemberId, familyTreeId, familyMembers, onClose]);
+	}, [childMemberId, familyTreeId, familyMembers, onClose, intl]);
 
 	useEffect(() => {
 		fetchBirthRecord();
@@ -101,19 +103,19 @@ export default function BirthPanel({
 		const newErrors: Record<string, string> = {};
 
 		if (!formData.birthDate) {
-			newErrors.birthDate = 'Birth date is required';
+			newErrors.birthDate = intl.formatMessage({ id: 'panel.birth.validation.birthDateRequired' });
 		} else {
 			const birthDate = new Date(formData.birthDate);
 			const today = new Date();
 
 			if (birthDate > today) {
-				newErrors.birthDate = 'Birth date cannot be in the future';
+				newErrors.birthDate = intl.formatMessage({ id: 'panel.birth.validation.birthDateFuture' });
 			}
 
 			if (parentBirthDate) {
 				const parentDate = new Date(parentBirthDate);
 				if (birthDate < parentDate) {
-					newErrors.birthDate = "Birth date must be after parent's birthday";
+					newErrors.birthDate = intl.formatMessage({ id: 'panel.birth.validation.birthDateAfterParent' });
 				}
 			}
 
@@ -143,16 +145,16 @@ export default function BirthPanel({
 			if (res.ok) {
 				const data = await res.json();
 				setBirthRecord(data);
-				toast.success('Birth information updated successfully');
+				toast.success(intl.formatMessage({ id: 'panel.birth.messages.updateSuccess' }));
 				onModeChange('view');
 				onSuccess();
 			} else {
 				const error = await res.json();
-				toast.error(error.error || 'Failed to update birth information');
+				toast.error(error.error || intl.formatMessage({ id: 'panel.birth.messages.updateError' }));
 			}
 		} catch (error) {
 			console.error('Error updating birth record:', error);
-			toast.error('Failed to update birth information');
+			toast.error(intl.formatMessage({ id: 'panel.birth.messages.updateError' }));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -178,13 +180,15 @@ export default function BirthPanel({
 	};
 
 	if (loading) {
-		return <LoadingScreen />;
+		return <LoadingScreen message={intl.formatMessage({ id: 'panel.birth.loadingMessage' })} />;
 	}
 
 	if (!birthRecord) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
-				<p className="text-gray-500">No birth information found</p>
+				<p className="text-gray-500">
+					<FormattedMessage id="panel.birth.noInformation" />
+				</p>
 			</div>
 		);
 	}
@@ -195,12 +199,16 @@ export default function BirthPanel({
 			<div className="border-b border-gray-200 p-6 pb-4">
 				<button onClick={onClose} className="flex items-center gap-2 text-[16px] text-black mb-4 hover:opacity-70">
 					<ChevronLeft className="w-4 h-4" />
-					<span>Back</span>
+					<span>
+						<FormattedMessage id="common.back" />
+					</span>
 				</button>
 
 				<div className="flex items-center justify-center gap-4 mb-4">
 					<Baby className="w-[50px] h-[50px] text-black" />
-					<h2 className="text-[26px] font-normal text-black">Birth Information</h2>
+					<h2 className="text-[26px] font-normal text-black">
+						<FormattedMessage id="panel.birth.title" />
+					</h2>
 				</div>
 			</div>
 
@@ -209,7 +217,9 @@ export default function BirthPanel({
 				<div className="space-y-6">
 					{/* Parent Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Parent *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.birth.parent" />
+						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 							<span className="text-[12px] text-black">{birthRecord.parent.fullName}</span>
 						</div>
@@ -217,7 +227,9 @@ export default function BirthPanel({
 
 					{/* Child Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Child *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.birth.child" />
+						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 							<span className="text-[12px] text-black">{birthRecord.child.fullName}</span>
 						</div>
@@ -225,17 +237,18 @@ export default function BirthPanel({
 
 					{/* Date of Child's Birth Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Date of Child&apos;s Birth *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.birth.dateOfBirth" />
+						</label>
 						{mode === 'view' ? (
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
-									{formData.birthDate
-										? new Date(formData.birthDate).toLocaleDateString('en-US', {
-												month: '2-digit',
-												day: '2-digit',
-												year: 'numeric',
-											})
-										: ''}
+									<FormattedDate
+										value={new Date(birthRecord.birthDate || '')}
+										year="numeric"
+										month="2-digit"
+										day="2-digit"
+									/>
 								</span>
 							</div>
 						) : (
@@ -271,7 +284,7 @@ export default function BirthPanel({
 					disabled={isSubmitting}
 					className="w-[95px] h-[40px] rounded-[10px] border-2 border-black bg-white text-[14px] font-normal text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 				>
-					Back
+					<FormattedMessage id="common.back" />
 				</button>
 
 				{mode === 'view' ? (
@@ -280,7 +293,7 @@ export default function BirthPanel({
 						disabled={isSubmitting}
 						className="w-[123px] h-[40px] rounded-[10px] bg-[#1f2937] text-[14px] font-normal text-white hover:bg-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
-						Edit
+						<FormattedMessage id="common.edit" />
 					</button>
 				) : (
 					<button
@@ -288,7 +301,7 @@ export default function BirthPanel({
 						disabled={isSubmitting}
 						className="w-[123px] h-[40px] rounded-[10px] bg-[#1f2937] text-[14px] font-normal text-white hover:bg-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
-						{isSubmitting ? 'Saving...' : 'Save'}
+						{isSubmitting ? <FormattedMessage id="common.saving" /> : <FormattedMessage id="common.save" />}
 					</button>
 				)}
 			</div>

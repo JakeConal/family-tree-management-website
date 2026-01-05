@@ -3,7 +3,8 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { IntlProvider as ReactIntlProvider } from 'react-intl';
 
-import { defaultLocale, Locale } from './config';
+import { defaultLocale, Locale } from '@/lib/i18n/config';
+
 import { loadMessages } from './loadMessages';
 
 interface IntlProviderProps {

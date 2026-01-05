@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ChevronDown, ChevronLeft, AlertTriangle } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -41,6 +42,7 @@ export default function DivorcePanel({
 	onClose,
 	onSuccess,
 }: DivorcePanelProps) {
+	const intl = useIntl();
 	const [relationship, setRelationship] = useState<SpouseRelationship | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [marriages, setMarriages] = useState<SpouseRelationship[]>([]);
@@ -88,7 +90,7 @@ export default function DivorcePanel({
 			}
 		} catch (error) {
 			console.error('Error fetching divorce:', error);
-			toast.error('Failed to load divorce record');
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
 		} finally {
 			setLoading(false);
 		}
@@ -129,21 +131,21 @@ export default function DivorcePanel({
 		switch (field) {
 			case 'member1Id':
 				if (!value) {
-					newErrors.member1Id = 'Member 1 is required';
+					newErrors.member1Id = intl.formatMessage({ id: 'panel.divorce.validation.member1Required' });
 				} else {
 					delete newErrors.member1Id;
 				}
 				break;
 			case 'member2Id':
 				if (!value) {
-					newErrors.member2Id = 'Member 2 is required';
+					newErrors.member2Id = intl.formatMessage({ id: 'panel.divorce.validation.member2Required' });
 				} else {
 					delete newErrors.member2Id;
 				}
 				break;
 			case 'divorceDate':
 				if (!value) {
-					newErrors.divorceDate = 'Date of divorce is required';
+					newErrors.divorceDate = intl.formatMessage({ id: 'panel.divorce.validation.divorceDateRequired' });
 				} else {
 					delete newErrors.divorceDate;
 				}
@@ -167,7 +169,7 @@ export default function DivorcePanel({
 				const divorceDate = new Date(formData.divorceDate);
 
 				if (divorceDate <= marriageDate) {
-					newErrors.divorceDate = 'Divorce date must be after the marriage date';
+					newErrors.divorceDate = intl.formatMessage({ id: 'panel.divorce.validation.divorceAfterMarriage' });
 					hasDateErrors = true;
 				} else {
 					delete newErrors.divorceDate;
@@ -219,7 +221,7 @@ export default function DivorcePanel({
 			const relationship = marriages.find((m) => m.id === relationshipId);
 
 			if (!relationship) {
-				toast.error('Selected relationship not found');
+				toast.error(intl.formatMessage({ id: 'panel.divorce.messages.relationshipNotFound' }));
 				setIsSubmitting(false);
 				return;
 			}
@@ -245,16 +247,16 @@ export default function DivorcePanel({
 			});
 
 			if (response.ok) {
-				toast.success('Divorce recorded successfully!');
+				toast.success(intl.formatMessage({ id: 'panel.divorce.messages.createSuccess' }));
 				onSuccess();
 				onClose();
 			} else {
 				const error = await response.json();
-				toast.error(error.error || 'Failed to record divorce');
+				toast.error(error.error || intl.formatMessage({ id: 'panel.divorce.messages.createError' }));
 			}
 		} catch (error) {
 			console.error('Error saving divorce:', error);
-			toast.error('Failed to record divorce');
+			toast.error(intl.formatMessage({ id: 'panel.divorce.messages.createError' }));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -280,7 +282,7 @@ export default function DivorcePanel({
 	if (loading) {
 		return (
 			<div className="w-full h-full">
-				<LoadingScreen message="Loading divorce record..." />
+				<LoadingScreen message={intl.formatMessage({ id: 'panel.divorce.loadingMessage' })} />
 			</div>
 		);
 	}
@@ -297,41 +299,63 @@ export default function DivorcePanel({
 					className="flex items-center text-black font-normal text-base hover:opacity-70 transition-opacity"
 				>
 					<ChevronLeft className="w-5 h-5 mr-2" />
-					<span className="font-['Inter']">Back</span>
+					<span className="font-['Inter']">
+						<FormattedMessage id="common.back" />
+					</span>
 				</button>
 			</div>
 
 			{isViewMode ? (
 				/* View Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
-					<h2 className="text-[26px] font-normal text-black text-center mb-10">Divorce Record Details</h2>
+					<h2 className="text-[26px] font-normal text-black text-center mb-10">
+						<FormattedMessage id="panel.divorce.title" />
+					</h2>
 
 					<div className="space-y-6">
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Member 1 *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.divorce.member1" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 								{relationship?.familyMember1.fullName}
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Member 2 *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.divorce.member2" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
 								{relationship?.familyMember2.fullName}
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Marriage Date</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1">
+								<FormattedMessage id="panel.divorce.marriageDate" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{formatDate(relationship?.marriageDate || '')}
+								<FormattedDate
+									value={new Date(relationship?.marriageDate || '')}
+									year="numeric"
+									month="short"
+									day="2-digit"
+								/>
 							</div>
 						</div>
 
 						<div>
-							<label className="block text-base font-normal text-black mb-1.5 ml-1">Divorce Date *</label>
+							<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<FormattedMessage id="panel.divorce.divorceDate" />
+							</label>
 							<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-								{formatDate(relationship?.divorceDate || '')}
+								<FormattedDate
+									value={new Date(relationship?.divorceDate || '')}
+									year="numeric"
+									month="short"
+									day="2-digit"
+								/>
 							</div>
 						</div>
 
@@ -341,13 +365,13 @@ export default function DivorcePanel({
 								onClick={onClose}
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 							>
-								Back
+								<FormattedMessage id="common.back" />
 							</button>
 							<button
 								onClick={() => onModeChange('edit')}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center"
 							>
-								Edit
+								<FormattedMessage id="common.edit" />
 							</button>
 						</div>
 					</div>
@@ -356,13 +380,19 @@ export default function DivorcePanel({
 				/* Add/Edit Mode */
 				<div className="flex-1 overflow-y-auto px-10 py-8">
 					<h2 className="text-[26px] font-normal text-black text-center mb-10">
-						{isAddMode ? 'Add Divorce Record' : 'Edit Divorce Date'}
+						{isAddMode ? (
+							<FormattedMessage id="panel.divorce.addRecord" />
+						) : (
+							<FormattedMessage id="panel.divorce.editDate" />
+						)}
 					</h2>
 
 					<form onSubmit={handleSubmit} className="space-y-5">
 						{/* Member 1 Selection */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Member 1 *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.divorce.member1" />
+							</label>
 							<div className="relative">
 								<select
 									value={formData.member1Id}
@@ -383,7 +413,9 @@ export default function DivorcePanel({
 									)}
 									disabled={!isAddMode}
 								>
-									<option value="">Select member</option>
+									<option value="">
+										<FormattedMessage id="panel.divorce.selectMember" />
+									</option>
 									{familyMembers.map((member) => (
 										<option key={member.id} value={member.id}>
 											{member.fullName}
@@ -397,7 +429,9 @@ export default function DivorcePanel({
 
 						{/* Member 2 Selection */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Member 2 *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.divorce.member2" />
+							</label>
 							<div className="relative">
 								<select
 									value={formData.member2Id}
@@ -418,11 +452,13 @@ export default function DivorcePanel({
 									)}
 								>
 									<option value="">
-										{!formData.member1Id
-											? 'Select Member 1 first'
-											: filteredSpouses.length === 0
-												? 'No married spouses found'
-												: 'Select member'}
+										{!formData.member1Id ? (
+											<FormattedMessage id="panel.divorce.selectMember1First" />
+										) : filteredSpouses.length === 0 ? (
+											<FormattedMessage id="panel.divorce.noMarriedSpouses" />
+										) : (
+											<FormattedMessage id="panel.divorce.selectMember" />
+										)}
 									</option>
 									{filteredSpouses.map((rel) => (
 										<option key={rel.id} value={rel.id}>
@@ -430,14 +466,16 @@ export default function DivorcePanel({
 										</option>
 									))}
 								</select>
-							<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.member2Id && touched.member2Id && <p className="mt-1 text-sm text-red-600">{errors.member2Id}</p>}
 						</div>
 
 						{/* Date of Divorce */}
 						<div>
-							<label className="block text-[16px] font-normal text-black mb-2">Date of Divorce *</label>
+							<label className="block text-[16px] font-normal text-black mb-2 required-label">
+								<FormattedMessage id="panel.divorce.divorceDate" />
+							</label>
 							<input
 								type="date"
 								value={formData.divorceDate}
@@ -455,7 +493,7 @@ export default function DivorcePanel({
 										'border-red-500 bg-red-50': errors.divorceDate && touched.divorceDate,
 									}
 								)}
-								placeholder="MM/DD/YYYY"
+								placeholder={intl.formatMessage({ id: 'panel.divorce.datePlaceholder' })}
 							/>
 							{errors.divorceDate && touched.divorceDate && (
 								<p className="mt-1 text-sm text-red-600">{errors.divorceDate}</p>
@@ -467,12 +505,11 @@ export default function DivorcePanel({
 							<div className="bg-[#bfdbfe] border border-black/50 rounded-[10px] p-4 flex gap-3">
 								<AlertTriangle className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
 								<div>
-									<h3 className="text-[14px] font-medium text-black mb-1">Important</h3>
+									<h3 className="text-[14px] font-medium text-black mb-1">
+										<FormattedMessage id="panel.divorce.importantTitle" />
+									</h3>
 									<p className="text-[12px] text-black">
-										The <span className="font-bold">Family Member selected</span> for this record{' '}
-										<span className="font-bold">cannot be changed</span> once saved. Furthermore, this record is{' '}
-										<span className="font-bold">permanent</span> and{' '}
-										<span className="font-bold">cannot be deleted</span>.
+										<FormattedMessage id="panel.divorce.importantMessage" />
 									</p>
 								</div>
 							</div>
@@ -481,7 +518,9 @@ export default function DivorcePanel({
 						{/* Error Message */}
 						{Object.keys(errors).length > 0 && (
 							<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-								<p className="text-sm font-medium text-red-800">Please fill in all required fields</p>
+								<p className="text-sm font-medium text-red-800">
+									<FormattedMessage id="panel.divorce.validation.fillAllFields" />
+								</p>
 							</div>
 						)}
 
@@ -493,14 +532,14 @@ export default function DivorcePanel({
 								className="w-[95px] h-[40px] border border-black rounded-[10px] text-black font-normal text-sm hover:bg-gray-50 transition-colors flex items-center justify-center"
 								disabled={isSubmitting}
 							>
-								{isAddMode ? 'Cancel' : 'Back'}
+								<FormattedMessage id={isAddMode ? 'panel.divorce.cancel' : 'panel.divorce.back'} />
 							</button>
 							<button
 								type="submit"
 								disabled={isSubmitting}
 								className="w-[123px] h-[40px] bg-[#1f2937] text-white rounded-[10px] font-bold text-sm hover:bg-[#111827] transition-colors flex items-center justify-center disabled:opacity-50"
 							>
-								{isSubmitting ? 'Saving...' : 'Save'}
+								<FormattedMessage id={isSubmitting ? 'panel.divorce.saving' : 'panel.divorce.save'} />
 							</button>
 						</div>
 					</form>

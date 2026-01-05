@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Globe } from 'lucide-react';
 import { useState } from 'react';
 
-import { localeNames, Locale } from '@/lib/i18n/config';
+import { Locale, localeNames } from '@/lib/i18n/config';
 import { useLocale } from '@/lib/i18n/useLocale';
 
 export function LanguageSwitcher({ compact = false, className = '' }: { compact?: boolean; className?: string }) {

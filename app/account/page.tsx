@@ -422,7 +422,7 @@ export default function AccountSettings() {
 				message={intl.formatMessage({
 					id: 'account.deleteConfirm.message',
 					defaultMessage:
-						'Are you sure you want to delete your account?\n\nThis action cannot be undone and will delete all your family trees, members, and records.',
+						'Are you sure you want to delete your account? This action cannot be undone and will delete all your family trees, members, and records.',
 				})}
 				confirmText={intl.formatMessage({ id: 'common.delete', defaultMessage: 'Delete' })}
 				cancelText={intl.formatMessage({ id: 'common.cancel', defaultMessage: 'Cancel' })}

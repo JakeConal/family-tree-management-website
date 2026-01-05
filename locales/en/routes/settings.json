@@ -1,0 +1,42 @@
+{
+	"settings": {
+		"loading": "Loading settings...",
+		"familyInfo": {
+			"title": "Family Information",
+			"familyName": "Family Name",
+			"familyNamePlaceholder": "Enter family name",
+			"origin": "Origin",
+			"originPlaceholder": "Select place of origin",
+			"established": "Established",
+			"establishedPlaceholder": "Enter establishment year"
+		},
+		"guestAccess": {
+			"title": "Guest Access",
+			"description": "Invite family members to view the tree and edit their own profile by generating access codes.",
+			"inviteGuest": "Invite Guest Editor"
+		},
+		"actions": {
+			"saveChanges": "Save Changes",
+			"saving": "Saving...",
+			"deleteFamilyTree": "Delete Family Tree",
+			"deleting": "Deleting..."
+		},
+		"delete": {
+			"confirmTitle": "Delete Family Tree",
+			"confirmMessage": "Are you sure you want to delete \"{name}\"?\n\nThis action cannot be undone and will delete all associated members, relationships, and records.",
+			"deleteButton": "Delete",
+			"cancelButton": "Cancel"
+		},
+		"messages": {
+			"updateSuccess": "Family tree updated successfully!",
+			"updateFailed": "Failed to update family tree. Please try again.",
+			"deleteSuccess": "Family tree deleted successfully",
+			"deleteFailed": "Failed to delete family tree. Please try again."
+		},
+		"notFound": {
+			"title": "Family Tree Not Found",
+			"message": "The family tree you're looking for doesn't exist or you don't have access to it.",
+			"goToDashboard": "Go to Dashboard"
+		}
+	}
+}

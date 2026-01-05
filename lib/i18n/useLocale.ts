@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { defaultLocale, Locale, locales } from './config';
+import { defaultLocale, Locale, locales } from '@/lib/i18n/config';
 
 export function useLocale() {
 	const [locale, setLocaleState] = useState<Locale>(() => {

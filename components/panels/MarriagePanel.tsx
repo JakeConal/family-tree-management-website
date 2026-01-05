@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ChevronLeft } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import LoadingScreen from '@/components/LoadingScreen';
 import { FamilyMember } from '@/types';
@@ -42,6 +43,7 @@ export default function MarriagePanel({
 	onSuccess,
 }: MarriagePanelProps) {
 	const [marriage, setMarriage] = useState<Marriage | null>(null);
+	const intl = useIntl();
 	const [loading, setLoading] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -83,17 +85,17 @@ export default function MarriagePanel({
 				}
 			} else {
 				const error = await res.json();
-				toast.error(error.error || 'Failed to load marriage information');
+				toast.error(error.error || intl.formatMessage({ id: 'common.generic' }));
 				onClose();
 			}
 		} catch (error) {
 			console.error('Error fetching marriage:', error);
-			toast.error('Failed to load marriage information');
+			toast.error(intl.formatMessage({ id: 'common.generic' }));
 			onClose();
 		} finally {
 			setLoading(false);
 		}
-	}, [relationshipId, familyTreeId, familyMembers, onClose]);
+	}, [relationshipId, familyTreeId, familyMembers, onClose, intl]);
 
 	useEffect(() => {
 		fetchMarriage();
@@ -103,26 +105,26 @@ export default function MarriagePanel({
 		const newErrors: Record<string, string> = {};
 
 		if (!formData.marriageDate) {
-			newErrors.marriageDate = 'Marriage date is required';
+			newErrors.marriageDate = intl.formatMessage({ id: 'panel.marriage.validation.marriageDateRequired' });
 		} else {
 			const marriageDate = new Date(formData.marriageDate);
 			const today = new Date();
 
 			if (marriageDate > today) {
-				newErrors.marriageDate = 'Marriage date cannot be in the future';
+				newErrors.marriageDate = intl.formatMessage({ id: 'panel.marriage.validation.marriageDateFuture' });
 			}
 
 			if (member1BirthDate) {
 				const member1Date = new Date(member1BirthDate);
 				if (marriageDate < member1Date) {
-					newErrors.marriageDate = "Marriage date must be after first member's birthday";
+					newErrors.marriageDate = intl.formatMessage({ id: 'panel.marriage.validation.afterMember1Birth' });
 				}
 			}
 
 			if (member2BirthDate) {
 				const member2Date = new Date(member2BirthDate);
 				if (marriageDate < member2Date) {
-					newErrors.marriageDate = "Marriage date must be after second member's birthday";
+					newErrors.marriageDate = intl.formatMessage({ id: 'panel.marriage.validation.afterMember2Birth' });
 				}
 			}
 		}
@@ -147,16 +149,16 @@ export default function MarriagePanel({
 			if (res.ok) {
 				const data = await res.json();
 				setMarriage(data);
-				toast.success('Marriage information updated successfully');
+				toast.success(intl.formatMessage({ id: 'panel.marriage.messages.updateSuccess' }));
 				onModeChange('view');
 				onSuccess();
 			} else {
 				const error = await res.json();
-				toast.error(error.error || 'Failed to update marriage information');
+				toast.error(error.error || intl.formatMessage({ id: 'panel.marriage.messages.updateError' }));
 			}
 		} catch (error) {
 			console.error('Error updating marriage:', error);
-			toast.error('Failed to update marriage information');
+			toast.error(intl.formatMessage({ id: 'panel.marriage.messages.updateError' }));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -182,13 +184,15 @@ export default function MarriagePanel({
 	};
 
 	if (loading) {
-		return <LoadingScreen />;
+		return <LoadingScreen message={intl.formatMessage({ id: 'panel.marriage.loadingMessage' })} />;
 	}
 
 	if (!marriage) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
-				<p className="text-gray-500">No marriage information found</p>
+				<p className="text-gray-500">
+					<FormattedMessage id="panel.marriage.noInfo" />
+				</p>
 			</div>
 		);
 	}
@@ -199,11 +203,15 @@ export default function MarriagePanel({
 			<div className="border-b border-gray-200 p-6 pb-4">
 				<button onClick={onClose} className="flex items-center gap-2 text-[16px] text-black mb-4 hover:opacity-70">
 					<ChevronLeft className="w-4 h-4" />
-					<span>Back</span>
+					<span>
+						<FormattedMessage id="common.back" />
+					</span>
 				</button>
 
 				<div className="flex items-center justify-center gap-4 mb-4">
-					<h2 className="text-[26px] font-normal text-black">Marriage Information</h2>
+					<h2 className="text-[26px] font-normal text-black">
+						<FormattedMessage id="panel.marriage.title" />
+					</h2>
 				</div>
 			</div>
 
@@ -212,7 +220,9 @@ export default function MarriagePanel({
 				<div className="space-y-6">
 					{/* Member 1 Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Member 1 *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.marriage.member1" />
+						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 							<span className="text-[12px] text-black">{marriage.familyMember1.fullName}</span>
 						</div>
@@ -220,7 +230,9 @@ export default function MarriagePanel({
 
 					{/* Member 2 Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Member 2 *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.marriage.member2" />
+						</label>
 						<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 							<span className="text-[12px] text-black">{marriage.familyMember2.fullName}</span>
 						</div>
@@ -228,17 +240,22 @@ export default function MarriagePanel({
 
 					{/* Date of Marriage Field */}
 					<div>
-						<label className="block text-[16px] font-normal text-black mb-2">Date of Marriage *</label>
+						<label className="block text-[16px] font-normal text-black mb-2 required-label">
+							<FormattedMessage id="panel.marriage.marriageDate" />
+						</label>
 						{mode === 'view' ? (
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
-									{formData.marriageDate
-										? new Date(formData.marriageDate).toLocaleDateString('en-US', {
-												month: '2-digit',
-												day: '2-digit',
-												year: 'numeric',
-											})
-										: ''}
+									{formData.marriageDate ? (
+										<FormattedDate
+											value={new Date(formData.marriageDate)}
+											year="numeric"
+											month="2-digit"
+											day="2-digit"
+										/>
+									) : (
+										''
+									)}
 								</span>
 							</div>
 						) : (
@@ -274,7 +291,7 @@ export default function MarriagePanel({
 					disabled={isSubmitting}
 					className="w-[95px] h-[40px] rounded-[10px] border-2 border-black bg-white text-[14px] font-normal text-black hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 				>
-					Back
+					<FormattedMessage id="common.back" />
 				</button>
 
 				{mode === 'view' ? (
@@ -283,7 +300,7 @@ export default function MarriagePanel({
 						disabled={isSubmitting}
 						className="w-[123px] h-[40px] rounded-[10px] bg-[#1f2937] text-[14px] font-normal text-white hover:bg-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
-						Edit
+						<FormattedMessage id="common.edit" />
 					</button>
 				) : (
 					<button
@@ -291,7 +308,7 @@ export default function MarriagePanel({
 						disabled={isSubmitting}
 						className="w-[123px] h-[40px] rounded-[10px] bg-[#1f2937] text-[14px] font-normal text-white hover:bg-[#111827] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 					>
-						{isSubmitting ? 'Saving...' : 'Save'}
+						{isSubmitting ? <FormattedMessage id="common.saving" /> : <FormattedMessage id="common.save" />}
 					</button>
 				)}
 			</div>

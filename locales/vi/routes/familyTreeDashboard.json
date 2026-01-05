@@ -1,0 +1,60 @@
+{
+	"familyTreeDashboard": {
+		"loading": "Đang tải dữ liệu cây gia phả...",
+		"notFound": {
+			"title": "Không Tìm Thấy Cây Gia Phả",
+			"message": "Cây gia phả bạn đang tìm kiếm không tồn tại hoặc bạn không có quyền truy cập.",
+			"goToDashboard": "Về Bảng Điều Khiển"
+		},
+		"overview": {
+			"title": "Tổng Quan Thông Tin Gia Đình",
+			"familyName": "Tên Họ:",
+			"origin": "Quê Quán:",
+			"established": "Thành Lập:",
+			"notSpecified": "Chưa xác định",
+			"years": "năm",
+			"totalGenerations": "Tổng số đời",
+			"allMembers": "Tất Cả Thành Viên",
+			"totalMembers": "Tổng Số Thành Viên",
+			"livingMembers": "Thành Viên Còn Sống"
+		},
+		"trends": {
+			"memberGrowth": "Tăng trưởng thành viên",
+			"member": "Thành Viên",
+			"deathTrend": "Xu Hướng Tử Vong",
+			"death": "Tử Vong",
+			"marriageTrend": "Xu Hướng Hôn Nhân",
+			"married": "Kết Hôn",
+			"divorced": "Ly Hôn",
+			"achievementGrowth": "Tăng Trưởng Thành Tích",
+			"achievements": "Thành Tích"
+		},
+		"quickAction": {
+			"title": "Hành Động Nhanh",
+			"addMember": "Thêm Thành Viên",
+			"recordAchievement": "Ghi Nhận Thành Tích",
+			"recordPassing": "Ghi Nhận Qua Đời",
+			"viewFamilyTree": "Xem Cây Gia Phả"
+		},
+		"recentChanges": {
+			"title": "Thay Đổi Gần Đây",
+			"seeAll": "Xem Tất Cả",
+			"noChanges": "Chưa có thay đổi lớn nào được ghi nhận.",
+			"system": "Hệ Thống",
+			"justNow": "Vừa xong",
+			"minutesAgo": "{count} phút trước",
+			"hoursAgo": "{count} giờ trước",
+			"daysAgo": "{count} ngày trước",
+			"birthRecorded": "Đã ghi nhận sinh",
+			"newMemberAdded": "Đã thêm thành viên mới",
+			"memberUpdated": "Đã cập nhật thông tin thành viên",
+			"memberRemoved": "Đã xóa thành viên",
+			"passingAdded": "Đã ghi nhận qua đời",
+			"achievementRecorded": "Đã ghi nhận thành tích",
+			"marriageRecorded": "Đã ghi nhận kết hôn",
+			"marriageRemoved": "Đã xóa hồ sơ kết hôn",
+			"divorceRecorded": "Đã ghi nhận ly hôn",
+			"treeUpdated": "Đã cập nhật thông tin cây gia phả"
+		}
+	}
+}
