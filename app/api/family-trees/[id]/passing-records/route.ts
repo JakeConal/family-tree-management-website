@@ -117,19 +117,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			return NextResponse.json({ error: 'Date of passing is required' }, { status: 400 });
 		}
 
-		if (!causesOfDeath || !Array.isArray(causesOfDeath) || causesOfDeath.length === 0) {
-			return NextResponse.json({ error: 'At least one cause of death is required' }, { status: 400 });
+		// Causes of death are optional, but if provided must be valid
+		if (causesOfDeath && !Array.isArray(causesOfDeath)) {
+			return NextResponse.json({ error: 'Causes of death must be an array' }, { status: 400 });
+		}
+
+		// Validate causes of death if provided
+		if (causesOfDeath && causesOfDeath.length > 0) {
+			for (const cause of causesOfDeath) {
+				if (!cause || typeof cause !== 'string' || cause.trim() === '') {
+					return NextResponse.json({ error: 'All causes of death must be non-empty strings' }, { status: 400 });
+				}
+			}
 		}
 
 		if (!burialPlaces || !Array.isArray(burialPlaces) || burialPlaces.length === 0) {
 			return NextResponse.json({ error: 'At least one burial place is required' }, { status: 400 });
-		}
-
-		// Validate causes of death
-		for (const cause of causesOfDeath) {
-			if (!cause || typeof cause !== 'string' || cause.trim() === '') {
-				return NextResponse.json({ error: 'All causes of death must be non-empty strings' }, { status: 400 });
-			}
 		}
 
 		// Validate burial places
@@ -178,17 +181,21 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 			return NextResponse.json({ error: 'This family member already has a passing record' }, { status: 400 });
 		}
 
-		// Create the passing record with related data
+		// Create the passing record with related data in a transaction
 		const passingRecord = await prisma.passingRecord.create({
 			data: {
 				familyMemberId: familyMemberId,
 				dateOfPassing: new Date(dateOfPassing),
-				causeOfDeath: {
-					create: {
-						causeName: causesOfDeath[0], // First cause becomes the main one
-						familyMemberId: familyMemberId,
-					},
-				},
+				...(causesOfDeath && causesOfDeath.length > 0
+					? {
+							causeOfDeath: {
+								create: causesOfDeath.map((cause: string) => ({
+									causeName: cause,
+									familyMemberId: familyMemberId,
+								})),
+							},
+						}
+					: {}),
 				buriedPlaces: {
 					create: burialPlaces.map((place: { location: string; startDate: string }) => ({
 						location: place.location,
@@ -215,19 +222,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 				},
 			},
 		});
-
-		// Create additional causes of death if there are more than one
-		if (causesOfDeath.length > 1) {
-			for (let i = 1; i < causesOfDeath.length; i++) {
-				await prisma.causeOfDeath.create({
-					data: {
-						causeName: causesOfDeath[i],
-						passingRecordId: passingRecord.id,
-						familyMemberId: familyMemberId,
-					},
-				});
-			}
-		}
 
 		// Log the passing record creation
 		await logChange('PassingRecord', passingRecord.id, 'CREATE', familyTreeId, sessionData.user.id, null, {

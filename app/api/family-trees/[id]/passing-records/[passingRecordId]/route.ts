@@ -125,8 +125,9 @@ export async function PUT(
 			return NextResponse.json({ error: 'Date of passing is required' }, { status: 400 });
 		}
 
-		if (!causesOfDeath || causesOfDeath.length === 0) {
-			return NextResponse.json({ error: 'At least one cause of death is required' }, { status: 400 });
+		// Causes of death are optional, but if provided must be valid
+		if (causesOfDeath && !Array.isArray(causesOfDeath)) {
+			return NextResponse.json({ error: 'Causes of death must be an array' }, { status: 400 });
 		}
 
 		if (!burialPlaces || burialPlaces.length === 0) {

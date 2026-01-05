@@ -409,7 +409,7 @@ export default function PassingPanel({
 							</div>
 
 							<div>
-								<label className="block text-base font-normal text-black mb-1.5 ml-1 required-label">
+								<label className="block text-base font-normal text-black mb-1.5 ml-1">
 									<FormattedMessage id="panel.passing.causeOfPassing" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
@@ -549,7 +549,7 @@ export default function PassingPanel({
 							{/* Cause of Passing */}
 							<div>
 								<div className="flex items-center justify-between mb-2">
-									<label className="block text-[16px] font-normal text-black required-label">
+									<label className="block text-[16px] font-normal text-black">
 										<FormattedMessage id="panel.passing.causeOfPassing" />
 									</label>
 									<button
