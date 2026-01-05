@@ -61,6 +61,12 @@ export default function BirthPanel({
 		if (!childMemberId) return;
 
 		setLoading(true);
+		setErrors((prev) => {
+			const newErrors = { ...prev };
+			delete newErrors.fetch;
+			return newErrors;
+		});
+
 		try {
 			const data = await FamilyTreeService.getBirthRecord(familyTreeId, childMemberId);
 			setBirthRecord(data);
@@ -82,6 +88,7 @@ export default function BirthPanel({
 			}
 		} catch (error) {
 			console.error('Error fetching birth record:', error);
+			setErrors((prev) => ({ ...prev, fetch: (error as Error).message }));
 			setBirthRecord(null);
 		} finally {
 			setLoading(false);
@@ -93,11 +100,11 @@ export default function BirthPanel({
 	}, [fetchBirthRecord]);
 
 	useEffect(() => {
-		if (!loading && !birthRecord && childMemberId) {
+		if (errors.fetch) {
 			toast.error(intl.formatMessage({ id: 'error.generic' }));
 			onClose();
 		}
-	}, [loading, birthRecord, childMemberId, intl, onClose]);
+	}, [errors.fetch, intl, onClose]);
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
@@ -240,12 +247,14 @@ export default function BirthPanel({
 						{mode === 'view' ? (
 							<div className="w-full h-[35px] rounded-[30px] bg-[#f3f2f2] border border-[rgba(0,0,0,0.5)] flex items-center px-4">
 								<span className="text-[12px] text-black">
-									<FormattedDate
-										value={new Date(birthRecord?.birthDate || '')}
-										year="numeric"
-										month="2-digit"
-										day="2-digit"
-									/>
+									{birthRecord?.birthDate && (
+										<FormattedDate
+											value={new Date(birthRecord.birthDate)}
+											year="numeric"
+											month="2-digit"
+											day="2-digit"
+										/>
+									)}
 								</span>
 							</div>
 						) : (

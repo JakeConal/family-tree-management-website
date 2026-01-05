@@ -76,6 +76,12 @@ export default function DivorcePanel({
 		if (!divorceId) return;
 
 		setLoading(true);
+		setErrors((prev) => {
+			const newErrors = { ...prev };
+			delete newErrors.fetch;
+			return newErrors;
+		});
+
 		try {
 			const data = await FamilyTreeService.getLifeEvent(familyTreeId, divorceId);
 			setRelationship(data);
@@ -88,6 +94,7 @@ export default function DivorcePanel({
 			});
 		} catch (error) {
 			console.error('Error fetching divorce:', error);
+			setErrors((prev) => ({ ...prev, fetch: (error as Error).message }));
 			setRelationship(null);
 		} finally {
 			setLoading(false);
@@ -110,10 +117,11 @@ export default function DivorcePanel({
 	}, [mode, divorceId, fetchMarriages, fetchDivorce]);
 
 	useEffect(() => {
-		if (!loading && !relationship && mode !== 'add' && divorceId) {
+		if (errors.fetch) {
 			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			onClose();
 		}
-	}, [loading, relationship, mode, divorceId, intl]);
+	}, [errors.fetch, intl, onClose]);
 
 	// Filter spouses when member1 changes
 	useEffect(() => {
@@ -328,12 +336,14 @@ export default function DivorcePanel({
 									<FormattedMessage id="panel.divorce.marriageDate" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									<FormattedDate
-										value={new Date(relationship?.marriageDate || '')}
-										year="numeric"
-										month="short"
-										day="2-digit"
-									/>
+									{relationship?.marriageDate && (
+										<FormattedDate
+											value={new Date(relationship.marriageDate)}
+											year="numeric"
+											month="short"
+											day="2-digit"
+										/>
+									)}
 								</div>
 							</div>
 
@@ -342,12 +352,14 @@ export default function DivorcePanel({
 									<FormattedMessage id="panel.divorce.divorceDate" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									<FormattedDate
-										value={new Date(relationship?.divorceDate || '')}
-										year="numeric"
-										month="short"
-										day="2-digit"
-									/>
+									{relationship?.divorceDate && (
+										<FormattedDate
+											value={new Date(relationship.divorceDate)}
+											year="numeric"
+											month="short"
+											day="2-digit"
+										/>
+									)}
 								</div>
 							</div>
 

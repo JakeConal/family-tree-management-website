@@ -101,6 +101,12 @@ export default function AchievementPanel({
 		if (!achievementId) return;
 
 		setLoading(true);
+		setErrors((prev) => {
+			const newErrors = { ...prev };
+			delete newErrors.fetch;
+			return newErrors;
+		});
+
 		try {
 			const data = await FamilyTreeService.getAchievementById(familyTreeId, achievementId);
 			setAchievement(data);
@@ -123,6 +129,7 @@ export default function AchievementPanel({
 			fetchMemberPassingRecord(data.familyMember.id.toString());
 		} catch (error) {
 			console.error('Error fetching achievement:', error);
+			setErrors((prev) => ({ ...prev, fetch: (error as Error).message }));
 			setAchievement(null);
 		} finally {
 			setLoading(false);
@@ -147,11 +154,11 @@ export default function AchievementPanel({
 	}, [mode, achievementId, fetchAchievementTypes, fetchAchievement]);
 
 	useEffect(() => {
-		if (!loading && !achievement && mode !== 'add' && achievementId) {
+		if (errors.fetch) {
 			toast.error(intl.formatMessage({ id: 'error.generic' }));
 			onClose();
 		}
-	}, [loading, achievement, mode, achievementId, intl, onClose]);
+	}, [errors.fetch, intl, onClose]);
 
 	const validateField = (field: string, value: string) => {
 		const newErrors = { ...errors };
@@ -366,7 +373,7 @@ export default function AchievementPanel({
 										<FormattedMessage id="panel.achievement.dateAchieved" />
 									</label>
 									<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-										<FormattedDate value={new Date(achievement?.achieveDate || '')} />
+										{achievement?.achieveDate ? <FormattedDate value={new Date(achievement.achieveDate)} /> : ''}
 									</div>
 								</div>
 							</div>

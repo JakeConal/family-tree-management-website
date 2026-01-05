@@ -72,6 +72,12 @@ export default function PassingPanel({
 		if (!passingRecordId) return;
 
 		setLoading(true);
+		setErrors((prev) => {
+			const newErrors = { ...prev };
+			delete newErrors.fetch;
+			return newErrors;
+		});
+
 		try {
 			const data = await FamilyTreeService.getPassingRecord(familyTreeId, passingRecordId);
 			setPassingRecord(data);
@@ -99,6 +105,7 @@ export default function PassingPanel({
 			}
 		} catch (error) {
 			console.error('Error fetching passing record:', error);
+			setErrors((prev) => ({ ...prev, fetch: (error as Error).message }));
 			setPassingRecord(null);
 		} finally {
 			setLoading(false);
@@ -121,10 +128,11 @@ export default function PassingPanel({
 	}, [mode, passingRecordId, fetchPassingRecord]);
 
 	useEffect(() => {
-		if (!loading && !passingRecord && mode !== 'add' && passingRecordId) {
-			toast.error(intl.formatMessage({ id: 'panel.passing.messages.loadError' }));
+		if (errors.fetch) {
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
+			onClose();
 		}
-	}, [loading, passingRecord, mode, passingRecordId, intl]);
+	}, [errors.fetch, intl, onClose]);
 
 	const validateField = (field: string, value: string) => {
 		const newErrors = { ...errors };
@@ -411,7 +419,7 @@ export default function PassingPanel({
 									<FormattedMessage id="panel.passing.dateOfPassing" />
 								</label>
 								<div className="bg-[#f3f2f2] border border-black/50 rounded-[30px] px-5 py-2 text-xs text-black">
-									<FormattedDate value={new Date(passingRecord?.dateOfPassing || '')} />
+									{passingRecord?.dateOfPassing ? <FormattedDate value={new Date(passingRecord.dateOfPassing)} /> : ''}
 								</div>
 							</div>
 

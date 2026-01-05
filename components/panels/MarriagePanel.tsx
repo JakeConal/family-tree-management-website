@@ -63,6 +63,12 @@ export default function MarriagePanel({
 		if (!relationshipId) return;
 
 		setLoading(true);
+		setErrors((prev) => {
+			const newErrors = { ...prev };
+			delete newErrors.fetch;
+			return newErrors;
+		});
+
 		try {
 			const data = await FamilyTreeService.getLifeEvent(familyTreeId, relationshipId);
 			setMarriage(data);
@@ -84,6 +90,7 @@ export default function MarriagePanel({
 			}
 		} catch (error) {
 			console.error('Error fetching marriage:', error);
+			setErrors((prev) => ({ ...prev, fetch: (error as Error).message }));
 			setMarriage(null);
 		} finally {
 			setLoading(false);
@@ -95,11 +102,11 @@ export default function MarriagePanel({
 	}, [fetchMarriage]);
 
 	useEffect(() => {
-		if (!loading && !marriage && relationshipId) {
-			toast.error(intl.formatMessage({ id: 'common.generic' }));
+		if (errors.fetch) {
+			toast.error(intl.formatMessage({ id: 'error.generic' }));
 			onClose();
 		}
-	}, [loading, marriage, relationshipId, intl, onClose]);
+	}, [errors.fetch, intl, onClose]);
 
 	const validateForm = () => {
 		const newErrors: Record<string, string> = {};
