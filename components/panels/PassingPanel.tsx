@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { ChevronDown, ChevronLeft, Calendar, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Plus, Trash2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
@@ -483,7 +483,7 @@ export default function PassingPanel({
 										</option>
 									))}
 								</select>
-								<X className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
+								<ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
 							</div>
 							{errors.familyMemberId && touched.familyMemberId && (
 								<p className="mt-1 text-sm text-red-600">{errors.familyMemberId}</p>
@@ -602,15 +602,12 @@ export default function PassingPanel({
 											{/* Start Date */}
 											<div>
 												<label className="block text-[11.584px] font-normal text-black mb-1.5">Start Date *</label>
-												<div className="relative">
-													<input
-														type="date"
-														value={place.startDate}
-														onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
-														className="w-full h-[34px] px-4 pr-10 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
-													/>
-													<Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-black/50 pointer-events-none" />
-												</div>
+												<input
+													type="date"
+													value={place.startDate}
+													onChange={(e) => updateBurialPlace(index, 'startDate', e.target.value)}
+													className="w-full h-[34px] px-4 bg-[#eff6ff] border border-black/50 rounded-[29px] text-[11.584px] text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+												/>
 												{errors[`burialPlaces_${index}_startDate`] && (
 													<p className="mt-1 text-xs text-red-600">{errors[`burialPlaces_${index}_startDate`]}</p>
 												)}
